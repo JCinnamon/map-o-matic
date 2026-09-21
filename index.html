@@ -1952,7 +1952,10 @@ function defaultStyle(geom){
     dotValue:100, dotSize:2.2, dotColor:'#b3452f',   /* dot density */
     /* density mapping */
     heatRadius:25, heatBlur:15, heatField:null,       /* heatmap: optional weight field */
-    hexSize:5, hexStat:'count', hexField:null, hexOpacity:0.8, hexStroke:true};   /* hexbin */
+    hexSize:5, hexStat:'count', hexField:null, hexOpacity:0.8, hexStroke:true,   /* hexbin */
+    /* cartogram: area carries the value instead of ground area */
+    cartoKind:'noncontig', cartoField:null, cartoNormField:null,
+    cartoSize:1, cartoSpacing:5, cartoIterations:12, cartoColorMode:'single'};
 }
 function defaultLabels(){ return {enabled:false, field:null, size:11, color:'#22293a', halo:true,
   font:'Arial, Helvetica, sans-serif', bold:true, italic:false, position:'ne', offset:8}; }
@@ -2320,6 +2323,7 @@ function globeClose(){
   const btn=document.getElementById('mkGlobeBtn'); if(btn) btn.classList.remove('on');
   document.getElementById('mk-center').classList.remove('globe-open');
   const proj=document.getElementById('mkProjection'); if(proj) proj.disabled=false;
+  if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   if(mkGlobe){ try{ mkGlobe.remove(); }catch(_){} mkGlobe=null; }
   const host=document.getElementById('mk-globe'); if(host) host.style.display='none';
   setTimeout(()=>{ if(mkMap) mkMap.invalidateSize(); }, 60);
@@ -3090,6 +3094,7 @@ function dotDensityPoints(lyr){
 /* the colour a feature ends up with, whichever method is in play */
 function featureColor(lyr, f){
   const st=lyr.style;
+  if(st.mode==='carto') return cartoColor(lyr,f);
   if(st.mode==='cat') return catColor(lyr,f);
   if(st.mode==='grad') return classColor(lyr, valueOf(lyr,f));
   if(st.mode==='bivariate') return bivariateColor(lyr,f);
@@ -3264,6 +3269,461 @@ function hexCellsToLayer(lyr){
   markProjectDirty(); if(typeof mkPushHistory==='function') mkPushHistory();
   toast('Created "'+nl.name+'" with '+cells.length+' cells.');
 }
+/* ---------- cartograms ---------- */
+/* A cartogram makes AREA carry the data value instead of ground area. Four
+   constructions are on offer, all computed in Web Mercator metres and handed
+   back as ordinary GeoJSON polygons, so popups, labels, selection, the
+   attribute table and export keep working exactly as for any other layer.
+     non-contiguous  each unit shrinks about its own centroid (Olson 1976)
+     Dorling         each unit becomes a circle, pushed apart until none overlap
+     Demers          the same idea with squares
+     contiguous      rubber-sheet displacement, units stay joined
+                     (Dougenik, Chrisman and Niemeyer 1985)
+   Units sit at made-up coordinates once transformed, which is why the basemap
+   is switched off and the projection dropdown locked while one is on show. */
+const CARTO_R=6378137;
+const CARTO_MAX_UNITS=2000;
+const CARTO_VERTEX_TARGET=24000;
+const CARTO_LABELS={noncontig:'non-contiguous', dorling:'Dorling', demers:'Demers', contig:'contiguous'};
+let cartoBasemapMemo=null;
+
+function cartoFwd(lon, lat){
+  const la=Math.max(-85.05112878, Math.min(85.05112878, lat));
+  return [CARTO_R*lon*Math.PI/180, CARTO_R*Math.log(Math.tan(Math.PI/4 + la*Math.PI/360))];
+}
+function cartoInv(x, y){
+  return [x/CARTO_R*180/Math.PI, (2*Math.atan(Math.exp(y/CARTO_R)) - Math.PI/2)*180/Math.PI];
+}
+function cartoRingArea(r){
+  let a=0;
+  for(let i=0,n=r.length-1;i<n;i++) a += r[i][0]*r[i+1][1] - r[i+1][0]*r[i][1];
+  return a/2;
+}
+function cartoRingCentroid(r){
+  let cx=0, cy=0, a=0;
+  for(let i=0,n=r.length-1;i<n;i++){
+    const cr=r[i][0]*r[i+1][1] - r[i+1][0]*r[i][1];
+    a+=cr; cx+=(r[i][0]+r[i+1][0])*cr; cy+=(r[i][1]+r[i+1][1])*cr;
+  }
+  if(Math.abs(a)<1e-12) return null;
+  a/=2;
+  return [cx/(6*a), cy/(6*a)];
+}
+/* centroid and net area (outer rings less their holes) of one unit */
+function cartoMeasure(polys){
+  let ax=0, ay=0, w=0, net=0;
+  for(const p of polys){
+    let holes=0;
+    for(let i=1;i<p.length;i++) holes+=Math.abs(cartoRingArea(p[i]));
+    const a=Math.max(0, Math.abs(cartoRingArea(p[0])) - holes);
+    net+=a;
+    const c=cartoRingCentroid(p[0]);
+    if(c && a>0){ ax+=c[0]*a; ay+=c[1]*a; w+=a; }
+  }
+  if(w>0) return [ax/w, ay/w, net];
+  let n=0, sx=0, sy=0;
+  for(const p of polys) for(const r of p) for(const pt of r){ sx+=pt[0]; sy+=pt[1]; n++; }
+  return n? [sx/n, sy/n, net] : null;
+}
+/* Douglas-Peucker, used only to keep very heavy layers responsive */
+function cartoDP(r, tol){
+  if(r.length<6) return r;
+  const keep=new Uint8Array(r.length);
+  keep[0]=1; keep[r.length-1]=1;
+  const t2=tol*tol, stack=[[0, r.length-1]];
+  while(stack.length){
+    const seg=stack.pop(), a=seg[0], b=seg[1];
+    if(b<=a+1) continue;
+    const ax=r[a][0], ay=r[a][1], dx=r[b][0]-ax, dy=r[b][1]-ay, den=dx*dx+dy*dy;
+    let best=-1, bd=-1;
+    for(let i=a+1;i<b;i++){
+      const px=r[i][0]-ax, py=r[i][1]-ay;
+      let d2;
+      if(den<=0){ d2=px*px+py*py; }
+      else {
+        let t=(px*dx+py*dy)/den;
+        t = t<0 ? 0 : (t>1 ? 1 : t);
+        const ex=px-t*dx, ey=py-t*dy;
+        d2=ex*ex+ey*ey;
+      }
+      if(d2>bd){ bd=d2; best=i; }
+    }
+    if(bd>t2 && best>0){ keep[best]=1; stack.push([a,best],[best,b]); }
+  }
+  const out=[];
+  for(let i=0;i<r.length;i++) if(keep[i]) out.push(r[i]);
+  if(out.length<4) return r;
+  const f=out[0], l=out[out.length-1];
+  if(f[0]!==l[0] || f[1]!==l[1]) out.push([f[0], f[1]]);
+  return out;
+}
+function cartoTrim(units){
+  let n=0;
+  for(const u of units) for(const p of u.polys) for(const r of p) n+=r.length;
+  if(n<=CARTO_VERTEX_TARGET) return 0;
+  let span=0;
+  for(const u of units) span+=Math.sqrt(Math.max(1, u.area));
+  let tol=Math.max(1, span/Math.max(1, units.length)/300);
+  for(let pass=0; pass<14 && n>CARTO_VERTEX_TARGET; pass++){
+    n=0;
+    for(const u of units){
+      for(let pi=0; pi<u.polys.length; pi++){
+        for(let ri=0; ri<u.polys[pi].length; ri++){
+          u.polys[pi][ri]=cartoDP(u.polys[pi][ri], tol);
+          n+=u.polys[pi][ri].length;
+        }
+      }
+    }
+    tol*=1.8;
+  }
+  return n;
+}
+/* the quantity a cartogram is showing, optionally turned into a rate */
+function cartoValueOf(lyr, f){
+  const st=lyr.style, p=f.properties||{};
+  let v=parseFloat(p[st.cartoField]);
+  if(st.cartoNormField){
+    const d=parseFloat(p[st.cartoNormField]);
+    v=(isFinite(d) && d!==0) ? v/d : NaN;
+  }
+  return v;
+}
+function cartoValueSig(lyr){
+  let n=0, s=0;
+  for(const f of visibleFeatures(lyr)){
+    n++;
+    const v=cartoValueOf(lyr, f);
+    if(isFinite(v)) s+=v;
+  }
+  return n+':'+s.toFixed(4);
+}
+function cartoUnits(lyr){
+  const units=[];
+  visibleFeatures(lyr).forEach(f=>{
+    const g=f.geometry;
+    if(!g || !/Polygon/.test(g.type)) return;
+    const polys=[];
+    const conv=poly=>{
+      const rr=[];
+      for(const ring of poly){
+        const r=[];
+        for(const c of ring){ if(isFinite(c[0]) && isFinite(c[1])) r.push(cartoFwd(c[0], c[1])); }
+        if(r.length>=4) rr.push(r);
+      }
+      if(rr.length) polys.push(rr);
+    };
+    if(g.type==='Polygon') conv(g.coordinates); else g.coordinates.forEach(conv);
+    if(!polys.length) return;
+    const m=cartoMeasure(polys);
+    if(!m) return;
+    const v=cartoValueOf(lyr, f);
+    units.push({f:f, polys:polys, cx:m[0], cy:m[1], area:m[2],
+      value:(isFinite(v) && v>0) ? v : 0, idx:fidOf(lyr, f)});
+  });
+  return units;
+}
+function cartoCircleRing(cx, cy, r, sides){
+  const ring=[];
+  for(let i=0;i<sides;i++){
+    const t=i/sides*Math.PI*2;
+    ring.push([cx + r*Math.cos(t), cy + r*Math.sin(t)]);
+  }
+  ring.push([ring[0][0], ring[0][1]]);
+  return ring;
+}
+/* Olson's non-contiguous cartogram: the unit with the highest value density
+   keeps its true size and every other unit shrinks about its own centroid, so
+   shapes and relative positions survive and the gaps carry the message. */
+function cartoNonContiguous(units, st){
+  let dmax=0;
+  for(const u of units){
+    if(u.value>0 && u.area>0){ const d=u.value/u.area; if(d>dmax) dmax=d; }
+  }
+  if(!(dmax>0)) return false;
+  const mul=Math.max(0.2, Math.min(3, +st.cartoSize||1));
+  for(const u of units){
+    const s=(u.value>0 && u.area>0) ? Math.sqrt((u.value/u.area)/dmax)*mul : 0;
+    u.scale=s;
+    for(const p of u.polys) for(const r of p){
+      for(let i=0;i<r.length;i++) r[i]=[u.cx + (r[i][0]-u.cx)*s, u.cy + (r[i][1]-u.cy)*s];
+    }
+  }
+  return true;
+}
+/* Dorling (circles) and Demers (squares): geography is abandoned for a packing
+   of symbols whose area is exactly proportional to the value. Symbols repel
+   each other until nothing overlaps, with a light pull back toward the true
+   centroid so the arrangement still reads as the map it came from. */
+function cartoPacked(units, st, square, out){
+  let totalArea=0, totalVal=0;
+  for(const u of units){ if(u.value>0){ totalArea+=u.area; totalVal+=u.value; } }
+  if(!(totalVal>0) || !(totalArea>0)) return false;
+  const mul=Math.max(0.2, Math.min(3, +st.cartoSize||1));
+  const gapPct=Math.max(0, Math.min(40, st.cartoSpacing==null ? 5 : +st.cartoSpacing));
+  const gap=1 + gapPct/100;
+  /* scale so the symbols together cover about as much ground as the polygons
+     did, which keeps the map as full as it was before */
+  const k=(square ? Math.sqrt(totalArea/totalVal) : Math.sqrt(totalArea/(Math.PI*totalVal)))*mul;
+  if(out) out.k=k;
+  const live=units.filter(u=>u.value>0);
+  const n=live.length;
+  let meanH=0;
+  for(const u of live){ u.h=k*Math.sqrt(u.value); u.px=u.cx; u.py=u.cy; meanH+=u.h; }
+  meanH/=Math.max(1,n);
+  const iters = n>1000 ? 30 : n>500 ? 60 : n>200 ? 100 : 150;
+  for(let it=0; it<iters; it++){
+    let worst=0;
+    for(let i=0;i<n;i++){
+      const a=live[i];
+      for(let j=i+1;j<n;j++){
+        const b=live[j];
+        let dx=b.px-a.px, dy=b.py-a.py;
+        if(square){
+          const reach=(a.h+b.h)*gap;
+          const needX=reach-Math.abs(dx), needY=reach-Math.abs(dy);
+          if(needX>0 && needY>0){
+            if(needX<=needY){
+              const s=(dx<0?-1:1)*needX/2;
+              a.px-=s; b.px+=s;
+              if(needX>worst) worst=needX;
+            } else {
+              const s=(dy<0?-1:1)*needY/2;
+              a.py-=s; b.py+=s;
+              if(needY>worst) worst=needY;
+            }
+          }
+        } else {
+          let d=Math.sqrt(dx*dx+dy*dy);
+          const need=(a.h+b.h)*gap;
+          if(d<1e-6){ dx=(i%2?1:-1)*meanH*1e-3; dy=(j%2?1:-1)*meanH*1e-3; d=Math.sqrt(dx*dx+dy*dy)||1; }
+          if(d<need){
+            const push=(need-d)/2, ux=dx/d, uy=dy/d;
+            a.px-=ux*push; a.py-=uy*push; b.px+=ux*push; b.py+=uy*push;
+            if(need-d>worst) worst=need-d;
+          }
+        }
+      }
+    }
+    for(let i=0;i<n;i++){
+      live[i].px += (live[i].cx-live[i].px)*0.03;
+      live[i].py += (live[i].cy-live[i].py)*0.03;
+    }
+    if(worst < meanH*0.004) break;
+  }
+  for(const u of units){
+    if(u.value<=0){ u.polys=[]; continue; }
+    u.polys = square
+      ? [[[[u.px-u.h,u.py-u.h],[u.px+u.h,u.py-u.h],[u.px+u.h,u.py+u.h],[u.px-u.h,u.py+u.h],[u.px-u.h,u.py-u.h]]]]
+      : [[cartoCircleRing(u.px, u.py, u.h, 40)]];
+  }
+  return true;
+}
+/* Dougenik, Chrisman and Niemeyer's rubber-sheet cartogram. Every vertex is
+   pushed by every unit in turn: outward from units that need to grow, inward
+   toward units that need to shrink. Because the displacement depends only on
+   where a vertex is, shared boundaries move together and the units stay
+   joined. A handful of passes is usually enough. */
+function cartoContiguous(units, st, out){
+  let totalVal=0;
+  for(const u of units) if(u.value>0) totalVal+=u.value;
+  if(!(totalVal>0)) return false;
+  const iters=Math.max(1, Math.min(30, +st.cartoIterations||12));
+  for(let it=0; it<iters; it++){
+    const meta=[];
+    let curTotal=0;
+    for(const u of units){
+      const m=cartoMeasure(u.polys);
+      const rec={cx:m?m[0]:u.cx, cy:m?m[1]:u.cy, area:m?m[2]:0};
+      curTotal+=rec.area;
+      meta.push(rec);
+    }
+    if(!(curTotal>0)) return false;
+    /* units with no data hold the size they have: they are still part of the
+       sheet, they just take no part in the fit. Leaving them in the error
+       average would drag the force-reduction factor to nothing and the whole
+       thing would crawl. */
+    let fixedArea=0;
+    for(let i=0;i<units.length;i++) if(units[i].value<=0) fixedArea+=meta[i].area;
+    const pool=Math.max(curTotal-fixedArea, curTotal*1e-3);
+    let errSum=0, errN=0;
+    for(let i=0;i<units.length;i++){
+      const m=meta[i];
+      m.radius=Math.sqrt(Math.max(m.area,0)/Math.PI);
+      if(units[i].value>0){
+        m.desired=Math.max(units[i].value/totalVal*pool, pool*1e-9);
+        const hi=Math.max(m.area, m.desired), lo=Math.min(m.area, m.desired);
+        if(lo>0){ errSum+=hi/lo; errN++; }
+      } else {
+        m.desired=m.area;
+      }
+      m.mass=Math.sqrt(m.desired/Math.PI) - m.radius;
+    }
+    const meanErr=errN ? errSum/errN : 1;
+    if(out) out.err=meanErr;
+    const frf=1/(1 + meanErr);
+    const mn=meta.length;
+    for(const u of units) for(const p of u.polys) for(const r of p){
+      for(let vi=0; vi<r.length; vi++){
+        const x0=r[vi][0], y0=r[vi][1];
+        let x=x0, y=y0;
+        for(let mi=0; mi<mn; mi++){
+          const m=meta[mi];
+          if(!(m.radius>0)) continue;
+          const dx=x0-m.cx, dy=y0-m.cy;
+          let d=Math.sqrt(dx*dx+dy*dy);
+          if(d<1e-6) d=1e-6;
+          const F = (d>m.radius)
+            ? m.mass*m.radius/d
+            : m.mass*(d*d/(m.radius*m.radius))*(4 - 3*d/m.radius);
+          x += dx/d*F*frf;
+          y += dy/d*F*frf;
+        }
+        r[vi]=[x,y];
+      }
+    }
+  }
+  if(out){
+    let done=0, fixed=0;
+    const fin=units.map(u=>{ const m=cartoMeasure(u.polys); const a=m?m[2]:0; done+=a; if(u.value<=0) fixed+=a; return a; });
+    const pool=Math.max(done-fixed, done*1e-3);
+    let e=0, n=0;
+    for(let i=0;i<units.length;i++){
+      if(units[i].value<=0) continue;
+      const want=units[i].value/totalVal*pool;
+      if(want>0 && fin[i]>0){ e+=Math.max(fin[i],want)/Math.min(fin[i],want); n++; }
+    }
+    out.err = n ? e/n : 1;
+  }
+  return true;
+}
+/* Builds (and memoises) the transformed FeatureCollection a cartogram layer is
+   drawn from. Returns null when the settings can't produce one, having put the
+   reason in the Style panel. */
+function cartogramFC(lyr){
+  const st=lyr.style;
+  const info=document.getElementById('stCartoInfo');
+  const say=msg=>{ lyr._cartoNote=msg; if(info) info.innerHTML=msg; };
+  const fail=msg=>{ say(msg); lyr._cartoSig=null; lyr._cartoFC=null; lyr._cartoByIdx=null; return null; };
+  if(!st.cartoField) return fail('Choose the field whose values the areas should show.');
+  const sig=[st.cartoKind, st.cartoField, st.cartoNormField, st.cartoSize, st.cartoIterations,
+    st.cartoSpacing, cartoValueSig(lyr)].join('|');
+  if(lyr._cartoSig===sig && lyr._cartoFC){
+    if(info && lyr._cartoNote) info.innerHTML=lyr._cartoNote;
+    return lyr._cartoFC;
+  }
+  const now=()=>(window.performance && performance.now) ? performance.now() : Date.now();
+  const t0=now();
+  const units=cartoUnits(lyr);
+  if(!units.length) return fail('This layer has no polygons to transform.');
+  if(units.length>CARTO_MAX_UNITS){
+    return fail('This layer has '+units.length.toLocaleString()+' polygons and cartograms are capped at '+
+      CARTO_MAX_UNITS.toLocaleString()+'. Filter it down, or dissolve it to larger units, and try again.');
+  }
+  if(!units.some(u=>u.value>0)){
+    return fail('No values above zero in ' + esc(st.cartoField) +
+      '. A cartogram needs a count or an amount, and negatives and zeroes have no area to give.');
+  }
+  const kind=st.cartoKind||'noncontig';
+  const trimmed=(kind==='contig'||kind==='noncontig') ? cartoTrim(units) : 0;
+  const out={};
+  let ok=false;
+  if(kind==='dorling') ok=cartoPacked(units, st, false, out);
+  else if(kind==='demers') ok=cartoPacked(units, st, true, out);
+  else if(kind==='contig') ok=cartoContiguous(units, st, out);
+  else ok=cartoNonContiguous(units, st);
+  if(!ok) return fail('These values can’t drive a cartogram — check the field you picked.');
+  lyr._cartoK=out.k||null;
+  const keepEmpty=(kind==='contig');   /* a contiguous sheet keeps its no-data units */
+  const feats=[], byIdx=new Map();
+  for(const u of units){
+    if(u.value<=0 && !keepEmpty) continue;
+    const coords=u.polys.map(p=>p.map(r=>r.map(pt=>cartoInv(pt[0], pt[1]))));
+    if(!coords.length) continue;
+    const f={type:'Feature', properties:u.f.properties,
+      geometry: coords.length===1 ? {type:'Polygon', coordinates:coords[0]}
+                                  : {type:'MultiPolygon', coordinates:coords}};
+    try{ Object.defineProperty(f, '__srcIdx', {value:u.idx, enumerable:false}); }
+    catch(_){ f.__srcIdx=u.idx; }
+    feats.push(f);
+    if(u.idx!=null) byIdx.set(u.idx, f);
+  }
+  if(!feats.length) return fail('Nothing survived the transform — try a different field.');
+  const ms=Math.round(now()-t0);
+  const dropped=units.length-feats.length;
+  const fit=(kind==='contig' && out.err)
+    ? (out.err<1.12 ? ' \u00b7 areas within '+Math.max(1,Math.round((out.err-1)*100))+'% of the size their values ask for'
+                    : ' \u00b7 areas still '+out.err.toFixed(1)+'\u00d7 off on average \u2014 add passes')
+    : '';
+  say('<b>'+feats.length.toLocaleString()+'</b> unit'+(feats.length===1?'':'s')+' redrawn in '+ms+' ms'+fit+
+    (dropped ? ' · '+dropped+' with no usable value left out' : '')+
+    (trimmed ? ' · outlines simplified to '+trimmed.toLocaleString()+' points to keep it responsive' : ''));
+  lyr._cartoSig=sig;
+  lyr._cartoFC={type:'FeatureCollection', features:feats};
+  lyr._cartoByIdx=byIdx;
+  return lyr._cartoFC;
+}
+/* colour on a cartogram is a second variable, or nothing at all */
+function cartoColor(lyr, f){
+  const st=lyr.style;
+  if(st.cartoColorMode==='grad') return classColor(lyr, valueOf(lyr, f));
+  if(st.cartoColorMode==='cat') return catColor(lyr, f);
+  return st.color;
+}
+function cartoPrepColors(lyr){
+  const st=lyr.style;
+  if(st.cartoColorMode==='grad') computeClassification(lyr);
+  else if(st.cartoColorMode==='cat') computeCategories(lyr);
+}
+/* A cartogram sits at invented coordinates, so the flat map's projection
+   dropdown is locked while one is showing, the same way the globe locks it. */
+function cartoLocksProjection(){
+  return mkLayers.some(l=>l.visible && l.style && l.style.mode==='carto');
+}
+function cartoUpdateProjectionLock(){
+  const sel=document.getElementById('mkProjection');
+  if(!sel) return;
+  if(typeof mkGlobe!=='undefined' && mkGlobe) return;   /* the globe already owns this control */
+  const lock=cartoLocksProjection();
+  sel.disabled=lock;
+  sel.title=lock ? 'Projections are unavailable while a cartogram is on the map, because cartogram units no longer sit at real-world coordinates.' : '';
+  if(lock && typeof projActive!=='undefined' && projActive){
+    sel.value='mercator-edit';
+    setProjectionMode('mercator-edit');
+    toast('Left the projection preview — cartograms are drawn on the flat editing map.');
+  }
+}
+function cartoEnterBasemap(){
+  if(typeof mkBasemapKey==='undefined' || mkBasemapKey==='none') return;
+  cartoBasemapMemo=mkBasemapKey;
+  setBasemap('none');
+  toast('Basemap hidden — cartogram units no longer sit at their real-world locations.');
+}
+function cartoLeaveBasemap(){
+  if(!cartoBasemapMemo) return;
+  const k=cartoBasemapMemo;
+  cartoBasemapMemo=null;
+  if(mkBasemapKey==='none' && !cartoLocksProjection()) setBasemap(k);
+}
+/* the transformed units, handed over as a layer of their own so they can be
+   filtered, joined, restyled and exported like any other polygons */
+function cartoToLayer(lyr){
+  const fc=lyr._cartoFC || cartogramFC(lyr);
+  if(!fc || !fc.features.length){ toast('Nothing to turn into a layer yet.'); return; }
+  const gj={type:'FeatureCollection', features:fc.features.map(f=>({
+    type:'Feature', properties:Object.assign({}, f.properties), geometry:clone(f.geometry)}))};
+  const label=CARTO_LABELS[lyr.style.cartoKind||'noncontig']||'cartogram';
+  const ds=registerDataset(gj, lyr.name+' — '+label+' cartogram', 'polygon', {derived:true});
+  const nl={id:uid(), name:ds.name, datasetId:ds.id, geojson:ds.geojson, geom:'polygon',
+    visible:true, opacity:1,
+    style:Object.assign(defaultStyle('polygon'), {mode:'single', color:lyr.style.color}),
+    labels:defaultLabels(), filter:{logic:'AND', conds:[]}, leaflet:null};
+  mkLayers.unshift(nl); mkSelectedId=nl.id;
+  renderAllMakerLayers(); renderMakerLayerList(); renderMakerPanels();
+  markProjectDirty();
+  if(typeof mkPushHistory==='function') mkPushHistory();
+  toast('Created "'+nl.name+'" with '+fc.features.length+' units.');
+}
+
 /* ---------- density mapping: heatmap ---------- */
 function renderHeatLayer(lyr){
   if(typeof L.heatLayer!=='function') { toast('The heatmap library failed to load.'); return null; }
@@ -3305,6 +3765,15 @@ function renderLayer(lyr){
     mkTouch();
     return;
   }
+  /* a cartogram is drawn from transformed geometry, so build that first */
+  if(st.mode==='carto'){
+    const cfc=cartogramFC(lyr);
+    if(!cfc){
+      updateMkStatus(); scheduleGlobeSync(); cartoUpdateProjectionLock(); mkTouch();
+      return;
+    }
+    cartoPrepColors(lyr);
+  }
   if(st.mode==='grad'||st.mode==='gradSize'||st.mode==='prop') { computeClassification(lyr); sizeRange(lyr); }
   if(st.mode==='bivariate'){ sizeRange(lyr); computeColorClassification(lyr); }
   if(st.mode==='cat') computeCategories(lyr);
@@ -3316,8 +3785,10 @@ function renderLayer(lyr){
       weight:0, fillOpacity:0.85*lyr.opacity, interactive:false
     }))).addTo(mkMap);
   }
+  /* cartogram features are already filtered and already transformed */
+  const drawFC=(st.mode==='carto' && lyr._cartoFC) ? lyr._cartoFC : lyr.geojson;
   const opts={
-    filter: f=>featurePasses(lyr,f),
+    filter: f=>(st.mode==='carto') ? true : featurePasses(lyr,f),
     style: f=>{
       if(st.mode==='dot'){
         return {color:st.strokeColor, weight:st.strokeWeight, opacity:lyr.opacity,
@@ -3347,12 +3818,13 @@ function renderLayer(lyr){
       });
     }
   };
-  lyr.leaflet=L.geoJSON(lyr.geojson, opts).addTo(mkMap);
+  lyr.leaflet=L.geoJSON(drawFC, opts).addTo(mkMap);
   updateLabelCss(lyr);
   updateMkStatus();
   if(selHighlight && selHighlight.bringToFront) selHighlight.bringToFront();
   if(projActive) scheduleProjRender();
   scheduleGlobeSync();   /* keep an open globe in step with visibility/styling */
+  cartoUpdateProjectionLock();
   mkTouch();   /* debounced undo snapshot: catches style / label / filter / edit changes */
 }
 /* The globe draws the user's layers as its own MapLibre layers, so any change to
@@ -3567,6 +4039,8 @@ let selection={layerId:null, set:new Set()};
 let selHighlight=null, selLastRow=null;
 
 function fidOf(lyr, f){
+  /* a cartogram draws transformed copies; they carry their source index */
+  if(f && f.__srcIdx!=null) return f.__srcIdx;
   if(!lyr._fidMap || lyr._fidN!==lyr.geojson.features.length){
     lyr._fidMap=new WeakMap();
     lyr.geojson.features.forEach((ft,i)=>lyr._fidMap.set(ft,i));
@@ -3598,8 +4072,13 @@ function renderSelection(){
   if(selHighlight){ try{ mkMap.removeLayer(selHighlight); }catch(_){} selHighlight=null; }
   const lyr=selectionLayer();
   const feats=selectedFeatureList();
-  if(lyr && feats.length){
-    selHighlight=L.geoJSON({type:'FeatureCollection', features:feats}, {
+  let shown=feats;
+  if(lyr && lyr.style.mode==='carto' && lyr._cartoByIdx){
+    /* highlight where the unit actually is on the cartogram, not where it sits on the ground */
+    shown=feats.map(f=>lyr._cartoByIdx.get(fidOf(lyr,f))).filter(Boolean);
+  }
+  if(lyr && shown.length){
+    selHighlight=L.geoJSON({type:'FeatureCollection', features:shown}, {
       style:()=>({color:'#ffb000', weight:4, opacity:1, fillColor:'#ffd24d', fillOpacity:.35}),
       pointToLayer:(f,latlng)=>L.circleMarker(latlng,{radius:(lyr.style.radius||6)+5, color:'#ffb000',
         weight:3, fillColor:'#ffd24d', fillOpacity:.55}),
@@ -3915,7 +4394,7 @@ function renderStyleTab(){
        ['heat','Heatmap (density surface)'],['hex','Hexbin (aggregated counts)']]
     : lyr.geom==='polygon'
       ? [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour'],
-         ['dot','Dot density']]
+         ['dot','Dot density'],['carto','Cartogram (area by value)']]
       : [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour']];
   let html=`<h3>${esc(lyr.name)} — symbology</h3>
     <div class="field"><label>Style type</label>
@@ -4000,6 +4479,84 @@ function renderStyleTab(){
       <div class="kv" id="stHexInfo"></div>
       <button class="btn small secondary" id="stHexToLayer">Create a layer from these bins</button>
       <p class="kv">Making a layer puts the cell values into the attribute table, where they can be browsed, filtered and joined like any other polygon layer.</p>`;
+  }
+  if(st.mode==='carto'){
+    const kind=st.cartoKind||'noncontig';
+    html+=`<div class="field"><label>Cartogram type</label>
+      <select id="stCartoKind">
+        <option value="noncontig" ${kind==='noncontig'?'selected':''}>Non-contiguous — units shrink in place</option>
+        <option value="dorling" ${kind==='dorling'?'selected':''}>Dorling — circles</option>
+        <option value="demers" ${kind==='demers'?'selected':''}>Demers — squares</option>
+        <option value="contig" ${kind==='contig'?'selected':''}>Contiguous — units stay joined</option>
+      </select></div>
+      <div class="field"><label>Value field (numeric — the quantity the area will carry)</label>
+      <select id="stCartoField"><option value="">— choose —</option>${numFields.map(f=>'<option '+(st.cartoField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+      <div class="field"><label>Normalize by (optional — makes a rate)</label>
+      <select id="stCartoNorm"><option value="">none</option>${numFields.map(f=>'<option '+(st.cartoNormField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>`;
+    if(kind==='contig'){
+      html+=`<div class="field"><label>Passes: <span id="stCartoIterLbl">${st.cartoIterations||12}</span></label>
+        <input type="range" id="stCartoIter" min="1" max="30" step="1" value="${st.cartoIterations||12}"></div>
+        <div class="kv">Each pass nudges every unit closer to the area its value asks for, at the cost of a shape further from its real outline. Twelve suits most data; a field with a very wide range needs more.</div>`;
+    } else {
+      html+=`<div class="row2">
+        <div class="field"><label>Size: <span id="stCartoSizeLbl">${(st.cartoSize||1).toFixed(2)}×</span></label>
+          <input type="range" id="stCartoSize" min="0.2" max="3" step="0.05" value="${st.cartoSize||1}"></div>`;
+      if(kind==='dorling'||kind==='demers'){
+        html+=`<div class="field"><label>Gap between symbols</label>
+          <input type="number" id="stCartoGap" min="0" max="40" step="1" value="${st.cartoSpacing==null?5:st.cartoSpacing}"></div>`;
+      } else {
+        html+=`<div class="field"><label>&nbsp;</label><div class="kv" style="margin:0;">The densest unit keeps its true size.</div></div>`;
+      }
+      html+=`</div>`;
+    }
+    html+=`<div class="field"><label>Colour</label>
+      <select id="stCartoColorMode">
+        <option value="single" ${st.cartoColorMode==='single'?'selected':''}>One colour for every unit</option>
+        <option value="grad" ${st.cartoColorMode==='grad'?'selected':''}>Graduated colour from a second field</option>
+        <option value="cat" ${st.cartoColorMode==='cat'?'selected':''}>Categories from a second field</option>
+      </select></div>`;
+    if(st.cartoColorMode==='grad'){
+      html+=`<div class="field"><label>Colour field (numeric)</label>
+        <select id="stField"><option value="">— choose —</option>${numFields.map(f=>'<option '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+        <div class="field"><label>Normalize the colour field by (optional)</label>
+        <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+        <div class="row2">
+          <div class="field"><label>Method</label>
+            <select id="stMethod">
+              <option value="quantile" ${st.method==='quantile'?'selected':''}>Quantile</option>
+              <option value="equal" ${st.method==='equal'?'selected':''}>Equal interval</option>
+              <option value="jenks" ${st.method==='jenks'?'selected':''}>Natural breaks (Jenks)</option>
+            </select></div>
+          <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.classes}"></div>
+        </div>
+        <div class="field"><label>Colour ramp</label><select id="stRamp">${rampOptions(st.ramp,'polygon','grad')}</select>
+          ${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
+        <div class="checkline"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}><label for="stReverse" style="margin:0;color:var(--text);">Reverse ramp</label></div>
+        <div id="stClassList"></div>
+        <div id="stBreaksInfo" class="kv"></div>
+        <p class="kv">Area and colour carry different things here. Using the same field for both double-encodes one variable, which is worth pointing out to students rather than avoiding.</p>`;
+    } else if(st.cartoColorMode==='cat'){
+      html+=`<div class="field"><label>Category field</label>
+        <select id="stField"><option value="">— choose —</option>${fields.map(f=>'<option '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+        <div class="row2">
+          <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,'polygon','cat')}</select></div>
+          <div class="field" style="max-width:96px;"><label>Show top</label><input type="number" id="stTopN" min="1" max="40" value="${st.topN||12}" ${st.showAll?'disabled':''}></div>
+        </div>
+        <button class="btn small ${st.showAll?'':'light'}" id="stShowAll" style="margin-bottom:6px;">Show all</button>
+        <div class="kv" id="stCatInfo"></div>
+        <div id="stCatList" style="max-height:240px;overflow-y:auto;margin-top:6px;"></div>
+        <button class="btn small secondary" id="stCatReset">Re-assign colours</button>`;
+    } else {
+      html+=colourFieldHtml('stColor','Fill colour', st.color);
+    }
+    html+=`<div class="kv" id="stCartoInfo" style="margin-top:8px;">${lyr._cartoNote||'Pick a value field to build the cartogram.'}</div>
+      <div class="legend-add-row" style="margin-bottom:6px;">
+        <button class="btn small secondary" id="stCartoToLayer">Create a layer from this cartogram</button>`;
+    if(typeof mkBasemapKey!=='undefined' && mkBasemapKey==='none'){
+      html+=`<button class="btn small light" id="stCartoBasemap">Bring the basemap back</button>`;
+    }
+    html+=`</div>
+      <p class="kv">Area now stands for the value rather than for ground area, so the units sit at invented coordinates. The basemap is switched off and the projection dropdown is locked while a cartogram is showing. Scale bars and distance measurements mean nothing on one.</p>`;
   }
   if(st.mode==='bivariate'){
     html+=`<div class="field"><label>Size field (numeric)</label>
@@ -4090,7 +4647,14 @@ function renderStyleTab(){
 
   const g=id=>document.getElementById(id);
   const rerender=()=>{ renderLayer(lyr); };
-  g('stMode').onchange=()=>{ st.mode=g('stMode').value; renderStyleTab(); rerender(); };
+  g('stMode').onchange=()=>{
+    const was=st.mode;
+    st.mode=g('stMode').value;
+    /* a cartogram's units aren't where the basemap says they are, so take it away */
+    if(st.mode==='carto' && was!=='carto') cartoEnterBasemap();
+    if(was==='carto' && st.mode!=='carto') cartoLeaveBasemap();
+    renderStyleTab(); rerender();
+  };
   bindColourField('stColor', ()=>st.color, v=>{ st.color=v; }, rerender);
   if(g('stField')) g('stField').onchange=()=>{ st.field=g('stField').value||null; st.catMap={}; renderStyleTab(); rerender(); };
   if(g('stNorm')) g('stNorm').onchange=()=>{ st.normField=g('stNorm').value||null; renderStyleTab(); rerender(); };
@@ -4167,6 +4731,62 @@ function renderStyleTab(){
     if(g('stHexStat')) g('stHexStat').onchange=()=>{ st.hexStat=g('stHexStat').value; renderStyleTab(); rerender(); };
     if(g('stHexField')) g('stHexField').onchange=()=>{ st.hexField=g('stHexField').value||null; rerender(); };
     if(g('stHexToLayer')) g('stHexToLayer').onclick=()=>hexCellsToLayer(lyr);
+  }
+  /* ---- cartogram ---- */
+  if(g('stCartoKind')){
+    g('stCartoKind').onchange=()=>{
+      st.cartoKind=g('stCartoKind').value;
+      lyr._cartoSig=null;
+      renderStyleTab(); rerender();
+    };
+    if(g('stCartoField')) g('stCartoField').onchange=()=>{
+      st.cartoField=g('stCartoField').value||null;
+      lyr._cartoSig=null;
+      renderStyleTab(); rerender();
+    };
+    if(g('stCartoNorm')) g('stCartoNorm').onchange=()=>{
+      st.cartoNormField=g('stCartoNorm').value||null;
+      lyr._cartoSig=null;
+      rerender();
+    };
+    if(g('stCartoSize')) g('stCartoSize').oninput=()=>{
+      st.cartoSize=parseFloat(g('stCartoSize').value)||1;
+      const l=g('stCartoSizeLbl'); if(l) l.textContent=st.cartoSize.toFixed(2)+'×';
+      lyr._cartoSig=null;
+      rerender();
+    };
+    if(g('stCartoGap')) g('stCartoGap').onchange=()=>{
+      st.cartoSpacing=Math.max(0, Math.min(40, parseFloat(g('stCartoGap').value)||0));
+      lyr._cartoSig=null;
+      rerender();
+    };
+    if(g('stCartoIter')) g('stCartoIter').onchange=()=>{
+      st.cartoIterations=Math.max(1, Math.min(30, parseInt(g('stCartoIter').value,10)||12));
+      const l=g('stCartoIterLbl'); if(l) l.textContent=st.cartoIterations;
+      lyr._cartoSig=null;
+      rerender();
+    };
+    if(g('stCartoIter')) g('stCartoIter').oninput=()=>{
+      const l=g('stCartoIterLbl'); if(l) l.textContent=g('stCartoIter').value;
+    };
+    if(g('stCartoColorMode')) g('stCartoColorMode').onchange=()=>{
+      st.cartoColorMode=g('stCartoColorMode').value;
+      if(st.cartoColorMode!=='single' && !st.field) st.field=st.cartoField||null;
+      st.catMap={};
+      renderStyleTab(); rerender();
+    };
+    if(g('stCartoToLayer')) g('stCartoToLayer').onclick=()=>cartoToLayer(lyr);
+    if(g('stCartoBasemap')) g('stCartoBasemap').onclick=()=>{
+      setBasemap(cartoBasemapMemo||'osm');
+      cartoBasemapMemo=null;
+      renderStyleTab();
+    };
+  }
+  if(st.mode==='carto' && st.cartoColorMode==='cat' && st.field) refreshCatList(lyr);
+  if(st.mode==='carto' && st.cartoColorMode==='grad' && st.field){
+    computeClassification(lyr);
+    const bi=g('stBreaksInfo');
+    if(bi && lyr._breaks) bi.innerHTML='<b>Class breaks:</b> '+lyr._breaks.map(b=>fmtNum(b)).join(' | ');
   }
   if(g('stColorField')) g('stColorField').onchange=()=>{ st.colorField=g('stColorField').value||null; renderStyleTab(); rerender(); };
 
@@ -5912,6 +6532,30 @@ function legendSpecForLayer(lyr){
         items.push({color:lyr._cColors[i], label:fmtNum(lyr._cBreaks[i])+' – '+fmtNum(lyr._cBreaks[i+1]), shape:shp_});
       }
     }
+  } else if(st.mode==='carto'){
+    const kind=st.cartoKind||'noncontig';
+    if(st.cartoColorMode==='grad'){
+      computeClassification(lyr);
+      if(lyr._breaks){
+        for(let i=lyr._breaks.length-2;i>=0;i--) items.push({color:lyr._colors[i], label:classRangeLabel(lyr,i), shape:'rect'});
+      }
+    } else if(st.cartoColorMode==='cat'){
+      computeCategories(lyr);
+      (lyr._cats||[]).forEach(v=>items.push({color:st.catMap[v], label:v, shape:'rect'}));
+      if(lyr._catOtherN) items.push({color:st.catMap[OTHER_KEY], label:'Other', shape:'rect'});
+    }
+    if(kind==='dorling'||kind==='demers'){
+      const vals=visibleFeatures(lyr).map(f=>cartoValueOf(lyr,f)).filter(v=>isFinite(v)&&v>0);
+      if(vals.length){
+        const vmax=Math.max.apply(null,vals), vmin=Math.min.apply(null,vals);
+        if(items.length) items.push({header:true, label:'Size'});
+        const fill=(st.cartoColorMode==='single') ? st.color : '#d8dce3';
+        [vmax, (vmin+vmax)/2, vmin].forEach(v=>items.push({color:fill, label:fmtNum(v),
+          shape:(kind==='demers'?'rect':'circle'), size:Math.max(6, Math.round(26*Math.sqrt(v/vmax)))}));
+      }
+    } else {
+      items.push({header:true, label:'Area \u221d '+(st.cartoField||'value')+(st.cartoNormField? ' / '+st.cartoNormField : '')});
+    }
   } else if(st.mode==='gradSize'){
     sizeRange(lyr);
     if(lyr._vmax!=null){
@@ -5921,7 +6565,9 @@ function legendSpecForLayer(lyr){
     }
   }
   let title=lyr.name;
-  if(st.field && st.mode!=='single'){ title=lyr.name+' — '+st.field + (st.normField? ' / '+st.normField : ''); }
+  if(st.mode==='carto'){
+    title=lyr.name+' — '+(st.cartoField||'') + (st.cartoNormField? ' / '+st.cartoNormField : '');
+  } else if(st.field && st.mode!=='single'){ title=lyr.name+' — '+st.field + (st.normField? ' / '+st.normField : ''); }
   return {title, items};
 }
 
@@ -6260,7 +6906,14 @@ function renderProjection(){
     if(st.mode==='grad'||st.mode==='gradSize'||st.mode==='prop'){ computeClassification(lyr); sizeRange(lyr); }
     if(st.mode==='bivariate'){ sizeRange(lyr); computeColorClassification(lyr); }
     if(st.mode==='cat') computeCategories(lyr);
-    visibleFeatures(lyr).forEach(f0=>{
+    let srcFeats;
+    if(st.mode==='carto'){
+      const cfc=cartogramFC(lyr);
+      if(!cfc) return;
+      cartoPrepColors(lyr);
+      srcFeats=cfc.features;
+    } else srcFeats=visibleFeatures(lyr);
+    srcFeats.forEach(f0=>{
       if(!f0.geometry) return;
       const f = def.interrupted && !/Point/.test(f0.geometry.type) ? prepForInterrupted(f0) : f0;
       const color=featureColor(lyr,f0);
@@ -7183,7 +7836,8 @@ function buildLegendGroup(title, items, frame, text){
     } else if(it.shape==='line'){
       parts.push(new fabric.Rect({left:padding-2, top:cy-1.5, width:swW+6, height:3, fill:paintValue(it.color)}));
     } else {
-      parts.push(new fabric.Rect({left:padding, top:cy-swW/2, width:swW, height:swW, fill:paintValue(it.color), stroke:'#555', strokeWidth:0.7}));
+      const s=size||swW;
+      parts.push(new fabric.Rect({left:padding+(swW-s)/2, top:cy-s/2, width:s, height:s, fill:paintValue(it.color), stroke:'#555', strokeWidth:0.7}));
     }
     parts.push(new fabric.Text(String(it.label),
       Object.assign({left:padding+swW+10, top:cy-tx.label.size/2}, legendFontOpts(tx.label))));

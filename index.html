@@ -45,7 +45,7 @@
   #topbar{gap:6px;}
   #topbar .btn.small{padding:4px 7px;}
   @media (max-width:1500px){ #topbar .grp{gap:4px;padding:0 4px;} #topbar .btn.small{padding:4px 6px;} }
-  @media (max-width:1420px){ #topbar label{display:none;} #syncState{display:none;} #topbar select{max-width:120px;} }
+  @media (max-width:1420px){ #topbar label{display:none;} body.mod-layout #syncState{display:none;} #topbar select{max-width:120px;} }
   @media (max-width:1400px){ #topbar select{max-width:104px;} #topbar .btn.small{padding:4px 5px;} #topbar .grp{padding:0 3px;} }
   #topbar .grp:last-child{border-right:none;}
   #topbar .tb-spacer{flex:1 1 0;min-width:8px;}
@@ -53,7 +53,7 @@
   #grp-page label{display:none;}
   #topbar #pageSize{max-width:96px;} #topbar #pageOrientation{max-width:82px;} #topbar #projectSwitcher{width:260px;max-width:none;}
   #topbar .grp{padding:0 5px;gap:4px;} #topbar h1{margin-right:4px;}
-  @media (max-width:1500px){ #syncState{display:none;} }
+  @media (max-width:1500px){ body.mod-layout #syncState{display:none;} }
   @media (max-width:1340px){ .mod-tabs button{padding:5px 10px;} body.mod-layout #topbar #projectSwitcher{width:128px !important;} #topbar #projectSwitcher{width:200px;} #topbar #pageSize{max-width:78px !important;} #topbar #pageOrientation{max-width:70px !important;} }
   @media (max-width:1500px){ body.mod-layout #topbar #projectSwitcher{width:120px;} body.mod-layout .mod-tabs button{padding:5px 11px;} #topbar #pageSize{max-width:86px;} #topbar #pageOrientation{max-width:76px;} #topbar .grp{padding:0 3px;gap:3px;} }
   #topbar .grp.tb-mid-last{border-right:none;}
@@ -408,6 +408,8 @@
   .at-ctprev{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;background:#fbfcfd;}
   .at-ctrow{display:flex;gap:6px;align-items:baseline;font:14px Georgia,serif;margin:3px 0;} .at-ctrow i{flex:1;border-bottom:1px dotted #bbb;} .at-ctrow b{font-weight:400;color:var(--muted);}
   .at-th img{width:100%;height:100%;object-fit:cover;}
+  .help-disc{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:6px;margin-top:8px;}
+  .home-foot-disc{display:inline-block;max-width:760px;opacity:.75;font-size:.92em;margin:4px 0;}
   .gr-sub{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 6px;} .gr-sub+div{margin-bottom:14px;}
   .gr-table{font-size:12px;border-collapse:collapse;width:100%;margin:4px 0;} .gr-table td,.gr-table th{padding:2px 4px;border-bottom:1px solid var(--line);text-align:left;}
   .swipe-bar{position:absolute;top:0;bottom:0;width:0;z-index:950;pointer-events:none;border-left:3px solid #1b2a4a;box-shadow:0 0 0 1px rgba(255,255,255,.8);}
@@ -852,7 +854,7 @@
   <div class="grp tb-mid-last">
     <select id="projectSwitcher" title="Switch project"></select>
     <button class="btn secondary small" id="btnSave" title="Save this project to browser storage">Save</button>
-    <button class="btn ghost small" id="btnSync" title="Save projects to a synced folder as well as this browser">☁ <span id="syncState">Sync off</span></button>
+    <button class="btn ghost small" id="btnSync" title="Save projects to a synced folder as well as this browser">☁ <span id="syncState">Sync to cloud</span></button>
   </div>
   <div class="tb-spacer"></div>
   <div class="grp">
@@ -893,7 +895,7 @@
     <div id="home-projects" class="home-grid"></div>
     <div id="home-sync"></div>
     <div id="home-library" class="hidden"></div>
-    <p class="kv home-note"><b>Where your work lives:</b> projects and datasets are saved in this browser, on this computer — nothing is uploaded to a server. To carry your work between machines, use <b>☁ Sync</b> in the top bar: point Map-O-Matic at a folder you already sync (OneDrive, Google&nbsp;Drive or Dropbox) and every project is written there as a file whenever it saves, so you can pick up on another computer. Sync needs Chrome or Edge. Either way, on a shared computer it's wise to also download a project file (card menu → Export) or a full project archive as a portable backup, and take it with you.</p>
+    <p class="kv home-note"><b>Where your work lives:</b> projects and datasets are saved in this browser, on this computer — nothing is uploaded to a server. To carry your work between machines, use <b>☁ Sync to cloud</b> in the top bar: point Map-O-Matic at a folder you already sync (OneDrive, Google&nbsp;Drive or Dropbox) and every project is written there as a file whenever it saves, so you can pick up on another computer. Sync needs Chrome or Edge. Either way, on a shared computer it's wise to also download a project file (card menu → Export) or a full project archive as a portable backup, and take it with you.</p>
   </div>
   <!-- credits ribbon (Vis-O-Matic style footer) -->
   <footer class="home-foot">
@@ -902,6 +904,7 @@
       <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a><span class="sep">·</span>
       <a href="https://github.com/jcinnamon" target="_blank" rel="noopener">GitHub</a><br>
       Built for research and teaching · a single HTML file, MIT licensed.<br>
+      <span class="home-foot-disc">Map-O-Matic is provided “as is”, without warranty of any kind. It is a teaching and research tool: check your results before relying on them, respect the terms of the data sources and basemaps you use, and remember that you are responsible for the data you load and the maps you publish.</span><br>
       <span class="home-foot-libs">Built with open tools: Leaflet · MapLibre GL · OpenFreeMap &amp; OpenMapTiles · Turf.js · Fabric.js · D3 &amp; d3-geo-projection · chroma.js · simple-statistics · PapaParse · JSZip · shpjs · jsPDF · html2canvas · Natural Earth &amp; OpenStreetMap data · title face Orbitron.</span>
     </div>
   </footer>
@@ -1147,35 +1150,28 @@
 <div class="modal-overlay hidden" id="modal-help">
   <div class="modal">
     <h2>Quick start</h2>
-    <div class="help-step"><b>Two ways to work:</b>
-      <p><b>A. Map Maker → Layout (all in this tool).</b> Add data in Map Maker, filter and symbolize it, then choose <b>Send / Export ▾ → Map Composer</b> — your styled map arrives as a map frame with the scale already calibrated and a legend built from your symbology.</p>
-      <p style="margin-top:6px;"><b>B. Bring your own map image.</b> Made a map elsewhere (any GIS or graphics software)? Export it as an image and upload it in the Layout module via <b>Map Frame</b>, then calibrate the scale bar by drawing a reference line of known distance.</p>
+    <p class="kv" style="margin-top:-4px;">Map-O-Matic has four modules, in the buttons at the top. Work is saved in this browser as you go, one project at a time (click the Map-O-Matic name for the project list).</p>
+    <div class="help-step"><b>🧭 Map Maker: build the map.</b>
+      <p><b>+ Add data</b> takes GeoJSON, CSV or Excel with coordinates, zipped shapefiles, your data library, or online sources. Select a layer to style it (categories, graduated colour or size, dot density, heatmaps, hexbins, cartograms), filter it and label it. The ⋯ menu and Tools tab hold the attribute table, field calculator and spatial tools. The map can switch to a globe or one of 13 projections, and ⇆ compares two layers with a swipe divider.</p>
     </div>
-    <div class="help-step"><b>Map Maker basics.</b>
-      <p>The <b>+ Add data</b> menu takes uploads (GeoJSON, CSV or Excel with coordinate columns, zipped shapefile), your data library, and online sources: Natural Earth base layers, OpenStreetMap features for your map area, open-data portal search (Opendatasoft and ArcGIS Hub sites, ArcGIS Online), or any GeoJSON/CSV/feature-service URL. Select a layer to set its symbology (single, categories, graduated colour with equal interval / quantile / natural breaks / manual classification, graduated symbol size), filters, and labels. The attribute table includes the filter builder and Field Calculator (e.g. <i>rate = count / population * 1000</i>). Spatial tools: join a table (CSV, Excel or another layer) by a shared field, buffer, select by location, points-in-polygons statistics, clip, erase, intersect, union, dissolve, merge, centroids, convex hull, bounding box, simplify, nearest-neighbour join, and distance matrix. The ⬇ button on each layer exports valid GeoJSON or CSV, including calculated fields. Drag the divider beside a side panel to resize it, or click the small ‹ › tab on the divider to hide or show it.</p>
-      <p><b>Process log.</b> The 📝 Process Log button lists every data step you took (data added, filters, tools, joins, calculations, edits, exports) and the current design settings, ready to copy into a report.</p>
-      <p><b>Coordinates in metres?</b> If a CSV's X/Y columns hold UTM or other projected values in metres, Map-O-Matic asks which coordinate system they use, shows where the data would land, and converts them. Rows at 0,0 or with blank coordinates are skipped and counted in the report.</p>
+    <div class="help-step"><b>▣ Map Composer: lay out the page.</b>
+      <p>Arrange the map with a title, legend, north arrow, scale bar, text and images, or start from a template. Maps arrive from Map Maker ready to use; a map image from other software can be added with <b>Map Frame</b> and its scale calibrated. <b>View as</b> checks colours for colour blindness and greyscale print.</p>
     </div>
-    <div class="help-step"><b>Field Mapper.</b>
-      <p>The <b>Field Mapper</b> module designs forms for mapping with phones: points, lines and areas, with text, numbers, dates, choices, notes, photos and audio. <b>Make link &amp; QR code</b> opens the form on any phone browser, where features are placed by GPS (walking lines and boundaries) or by tapping the map. Data come back over a direct link set up by scanning QR codes (<b>Collected data → Receive from phone</b>), as text-only QR codes, or as a GeoJSON/CSV file, and <b>Send to Map Maker</b> turns them into layers.</p>
+    <div class="help-step"><b>📱 Field Mapper: collect data on phones.</b>
+      <p>Design a form, share it by link or QR code, and record points, lines and areas with photos and audio. Collected data come back to the laptop and become Map Maker layers.</p>
     </div>
-    <div class="help-step"><b>Projections.</b>
-      <p>The <b>Projection</b> selector switches the map from the Web Mercator editing view into any of 13 projections — world (Equal Earth, Robinson, Winkel Tripel, Mollweide, Mercator, Orthographic), regional conic (Albers, Lambert Conformal, with adjustable centre and standard parallels), azimuthal (Equidistant, Stereographic), and historical (Gall–Peters, Goode, Bonne). Projected view draws your vector layers with an optional graticule and world-land backdrop; raster basemaps can't be reprojected in the browser, so they hide. Send to Composer captures the projected map (scale bars don't apply — scale varies across a projection).</p>
+    <div class="help-step"><b>📖 Atlas: a book of maps.</b>
+      <p>Gather live maps, layouts, images and text into an atlas with a cover and contents page, in one of five designs. It reads as a flip-book or a scrolling page, and exports as a web page or a PDF.</p>
     </div>
-    <div class="help-step"><b>Layout basics.</b>
-      <p>Start from a <b>Template</b> if you like — double-click any placeholder to fill it with the real element in that exact spot. Add title, text, legend, north arrow, scale bar, neatline, images. Everything drags, resizes, and rotates. Undo with Ctrl+Z. The <b>Margins</b> button shows 0.5" margin guides (never exported). A <b>Live Embed</b> shows an interactive web map on screen for reference but prints as a placeholder — use a real image frame for the final export.</p>
+    <div class="help-step"><b>Send / Export ▾</b> (top right).
+      <p>Send the current map to Map Composer or the Atlas, share a live link, or export files: layout PDF/PNG/SVG, an interactive web map, data layers, or a whole project archive.</p>
     </div>
-    <div class="help-step"><b>Scale bars.</b>
-      <p>Scale bars link to a map frame. Frames sent from Map Maker (in Web Mercator view) are calibrated automatically. For uploaded images, select the frame, click <b>Calibrate scale</b>, click two points with a known real-world distance between them, and enter the distance. The bar resizes automatically if you resize the frame.</p>
+    <div class="help-step"><b>Keeping your work.</b>
+      <p>Projects live only in this browser. <b>☁ Sync to cloud</b> also saves them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>📝 Process Log</b> lists every step you took, ready for a report.</p>
     </div>
-    <div class="help-step"><b>Projects and the data library.</b>
-      <p>The home screen (click the Map-O-Matic name at top left, or choose 🏠 Projects… in the project dropdown) lists all your projects (stored in this browser — nothing goes to a server) with rename, duplicate, delete, import, and export. The project dropdown in the top bar jumps between them; work is autosaved as you go. Datasets live in a shared <b>Data library</b> usable across projects — "+ Add data → From my library" adds one to the current project. On shared computers, always download a project file or archive as backup before you leave.</p>
-    </div>
-    <div class="help-step"><b>Exporting.</b>
-      <p><b>Export</b> covers everything: the layout as print-ready PDF/PNG; the Map Maker view as a georeferenced PNG with world file (usable in other GIS software); all data layers as a zip of GeoJSON files; or a full project archive (layout + layers + project file) — the complete package in one download.</p>
-    </div>
-    <div class="help-step"><b>About this tool.</b>
-      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It's free to use and runs entirely in your browser — your data stays on your computer. Basemap tiles and online data sources are the only network requests your data workflow makes.</p>
+    <div class="help-step"><b>About.</b>
+      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs entirely in your browser: your data stay on your computer, and the only network requests are for basemaps and the online data sources you choose. The full user guide covers every tool.</p>
+      <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. It is a teaching and research tool: check your results before relying on them, respect the terms of the data sources and basemaps you use, and remember that you are responsible for the data you load and the maps you publish.</p>
     </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
   </div>
@@ -9489,7 +9485,7 @@ function atlasViewer(root, D){
         '<div class="av-cv-t">'+E(D.title||'Atlas')+(theme==='retro'?'<span class="av-caret">▌</span>':'')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
         (D.author?'<div class="av-cv-a">'+E(D.author)+'</div>':'')+'</div></div>';
     }
-    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></div></div>';
+    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic<small>jonathancinnamon.com/map-o-matic</small></span></a></div></div>';
     if(p.kind==='blank') return '<div class="av-pg av-blank"></div>';
     if(p.kind==='spreadR') return '<div class="av-pg av-blank"></div>';
     var foot='<div class="av-foot"><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i)+'</span></div>';
@@ -9591,7 +9587,7 @@ function atlasViewer(root, D){
       var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
       html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
     });
-    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></section>';
+    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic<small>jonathancinnamon.com/map-o-matic</small></span></a></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
     root.innerHTML=html;
     root.querySelector('.av-spdf').onclick=function(){ makePdf().catch(function(){}); };
@@ -9846,7 +9842,8 @@ const ATLAS_CSS=`
 .av-cover::after{content:"";position:absolute;left:4%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.18);}
 .av-back{color:#fff;justify-content:flex-end;}
 .av-bk-in{padding:10% 9%;font:1.2em var(--ui);opacity:.9;}
-.av-brand{display:flex;align-items:center;gap:.5em;font:600 1em var(--ui);opacity:.85;}
+.av-brand{display:flex;align-items:center;gap:.5em;font:600 1em var(--ui);opacity:.85;color:inherit;text-decoration:none;}
+.av-brand span{display:flex;flex-direction:column;line-height:1.25;} .av-brand small{font-weight:400;opacity:.8;font-size:.85em;} a.av-brand:hover span{text-decoration:underline;}
 .av-toc-img{flex:0 1 auto;max-height:28%;margin:0 0 .8em;display:flex;} .av-toc-img img{max-width:100%;max-height:100%;object-fit:cover;border-radius:2px;}
 .av-toc-txt{flex:0 1 auto;margin:0 0 .9em;max-height:24%;}
 .av-toc{font-size:1.4em;display:flex;flex-direction:column;gap:.35em;overflow:auto;}
@@ -14085,6 +14082,7 @@ function switchModule(which){
   document.getElementById('grp-page').style.display=which==='layout'?'flex':'none';
   document.body.classList.toggle('on-home', which==='home');
   document.body.classList.toggle('mod-layout', which==='layout');
+  document.body.classList.toggle('mod-home', which==='home');
   if(which==='maker' && mkMap) setTimeout(()=>mkMap.invalidateSize(), 60);
   if(which==='layout'){ canvas.calcOffset(); canvas.renderAll(); }
   positionEmbedFrames();
@@ -15461,7 +15459,7 @@ function updateSyncUI(state){
   }
   btn.classList.toggle('on', syncActive());
   if(!lbl) return;
-  if(!syncActive()){ lbl.textContent='Sync off'; btn.title='Save projects to a synced folder as well as this browser'; return; }
+  if(!syncActive()){ lbl.textContent='Sync to cloud'; btn.title='Save projects to a folder you sync (OneDrive, Google Drive, Dropbox) as well as this browser'; return; }
   if(syncDir.__needsPermission){ lbl.textContent='Sync — allow'; btn.title='Click to re-allow access to “'+syncDir.name+'”'; return; }
   btn.title='Syncing to “'+syncDir.name+'”';
   lbl.textContent = state==='saving' ? 'Saving…'

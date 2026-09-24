@@ -323,7 +323,14 @@
   #module-atlas{display:flex;background:#f4f6f9;}
   .at-left{width:250px;flex:none;background:#fff;border-right:1px solid var(--line);padding:14px 12px;overflow:auto;display:flex;flex-direction:column;gap:8px;}
   #atList{display:flex;flex-direction:column;gap:6px;}
-  .at-item{display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:7px;padding:6px;background:#fff;cursor:pointer;color:var(--text);font-size:12.5px;}
+  .at-item{display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:7px;padding:6px;background:#fff;cursor:pointer;color:var(--text);font-size:12.5px;position:relative;user-select:none;}
+  .at-item.at-pg{padding-left:4px;touch-action:none;} .at-item:focus-visible{outline:2px solid var(--teal);outline-offset:1px;}
+  .at-grip{color:#b3bcc9;font-size:14px;width:10px;flex:none;cursor:grab;visibility:hidden;} .at-pg:hover .at-grip{visibility:visible;}
+  .at-x{position:absolute;top:4px;right:4px;border:1px solid var(--line);background:#fff;color:#8a93a3;border-radius:10px;min-width:20px;height:20px;padding:0 5px;font-size:13px;line-height:1;cursor:pointer;opacity:0;transition:opacity .12s;}
+  .at-pg:hover .at-x,.at-pg:focus-within .at-x,.at-x.armed{opacity:1;} .at-x:hover{color:#b3261e;border-color:#e0a09b;} .at-x.armed{background:#b3261e;color:#fff;border-color:#b3261e;font-size:11px;font-weight:600;}
+  .at-item.dragging{opacity:.45;} #atList{position:relative;}
+  .at-dropline{position:absolute;left:0;right:0;height:3px;border-radius:2px;background:var(--teal);box-shadow:0 0 0 2px rgba(47,125,120,.2);pointer-events:none;}
+  .at-meta b{padding-right:16px;}
   .at-item.active{border-color:var(--teal);background:#e8f3f1;} .at-item.dragover{box-shadow:0 0 0 2px var(--teal);} .at-item.dragging{opacity:.5;}
   .at-item.at-auto{opacity:.7;cursor:default;}
   .at-th{width:46px;height:58px;flex:none;border-radius:3px;background:#f4f1ea;border:1px solid #e0d9c8;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#8a826f;font-size:20px;}
@@ -340,7 +347,7 @@
   .at-modes{display:flex;flex-direction:column;gap:6px;} .at-modes label{border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;font-weight:600;cursor:pointer;} .at-modes label span{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-left:20px;}
   .at-modes label:has(input:checked){border-color:var(--teal);background:#e8f3f1;}
   .fc-chk2{display:flex;gap:6px;align-items:center;font-size:13px;margin:8px 0 4px;}
-  .at-go{display:flex;flex-direction:column;gap:6px;margin-top:12px;} .at-go .btn{justify-content:center;}
+  .at-go{display:flex;flex-direction:column;gap:6px;margin-top:8px;} .at-go .btn{justify-content:center;}
   .at-ed{display:flex;flex-direction:column;gap:10px;} .at-row{display:flex;gap:10px;align-items:flex-end;} .at-pbtns{display:flex;gap:4px;}
   .at-media{background:#fbf8f1;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;min-height:240px;max-height:62vh;overflow:hidden;}
   .at-media img{max-width:100%;max-height:60vh;object-fit:contain;} .at-mapbox{height:58vh;} .at-mapbox iframe{width:100%;height:100%;border:0;}
@@ -350,6 +357,9 @@
   .at-rt-bar button{background:#fff;border:1px solid var(--line);border-radius:4px;padding:3px 8px;font-size:12px;min-width:30px;}
   .at-rt{min-height:180px;border:1px solid var(--line);border-radius:0 0 6px 6px;background:#fff;padding:12px 14px;font:15px/1.55 Georgia,serif;outline:none;}
   .at-rt:focus{border-color:var(--teal);} .at-rt h2{font-size:21px;font-weight:400;margin:.4em 0;} .at-rt h3{font-size:17px;margin:.4em 0;} .at-rt blockquote{border-left:3px solid #c9b98f;margin:.4em 0;padding-left:10px;color:#5b5446;font-style:italic;} .at-rt p{margin:0 0 .6em;}
+  .at-cvwrap{width:min(420px,90%);margin:10px auto;}
+  .at-cvbox{position:relative;width:100%;aspect-ratio:1/1.32;border-radius:4px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+  .at-cvbox.av-root{position:relative;inset:auto;}
   .at-cvprev{width:min(420px,90%);aspect-ratio:1/1.32;margin:10px auto;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#fff;display:flex;align-items:flex-end;font-family:Georgia,serif;}
   .at-cvprev>div{padding:30px;background:linear-gradient(to top,rgba(0,0,0,.5),rgba(0,0,0,0));width:100%;box-sizing:border-box;}
   .at-cvprev .t{font-size:34px;line-height:1.1;} .at-cvprev .s{font-size:17px;font-style:italic;margin-top:6px;} .at-cvprev .a{font:600 12px -apple-system,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-top:18px;opacity:.85;}
@@ -924,7 +934,6 @@
 <div id="module-atlas" class="module hidden">
   <aside class="at-left">
     <h3 class="fc-h" style="margin-top:0;">Pages</h3>
-    <div id="atList"></div>
     <div class="at-addwrap"><button class="btn small" id="atAddBtn" style="width:100%;justify-content:center;">+ Add page ▾</button>
       <div class="at-addmenu hidden" id="atAddMenu">
         <button data-k="map">🧭 Live map<small>the layers on in Map Maker, interactive</small></button>
@@ -932,6 +941,7 @@
         <button data-k="image">🖼 Image<small>a photo, scan or figure</small></button>
         <button data-k="text">¶ Text<small>an introduction, essay or notes</small></button>
       </div></div>
+    <div id="atList"></div>
   </aside>
   <main class="at-main"><div class="at-body" id="atBody"></div></main>
   <aside class="at-right" id="atSettings"></aside>
@@ -4341,6 +4351,24 @@ function cartoFwd(lon, lat){
   const la=Math.max(-85.05112878, Math.min(85.05112878, lat));
   return [CARTO_R*lon*Math.PI/180, CARTO_R*Math.log(Math.tan(Math.PI/4 + la*Math.PI/360))];
 }
+/* v52: a cartogram can also be computed in the plane of an equal-area
+   projection, so that unit areas match their values on the projected map. */
+const CARTO_EQUAL_AREA={equalEarth:1, mollweide:1, albersConic:1, gallPeters:1, goode:1, bonne:1};
+let cartoCurPlane=null;
+function cartoPF(lon, lat){ return cartoCurPlane ? cartoCurPlane.f(lon, lat) : cartoFwd(lon, lat); }
+function cartoPI(x, y){ return cartoCurPlane ? cartoCurPlane.i(x, y) : cartoInv(x, y); }
+function cartoProjPlane(){
+  if(typeof projActive==='undefined' || !projActive || !CARTO_EQUAL_AREA[projKey]) return null;
+  const def=PROJ_DEFS[projKey], p=def.make();
+  const num=id=>parseFloat(document.getElementById(id).value)||0;
+  if(def.kind==='conic'){ if(p.parallels) p.parallels([num('projP1')||30, num('projP2')||60]); p.rotate([-num('projLon'),0]); if(p.center) p.center([0,num('projLat')]); }
+  else p.rotate([-num('projLon'),0,0]);
+  p.scale(CARTO_R).translate([0,0]);
+  const key=projKey+'|'+p.rotate().map(v=>v.toFixed(3)).join(',')+'|'+(p.parallels?p.parallels().join(','):'')+'|'+(p.center?p.center().join(','):'');
+  return {key,
+    f:(lon,lat)=>{ const q=p([lon,lat]); return q&&isFinite(q[0])&&isFinite(q[1]) ? [q[0],-q[1]] : [NaN,NaN]; },
+    i:(x,y)=>{ const q=p.invert?p.invert([x,-y]):null; return q&&isFinite(q[0])&&isFinite(q[1]) ? q : [NaN,NaN]; }};
+}
 function cartoInv(x, y){
   return [x/CARTO_R*180/Math.PI, (2*Math.atan(Math.exp(y/CARTO_R)) - Math.PI/2)*180/Math.PI];
 }
@@ -4548,7 +4576,7 @@ function cartoUnits(lyr){
       const rr=[];
       for(const ring of poly){
         const r=[];
-        for(const c of ring){ if(isFinite(c[0]) && isFinite(c[1])) r.push(cartoFwd(c[0], c[1])); }
+        for(const c of ring){ if(isFinite(c[0]) && isFinite(c[1])){ const q=cartoPF(c[0], c[1]); if(isFinite(q[0]) && isFinite(q[1])) r.push(q); } }
         if(r.length>=4) rr.push(r);
       }
       if(rr.length) polys.push(rr);
@@ -4770,14 +4798,25 @@ function cartoContiguous(units, st, out){
 /* Builds (and memoises) the transformed FeatureCollection a cartogram layer is
    drawn from. Returns null when the settings can't produce one, having put the
    reason in the Style panel. */
-function cartogramFC(lyr){
+/* plane: null for the flat (Web Mercator) map, or cartoProjPlane() for a
+   projected view; each keeps its own cached result */
+function cartogramFC(lyr, plane){
+  if(!plane) return cartogramFC0(lyr, '');
+  const save={sig:lyr._cartoSig, fc:lyr._cartoFC, by:lyr._cartoByIdx, k:lyr._cartoK, note:lyr._cartoNote};
+  lyr._cartoSig=lyr._cartoSigP; lyr._cartoFC=lyr._cartoFCP; lyr._cartoByIdx=null;
+  cartoCurPlane=plane;
+  try{ return cartogramFC0(lyr, plane.key); }
+  finally{ cartoCurPlane=null; lyr._cartoSigP=lyr._cartoSig; lyr._cartoFCP=lyr._cartoFC;
+    lyr._cartoSig=save.sig; lyr._cartoFC=save.fc; lyr._cartoByIdx=save.by; lyr._cartoK=save.k; }
+}
+function cartogramFC0(lyr, planeKey){
   const st=lyr.style;
   const info=document.getElementById('stCartoInfo');
   const say=msg=>{ lyr._cartoNote=msg; if(info) info.innerHTML=msg; };
   const fail=msg=>{ say(msg); lyr._cartoSig=null; lyr._cartoFC=null; lyr._cartoByIdx=null; return null; };
   if(!st.cartoField) return fail('Choose the field whose values the areas should show.');
   const sig=[st.cartoKind, st.cartoField, st.cartoNormField, st.cartoSize, st.cartoIterations,
-    st.cartoSpacing, st.cartoAuto, cartoValueSig(lyr)].join('|');
+    st.cartoSpacing, st.cartoAuto, cartoValueSig(lyr), planeKey].join('|');
   if(lyr._cartoSig===sig && lyr._cartoFC){
     if(info && lyr._cartoNote) info.innerHTML=lyr._cartoNote;
     return lyr._cartoFC;
@@ -4797,7 +4836,7 @@ function cartogramFC(lyr){
   const kind=st.cartoKind||'noncontig';
   /* a new cartogram replaces the old units, so a selection made on the old one
      would highlight shapes that are no longer there */
-  if(lyr._cartoFC && typeof selection!=='undefined' && selection.layerId===lyr.id && selection.set.size) clearSelection();
+  if(!planeKey && lyr._cartoFC && typeof selection!=='undefined' && selection.layerId===lyr.id && selection.set.size) clearSelection();
   cartoSnapUnits(units);
   const trimmed=(kind==='contig'||kind==='noncontig') ? cartoTrim(units) : 0;
   if(kind==='contig'){
@@ -4824,7 +4863,7 @@ function cartogramFC(lyr){
   const feats=[], byIdx=new Map();
   for(const u of units){
     if(u.value<=0 && !keepEmpty) continue;
-    const coords=u.polys.map(p=>p.map(r=>r.map(pt=>cartoInv(pt[0], pt[1]))));
+    const coords=u.polys.map(p=>p.map(r=>r.map(pt=>cartoPI(pt[0], pt[1])).filter(pt=>isFinite(pt[0])&&isFinite(pt[1]))).filter(r=>r.length>=4)).filter(p=>p.length);
     if(!coords.length) continue;
     const f={type:'Feature', properties:u.f.properties,
       geometry: coords.length===1 ? {type:'Polygon', coordinates:coords[0]}
@@ -4902,8 +4941,8 @@ function cartoPrepColors(lyr){
   if(st.cartoColorMode==='grad') computeClassification(lyr);
   else if(st.cartoColorMode==='cat') computeCategories(lyr);
 }
-/* A cartogram sits at invented coordinates, so the flat map's projection
-   dropdown is locked while one is showing, the same way the globe locks it. */
+/* While a cartogram shows, only equal-area projections can be chosen: the
+   cartogram is rebuilt in that projection's plane, where area is preserved. */
 function cartoLocksProjection(){
   return mkLayers.some(l=>l.visible && l.style && l.style.mode==='carto');
 }
@@ -4911,12 +4950,18 @@ function cartoUpdateProjectionLock(){
   const sel=document.getElementById('mkProjection');
   if(!sel) return;
   const lock=cartoLocksProjection();
-  sel.disabled=lock;
-  sel.title=lock ? 'Projections are unavailable while a cartogram is on the map, because cartogram units no longer sit at real-world coordinates.' : '';
-  if(lock && typeof projActive!=='undefined' && projActive){
+  sel.disabled=false;
+  [...sel.options].forEach(o=>{
+    const off= lock && o.value!=='mercator-edit' && !CARTO_EQUAL_AREA[o.value];
+    o.disabled=off;
+    if(!o.dataset.lbl) o.dataset.lbl=o.textContent;
+    o.textContent= off ? o.dataset.lbl+' — not equal-area' : o.dataset.lbl;
+  });
+  sel.title=lock ? 'While a cartogram is on the map, only equal-area projections are available, so each unit\'s area still matches its value.' : '';
+  if(lock && typeof projActive!=='undefined' && projActive && !CARTO_EQUAL_AREA[projKey]){
     sel.value='mercator-edit';
     setProjectionMode('mercator-edit');
-    toast('Left the projection preview — cartograms are drawn on the flat editing map.');
+    toast('Cartograms need an equal-area projection (Equal Earth, Mollweide, Albers, Gall–Peters, Goode or Bonne), so the map went back to the flat view.', 6000);
   }
 }
 function cartoEnterBasemap(){
@@ -5836,7 +5881,7 @@ function renderStyleTab(){
       html+=`<button class="btn small light" id="stCartoBasemap">Bring the basemap back</button>`;
     }
     html+=`</div>
-      <p class="kv">Area now stands for the value rather than for ground area, so the units sit at invented coordinates. The basemap is switched off and the projection dropdown is locked while a cartogram is showing. Scale bars and distance measurements mean nothing on one.</p>`;
+      <p class="kv">Area now stands for the value rather than for ground area, so the units sit at invented coordinates. The basemap is switched off, and only equal-area projections (Equal Earth, Mollweide, Albers, Gall–Peters, Goode, Bonne) can be chosen: the cartogram is rebuilt in that projection so areas still match values. Scale bars and distance measurements mean nothing on one.</p>`;
   }
   if(st.mode==='bivariate'){
     html+=`<div class="field"><label>Size field (numeric)</label>
@@ -9390,11 +9435,30 @@ function atlasViewer(root, D){
   var seq=[{kind:'cover'}];
   if(D.contents && pages.length) seq.push({kind:'contents'});
   pages.forEach(function(p){ seq.push(p); });
+  var baseSeq=seq.slice();
+  /* a two-page spread always starts on a left page (odd index); pad with a blank when needed */
+  function bookSeq(base){
+    var inner=[];
+    base.slice(1).forEach(function(p){
+      if(isSpread(p)){ if((inner.length+1)%2===0) inner.push({kind:'blank'}); inner.push(p); inner.push({kind:'spreadR', of:p}); }
+      else inner.push(p);
+    });
+    if(inner.length%2===1) inner.push({kind:'blank'});
+    return [base[0]].concat(inner).concat([{kind:'back'}]);
+  }
   var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text',contents:'Contents'}[p.kind]||''); };
   var pad3=function(n){ n=String(n); while(n.length<3) n='0'+n; return n; };
   var pnum=function(n){ return theme==='retro' ? 'p.'+pad3(n) : String(n); };
   function logo(sz){ return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>'; }
+  var pdfMode=false;
+  /* in a PDF, pictures are drawn as backgrounds: the PDF renderer ignores object-fit */
+  function pdfPic(src, fit){ return '<div class="av-pdfpic" style="background-image:url('+src+');background-size:'+fit+'"></div>'; }
   function mediaHtml(p, live){
+    if(pdfMode){
+      if(p.kind==='map'){ var st=IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:''); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl">Interactive version: '+E(D.url)+'</div>':''); }
+      if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media av-pdfm">'+pdfPic(p.src,'contain')+'</div>';
+      return '';
+    }
     if(p.kind==='map'){
       if(live && p.mapHtml) return '<div class="av-media av-map" data-map="'+E(p.id)+'">'+(IMG.test(p.thumb||'')?'<img class="av-mstill" src="'+p.thumb+'" alt="">':'')+'</div>';
       return '<div class="av-media av-map av-still">'+(IMG.test(p.thumb||'')?'<img src="'+p.thumb+'" alt="">':'')+'<span>Interactive map</span></div>';
@@ -9413,7 +9477,7 @@ function atlasViewer(root, D){
     return seq.map(function(q,j){ return (j>0 && q.kind!=='contents' && q.kind!=='back' && q.kind!=='blank' && q.kind!=='spreadR')?'<a class="av-toc-r" data-go="'+j+'"><span>'+E(titleOf(q))+'</span><i></i><b>'+pnum(j)+(isSpread(q)?'–'+pnum(j+1):'')+'</b></a>':''; }).join('');
   }
   function contentsIntro(){
-    return (IMG.test(D.contentsImage||'')?'<div class="av-toc-img"><img src="'+D.contentsImage+'" alt=""></div>':'')+
+    return (IMG.test(D.contentsImage||'')?(pdfMode?'<div class="av-toc-img av-pdfti">'+pdfPic(D.contentsImage,'cover')+'</div>':'<div class="av-toc-img"><img src="'+D.contentsImage+'" alt=""></div>'):'')+
       (D.contentsText?'<div class="av-text av-toc-txt">'+D.contentsText+'</div>':'');
   }
   /* full: render the whole two-page spread; otherwise one page */
@@ -9460,6 +9524,53 @@ function atlasViewer(root, D){
     var z=doc.createElement('div'); z.className='av-zoom'; z.innerHTML='<img src="'+src+'" alt=""><button class="av-zx" aria-label="Close">✕</button>';
     z.onclick=function(){ z.remove(); }; root.appendChild(z);
   }
+  /* ---- PDF: every page drawn in the chosen design, one PDF page per atlas page, spreads as wide pages ---- */
+  function loadScript(src, sri){
+    return new Promise(function(res, rej){
+      var s=doc.createElement('script'); s.src=src; if(sri){ s.integrity=sri; s.crossOrigin='anonymous'; }
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src.split('/').pop()+' (are you online?)')); }; doc.head.appendChild(s);
+    });
+  }
+  function makePdf(opts){
+    opts=opts||{};
+    var busyEl=doc.createElement('div'); busyEl.className='av-pdfbusy'; busyEl.innerHTML='<div><b>Making the PDF…</b><span>Preparing</span></div>'; doc.body.appendChild(busyEl);
+    var say=function(t){ busyEl.querySelector('span').textContent=t; };
+    var need=[];
+    if(!win.html2canvas) need.push(loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H'));
+    if(!(win.jspdf && win.jspdf.jsPDF)) need.push(loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk'));
+    var saved=seq, host=null;
+    return Promise.all(need).then(function(){ return (doc.fonts && doc.fonts.ready) ? doc.fonts.ready : null; }).then(function(){
+      seq=bookSeq(baseSeq); pdfMode=true;
+      var list=[]; seq.forEach(function(q,i){ if(q.kind==='blank'||q.kind==='spreadR') return; list.push(i); });
+      host=doc.createElement('div'); host.className='av-root av-mode-book av-th-'+theme+' av-pdfhost'; doc.body.appendChild(host);
+      var PW=540, PH=712.8, W=900, H=Math.round(900*1.32), pdf=null;
+      var step=function(n){
+        if(n>=list.length) return Promise.resolve();
+        var i=list[n], full=isSpread(seq[i]), w=full?W*2:W;
+        say('Page '+(n+1)+' of '+list.length);
+        host.innerHTML='<div class="av-pdfpage'+(i%2===1&&!full?' av-pdf-l':'')+'" style="width:'+w+'px;height:'+H+'px;font-size:'+(H/60)+'px">'+pageHtml(i,false,full)+(full?'<div class="av-gutter av-pdfgut"></div>':'')+'</div>';
+        var el=host.firstChild;
+        return new Promise(function(r){ setTimeout(r, 30); }).then(function(){
+          return win.html2canvas(el, {scale:1.7, useCORS:true, logging:false, backgroundColor:null, width:w, height:H, windowWidth:Math.max(w, 1200)});
+        }).then(function(cv){
+          var fw=full?PW*2:PW, img=cv.toDataURL('image/jpeg', 0.9);
+          if(!pdf) pdf=new win.jspdf.jsPDF({unit:'pt', format:[fw,PH], orientation:fw>PH?'landscape':'portrait', compress:true});
+          else pdf.addPage([fw,PH], fw>PH?'landscape':'portrait');
+          pdf.addImage(img, 'JPEG', 0, 0, fw, PH, undefined, 'FAST');
+          return step(n+1);
+        });
+      };
+      return step(0).then(function(){
+        pdf.setProperties({title:D.title||'Atlas', subject:D.subtitle||'', author:D.author||'', creator:'Map-O-Matic'});
+        var name=(D.title||'atlas').replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'atlas';
+        if(opts.blob) return pdf.output('blob');
+        pdf.save(name+'_atlas.pdf'); return true;
+      });
+    }).then(function(r){ return r; }, function(err){ busyEl.innerHTML='<div><b>The PDF could not be made.</b><span>'+E(err&&err.message||err)+'</span></div>'; setTimeout(function(){ busyEl.remove(); }, 5000); throw err; })
+      .then(function(r){ seq=saved; pdfMode=false; if(host) host.remove(); busyEl.remove(); return r; }, function(e){ seq=saved; pdfMode=false; if(host) host.remove(); throw e; });
+  }
+  if(D.__pdfOnly) return {pdf:makePdf};
+  if(D.__cover){ root.className=(root.className||'').replace(/\b(av-root|av-mode-\w+|av-th-\w+|av-cvhost)\b/g,'').trim()+' av-root av-mode-book av-th-'+theme+' av-cvhost'; root.innerHTML=pageHtml(0,false); return {}; }
   var go=function(){};
   /* a live map says when its basemap has drawn; only then does it replace the still */
   win.addEventListener('message', function(e){ if(!e.data||!e.data.momMapReady) return;
@@ -9473,7 +9584,7 @@ function atlasViewer(root, D){
     var secs=[];
     var html='<nav class="av-snav"><span class="av-sbrand">'+E(D.title||'Atlas')+'</span><div class="av-tabs" role="tablist">';
     seq.forEach(function(q,j){ if(j>0) { secs.push(j); html+='<button class="av-tab" data-j="'+j+'" role="tab">'+E(titleOf(q.kind==='contents'?{kind:'contents',title:D.contentsTitle}:q))+'</button>'; } });
-    html+='</div><div class="av-sprog"><i></i></div></nav>';
+    html+='</div><button class="av-spdf" title="Download this atlas as a PDF">⬇ PDF</button><div class="av-sprog"><i></i></div></nav>';
     seq.forEach(function(q,j){
       if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<button class="av-down" data-go="1" aria-label="Start reading">↓</button></section>'; return; }
       if(q.kind==='contents'){ html+='<section class="av-s av-k-contents" id="av-s'+j+'">'+winBar(q,j)+'<h2 class="av-h">'+E(D.contentsTitle||'Contents')+'</h2>'+contentsIntro()+'<div class="av-toc">'+contentsRows()+'</div></section>'; return; }
@@ -9483,6 +9594,7 @@ function atlasViewer(root, D){
     html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
     root.innerHTML=html;
+    root.querySelector('.av-spdf').onclick=function(){ makePdf().catch(function(){}); };
     var curJ=0;
     go=function(j){ var s=root.querySelector('#av-s'+j); if(s) s.scrollIntoView({behavior:'smooth'}); };
     var tabs=[].slice.call(root.querySelectorAll('.av-tab'));
@@ -9509,18 +9621,11 @@ function atlasViewer(root, D){
     root.querySelectorAll('.av-s').forEach(function(s){ if(io) io.observe(s); else mountMaps(s); });
     mountMaps(root.querySelector('.av-scover'));
     curJ=-1; setCur(0);
-    return {go:go};
+    return {go:go, pdf:makePdf};
   }
 
   /* ================= book ================= */
-  /* a two-page spread always starts on a left page (odd index); pad with a blank when needed */
-  var inner=[];
-  seq.slice(1).forEach(function(p){
-    if(isSpread(p)){ if((inner.length+1)%2===0) inner.push({kind:'blank'}); inner.push(p); inner.push({kind:'spreadR', of:p}); }
-    else inner.push(p);
-  });
-  if(inner.length%2===1) inner.push({kind:'blank'});
-  seq=[seq[0]].concat(inner).concat([{kind:'back'}]);
+  seq=bookSeq(baseSeq);
   /* spreads: [ -, cover ], [1,2], [3,4] … [back, -] */
   var spreads=[[null,0]];
   for(var k=1;k<seq.length-1;k+=2) spreads.push([k,k+1]);
@@ -9528,7 +9633,7 @@ function atlasViewer(root, D){
   var si=0, busy=false, single=false;
   root.innerHTML='<div class="av-stage"><div class="av-book"><div class="av-side av-l"></div><div class="av-side av-r"></div><div class="av-sov"></div><div class="av-gutter"></div><div class="av-spine"></div></div></div>'+
     '<div class="av-nav"><button class="av-prev" aria-label="Previous page">‹</button><span class="av-pn"></span><button class="av-next" aria-label="Next page">›</button>'+
-    (pages.length&&D.contents?'<button class="av-tocb" title="Contents">☰</button>':'')+'<button class="av-fs" title="Full screen">⛶</button></div>';
+    (pages.length&&D.contents?'<button class="av-tocb" title="Contents">☰</button>':'')+'<button class="av-fs" title="Full screen">⛶</button><button class="av-pdfb" title="Download this atlas as a PDF">⬇ PDF</button></div>';
   var book=root.querySelector('.av-book'), L=root.querySelector('.av-l'), R=root.querySelector('.av-r'), SOV=root.querySelector('.av-sov'), pn=root.querySelector('.av-pn');
   /* half of a spread, as a still picture, for a side or a turning leaf */
   function halfHtml(i){
@@ -9615,6 +9720,7 @@ function atlasViewer(root, D){
   root.querySelector('.av-prev').onclick=function(){ flip(-1); };
   root.querySelector('.av-next').onclick=function(){ flip(1); };
   var tb=root.querySelector('.av-tocb'); if(tb) tb.onclick=function(){ go(1); };
+  root.querySelector('.av-pdfb').onclick=function(){ makePdf().catch(function(){}); };
   root.querySelector('.av-fs').onclick=function(){ var el=doc.documentElement; if(doc.fullscreenElement) doc.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen(); };
   doc.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('input,textarea,select')) return; if(e.key==='ArrowRight'||e.key==='PageDown') flip(1); if(e.key==='ArrowLeft'||e.key==='PageUp') flip(-1); });
   var px=null;
@@ -9634,7 +9740,7 @@ function atlasViewer(root, D){
       wasSingle=single; paint(); } }
   win.addEventListener('resize', resize);
   resize(); paint();
-  return {go:go};
+  return {go:go, pdf:makePdf};
 }
 const ATLAS_CSS=`
 .av-root{--paper:#fbf8f1;--ink:#22293a;--head:#1f2f45;--rule:#d9d1bf;--muted:#8a826f;--cap:#5b5446;--accent:#2f6f6b;--quote:#c9b98f;--mapb:#cfc6b2;--dots:#a89f88;
@@ -9775,11 +9881,13 @@ const ATLAS_CSS=`
 .av-sarrows{position:fixed;right:18px;bottom:18px;z-index:25;display:flex;flex-direction:column;gap:6px;}
 .av-sarrows button{width:40px;height:40px;border-radius:50%;border:1px solid var(--rule);background:var(--paper);color:var(--head);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);}
 .av-sarrows button:hover{filter:brightness(.95);}
-.av-s{max-width:980px;margin:0 auto;padding:60px 26px 40px;font-size:16px;scroll-margin-top:48px;}
-.av-s.av-sfull{max-width:1400px;} .av-s.av-sfull .av-map{height:82vh;}
+.av-s{max-width:980px;margin:0 auto;padding:36px 26px 44px;font-size:16px;scroll-margin-top:48px;box-sizing:border-box;min-height:calc(100vh - 48px);display:flex;flex-direction:column;justify-content:center;}
+.av-s>*{flex:none;}
+.av-s.av-sfull{max-width:1400px;} .av-s.av-sfull .av-map{height:max(320px, calc(100vh - 48px - 190px));}
 .av-s .av-h{font-size:34px;}
-.av-s .av-media{height:auto;} .av-s .av-media img{max-height:82vh;}
-.av-s .av-map{height:70vh;}
+.av-s .av-media{height:auto;} .av-s .av-media img{max-height:max(280px, calc(100vh - 48px - 200px));}
+.av-s .av-map{height:max(320px, calc(100vh - 48px - 210px));}
+.av-s.av-k-text,.av-s.av-k-contents{justify-content:flex-start;padding-top:64px;}
 .av-s .av-text{font-size:18px;max-width:720px;}
 .av-s .av-toc{font-size:19px;max-width:720px;} .av-s .av-toc-img img{max-height:320px;}
 .av-s .av-win{font-size:14px;}
@@ -9790,6 +9898,19 @@ const ATLAS_CSS=`
 .av-sbt{position:absolute;left:26px;top:30px;right:26px;color:#fff;font:15px var(--ui);opacity:.9;}
 .av-s.av-sback .av-brand{position:absolute;left:26px;bottom:22px;color:#fff;}
 @media (max-width:640px){ .av-sbrand{display:none;} .av-snav{padding:0 8px;} }
+.av-pdfb{font-size:12.5px !important;padding:0 12px;font-family:var(--ui);}
+.av-spdf{flex:none;background:none;border:1px solid var(--rule);color:var(--head);border-radius:14px;padding:4px 11px;font:600 12px var(--ui);cursor:pointer;}
+.av-pdfbusy{position:fixed;inset:0;z-index:100;background:rgba(10,14,22,.55);display:flex;align-items:center;justify-content:center;font:14px -apple-system,'Segoe UI',sans-serif;}
+.av-pdfbusy>div{background:#fff;color:#1d2330;border-radius:10px;padding:16px 22px;box-shadow:0 6px 30px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:4px;min-width:220px;text-align:center;}
+.av-pdfbusy span{color:#667;font-size:13px;}
+.av-pdfhost{position:absolute !important;left:0;top:0;right:auto;bottom:auto;width:auto;height:auto;z-index:-1;overflow:visible;background:none !important;}
+.av-pdfpage{position:relative;overflow:hidden;background-color:var(--paper);}
+.av-th-notebook .av-pdfpage{background-image:linear-gradient(rgba(120,150,180,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,180,.16) 1px,transparent 1px);background-size:1.6em 1.6em;}
+.av-pdf-l .av-foot{flex-direction:row-reverse;}
+.av-pdfgut{display:block !important;}
+.av-pdfpic{position:absolute;inset:0;background-repeat:no-repeat;background-position:center;}
+.av-pdfm{position:relative;} .av-pdfti{position:relative;height:28%;}
+.av-pdfurl{font:.95em var(--ui);color:var(--muted);margin-top:.4em;}
 @media print{ .av-nav,.av-snav,.av-sarrows{display:none;} }
 `;
 
@@ -9844,11 +9965,12 @@ function atSanitize(a){
   out.coverImage=AT_IMG.test(a.coverImage||'')?a.coverImage:'';
   out.mode=a.mode==='scroll'?'scroll':'book'; out.contents=a.contents!==false;
   out.theme=AT_THEMES.some(t=>t.k===a.theme)?a.theme:'classic';
+  out.url=/^https?:\/\/[^\s<>"]{3,300}$/i.test((a.url||'').trim())?(a.url||'').trim():'';
   out.contentsTitle=s(a.contentsTitle,120)||'Contents'; out.contentsText=sanitizeRich(a.contentsText); out.contentsImage=AT_IMG.test(a.contentsImage||'')?a.contentsImage:'';
   out.pages=(Array.isArray(a.pages)?a.pages:[]).slice(0,200).map(p=>{
     if(!p || !AT_KINDS[p.kind]) return null;
     return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
-      src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'',
+      src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'', still:AT_IMG.test(p.still||'')?p.still:'',
       mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
   }).filter(Boolean);
   return out;
@@ -9906,19 +10028,53 @@ function renderAtlas(){
 function renderAtList(){
   const box=document.getElementById('atList');
   const nums=atNumbers();
-  box.innerHTML='<button class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></button>'+
-    (atlas.contents&&atlas.pages.length?'<button class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div></button>':'')+
-    atlas.pages.map((p,i)=>'<button class="at-item'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" draggable="true" data-i="'+i+'"><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+(nums[p.id]?(nums[p.id].length>1?'pages '+nums[p.id].join('–')+' · spread':'page '+nums[p.id][0]):'')+' · '+AT_KINDS[p.kind].label+'</span></div></button>').join('')+
-    (atlas.pages.length?'':'<p class="kv">No pages yet. Add one below.</p>');
-  let from=null;
-  box.querySelectorAll('.at-item[data-id]').forEach(b=>{
-    b.onclick=()=>{ atSel=b.dataset.id; renderAtList(); renderAtBody(); };
-    if(b.dataset.i==null) return;
-    b.addEventListener('dragstart', e=>{ from=+b.dataset.i; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',''); }catch(_){} b.classList.add('dragging'); });
-    b.addEventListener('dragend', ()=>{ b.classList.remove('dragging'); box.querySelectorAll('.dragover').forEach(x=>x.classList.remove('dragover')); });
-    b.addEventListener('dragover', e=>{ if(from==null) return; e.preventDefault(); b.classList.add('dragover'); });
-    b.addEventListener('dragleave', ()=>b.classList.remove('dragover'));
-    b.addEventListener('drop', e=>{ e.preventDefault(); const to=+b.dataset.i; if(from==null||from===to) return; atlas.pages.splice(to,0,atlas.pages.splice(from,1)[0]); from=null; atDirty(); renderAtList(); });
+  box.innerHTML='<div class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></div>'+
+    (atlas.contents&&atlas.pages.length?'<div class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents" role="button" tabindex="0"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div></div>':'')+
+    atlas.pages.map((p,i)=>'<div class="at-item at-pg'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" data-i="'+i+'" role="button" tabindex="0" title="Drag to move this page"><span class="at-grip" aria-hidden="true">⠿</span><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+(nums[p.id]?(nums[p.id].length>1?'pages '+nums[p.id].join('–')+' · spread':'page '+nums[p.id][0]):'')+' · '+AT_KINDS[p.kind].label+'</span></div><button class="at-x" data-del="'+esc(p.id)+'" title="Remove this page" aria-label="Remove page">×</button></div>').join('')+
+    (atlas.pages.length?'':'<p class="kv">No pages yet. Use + Add page above, or Send / Export ▾ in Map Maker or Map Composer.</p>');
+  const pick=id=>{ atSel=id; renderAtList(); renderAtBody(); };
+  box.querySelectorAll('.at-item[data-id]').forEach(it=>{
+    it.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(it.dataset.id); } };
+    if(it.dataset.i==null){ it.onclick=()=>pick(it.dataset.id); return; }
+    it.addEventListener('pointerdown', e=>{
+      if(e.button!==0 || e.target.closest('.at-x')) return;
+      const from=+it.dataset.i, y0=e.clientY; let drag=false, to=from, line=null;
+      const items=[...box.querySelectorAll('.at-pg')];
+      const move=ev=>{
+        if(!drag){ if(Math.abs(ev.clientY-y0)<6) return; drag=true; it.classList.add('dragging'); line=document.createElement('div'); line.className='at-dropline'; box.appendChild(line); try{ it.setPointerCapture(e.pointerId); }catch(_){} }
+        ev.preventDefault();
+        to=items.length;
+        for(let k=0;k<items.length;k++){ const r=items[k].getBoundingClientRect(); if(ev.clientY<r.top+r.height/2){ to=k; break; } }
+        const ref= to<items.length ? items[to].getBoundingClientRect() : items[items.length-1].getBoundingClientRect(), br=box.getBoundingClientRect();
+        line.style.top=((to<items.length?ref.top-4:ref.bottom+2)-br.top+box.scrollTop)+'px';
+        const lr=box.parentNode.getBoundingClientRect();   /* scroll the list while dragging near its edges */
+        if(ev.clientY<lr.top+40) box.parentNode.scrollTop-=10; else if(ev.clientY>lr.bottom-40) box.parentNode.scrollTop+=10;
+      };
+      const up=()=>{
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+        if(!drag){ pick(it.dataset.id); return; }
+        if(line) line.remove(); it.classList.remove('dragging');
+        let dest= to>from ? to-1 : to;
+        if(dest!==from){ atlas.pages.splice(dest,0,atlas.pages.splice(from,1)[0]); atDirty(); mlog('compose','Moved the atlas page "'+(atlas.pages[dest].title||'Untitled')+'" to position '+(dest+1)+'.'); }
+        renderAtList(); if(atSel!=='cover'&&atSel!=='contents') renderAtBody();
+      };
+      window.addEventListener('pointermove', move, {passive:false}); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+    });
+  });
+  box.querySelectorAll('.at-x').forEach(x=>{
+    x.onpointerdown=e=>e.stopPropagation();
+    x.onclick=e=>{
+      e.stopPropagation();
+      if(!x._armed){ x._armed=true; x.classList.add('armed'); x.textContent='Remove?'; setTimeout(()=>{ if(x.isConnected){ x._armed=false; x.classList.remove('armed'); x.textContent='×'; } }, 3000); return; }
+      const i=atlas.pages.findIndex(p=>p.id===x.dataset.del); if(i<0) return;
+      const gone=atlas.pages.splice(i,1)[0];
+      if(atSel===gone.id) atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover');
+      atDirty(); renderAtlas();
+      mlog('compose','Removed the atlas page "'+(gone.title||'Untitled')+'".');
+      toast('Removed', 6000);
+      const tEl=document.getElementById('toast'); tEl.innerHTML='Removed “'+esc(gone.title||'Untitled')+'”. <a href="#" id="atUndoDel" style="color:#9fe0d8;font-weight:700;margin-left:6px;pointer-events:auto;">Undo</a>';
+      document.getElementById('atUndoDel').onclick=ev=>{ ev.preventDefault(); tEl.classList.remove('show'); if(atlas.pages.includes(gone)) return; atlas.pages.splice(Math.min(i,atlas.pages.length),0,gone); atSel=gone.id; atDirty(); renderAtlas(); };
+    };
   });
 }
 function atRichEditor(host, html, onChange){
@@ -9941,7 +10097,11 @@ function atRichEditor(host, html, onChange){
 function renderAtBody(){
   const body=document.getElementById('atBody');
   if(atSel==='cover'){
-    body.innerHTML='<div class="at-cvprev" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"><div><div class="t">'+esc(atlas.title)+'</div>'+(atlas.subtitle?'<div class="s">'+esc(atlas.subtitle)+'</div>':'')+(atlas.author?'<div class="a">'+esc(atlas.author)+'</div>':'')+'</div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right.</p>';
+    atEnsureCss();
+    body.innerHTML='<div class="at-cvwrap"><div class="at-cvbox"></div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right, in the '+esc((AT_THEMES.find(t=>t.k===atlas.theme)||AT_THEMES[0]).n)+' design.</p>';
+    const bx=body.querySelector('.at-cvbox');
+    atlasViewer(bx, Object.assign({}, atlas, {pages:[], __cover:true}));
+    bx.style.fontSize=(bx.clientHeight/60)+'px';
     return;
   }
   if(atSel==='contents'){ renderAtContents(body); return; }
@@ -10015,8 +10175,9 @@ function renderAtSettings(){
       '<label><input type="radio" name="atMode" value="book"'+(atlas.mode==='book'?' checked':'')+'> 📖 Book<span>Turn pages in two-page spreads, like a printed atlas</span></label>'+
       '<label><input type="radio" name="atMode" value="scroll"'+(atlas.mode==='scroll'?' checked':'')+'> ↕ Scrolling<span>One long page, section after section</span></label></div>'+
     '<label class="fc-chk2"><input type="checkbox" id="atToc"'+(atlas.contents?' checked':'')+'> Contents page</label>'+
-    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button></div>'+
-    '<p class="kv">The export is one HTML file. Host it like an interactive web map (Netlify Drop, GitHub Pages or any web host) and share the link. Live maps load their basemaps over the internet.</p>';
+    '<label class="fc-lbl">Web address (optional)<input type="text" id="atUrl" maxlength="300" placeholder="https://… where the atlas will be online" value="'+esc(atlas.url||'')+'"></label>'+
+    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button><button class="btn secondary" id="atPdf">⬇ Download PDF</button></div>'+
+    '<p class="kv">The export is one HTML file. Host it like an interactive web map (Netlify Drop, GitHub Pages or any web host) and share the link. Live maps load their basemaps over the internet. The PDF has one page per atlas page in the chosen design; live maps appear as sharp snapshots, with the web address under them if you give one. Readers of the web version can download the PDF too.</p>';
   const up=(k,rerender)=>e=>{ atlas[k]=e.target.value; atDirty(); if(rerender) renderAtlas(); else { renderAtList(); if(atSel==='cover') renderAtBody(); } };
   document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
   document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value; atDirty(); };
@@ -10026,10 +10187,12 @@ function renderAtSettings(){
   ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
   const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
   document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); renderAtList(); });
-  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
+  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); if(atSel!=='cover'){ atSel='cover'; renderAtList(); } renderAtBody(); if(atlas.theme==='retro') setTimeout(()=>{ if(atSel==='cover') renderAtBody(); }, 700); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
   document.getElementById('atToc').onchange=e=>{ atlas.contents=e.target.checked; atDirty(); renderAtList(); };
   document.getElementById('atPrev').onclick=atPreview;
   document.getElementById('atExport').onclick=atExport;
+  document.getElementById('atPdf').onclick=()=>atPdf();
+  document.getElementById('atUrl').oninput=e=>{ const v=e.target.value.trim(); atlas.url=/^https?:\/\/\S{3,}$/i.test(v)?v:''; atDirty(); };
 }
 function atReadImage(file, max){
   return new Promise((res,rej)=>{
@@ -10055,8 +10218,9 @@ async function atCaptureMap(p, basemap, quiet){
   /* a still for page thumbnails and the page-turn animation */
   try{
     if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
-    const url= projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement(document.getElementById('mk-map'), 1, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint')));
+    const url= projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement(document.getElementById('mk-map'), 2, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint')));
     p.thumb=await atToJpeg(url, 900, 0.8);
+    p.still=await atToJpeg(url, 2000, 0.86);   /* sharper copy for the PDF */
   }catch(_){ p.thumb=''; }
   finally{ if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
   atDirty(); if(!document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas();
@@ -10105,7 +10269,7 @@ async function atSendFromMaker(targetId){
     return;
   }
   const l0=mkLayers.find(l=>l.visible);
-  const base=l0 ? (l0.style.legendTitle||prettyName(l0.name)) : 'Map';
+  const base=(l0 ? (l0.style.legendTitle||prettyName(l0.name)) : 'Map').replace(/(\s\(\d+\))+$/,'');
   const same=atlas.pages.filter(q=>q.kind==='map' && (q.title===base || q.title.startsWith(base+' ('))).length;
   const p={id:uid(), kind:'map', title:same?base+' ('+(same+1)+')':base, caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null};
   if(!(await atCaptureMap(p, null, true))) return;
@@ -10147,6 +10311,23 @@ function buildAtlasHtml(a0){
     (a.theme==='retro'?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap">':'')+
     '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
     '<script>\n'+atlasViewer.toString()+'\natlasViewer(document.getElementById("atlas"), '+data+');\n<\/script></body></html>';
+}
+/* Download the atlas as a PDF from inside the app (the same renderer the
+   exported atlas uses, with the app's own jsPDF and html2canvas) */
+function atEnsureCss(){
+  if(!document.getElementById('atlasAppCss')){ const st=document.createElement('style'); st.id='atlasAppCss'; st.textContent=ATLAS_CSS; document.head.appendChild(st); }
+  if(atlas && atlas.theme==='retro' && !document.getElementById('atlasRetroFonts')){ const l=document.createElement('link'); l.id='atlasRetroFonts'; l.rel='stylesheet'; l.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap'; document.head.appendChild(l); return true; }
+  return false;
+}
+async function atPdf(){
+  if(!atlas || !atlas.pages.length){ toast('Add some pages to the atlas first.'); return; }
+  if(atEnsureCss()) await new Promise(r=>setTimeout(r,600));
+  const a=Object.assign({}, atlas, {pages:atlas.pages.map(p=>{ const q=Object.assign({}, p); delete q.snap; q.mapHtml=''; return q; }), __pdfOnly:true});
+  try{
+    const api=atlasViewer(document.createElement('div'), a);
+    await api.pdf();
+    mlog('export','Downloaded the atlas "'+atlas.title+'" as a PDF ('+atlas.pages.length+' pages, '+((AT_THEMES.find(t=>t.k===atlas.theme)||{}).n||'Classic')+' design).');
+  }catch(err){ toast('The PDF could not be made: '+(err&&err.message||err), 6000); }
 }
 function atPreview(){
   if(!atlas) return;
@@ -11021,7 +11202,7 @@ function renderTopMenu(){
   } else if(mod==='layout'){
     h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page');
   } else if(mod==='atlas' && atlas){
-    h+='<div class="tg">This atlas</div>'+it('atlas-preview','👁 Preview atlas','Full screen, as readers will see it')+it('atlas-export','⬇ Export atlas as web page','One HTML file to host and share');
+    h+='<div class="tg">This atlas</div>'+it('atlas-preview','👁 Preview atlas','Full screen, as readers will see it')+it('atlas-export','⬇ Export atlas as web page','One HTML file to host and share')+it('atlas-pdf','⬇ Download atlas as PDF','One page per atlas page, ready to print');
   }
   h+='<div class="tg">Share &amp; export</div>'+it('share','🔗 Share link or embed…','A live link to the map, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
   m.innerHTML=h;
@@ -11046,6 +11227,7 @@ function renderTopMenu(){
     else if(g==='atlas-open') switchModule('atlas');
     else if(g==='atlas-preview') atPreview();
     else if(g==='atlas-export') atExport();
+    else if(g==='atlas-pdf') atPdf();
     else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
     else if(t.dataset.upd){ if(t.dataset.k==='layout') await atSendLayout(t.dataset.upd); else await atSendFromMaker(t.dataset.upd); }
   });
@@ -11346,7 +11528,7 @@ function renderProjection(){
     if(st.mode==='cat') computeCategories(lyr);
     let srcFeats;
     if(st.mode==='carto'){
-      const cfc=cartogramFC(lyr);
+      const cfc=cartogramFC(lyr, cartoProjPlane());
       if(!cfc) return;
       cartoPrepColors(lyr);
       srcFeats=cfc.features;
@@ -11533,6 +11715,12 @@ document.getElementById('mkProjection').addEventListener('change', e=>{
 document.getElementById('projFitBtn').onclick=projFitToData;
 document.getElementById('projFitWorldBtn').onclick=projFitToWorld;
 window.addEventListener('resize', ()=>{ if(projActive) scheduleProjRender(); });
+/* side panels collapsing or being dragged wider change the frame without a window resize */
+if('ResizeObserver' in window){
+  let lastW=0, lastH=0;
+  new ResizeObserver(ents=>{ const r=ents[0].contentRect; if(!projActive || (r.width===lastW && r.height===lastH)) return; lastW=r.width; lastH=r.height;
+    renderProjection(); if(typeof swipe!=='undefined' && swipe) swipeClip(); }).observe(document.getElementById('mk-proj'));
+}
 
 /* ---------- pan / zoom / rotate interaction ---------- */
 (function projInteraction(){
@@ -16257,7 +16445,7 @@ function projSnapshot(){
     if(st.mode==='bivariate'){ sizeRange(lyr); computeColorClassification(lyr); }
     if(st.mode==='cat') computeCategories(lyr);
     let src;
-    if(st.mode==='carto'){ const cfc=cartogramFC(lyr); if(!cfc) return; cartoPrepColors(lyr); src=cfc.features; }
+    if(st.mode==='carto'){ const cfc=cartogramFC(lyr, cartoProjPlane()); if(!cfc) return; cartoPrepColors(lyr); src=cfc.features; }
     else src=visibleFeatures(lyr);
     const L2={id:lyr.id, f:[]};
     if(lyr.geom==='point' && st.symbol && st.symbol!=='circle'){ L2.sym=symbolPath(st.symbol); L2.sk=symbolIsStroked(st.symbol)?1:0; }

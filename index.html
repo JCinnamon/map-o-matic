@@ -356,6 +356,17 @@
   #stage-wrap{position:relative;} .cvd-banner{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:5;background:#fff3d6;border:1px solid #e3c47a;color:#6b5314;font-size:12px;padding:5px 12px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.1);}
   #toolrail .cvd-sel{width:100%;font-size:11px;padding:3px;border:1px solid var(--line);border-radius:5px;margin-top:2px;}
   #toolrail .cvd-lbl{font-size:10.5px;font-weight:600;color:var(--text);text-align:center;margin-top:4px;}
+  .mk-sendwrap{position:relative;display:inline-block;}
+  .mk-sendmenu{position:absolute;right:0;top:100%;margin-top:4px;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(20,30,50,.2);z-index:1200;padding:5px;max-height:70vh;overflow:auto;}
+  .mk-sendmenu .sm-item{display:flex;flex-direction:column;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:6px;color:var(--text);font-size:13px;cursor:pointer;}
+  .mk-sendmenu .sm-item small{font-weight:400;color:var(--muted);font-size:11.5px;margin-top:1px;} .mk-sendmenu .sm-item:hover{background:#eef3f7;}
+  .mk-sendmenu .sm-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:8px 10px 4px;border-top:1px solid var(--line);margin-top:4px;}
+  .mk-sendmenu .sm-pages{display:flex;flex-direction:column;gap:4px;padding:0 4px 4px;}
+  .mk-sendmenu .sm-page{display:flex;align-items:center;gap:8px;padding:4px;border-radius:6px;} .mk-sendmenu .sm-page:hover{background:#f4f6f9;}
+  .mk-sendmenu .sm-th{width:44px;height:34px;flex:none;border-radius:3px;overflow:hidden;background:#eef1f4;display:flex;align-items:center;justify-content:center;} .mk-sendmenu .sm-th img{width:100%;height:100%;object-fit:cover;}
+  .mk-sendmenu .sm-pt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:12.5px;} .mk-sendmenu .sm-pt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .mk-sendmenu .sm-pt small{color:var(--muted);font-size:11px;}
+  .mk-sendmenu .sm-foot{display:block;width:100%;text-align:right;background:none;border:none;border-top:1px solid var(--line);margin-top:4px;padding:7px 10px 4px;color:var(--teal);font-weight:600;font-size:12.5px;cursor:pointer;}
+  .at-mapopts{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;} .at-mapopts select{font-size:13px;padding:5px 7px;border:1px solid var(--line);border-radius:5px;}
   .send-names{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;display:flex;flex-direction:column;gap:6px;}
   .sn-h{font-size:12px;font-weight:700;color:var(--navy);} .sn-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
@@ -1001,7 +1012,9 @@
         <button class="btn light small" id="mkSelExport" title="Export or save the selected features">Selected ▾</button>
         <button class="btn light small" id="mkSelClear" title="Clear selection">✕</button>
       </span>
-      <button class="btn small" id="mkSendBtn">Send to Composer ▸</button>
+      <span class="mk-sendwrap"><button class="btn small" id="mkSendMenuBtn" aria-haspopup="true" aria-expanded="false">Send to ▾</button>
+        <div class="mk-sendmenu hidden" id="mkSendMenu" role="menu"></div>
+        <button id="mkSendBtn" hidden></button></span>
     </div>
     <div id="mk-map"></div>
     <div id="mk-proj" class="hidden">
@@ -1377,6 +1390,11 @@
         <div class="field"><label>Basemap in the embed</label>
           <select id="embedBasemap">
             <option value="osm">OpenStreetMap</option>
+            <option value="ofm-positron">Positron (light)</option>
+            <option value="ofm-bright">Bright</option>
+            <option value="ofm-liberty">Liberty (streets)</option>
+            <option value="ofm-dark">Dark</option>
+            <option value="ofm-fiord">Fiord (muted)</option>
             <option value="s2cloudless">Sentinel-2 Cloudless (open)</option>
             <option value="satellite">Satellite</option>
             <option value="satellite-hybrid">Satellite Hybrid</option>
@@ -9596,10 +9614,37 @@ function atSanitize(a){
     if(!p || !AT_KINDS[p.kind]) return null;
     return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
       src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'',
-      mapHtml:(p.kind==='map' && typeof p.mapHtml==='string')?p.mapHtml.slice(0,30e6):'', basemap:s(p.basemap,40), captured:+p.captured||null};
+      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
   }).filter(Boolean);
   return out;
 }
+/* Atlas maps use the same basemaps as Map Maker, minus the standard
+   OpenStreetMap tiles: those servers refuse maps that run inside a sandboxed
+   frame (no referrer), which is how every atlas map runs. */
+const AT_BMS=[['ofm-positron','Positron (light)'],['ofm-bright','Bright'],['ofm-liberty','Liberty (streets)'],['ofm-dark','Dark'],['ofm-fiord','Fiord (muted)'],
+  ['s2cloudless','Sentinel-2 Cloudless (open)'],['satellite','Satellite'],['satellite-hybrid','Satellite Hybrid'],['none','None (data only)']];
+function atBmKey(k){ if(BASEMAP_LEGACY[k]) k=BASEMAP_LEGACY[k]; return AT_BMS.some(b=>b[0]===k)?k:'ofm-positron'; }
+function atSnapFrom(p){
+  const ok=sn=>sn && Array.isArray(sn.layers) && sn.view && Array.isArray(sn.view.c);
+  const clean=sn=>({layers:sn.layers.slice(0,50), view:{c:[+sn.view.c[0]||0,+sn.view.c[1]||0], z:+sn.view.z||2,
+      b:Array.isArray(sn.view.b)&&sn.view.b.length===2?[[+sn.view.b[0][0],+sn.view.b[0][1]],[+sn.view.b[1][0],+sn.view.b[1][1]]]:null},
+    legendHtml:typeof sn.legendHtml==='string'?sn.legendHtml.slice(0,200000):'', layerIds:Array.isArray(sn.layerIds)?sn.layerIds.map(x=>String(x).slice(0,40)).slice(0,50):[]});
+  if(ok(p.snap)) return clean(p.snap);
+  /* pages captured by v47 kept a finished map page; recover its data and view */
+  const h=typeof p.mapHtml==='string'?p.mapHtml:''; if(!h) return null;
+  try{
+    const a=h.indexOf('var LAYERS='), b=h.indexOf(";\nvar map=L.map(", a); if(a<0||b<0) return null;
+    const layers=JSON.parse(h.slice(a+11,b));
+    const v=/setView\(\[([-\d.e]+),([-\d.e]+)\], ?([\d.]+)\)/.exec(h);
+    const lg=/d\.innerHTML=("(?:[^"\\]|\\.)*")/.exec(h);
+    return clean({layers, view:{c:v?[+v[1],+v[2]]:[20,0], z:v?+v[3]:2}, legendHtml:lg?JSON.parse(lg[1]):'', layerIds:[]});
+  }catch(_){ return null; }
+}
+function atMapHtml(p){
+  if(!p || !p.snap) return '';
+  return buildEmbedHtml({name:p.title||'Map', basemap:atBmKey(p.basemap), popups:true, legend:p.legend?'toggle':false, snap:p.snap, keepView:true});
+}
+function atDefaultBm(){ return atBmKey(mkBasemapKey); }
 function atLoad(data){ atlas=atSanitize(data && data.atlas); atSel='cover'; if(document.getElementById('module-atlas') && !document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas(); }
 function atDirty(){ markProjectDirty(); }
 function atCur(){ return atlas && atlas.pages.find(p=>p.id===atSel); }
@@ -9662,10 +9707,14 @@ function renderAtBody(){
   const p=atCur(); if(!p){ atSel='cover'; renderAtBody(); return; }
   const i=atlas.pages.indexOf(p);
   let media='';
-  if(p.kind==='map') media=p.mapHtml?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>';
+  if(p.kind==='map') media=p.snap?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>';
   else if(p.kind==='layout'||p.kind==='image') media=p.src?'<div class="at-media"><img src="'+p.src+'" alt=""></div>':'<div class="at-media at-missing">No image yet.</div>';
-  const bmOpts=document.getElementById('embedBasemap') ? document.getElementById('embedBasemap').innerHTML : '<option value="osm">OpenStreetMap</option>';
-  const act = p.kind==='map' ? '<div class="at-acts"><label class="kv" style="margin:0">Basemap <select id="atBm">'+bmOpts+'</select></label><button class="btn small" id="atRecap">↻ Recapture from Map Maker</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. It shows the layers switched on in Map Maker and the current view, and stays interactive in the atlas.</span></div>'
+  const bmOpts=AT_BMS.map(b=>'<option value="'+b[0]+'">'+b[1]+'</option>').join('');
+  const nL=p.snap?p.snap.layers.length:0;
+  const act = p.kind==='map' ? '<div class="at-mapopts"><label class="fc-lbl" style="margin:0">Basemap<select id="atBm">'+bmOpts+'</select></label>'+
+      '<label class="fc-chk2" style="margin:0 0 6px"><input type="checkbox" id="atLg"'+(p.legend?' checked':'')+'> Legend button<span class="kv" style="margin:0 0 0 4px">(readers open and close it)</span></label></div>'+
+      '<div class="at-acts"><button class="btn small" id="atRecap" title="Replace this page\'s map with the layers and view in Map Maker now">↻ Update from Map Maker</button><button class="btn small light" id="atShowMk" title="Open Map Maker at this page\'s view with its layers switched on">🧭 Show in Map Maker</button>'+
+      '<span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString()+' · ':'')+nL+' layer'+(nL===1?'':'s')+'. Tip: in Map Maker, <b>Send to ▾ → Atlas</b> adds each new view as a page.</span></div>'
     : p.kind==='layout' ? '<div class="at-acts"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. Readers can click it to enlarge.</span></div>'
     : p.kind==='image' ? '<div class="at-acts"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div>' : '';
   body.innerHTML='<div class="at-ed">'+
@@ -9674,8 +9723,12 @@ function renderAtBody(){
     media+act+
     (p.kind!=='text'?'<label class="fc-lbl">Caption (optional)<input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>':'')+
     '<div class="fc-lbl">'+(p.kind==='text'?'Text':'Text on this page (optional)')+'</div><div id="atRich"></div></div>';
-  if(p.kind==='map' && p.mapHtml){ body.querySelector('.at-mapbox iframe').srcdoc=p.mapHtml; }
-  const bm=document.getElementById('atBm'); if(bm){ bm.value=p.basemap||'osm'; if(!bm.value) bm.selectedIndex=0; }
+  const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
+  if(p.kind==='map' && p.snap) loadMap();
+  const bm=document.getElementById('atBm');
+  if(bm){ bm.value=atBmKey(p.basemap); bm.onchange=()=>{ p.basemap=bm.value; atDirty(); loadMap(); }; }
+  const lgc=document.getElementById('atLg'); if(lgc) lgc.onchange=()=>{ p.legend=lgc.checked; atDirty(); loadMap(); };
+  const smk=document.getElementById('atShowMk'); if(smk) smk.onclick=()=>atShowInMaker(p);
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
   const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
   atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
@@ -9684,7 +9737,7 @@ function renderAtBody(){
   const del=document.getElementById('atDel');
   del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete page'; } },3500); return; }
     atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
-  const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p, bm?bm.value:'osm'); else atCaptureLayout(p); };
+  const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
   if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
 }
@@ -9729,17 +9782,14 @@ function atReadImage(file, max){
 function atToJpeg(dataURL, max, q){
   return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,max/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL('image/jpeg',q||0.85)); }; im.onerror=()=>res(''); im.src=dataURL; });
 }
-function atRasterBasemap(){
-  const k=mkBasemapKey, b=BASEMAPS[k];
-  return (b && b.kind==='raster') ? k : (k==='none'?'none':'osm');
-}
-async function atCaptureMap(p, basemap){
+async function atCaptureMap(p, basemap, quiet){
   if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer in Map Maker first.', 3500); return false; }
   if(mkGlobe || projActive){ toast('Switch Map Maker back to the Web Mercator view to capture a live map.', 4000); return false; }
-  toast('Capturing the map from Map Maker…');
+  if(!quiet) toast('Capturing the map from Map Maker…');
   const wasHidden=document.getElementById('module-maker').classList.contains('hidden');
-  p.mapHtml=buildEmbedHtml({name:(p.title||atlas.title||'Map'), basemap:basemap||atRasterBasemap(), popups:true, legend:true});
-  p.basemap=basemap||atRasterBasemap(); p.captured=Date.now();
+  p.snap=embedSnapshot(); p.mapHtml='';
+  if(basemap || !p.basemap) p.basemap=atBmKey(basemap||atDefaultBm());
+  p.captured=Date.now();
   /* a still for page thumbnails and the page-turn animation */
   try{
     if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
@@ -9747,9 +9797,40 @@ async function atCaptureMap(p, basemap){
     p.thumb=await atToJpeg(url, 900, 0.8);
   }catch(_){ p.thumb=''; }
   finally{ if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
-  atDirty(); renderAtlas();
+  atDirty(); if(!document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas();
   mlog('compose','Captured a live map for the atlas page "'+(p.title||'Map')+'" ('+mkLayers.filter(l=>l.visible).map(l=>l.name).join(', ')+').');
   return true;
+}
+/* Put Map Maker back the way it was when a page was captured */
+function atShowInMaker(p){
+  if(!p || !p.snap) return;
+  const ids=p.snap.layerIds||[];
+  if(ids.length && ids.some(id=>mkLayers.some(l=>l.id===id))){
+    mkLayers.forEach(l=>{ const on=ids.includes(l.id); if(l.visible!==on){ l.visible=on; renderLayer(l); } });
+    if(!mkLayers.some(l=>l.id===mkSelectedId && l.visible)){ const n=mkLayers.find(l=>l.visible); mkSelectedId=n?n.id:null; }
+    renderMakerLayerList(); renderMakerPanels(); updateMkStatus();
+  }
+  if(p.basemap && BASEMAPS[p.basemap]!==undefined && p.basemap!==mkBasemapKey) setBasemap(p.basemap);
+  switchModule('maker');
+  setTimeout(()=>{ mkMap.invalidateSize(); const v=p.snap.view; if(v.b) mkMap.fitBounds(v.b,{animate:false}); else mkMap.setView(v.c,v.z,{animate:false}); }, 60);
+  toast('Map Maker is showing “'+(p.title||'this page')+'”. Change it, then Send to ▾ → Atlas → Update this page.', 5000);
+}
+/* Map Maker's Send to ▾ → Atlas: add the current view as a new page, or replace a page's map */
+async function atSendFromMaker(targetId){
+  if(!atlas){ atlas=atDefault(); const rec=projectsCache.find(r=>r.id===currentProjectId); if(rec&&rec.name) atlas.title=rec.name; mlog('compose','Started the atlas "'+atlas.title+'".'); }
+  if(targetId){
+    const p=atlas.pages.find(q=>q.id===targetId); if(!p) return;
+    if(await atCaptureMap(p, null, true)){ atSel=p.id; toast('Updated atlas page '+(atlas.pages.indexOf(p)+(atlas.contents?2:1))+', “'+(p.title||'Map')+'”, with this view.', 4000); }
+    return;
+  }
+  const l0=mkLayers.find(l=>l.visible);
+  const base=l0 ? (l0.style.legendTitle||prettyName(l0.name)) : 'Map';
+  const same=atlas.pages.filter(q=>q.kind==='map' && (q.title===base || q.title.startsWith(base+' ('))).length;
+  const p={id:uid(), kind:'map', title:same?base+' ('+(same+1)+')':base, caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null};
+  if(!(await atCaptureMap(p, null, true))) return;
+  atlas.pages.push(p); atSel=p.id; atDirty();
+  const n=atlas.pages.length+(atlas.contents?1:0);
+  toast('Added to the atlas as page '+n+', “'+p.title+'”. Pan, zoom or restyle and send again for the next page.', 5000);
 }
 async function atCaptureLayout(p){
   if(!canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ toast('The Composer page is empty. Lay out a map there first.', 3500); return false; }
@@ -9763,8 +9844,8 @@ async function atCaptureLayout(p){
 }
 async function atAddPage(kind){
   if(!atlas){ atlas=atDefault(); }
-  const p={id:uid(), kind, title:'', caption:'', text:'', src:'', thumb:'', mapHtml:'', basemap:'', captured:null};
-  if(kind==='map'){ const l0=mkLayers.find(l=>l.visible); p.title=l0? (l0.style.legendTitle||prettyName(l0.name)) : 'Map'; if(!(await atCaptureMap(p, atRasterBasemap()))) return; }
+  const p={id:uid(), kind, title:'', caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null};
+  if(kind==='map'){ const l0=mkLayers.find(l=>l.visible); p.title=l0? (l0.style.legendTitle||prettyName(l0.name)) : 'Map'; if(!(await atCaptureMap(p))) return; }
   if(kind==='layout'){ const t=canvas.getObjects().find(o=>o.data&&o.data.type==='title'); p.title=t&&t.text?t.text:'Map'; if(!(await atCaptureLayout(p))) return; }
   if(kind==='image'){
     const f=await new Promise(res=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=()=>res(inp.files&&inp.files[0]); inp.click(); });
@@ -9776,7 +9857,9 @@ async function atAddPage(kind){
   const cur=atCur(); const at=cur?atlas.pages.indexOf(cur)+1:atlas.pages.length;
   atlas.pages.splice(at,0,p); atSel=p.id; atDirty(); renderAtlas();
 }
-function buildAtlasHtml(a){
+function buildAtlasHtml(a0){
+  /* each map page becomes a finished interactive map; the raw snapshot stays behind */
+  const a=Object.assign({}, a0, {pages:a0.pages.map(p=>{ const q=Object.assign({}, p); if(p.kind==='map') q.mapHtml=atMapHtml(p); delete q.snap; return q; })});
   const data=JSON.stringify(a).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   const fav=document.querySelector('link[rel="icon"]');
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
@@ -10426,6 +10509,34 @@ document.getElementById('mkSendBtn').onclick=()=>{
   openModal('modal-send');
   document.getElementById('sendStatus').textContent='';
 };
+/* Send to ▾ — Map Composer, or the atlas (new page, or update an existing map page) */
+function renderSendMenu(){
+  const m=document.getElementById('mkSendMenu');
+  const maps=atlas?atlas.pages.filter(p=>p.kind==='map'):[];
+  const pn=p=>atlas.pages.indexOf(p)+(atlas.contents?2:1);
+  m.innerHTML='<button class="sm-item" data-go="composer" role="menuitem"><b>▣ Map Composer…</b><small>Place this map on the layout page with a legend and scale bar</small></button>'+
+    '<button class="sm-item" data-go="atlas-new" role="menuitem"><b>📖 Atlas: new page</b><small>Add this view, its layers and styling as an interactive map page</small></button>'+
+    (maps.length?'<div class="sm-h">Update an atlas map page with this view</div><div class="sm-pages">'+maps.map(p=>
+      '<div class="sm-page"><span class="sm-th">'+(AT_IMG.test(p.thumb||'')?'<img src="'+p.thumb+'" alt="">':'🧭')+'</span><span class="sm-pt"><b>'+esc(p.title||'Map')+'</b><small>page '+pn(p)+'</small></span>'+
+      '<button class="btn small light" data-show="'+p.id+'" title="Go back to this page\'s view and layers">View</button><button class="btn small" data-upd="'+p.id+'" title="Replace this page\'s map with the current view">Update</button></div>').join('')+'</div>':'')+
+    (atlas?'<button class="sm-foot" data-go="atlas-open">Open the Atlas ›</button>':'');
+}
+(function(){
+  const btn=document.getElementById('mkSendMenuBtn'), m=document.getElementById('mkSendMenu');
+  const close=()=>{ m.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); };
+  btn.onclick=e=>{ e.stopPropagation(); if(!m.classList.contains('hidden')){ close(); return; } renderSendMenu(); m.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); };
+  document.addEventListener('click', e=>{ if(!m.contains(e.target)) close(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  m.addEventListener('click', async e=>{
+    const t=e.target.closest('[data-go],[data-show],[data-upd]'); if(!t) return;
+    e.stopPropagation(); close();
+    if(t.dataset.go==='composer') document.getElementById('mkSendBtn').click();
+    else if(t.dataset.go==='atlas-new') await atSendFromMaker(null);
+    else if(t.dataset.go==='atlas-open') switchModule('atlas');
+    else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
+    else if(t.dataset.upd) await atSendFromMaker(t.dataset.upd);
+  });
+})();
 function applySendNames(){
   document.querySelectorAll('#sendNames .sendLg').forEach(inp=>{
     const l=mkLayers.find(x=>x.id===inp.dataset.id); if(!l) return;
@@ -15569,20 +15680,32 @@ function embedLegendHtml(){
   });
   return parts.join('');
 }
-function buildEmbedHtml(opts){
+/* Everything an interactive map needs, frozen at this moment: the visible layers
+   with their baked styling, the view, and the legend. Atlas pages keep one of
+   these per page so each page can hold a different view. */
+function embedSnapshot(){
   const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l); d.lbl=labelSpecFor(l); return d; }).filter(d=>d.fc.features.length);
+  let view={c:[20,0], z:2, b:null};
+  if(mkMap){ const c=mkMap.getCenter(), b=mkMap.getBounds(); view={c:[c.lat,c.lng], z:mkMap.getZoom(), b:[[b.getSouth(),b.getWest()],[b.getNorth(),b.getEast()]]}; }
+  return {layers, view, legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id)};
+}
+function buildEmbedHtml(opts){
+  const snap=opts.snap||embedSnapshot();
+  const layers=snap.layers;
   const title=(opts.name||'Map').replace(/-/g,' ');
   const basemap=opts.basemap||'osm';
+  const vecDef=(BASEMAPS[basemap]&&BASEMAPS[basemap].kind==='vector')?BASEMAPS[basemap]:null;
   /* any raster basemap works in the embedded Leaflet map, including the
      multi-layer Satellite Hybrid (imagery + reference overlays) */
   const bmDef=BASEMAPS[basemap];
   const bmSpec = (bmDef && bmDef.kind==='raster')
     ? {urls:bmDef.urls.slice(), attr:bmDef.attr, max:bmDef.max||19, maxNative:bmDef.maxNative||bmDef.max||19}
     : null;
-  const view = mkMap ? {c:[mkMap.getCenter().lat, mkMap.getCenter().lng], z:mkMap.getZoom()} : {c:[20,0], z:2};
+  const view = snap.view;
   /* keep the data safe inside a <script> block */
   const dataJSON=JSON.stringify(layers).replace(/<\/(script)/gi,'<\\/$1').replace(/<!--/g,'<\\!--');
-  const legendHtml = opts.legend ? embedLegendHtml() : '';
+  const legendHtml = opts.legend ? snap.legendHtml : '';
+  const lgToggle = opts.legend==='toggle';
   const css=`html,body{margin:0;height:100%;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;}
 #map{position:absolute;inset:0;}
 .leaflet-popup-content{font-size:12px;max-height:220px;overflow:auto;}
@@ -15590,6 +15713,10 @@ function buildEmbedHtml(opts){
 .cs-embed-popup td{padding:2px 6px;border-bottom:1px solid #eee;vertical-align:top;}
 .cs-embed-popup td.k{color:#666;font-weight:600;}
 .cs-legend{background:rgba(255,255,255,.92);padding:8px 10px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);font-size:12px;max-height:44%;overflow:auto;line-height:1.5;}
+.cs-lgwrap{display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-height:70vh;}
+.cs-lgwrap .cs-legend{max-height:calc(70vh - 40px);}
+.cs-lgbtn{font:600 12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}
+.cs-lgbtn:hover{background:#f1f4f8;}
 .cs-legend .lg-title{font-weight:700;margin:4px 0 3px;}
 .cs-legend .lg-title:first-child{margin-top:0;}
 .cs-legend .lg-row{display:flex;align-items:center;gap:6px;}
@@ -15603,7 +15730,7 @@ function buildEmbedHtml(opts){
   const js=`
 var LAYERS=${dataJSON};
 var map=L.map('map',{preferCanvas:true}).setView([${view.c[0]},${view.c[1]}], ${view.z});
-${bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}}).addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');`}
+${vecDef ? `try{L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},interactive:false}).addTo(map);}catch(e){}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}}).addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');`}
 function styleFn(f){var s=f.properties._cs||{};return{color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};}
 function ptLayer(f,ll){var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]})});}return L.circleMarker(ll,{radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo});}
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -15612,8 +15739,10 @@ function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,
 function label(f,layer,lb,li){if(!lb||!lb.f)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
 LAYERS.forEach(function(L2,li){var gj=L.geoJSON(L2.fc,{style:styleFn,pointToLayer:ptLayer,onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}});gj.addTo(group);});
-try{var b=group.getBounds();if(b.isValid())map.fitBounds(b,{padding:[24,24]});}catch(e){}
-${legendHtml ? `var lg=L.control({position:'bottomright'});lg.onAdd=function(){var d=L.DomUtil.create('div','cs-legend');d.innerHTML=${JSON.stringify(legendHtml)};return d;};lg.addTo(map);` : ''}`;
+${(opts.keepView && view.b) ? `map.fitBounds(${JSON.stringify(view.b)});` : `try{var b=group.getBounds();if(b.isValid())map.fitBounds(b,{padding:[24,24]});}catch(e){}`}
+${legendHtml ? (lgToggle
+  ? `var lg=L.control({position:'bottomright'});lg.onAdd=function(){var w=L.DomUtil.create('div','cs-lgwrap');w.innerHTML='<div class="cs-legend" hidden></div><button type="button" class="cs-lgbtn" aria-expanded="false">Legend</button>';var p=w.firstChild,bt=w.lastChild;p.innerHTML=${JSON.stringify(legendHtml)};bt.onclick=function(){var o=p.hidden;p.hidden=!o;bt.setAttribute('aria-expanded',String(o));bt.textContent=o?'Hide legend':'Legend';};L.DomEvent.disableClickPropagation(w);L.DomEvent.disableScrollPropagation(w);return w;};lg.addTo(map);`
+  : `var lg=L.control({position:'bottomright'});lg.onAdd=function(){var d=L.DomUtil.create('div','cs-legend');d.innerHTML=${JSON.stringify(legendHtml)};return d;};lg.addTo(map);`) : ''}`;
   const html=`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15626,6 +15755,9 @@ ${legendHtml ? `var lg=L.control({position:'bottomright'});lg.onAdd=function(){v
 <body>
 <div id="map"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha384-NElt3Op+9NBMCYaef5HxeJmU4Xeard/Lku8ek6hoPTvYkQPh3zLIrJP7KiRocsxO" crossorigin="anonymous"><\/script>
+${vecDef ? `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.1/maplibre-gl.css" integrity="sha384-Nq6PQ+9vJPvw7U/VfDELyrWoGQMsy0gi6QShhaSrGzkpF5KkM40csg2leky+YMTd" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.1/maplibre-gl.min.js" integrity="sha384-Bf0u7y3B8VQ+pO0vwItSnb1fZsVZP6kqxIykY2Ay4nqTq35i85MGy5PB978dEDBD" crossorigin="anonymous"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.3/leaflet-maplibre-gl.js" integrity="sha384-LIxE/QjpJKC2A91yD40ZisdYtFbgAjl58jqpo9/MUZNgwhqsTfzwrTlqv6nDdzzB" crossorigin="anonymous"><\/script>` : ''}
 <script>${js}
 <\/script>
 <!-- Interactive map made with Map-O-Matic. Data © OpenStreetMap contributors where a basemap is shown. -->

@@ -245,15 +245,55 @@
   #mk-map.georef-mode .leaflet-overlay-pane canvas, #mk-map.georef-mode .leaflet-overlay-pane svg, #mk-map.georef-mode .leaflet-overlay-pane path,
   #mk-map.georef-mode .leaflet-marker-pane > *, #mk-map.georef-mode [class*="swipe"] canvas{pointer-events:none !important;}
   .gr-pin span{display:block;width:22px;height:22px;border-radius:50%;background:#2f7d78;color:#fff;font:700 11px/22px sans-serif;text-align:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);}
-  .cl-row{display:grid;grid-template-columns:1fr 92px auto auto;gap:3px;align-items:center;margin-bottom:4px;}
-  .cl-row input[type=text],.cl-row select{font-size:12px;padding:3px 4px;border:1px solid var(--line);border-radius:4px;min-width:0;}
-  .cl-row .cl-opts{grid-column:1/5;} .cl-row .cl-req{font-size:11px;display:flex;align-items:center;gap:2px;}
   .cl-btns{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 4px;} .cl-adv{margin-top:8px;font-size:12px;}
   .cl-link{display:flex;gap:4px;margin-top:6px;} .cl-link input{flex:1;min-width:0;font-size:11px;}
   .cl-qr{margin:6px 0;} .cl-qr canvas{image-rendering:pixelated;border:1px solid var(--line);}
   .qr-cam{background:#111;border-radius:6px;overflow:hidden;aspect-ratio:4/3;} .qr-cam video{width:100%;height:100%;object-fit:cover;display:block;}
   .qr-prog{height:8px;background:#e3e6eb;border-radius:4px;margin-top:8px;overflow:hidden;} .qr-prog div{height:100%;width:0;background:#2f7d78;transition:width .2s;}
   .mk-pop-photo{width:220px;height:auto;max-height:220px;object-fit:contain;display:block;margin-top:3px;border-radius:4px;}
+  #module-collect{display:flex;background:#f4f6f9;}
+  .fc-left{width:230px;flex:none;border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;gap:8px;padding:14px 12px;overflow:auto;}
+  #fcFormList{display:flex;flex-direction:column;gap:6px;}
+  .fc-formitem{text-align:left;border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--text);}
+  .fc-formitem span{font-size:11.5px;color:var(--muted);} .fc-formitem.active{border-color:var(--teal);background:#e8f3f1;}
+  .fc-left-btns{display:flex;gap:6px;} .fc-left-btns .btn{flex:1;justify-content:center;}
+  .fc-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .fc-tabs{display:flex;border-bottom:1px solid var(--line);background:#fff;padding:0 16px;flex:none;}
+  .fc-tab{background:none;border:none;padding:11px 16px;font-size:13px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;}
+  .fc-tab.active{color:var(--navy);border-bottom-color:var(--teal);}
+  .fc-body{flex:1;overflow:auto;padding:18px 24px 40px;}
+  .fc-right{width:350px;flex:none;border-left:1px solid var(--line);background:#fff;overflow:auto;padding:16px 14px;}
+  .fc-h{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 8px;font-weight:700;}
+  .fc-h .kv{text-transform:none;letter-spacing:0;font-weight:400;margin-left:6px;}
+  .fc-sec{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
+  .fc-lbl{font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px;margin-top:4px;}
+  .fc-sec input[type=text],.fc-sec textarea,.fc-sec select{font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-family:inherit;}
+  .fc-title{font-size:18px !important;font-weight:700;}
+  .fc-settings{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;} .fc-settings .fc-wide{grid-column:1/-1;}
+  .fc-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px 8px 32px;margin-bottom:8px;position:relative;}
+  .fc-card.dragover{border-color:var(--teal);box-shadow:0 0 0 2px rgba(47,125,120,.25);} .fc-card.dragging{opacity:.5;}
+  .fc-grip{position:absolute;left:9px;top:12px;cursor:grab;color:#9aa6bd;font-size:15px;letter-spacing:-3px;user-select:none;}
+  .fc-grid{display:grid;grid-template-columns:1.4fr 1fr 150px auto;gap:8px 10px;align-items:end;}
+  .fc-grid label{font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:3px;}
+  .fc-grid input[type=text],.fc-grid input[type=number],.fc-grid select,.fc-grid textarea{font-size:13px;padding:5px 7px;border:1px solid var(--line);border-radius:5px;font-family:inherit;min-width:0;}
+  .fc-grid .fc-chk{flex-direction:row;align-items:center;gap:5px;font-size:12px;color:var(--text);padding-bottom:6px;}
+  .fc-grid .fc-span{grid-column:1/-1;} .fc-grid .fc-span2{grid-column:1/3;}
+  .fc-card-foot{display:flex;justify-content:flex-end;gap:4px;margin-top:8px;}
+  .fc-empty{max-width:560px;margin:40px auto;text-align:center;color:var(--muted);} .fc-empty h3{color:var(--navy);}
+  .fc-phone{width:292px;margin:0 auto;border:10px solid #22293a;border-radius:30px;height:540px;overflow:hidden;background:#fff;display:flex;flex-direction:column;box-shadow:0 6px 20px rgba(0,0,0,.15);}
+  .fc-phone .cl-top{background:#2f7d78;color:#fff;padding:10px 12px;font-weight:600;font-size:14px;flex:none;}
+  .fc-prev-sheet{flex:1;overflow:auto;} .fc-prev-sheet .sh{padding:12px 14px 18px;font-size:14px;}
+  .fc-prev-sheet input,.fc-prev-sheet textarea{font-size:14px !important;}
+  .fc-share{margin-top:14px;border-top:1px solid var(--line);padding-top:4px;}
+  .fc-databar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px;} .fc-databar .kv{margin:0 auto 0 0;}
+  .fc-dtable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:13px;margin-bottom:10px;}
+  .fc-dtable th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:7px 8px;border-bottom:1px solid var(--line);}
+  .fc-dtable td{padding:6px 8px;border-bottom:1px solid #eef0f4;} .fc-dtable tr[data-id]{cursor:pointer;} .fc-dtable tr.on{background:#e8f3f1;}
+  .fc-dname{border:1px solid transparent;background:transparent;font:inherit;padding:3px 5px;border-radius:4px;width:100%;min-width:160px;} .fc-dname:hover,.fc-dname:focus{border-color:var(--line);background:#fff;}
+  .fc-ptwrap{overflow:auto;max-height:50vh;border:1px solid var(--line);border-radius:8px;background:#fff;}
+  .fc-pts{border-collapse:collapse;font-size:12px;white-space:nowrap;} .fc-pts th{position:sticky;top:0;background:#f4f6f9;text-align:left;padding:5px 8px;font-weight:600;}
+  .fc-pts td{padding:4px 8px;border-top:1px solid #eef0f4;vertical-align:middle;max-width:260px;overflow:hidden;text-overflow:ellipsis;} .fc-pts img{height:44px;border-radius:3px;display:block;}
+  .gr-sub{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 6px;} .gr-sub+div{margin-bottom:14px;}
   .gr-table{font-size:12px;border-collapse:collapse;width:100%;margin:4px 0;} .gr-table td,.gr-table th{padding:2px 4px;border-bottom:1px solid var(--line);text-align:left;}
   .swipe-bar{position:absolute;top:0;bottom:0;width:0;z-index:950;pointer-events:none;border-left:3px solid #1b2a4a;box-shadow:0 0 0 1px rgba(255,255,255,.8);}
   .swipe-handle{position:absolute;top:50%;left:-19px;width:34px;height:34px;margin-top:-17px;border-radius:50%;background:#1b2a4a;color:#fff;font-size:17px;line-height:34px;text-align:center;cursor:ew-resize;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.35);touch-action:none;}
@@ -649,6 +689,7 @@
   <div class="mod-tabs">
     <button id="modMakerBtn" class="active">Map Maker</button>
     <button id="modLayoutBtn">Map Composer</button>
+    <button id="modCollectBtn">Field Collector</button>
   </div>
   <div class="grp" id="grp-page">
     <label>Page</label>
@@ -727,19 +768,42 @@
     <div id="home-projects" class="home-grid"></div>
     <div id="home-sync"></div>
     <div id="home-library" class="hidden"></div>
-    <p class="kv home-note"><b>Where your work lives:</b> projects and datasets are saved in this browser, on this computer — nothing is uploaded to a server. To carry your work between machines, use <b>☁ Sync</b> in the top bar: point Map-O-Matic at a folder you already sync (OneDrive, Google&nbsp;Drive or Dropbox) and every project is written there as a file whenever it saves, so you can pick up on another computer. Sync needs Chrome or Edge. Either way, on a shared or lab computer it's wise to also download a project file (card menu → Export) or a full project archive as a portable backup, and take it with you.</p>
+    <p class="kv home-note"><b>Where your work lives:</b> projects and datasets are saved in this browser, on this computer — nothing is uploaded to a server. To carry your work between machines, use <b>☁ Sync</b> in the top bar: point Map-O-Matic at a folder you already sync (OneDrive, Google&nbsp;Drive or Dropbox) and every project is written there as a file whenever it saves, so you can pick up on another computer. Sync needs Chrome or Edge. Either way, on a shared computer it's wise to also download a project file (card menu → Export) or a full project archive as a portable backup, and take it with you.</p>
   </div>
   <!-- credits ribbon (Vis-O-Matic style footer) -->
   <footer class="home-foot">
     <div class="home-foot-in">
       <strong>Map-O-Matic</strong><span class="sep">·</span>
-      <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>, Geography, UBC Okanagan<span class="sep">·</span>
+      <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a><span class="sep">·</span>
       <a href="https://github.com/jcinnamon" target="_blank" rel="noopener">GitHub</a><br>
       Built for research and teaching · a single HTML file, MIT licensed. Part of the
       <a href="https://www.jonathancinnamon.com/vis-o-matic/" target="_blank" rel="noopener">Vis-O-Matic</a> family of visual-research tools.<br>
       <span class="home-foot-libs">Built with open tools: Leaflet · MapLibre GL · OpenFreeMap &amp; OpenMapTiles · Turf.js · Fabric.js · D3 &amp; d3-geo-projection · chroma.js · simple-statistics · PapaParse · JSZip · shpjs · jsPDF · html2canvas · Natural Earth &amp; OpenStreetMap data · title face Orbitron.</span>
     </div>
   </footer>
+</div>
+
+<!-- ================= FIELD COLLECTOR ================= -->
+<div id="module-collect" class="module hidden">
+  <aside class="fc-left">
+    <h3 class="fc-h" style="margin-top:0;">Forms</h3>
+    <div id="fcFormList"></div>
+    <button class="btn small" id="fcNewForm">+ New form</button>
+    <div class="fc-left-btns"><button class="btn small light" id="fcDupForm">Duplicate</button><button class="btn small light" id="fcDelForm">Delete form</button></div>
+  </aside>
+  <main class="fc-main">
+    <div class="fc-tabs"><button class="fc-tab active" data-t="design">Design form</button><button class="fc-tab" data-t="data">Collected data<span id="fcDataCount"></span></button></div>
+    <div class="fc-body" id="fcBody"></div>
+  </main>
+  <aside class="fc-right">
+    <div id="fcPreview"></div>
+    <div class="fc-share">
+      <h3 class="fc-h">Open on phones</h3>
+      <p class="kv">Make a link and QR code for this form. Phones open it in the browser; nothing to install.</p>
+      <button class="btn" id="fcMakeLink" style="width:100%;justify-content:center;">Make link &amp; QR code</button>
+      <div id="fcLinkOut"></div>
+    </div>
+  </aside>
 </div>
 
 <!-- ================= MAP MAKER ================= -->
@@ -758,7 +822,6 @@
           <button id="mkAddUpload">⬆ Upload files…</button>
           <button id="mkAddLibrary">▤ From my library…</button>
           <button id="mkAddOnline">🌐 Online sources…</button>
-          <button id="mkAddPhone">📱 From phone (QR)…</button>
         </div>
       </div>
     </div>
@@ -941,9 +1004,12 @@
       <p style="margin-top:6px;"><b>B. Bring your own map image.</b> Made a map elsewhere (any GIS or graphics software)? Export it as an image and upload it in the Layout module via <b>Map Frame</b>, then calibrate the scale bar by drawing a reference line of known distance.</p>
     </div>
     <div class="help-step"><b>Map Maker basics.</b>
-      <p>The <b>+ Add data</b> menu takes uploads (GeoJSON, CSV or Excel with coordinate columns, zipped shapefile), your data library, and online sources: Natural Earth base layers, OpenStreetMap features for your map area, open-data portal search, BC municipal open data and public ArcGIS layers (BC &amp; municipal tab), or any GeoJSON/CSV/feature-service URL. Select a layer to set its symbology (single, categories, graduated colour with equal interval / quantile / natural breaks / manual classification, graduated symbol size), filters, and labels. The attribute table includes the filter builder and Field Calculator (e.g. <i>rate = count / population * 1000</i>). Spatial tools: join a table (CSV, Excel or another layer) by a shared field, buffer, select by location, points-in-polygons statistics, clip, erase, intersect, union, dissolve, merge, centroids, convex hull, bounding box, simplify, nearest-neighbour join, and distance matrix. The ⬇ button on each layer exports valid GeoJSON or CSV, including calculated fields. The ⟨ ⟩ buttons collapse the side panels.</p>
-      <p><b>Process log.</b> The 📝 Process Log button lists every data step you took (data added, filters, tools, joins, calculations, edits, exports) and the current design settings, ready to copy into a lab or atlas report.</p>
-      <p><b>Coordinates in metres?</b> If a CSV's X/Y columns hold UTM, BC Albers or other projected values (as the Vancouver Police crime data does), Map-O-Matic asks which coordinate system they use, shows where the data would land, and converts them. Rows at 0,0 or with blank coordinates are skipped and counted in the report.</p>
+      <p>The <b>+ Add data</b> menu takes uploads (GeoJSON, CSV or Excel with coordinate columns, zipped shapefile), your data library, and online sources: Natural Earth base layers, OpenStreetMap features for your map area, open-data portal search (Opendatasoft and ArcGIS Hub sites, ArcGIS Online), or any GeoJSON/CSV/feature-service URL. Select a layer to set its symbology (single, categories, graduated colour with equal interval / quantile / natural breaks / manual classification, graduated symbol size), filters, and labels. The attribute table includes the filter builder and Field Calculator (e.g. <i>rate = count / population * 1000</i>). Spatial tools: join a table (CSV, Excel or another layer) by a shared field, buffer, select by location, points-in-polygons statistics, clip, erase, intersect, union, dissolve, merge, centroids, convex hull, bounding box, simplify, nearest-neighbour join, and distance matrix. The ⬇ button on each layer exports valid GeoJSON or CSV, including calculated fields. The ⟨ ⟩ buttons collapse the side panels.</p>
+      <p><b>Process log.</b> The 📝 Process Log button lists every data step you took (data added, filters, tools, joins, calculations, edits, exports) and the current design settings, ready to copy into a report.</p>
+      <p><b>Coordinates in metres?</b> If a CSV's X/Y columns hold UTM or other projected values in metres, Map-O-Matic asks which coordinate system they use, shows where the data would land, and converts them. Rows at 0,0 or with blank coordinates are skipped and counted in the report.</p>
+    </div>
+    <div class="help-step"><b>Field Collector.</b>
+      <p>The <b>Field Collector</b> module designs forms for collecting points with phones: text, numbers, dates, choices, notes and photos. <b>Make link &amp; QR code</b> opens the form on any phone browser, where each point records its GPS location (or a spot tapped on the map) with the answers. Points come back through the laptop's webcam (<b>Collected data → Receive from phone</b>) or as a GeoJSON/CSV file, and <b>Send to Map Maker</b> turns them into a layer.</p>
     </div>
     <div class="help-step"><b>Projections.</b>
       <p>The <b>Projection</b> selector switches the map from the Web Mercator editing view into any of 13 projections — world (Equal Earth, Robinson, Winkel Tripel, Mollweide, Mercator, Orthographic), regional conic (Albers, Lambert Conformal, with adjustable centre and standard parallels), azimuthal (Equidistant, Stereographic), and historical (Gall–Peters, Goode, Bonne). Projected view draws your vector layers with an optional graticule and world-land backdrop; raster basemaps can't be reprojected in the browser, so they hide. Send to Composer captures the projected map (scale bars don't apply — scale varies across a projection).</p>
@@ -961,7 +1027,7 @@
       <p><b>Export</b> covers everything: the layout as print-ready PDF/PNG; the Map Maker view as a georeferenced PNG with world file (usable in other GIS software); all data layers as a zip of GeoJSON files; or a full project archive (layout + layers + project file) — the complete package in one download.</p>
     </div>
     <div class="help-step"><b>About this tool.</b>
-      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a> (Geography, UBC Okanagan). It's free to use and runs entirely in your browser — your data stays on your computer. Basemap tiles and online data sources are the only network requests your data workflow makes.</p>
+      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It's free to use and runs entirely in your browser — your data stays on your computer. Basemap tiles and online data sources are the only network requests your data workflow makes.</p>
     </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
   </div>
@@ -1292,8 +1358,7 @@
     <div class="home-tabs" style="margin:0 0 14px;">
       <button class="online-tab active" data-t="ne">World base data</button>
       <button class="online-tab" data-t="osm">OpenStreetMap</button>
-      <button class="online-tab" data-t="portal">Open data portals</button>
-      <button class="online-tab" data-t="bc">BC &amp; municipal</button>
+      <button class="online-tab" data-t="bc">Open data portals</button>
       <button class="online-tab" data-t="url">From URL</button>
     </div>
 
@@ -1345,44 +1410,30 @@
       <p class="kv">Results are capped at 8,000 features per query. Complex multipolygon features may be omitted.</p>
     </div>
 
-    <div id="online-portal" class="hidden">
-      <div class="row2">
-        <div class="field"><label>Portal</label>
-          <select id="portalDomain">
-            <option value="data.opendatasoft.com">Opendatasoft network (many cities & agencies)</option>
-            <option value="opendata.vancouver.ca">City of Vancouver</option>
-            <option value="__custom">Custom Opendatasoft portal…</option>
-          </select></div>
-        <div class="field hidden" id="portalCustomWrap"><label>Portal domain</label><input type="text" id="portalCustom" placeholder="e.g. data.somecity.gov"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Search datasets</label><input type="text" id="portalQ" placeholder="e.g. street trees, crime, zoning, transit"></div>
-        <div class="field" style="max-width:120px;align-self:flex-end;"><button class="btn" id="portalSearchBtn" style="width:100%;justify-content:center;">Search</button></div>
-      </div>
-      <div id="portalResults" style="max-height:36vh;overflow-y:auto;"></div>
-    </div>
-
     <div id="online-bc" class="hidden">
-      <p class="kv">Search BC municipal open-data sites, public ArcGIS layers, or the BC Data Catalogue. Municipal and ArcGIS layers load straight into the map; BC Data Catalogue datasets come as download links (the provincial map service doesn't allow direct loading from web pages).</p>
+      <p class="kv">Search open-data portals for map layers. Opendatasoft portals, ArcGIS Hub sites (the open-data sites of many cities, regions and agencies) and public ArcGIS Online layers load straight into the map. Catalogues whose map services don't allow loading from a web page show download links instead.</p>
       <div class="row2">
         <div class="field"><label for="bcSource">Source</label>
           <select id="bcSource">
-            <optgroup label="Load directly">
-              <option value="hub:opendata.kelowna.ca">City of Kelowna open data</option>
-              <option value="hub:opendata.victoria.ca">City of Victoria open data</option>
-              <option value="hub:opendata-saanich.hub.arcgis.com">District of Saanich open data</option>
-              <option value="hub:__custom">Another ArcGIS Hub open-data site…</option>
+            <optgroup label="Search any portal">
+              <option value="ods:data.opendatasoft.com">Opendatasoft network (many cities and agencies)</option>
+              <option value="ods:__custom">An Opendatasoft portal…</option>
+              <option value="hub:__custom">An ArcGIS Hub open-data site…</option>
               <option value="agol">ArcGIS Online public layers</option>
             </optgroup>
-            <optgroup label="Download links">
-              <option value="bccat">BC Data Catalogue</option>
+            <optgroup label="Presets">
+              <option value="ods:opendata.vancouver.ca">City of Vancouver (Opendatasoft)</option>
+              <option value="hub:opendata.kelowna.ca">City of Kelowna (ArcGIS Hub)</option>
+              <option value="hub:opendata.victoria.ca">City of Victoria (ArcGIS Hub)</option>
+              <option value="hub:opendata-saanich.hub.arcgis.com">District of Saanich (ArcGIS Hub)</option>
+              <option value="bccat">BC Data Catalogue (download links)</option>
             </optgroup>
           </select></div>
-        <div class="field hidden" id="bcHubWrap"><label for="bcHubDomain">Hub site address</label><input type="text" id="bcHubDomain" placeholder="e.g. opendata.somecity.ca"></div>
+        <div class="field hidden" id="bcHubWrap"><label for="bcHubDomain">Portal address</label><input type="text" id="bcHubDomain" placeholder="e.g. opendata.somecity.org"></div>
       </div>
-      <div class="checkline" id="bcAgolBCWrap" style="display:none;"><input type="checkbox" id="bcAgolBC" checked><label for="bcAgolBC">Only layers in British Columbia</label></div>
+      <div class="checkline" id="bcAgolBCWrap" style="display:none;"><input type="checkbox" id="bcAgolBC" checked><label for="bcAgolBC">Only layers in the current map view</label></div>
       <div class="row2">
-        <div class="field"><label for="bcQ">Search</label><input type="text" id="bcQ" placeholder="e.g. trees, parks, zoning, bike lanes"></div>
+        <div class="field"><label for="bcQ">Search</label><input type="text" id="bcQ" placeholder="e.g. trees, parks, zoning, transit"></div>
         <div class="field" style="max-width:120px;align-self:flex-end;"><button class="btn" id="bcSearchBtn" style="width:100%;justify-content:center;">Search</button></div>
       </div>
       <div id="bcResults" style="max-height:36vh;overflow-y:auto;"></div>
@@ -1447,9 +1498,9 @@
     </div>
     <div class="field"><label for="crdCRS">Coordinate system of these values</label><select id="crdCRS"></select></div>
     <div class="field hidden" id="crdCustomRow"><label for="crdCustom">EPSG code or proj4 string</label>
-      <input type="text" id="crdCustom" placeholder="e.g. EPSG:26910 or +proj=utm +zone=10 +datum=NAD83"></div>
+      <input type="text" id="crdCustom" placeholder="e.g. EPSG:32633 or +proj=utm +zone=33 +datum=WGS84"></div>
     <div class="kv" id="crdPreview" style="background:#f4f6f9;border-radius:6px;padding:8px 10px;"></div>
-    <p class="kv" style="margin-top:8px;">In British Columbia, Vancouver and Victoria fall in UTM zone 10; Kelowna, Kamloops and the Kootenays in zone 11. Check that the preview names the right area before loading.</p>
+    <p class="kv" style="margin-top:8px;">UTM zones are 6° of longitude wide, numbered eastward from 180°W: zone = (longitude + 180) ÷ 6, rounded up. North or South marks the hemisphere. Check that the preview names the right area before loading.</p>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-coords')">Cancel</button>
       <button class="btn secondary hidden" id="crdJoinBtn">Join it to a layer instead…</button>
@@ -1521,10 +1572,10 @@
 })();
 </script>
 <script>
-window.CARTO_PUBLISH = {
+window.MAPOMATIC_PUBLISH = {
   clientId: "",                 // GitHub OAuth App client ID
   gatekeeper: "",               // deployed token-exchange worker URL, e.g. https://xxx.workers.dev
-  repo: "carto-maps"            // repo the maps are published into (created if missing)
+  repo: "map-o-matic-maps"      // repo the maps are published into (created if missing)
 };
 </script>
 <script>
@@ -2934,7 +2985,6 @@ document.getElementById('mkAddMenuBtn').onclick=(e)=>{
 document.addEventListener('click', ()=>addMenuList.classList.add('hidden'));
 document.getElementById('mkAddUpload').onclick=()=>{ addMenuList.classList.add('hidden'); document.getElementById('fileMakerData').click(); };
 document.getElementById('mkAddLibrary').onclick=()=>{ addMenuList.classList.add('hidden'); openLibPick(); };
-document.getElementById('mkAddPhone').onclick=()=>{ addMenuList.classList.add('hidden'); openQrReceiver(); };
 
 /* ---------- data ingestion ---------- */
 document.getElementById('fileMakerData').addEventListener('change', function(e){
@@ -2973,15 +3023,39 @@ function loadLib(name){
    is used as-is; values in metres (UTM, BC Albers, StatCan Lambert, Web Mercator)
    are converted with proj4 after the student confirms the system. */
 const NAD83='+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
+const WGS84U='+datum=WGS84 +units=m +no_defs', GRS80T='+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
+const pad2=z=>String(z).padStart(2,'0');
+/* every UTM zone (WGS84, north and south), plus the regional datums most data
+   arrive in, then national grids. The group decides the heading in the list. */
 const CRS_PRESETS=[
-  {id:'geo', label:'Longitude / latitude (degrees, WGS84)', def:null},
-  ...[7,8,9,10,11,12].map(z=>({id:'EPSG:269'+String(z).padStart(2,'0'), label:'UTM zone '+z+'N, NAD83 (EPSG:269'+String(z).padStart(2,'0')+')', def:'+proj=utm +zone='+z+' '+NAD83, utm:z})),
-  {id:'EPSG:3005', label:'BC Albers, NAD83 (EPSG:3005)', def:'+proj=aea +lat_0=45 +lon_0=-126 +lat_1=50 +lat_2=58.5 +x_0=1000000 +y_0=0 '+NAD83},
-  {id:'EPSG:3347', label:'Statistics Canada Lambert (EPSG:3347)', def:'+proj=lcc +lat_0=63.390675 +lon_0=-91.8666666666667 +lat_1=49 +lat_2=77 +x_0=6200000 +y_0=3000000 '+NAD83},
-  {id:'EPSG:3857', label:'Web Mercator, metres (EPSG:3857)', def:'+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +no_defs'},
-  {id:'custom', label:'Other (type an EPSG code or proj4 string)…', def:null}
+  {id:'geo', label:'Longitude / latitude (degrees, WGS84)', def:null, group:'Degrees'},
+  ...Array.from({length:60},(_,i)=>i+1).map(z=>({id:'EPSG:326'+pad2(z), label:'UTM zone '+z+'N, WGS84 (EPSG:326'+pad2(z)+')', def:'+proj=utm +zone='+z+' '+WGS84U, utm:z, hemi:'N', datum:'WGS84', group:'UTM, WGS84, northern hemisphere'})),
+  ...Array.from({length:60},(_,i)=>i+1).map(z=>({id:'EPSG:327'+pad2(z), label:'UTM zone '+z+'S, WGS84 (EPSG:327'+pad2(z)+')', def:'+proj=utm +zone='+z+' +south '+WGS84U, utm:z, hemi:'S', datum:'WGS84', group:'UTM, WGS84, southern hemisphere'})),
+  ...Array.from({length:23},(_,i)=>i+1).map(z=>({id:'EPSG:269'+pad2(z), label:'UTM zone '+z+'N, NAD83 (EPSG:269'+pad2(z)+')', def:'+proj=utm +zone='+z+' '+NAD83, utm:z, hemi:'N', datum:'NAD83', group:'UTM, NAD83 (North America)'})),
+  ...Array.from({length:11},(_,i)=>i+28).map(z=>({id:'EPSG:258'+pad2(z), label:'UTM zone '+z+'N, ETRS89 (EPSG:258'+pad2(z)+')', def:'+proj=utm +zone='+z+' '+GRS80T, utm:z, hemi:'N', datum:'ETRS89', group:'UTM, ETRS89 (Europe)'})),
+  ...Array.from({length:14},(_,i)=>i+46).map(z=>({id:'EPSG:78'+pad2(z), label:'MGA zone '+z+', GDA2020 (EPSG:78'+pad2(z)+')', def:'+proj=utm +zone='+z+' +south '+GRS80T, utm:z, hemi:'S', datum:'GDA2020', group:'UTM, GDA2020 (Australia)'})),
+  {id:'EPSG:3978', label:'Canada Atlas Lambert, NAD83 (EPSG:3978)', def:'+proj=lcc +lat_0=49 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 '+NAD83, area:[-142,40,-50,85], group:'National and regional systems'},
+  {id:'EPSG:3347', label:'Statistics Canada Lambert (EPSG:3347)', def:'+proj=lcc +lat_0=63.390675 +lon_0=-91.8666666666667 +lat_1=49 +lat_2=77 +x_0=6200000 +y_0=3000000 '+NAD83, area:[-142,40,-50,85], group:'National and regional systems'},
+  {id:'EPSG:3005', label:'BC Albers, NAD83 (EPSG:3005)', def:'+proj=aea +lat_0=45 +lon_0=-126 +lat_1=50 +lat_2=58.5 +x_0=1000000 +y_0=0 '+NAD83, area:[-140,48,-113,61], group:'National and regional systems'},
+  {id:'EPSG:5070', label:'USA Contiguous Albers, NAD83 (EPSG:5070)', def:'+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 '+NAD83, area:[-125,24,-66,50], group:'National and regional systems'},
+  {id:'EPSG:27700', label:'British National Grid (EPSG:27700)', def:'+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', area:[-9,49,2,61], group:'National and regional systems'},
+  {id:'EPSG:2157', label:'Irish Transverse Mercator (EPSG:2157)', def:'+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=0.99982 +x_0=600000 +y_0=750000 '+GRS80T, area:[-11,51,-5,56], group:'National and regional systems'},
+  {id:'EPSG:2154', label:'France Lambert-93 (EPSG:2154)', def:'+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 '+GRS80T, area:[-5,41,10,52], group:'National and regional systems'},
+  {id:'EPSG:3035', label:'Europe equal-area, ETRS89-LAEA (EPSG:3035)', def:'+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 '+GRS80T, area:[-32,27,45,82], group:'National and regional systems'},
+  {id:'EPSG:3577', label:'Australian Albers, GDA94 (EPSG:3577)', def:'+proj=aea +lat_0=0 +lon_0=132 +lat_1=-18 +lat_2=-36 +x_0=0 +y_0=0 '+GRS80T, area:[108,-45,160,-9], group:'National and regional systems'},
+  {id:'EPSG:2193', label:'New Zealand Transverse Mercator (EPSG:2193)', def:'+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 +x_0=1600000 +y_0=10000000 '+GRS80T, area:[165,-48,179,-34], group:'National and regional systems'},
+  {id:'EPSG:3857', label:'Web Mercator, metres (EPSG:3857)', def:'+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +no_defs', group:'National and regional systems'},
+  {id:'custom', label:'Other (type an EPSG code or proj4 string)…', def:null, group:'Other'}
 ];
-/* EPSG codes students commonly meet, for GeoJSON files that declare a crs */
+function crsOptionsHtml(){
+  let html='', g=null;
+  CRS_PRESETS.forEach(c=>{
+    if(c.group!==g){ if(g!==null) html+='</optgroup>'; g=c.group; html+='<optgroup label="'+esc(g)+'">'; }
+    html+='<option value="'+c.id+'">'+esc(c.label)+'</option>';
+  });
+  return html+'</optgroup>';
+}
+/* other EPSG codes often met, for GeoJSON files that declare a crs */
 const EPSG_EXTRA={
   32607:'+proj=utm +zone=7 +datum=WGS84 +units=m +no_defs', 32608:'+proj=utm +zone=8 +datum=WGS84 +units=m +no_defs',
   32609:'+proj=utm +zone=9 +datum=WGS84 +units=m +no_defs', 32610:'+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs',
@@ -3003,7 +3077,7 @@ const REF_PLACES=[['Vancouver',49.28,-123.12],['Victoria',48.43,-123.37],['Nanai
   ['Prince George',53.92,-122.75],['Fort St. John',56.25,-120.85],['Prince Rupert',54.32,-130.32],['Whitehorse',60.72,-135.06],
   ['Calgary',51.05,-114.07],['Edmonton',53.55,-113.49],['Regina',50.45,-104.61],['Winnipeg',49.90,-97.14],['Toronto',43.65,-79.38],
   ['Ottawa',45.42,-75.70],['Montréal',45.50,-73.57],['Halifax',44.65,-63.57],['Seattle',47.61,-122.33],['Portland',45.52,-122.68],
-  ['London',51.51,-0.13],['New York',40.71,-74.01],['Sydney',-33.87,151.21]];
+  ['London',51.51,-0.13],['New York',40.71,-74.01],['Sydney',-33.87,151.21],['Los Angeles',34.05,-118.24],['Chicago',41.88,-87.63],['Houston',29.76,-95.37],['Miami',25.76,-80.19],['Mexico City',19.43,-99.13],['Bogotá',4.71,-74.07],['Lima',-12.05,-77.04],['São Paulo',-23.55,-46.63],['Buenos Aires',-34.60,-58.38],['Santiago',-33.45,-70.67],['Dublin',53.35,-6.26],['Edinburgh',55.95,-3.19],['Paris',48.86,2.35],['Madrid',40.42,-3.70],['Lisbon',38.72,-9.14],['Berlin',52.52,13.40],['Rome',41.90,12.50],['Amsterdam',52.37,4.90],['Stockholm',59.33,18.07],['Warsaw',52.23,21.01],['Athens',37.98,23.73],['Istanbul',41.01,28.98],['Moscow',55.76,37.62],['Cairo',30.04,31.24],['Lagos',6.52,3.38],['Nairobi',-1.29,36.82],['Johannesburg',-26.20,28.05],['Cape Town',-33.92,18.42],['Dubai',25.20,55.27],['Mumbai',19.08,72.88],['Delhi',28.61,77.21],['Dhaka',23.81,90.41],['Bangkok',13.76,100.50],['Singapore',1.35,103.82],['Jakarta',-6.21,106.85],['Manila',14.60,120.98],['Hong Kong',22.32,114.17],['Beijing',39.90,116.41],['Shanghai',31.23,121.47],['Seoul',37.57,126.98],['Tokyo',35.68,139.69],['Perth',-31.95,115.86],['Melbourne',-37.81,144.96],['Brisbane',-27.47,153.03],['Auckland',-36.85,174.76],['Wellington',-41.29,174.78],['Honolulu',21.31,-157.86],['Anchorage',61.22,-149.90],['Reykjavík',64.15,-21.94]];
 function nearestPlace(lat,lon){
   let best=null, bd=Infinity;
   REF_PLACES.forEach(p=>{ const d=turf.distance([lon,lat],[p[2],p[1]]); if(d<bd){bd=d;best=p[0];} });
@@ -3041,8 +3115,8 @@ function classifyCoords(pairs){
   if(big>=0.9) return {kind:'projected', ok};
   return {kind:'unknown', ok};
 }
-/* best-guess projected system: for UTM, pick the zone that lands the data nearest
-   to the layers already on the map (or the map view if there are none) */
+/* best-guess projected system: every candidate is tried and the one that lands
+   the data nearest the layers already on the map (or the map view) wins. */
 function guessCRS(ok){
   const xs=ok.map(p=>p[0]).sort((a,b)=>a-b), ys=ok.map(p=>p[1]).sort((a,b)=>a-b);
   const mx=xs[Math.floor(xs.length/2)], my=ys[Math.floor(ys.length/2)];
@@ -3050,19 +3124,35 @@ function guessCRS(ok){
   try{
     const other=mkLayers.filter(l=>l.geojson&&l.geojson.features.length);
     if(other.length){ const b=turf.bbox({type:'FeatureCollection',features:other.flatMap(l=>l.geojson.features.slice(0,500))}); ref=[(b[0]+b[2])/2,(b[1]+b[3])/2]; }
-    else if(mkMap){ const c=mkMap.getCenter();
-      /* the untouched start-up view says nothing about the data, so fall back to zone 10 (most of BC's population) */
-      if(turf.distance([c.lng,c.lat],[-119.496,49.888])>2) ref=[c.lng,c.lat]; }
+    else if(mkMap){ const c=mkMap.getCenter(); ref=[c.lng,c.lat]; }
   }catch(_){}
-  let cands=[];
-  if(mx>100000&&mx<900000&&my>3000000&&my<9400000) cands=CRS_PRESETS.filter(c=>c.utm);
-  else if(mx>200000&&mx<1900000&&my>300000&&my<1800000) cands=CRS_PRESETS.filter(c=>c.id==='EPSG:3005');
-  else if(mx>3000000&&mx<9500000&&my>600000&&my<5000000) cands=CRS_PRESETS.filter(c=>c.id==='EPSG:3347');
-  else if(Math.abs(mx)<20037509&&Math.abs(my)<20037509) cands=CRS_PRESETS.filter(c=>c.id==='EPSG:3857');
-  if(!cands.length) return null;
-  if(cands.length===1||!ref||!window.proj4) return cands.find(c=>c.utm===10)||cands[0];
-  let best=cands[0], bd=Infinity;
-  cands.forEach(c=>{ try{ const ll=proj4(c.def,'EPSG:4326',[mx,my]); const d=turf.distance(ll,ref); if(d<bd){bd=d;best=c;} }catch(_){} });
+  if(!window.proj4) return null;
+  const cands=[];
+  if(mx>100000&&mx<900000&&my>0&&my<10000000 && ref){
+    /* UTM: the zones either side of the reference, in its hemisphere and the datum used there */
+    const z=Math.min(60, Math.max(1, Math.ceil((ref[0]+180)/6))), hemi=ref[1]<0?'S':'N';
+    const lon=ref[0], lat=ref[1];
+    const datum = (hemi==='N'&&lon>-170&&lon<-50) ? 'NAD83' : (hemi==='N'&&lon>-32&&lon<45&&lat>34) ? 'ETRS89' : (hemi==='S'&&lon>100&&lon<165&&lat>-50) ? 'GDA2020' : 'WGS84';
+    [z-1,z,z+1].forEach(zz=>{
+      const zn=((zz-1+60)%60)+1;
+      const c=CRS_PRESETS.find(p=>p.utm===zn&&p.hemi===hemi&&p.datum===datum) || CRS_PRESETS.find(p=>p.utm===zn&&p.hemi===hemi&&p.datum==='WGS84');
+      if(c) cands.push(c);
+    });
+  }
+  CRS_PRESETS.filter(c=>c.area).forEach(c=>cands.push(c));
+  let best=null, bd=Infinity;
+  cands.forEach(c=>{
+    try{
+      const ll=proj4(c.def,'EPSG:4326',[mx,my]);
+      if(!isFinite(ll[0])||!isFinite(ll[1])||Math.abs(ll[1])>90) return;
+      if(c.area && !(ll[0]>=c.area[0]&&ll[0]<=c.area[2]&&ll[1]>=c.area[1]&&ll[1]<=c.area[3])) return;
+      const d=ref? turf.distance(ll,ref) : 0;
+      if(d<bd){ bd=d; best=c; }
+    }catch(_){}
+  });
+  if(best && (!ref || bd<3000)) return best;
+  /* nothing lands near: Web Mercator, if the numbers fit it */
+  if(Math.abs(mx)<20037509&&Math.abs(my)<20037509) return CRS_PRESETS.find(c=>c.id==='EPSG:3857');
   return best;
 }
 function mapCoords(coords, fn){
@@ -3180,7 +3270,7 @@ function openCoordsDialog(o){
     document.getElementById('crdY').innerHTML=opts(o.y);
   }
   const sel=document.getElementById('crdCRS');
-  sel.innerHTML=CRS_PRESETS.map(c=>'<option value="'+c.id+'">'+esc(c.label)+'</option>').join('');
+  sel.innerHTML=crsOptionsHtml();
   sel.value='geo';
   openModal('modal-coords');
   document.getElementById('crdPreview').textContent='Loading the conversion library…';
@@ -3212,7 +3302,7 @@ function crdSync(){
   const go=document.getElementById('crdGoBtn');
   if(!pairs.length){ pv.textContent='Choose the columns holding the coordinates.'; go.disabled=true; return; }
   const def=crdCurrentDef();
-  if(!def){ pv.textContent='Type an EPSG code this tool knows (UTM, BC Albers, StatCan Lambert, Web Mercator) or a full proj4 string starting with +proj=.'; go.disabled=true; return; }
+  if(!def){ pv.textContent='Type an EPSG code this tool knows (any UTM zone, the national systems in the list, Web Mercator) or a full proj4 string starting with +proj=.'; go.disabled=true; return; }
   let ll=pairs.slice(0,500);
   try{ if(def!=='geo'){ const tr=proj4(def,'EPSG:4326'); ll=ll.map(p=>tr.forward([p[0],p[1]])); } }
   catch(e){ pv.textContent='That system could not be used: '+e.message; go.disabled=true; return; }
@@ -5610,7 +5700,7 @@ function renderStyleTab(){
         <div id="stClassList"></div>
         <div id="stBreaksInfo" class="kv"></div>
         <div id="stHisto" class="histo"></div>
-        <p class="kv">Area and colour carry different things here. Using the same field for both double-encodes one variable, which is worth pointing out to students rather than avoiding.</p>`;
+        <p class="kv">Area and colour carry different things here. Using the same field for both double-encodes one variable, which is worth noticing rather than avoiding.</p>`;
     } else if(st.cartoColorMode==='cat'){
       html+=`<div class="field"><label>Category field</label>
         <select id="stField"><option value="">— choose —</option>${fields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
@@ -6945,7 +7035,7 @@ function renderAttrTable(){
           const pend=attrPendingFor(i,c);
           const has=pend!==undefined;
           const v=has? pend : (f.properties||{})[c];
-          if(isPhotoVal(v)) return '<td data-c="'+esc(c)+'" title="Photo (open the feature on the map to see it)">📷</td>';
+          if(isPhotoVal(v)) return '<td data-c="'+esc(c)+'" class="photo-td"><img src="'+v+'" alt="Photo" style="height:36px;border-radius:3px;display:block;"></td>';
           return '<td data-c="'+esc(c)+'"'+(editMode?' contenteditable="true"':'')+(has?' class="pending"':'')+'>'+esc(v)+'</td>';
         }).join('')+'</tr>';
       }).join('');
@@ -7956,49 +8046,58 @@ function endGeoref(){
   document.getElementById('mk-map').classList.remove('georef-mode');
   geoRef=null; renderGeorefPanel();
 }
-/* ================= FIELD DATA COLLECTION (v42, F5) =================
-   The form is designed in Tools and travels to the phone inside a link (#c=…),
-   so nothing is uploaded anywhere. The phone keeps its points in its own browser
-   storage. They come back as a GeoJSON/CSV file, or as a run of QR codes that the
-   laptop's webcam reads (no photos in that route: they are too big for QR codes). */
-const COLLECT_TYPES={text:'Short text', number:'Number', choice:'Choice list', notes:'Long notes', photo:'Photo'};
-const COLLECT_RESERVED=['lat','lng','time','gps_acc_m','placed_by'];
-const COLLECT_DEFAULT_BASE='https://jcinnamon.github.io/carto-studio/';
+/* ================= FIELD COLLECTOR (v43) =================
+   A module of its own. Forms are designed on the laptop and travel to phones
+   inside a link (#c=…), so nothing is uploaded anywhere. Phones keep their points
+   in their own browser storage and hand them back as a run of QR codes read by
+   the laptop's webcam, or as a GeoJSON/CSV file. Received data sits in the
+   module until it is sent to Map Maker as a layer. */
+const COLLECT_TYPES={text:'Short text', number:'Number', choice:'Choice (one)', multi:'Choice (several)', date:'Date', notes:'Long notes', photo:'Photo'};
+const COLLECT_RESERVED=['lat','lng','time','gps_acc_m','placed_by','point_id','source'];
+const COLLECT_DEFAULT_BASE='https://www.jonathancinnamon.com/map-o-matic/';
+const PHOTO_SIZES=[640,800,1200,1600];
 const PHOTO_RE=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 function isPhotoVal(v){ return typeof v==='string' && v.length>30 && v.length<4e6 && v.charCodeAt(0)===100 && PHOTO_RE.test(v); }
-function stripPhotos(p){
-  const o={}; for(const k in (p||{})){ o[k]=isPhotoVal(p[k]) ? '(photo not included)' : p[k]; } return o;
-}
 function makerPopupHtml(p){
-  return Object.keys(p).slice(0,12).map(k=>{
+  return Object.keys(p).slice(0,14).map(k=>{
     const v=p[k];
     if(isPhotoVal(v)) return '<b>'+esc(k)+':</b><br><img class="mk-pop-photo" src="'+v+'" alt="Photo: '+esc(k)+'">';
     return '<b>'+esc(k)+':</b> '+esc(v);
   }).join('<br>');
 }
-let collectForm=null;
+let fcForms=[], fcData=[], fcSel=null, fcTab='design', fcView=null, fcChecked=new Set();
+function fcSlug(s){ return String(s||'').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'_').replace(/^_+|_+$/g,'').slice(0,40); }
 function newCollectForm(){
-  return {id:uid(), title:'Field survey', fields:[
-    {name:'category', type:'choice', options:['Good','Fair','Poor'], req:true},
-    {name:'notes', type:'notes', options:[], req:false},
-    {name:'photo', type:'photo', options:[], req:false}]};
+  return {id:uid(), title:'New survey', intro:'', photoSize:800, placement:'both', fields:[
+    {name:'category', label:'Category', type:'choice', options:['Option A','Option B','Option C'], req:true, help:'', def:''},
+    {name:'notes', label:'Notes', type:'notes', options:[], req:false, help:'', def:''},
+    {name:'photo', label:'Photo', type:'photo', options:[], req:false, help:'', def:''}]};
 }
 /* forms arrive from links anyone can write, so every part is checked */
 function sanitizeCollectForm(f){
   if(!f || typeof f!=='object') return null;
-  const str=(s,n)=>String(s==null?'':s).replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+  const str=(s,n)=>String(s==null?'':s).replace(/[\u0000-\u0009\u000b-\u001f]/g,' ').trim().slice(0,n);
   const seen=new Set();
-  const fields=(Array.isArray(f.fields)?f.fields:[]).slice(0,25).map(x=>{
+  const fields=(Array.isArray(f.fields)?f.fields:[]).slice(0,40).map(x=>{
     if(!x || typeof x!=='object') return null;
-    let name=str(x.name,40); if(!name) return null;
+    let name=str(x.name,40).replace(/\n/g,' ') || fcSlug(x.label);
+    if(!name) return null;
     if(COLLECT_RESERVED.includes(name.toLowerCase())) name+='_';
     while(seen.has(name.toLowerCase())) name+='_';
     seen.add(name.toLowerCase());
     const type=Object.prototype.hasOwnProperty.call(COLLECT_TYPES, x.type) ? x.type : 'text';
-    const options= type==='choice' ? (Array.isArray(x.options)?x.options:[]).map(o=>str(o,60)).filter(Boolean).slice(0,30) : [];
-    return {name, type, options, req:!!x.req};
+    const options=(type==='choice'||type==='multi') ? (Array.isArray(x.options)?x.options:[]).map(o=>str(o,60).replace(/\n/g,' ')).filter(Boolean).slice(0,40) : [];
+    let def=str(x.def,100).replace(/\n/g,' ');
+    if(type==='number' && def!=='' && !isFinite(Number(def))) def='';
+    if(type==='choice' && def && !options.includes(def)) def='';
+    if(type==='multi') def=def.split(';').map(s=>s.trim()).filter(s=>options.includes(s)).join('; ');
+    if(type==='date' && def && !/^\d{4}-\d{2}-\d{2}$/.test(def) && def!=='today') def='';
+    if(type==='photo') def='';
+    return {name, label:str(x.label,80).replace(/\n/g,' ')||name, type, options, req:!!x.req, help:str(x.help,200).replace(/\n/g,' '), def};
   }).filter(Boolean);
-  return {id:(str(f.id,40).replace(/[^A-Za-z0-9_-]/g,''))||uid(), title:str(f.title,80)||'Field survey', fields};
+  return {id:(str(f.id,40).replace(/[^A-Za-z0-9_-]/g,''))||uid(), title:str(f.title,80).replace(/\n/g,' ')||'Field survey',
+    intro:str(f.intro,600), photoSize:PHOTO_SIZES.includes(+f.photoSize)?+f.photoSize:800,
+    placement:['both','gps','tap'].includes(f.placement)?f.placement:'both', fields};
 }
 function collectBase(){
   let b=''; try{ b=localStorage.getItem('mom_collect_base')||''; }catch(_){}
@@ -8015,74 +8114,162 @@ function qrToCanvas(text, px, ecl){
   for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) g.fillRect((c+m)*cell,(r+m)*cell,cell,cell);
   return cv;
 }
-function renderCollectPanel(){
-  const host=document.getElementById('mk-collect-panel'); if(!host) return;
-  const f=collectForm;
+/* the form's questions as HTML: shared by the phone and the laptop preview */
+function clFieldsHtml(form, vals, pre){
+  const today=new Date().toISOString().slice(0,10);
+  return form.fields.map((x,i)=>{
+    const id=pre+i, star=x.req?' <em>*</em>':'';
+    let v=vals ? vals[x.name] : (x.def==='' ? null : x.def);
+    if(!vals && x.type==='date' && x.def==='today') v=today;
+    const help=x.help?'<div class="hp">'+esc(x.help)+'</div>':'';
+    const lab='<label class="f" for="'+id+'">'+esc(x.label)+star+'</label>'+help;
+    if(x.type==='number') return lab+'<input type="number" inputmode="decimal" step="any" id="'+id+'" value="'+(v==null?'':esc(v))+'">';
+    if(x.type==='date') return lab+'<input type="date" id="'+id+'" value="'+(v==null?'':esc(v))+'">';
+    if(x.type==='notes') return lab+'<textarea id="'+id+'" maxlength="2000">'+esc(v==null?'':v)+'</textarea>';
+    if(x.type==='choice'||x.type==='multi'){
+      const multi=x.type==='multi', sel=multi? String(v==null?'':v).split(';').map(s=>s.trim()) : [v];
+      return '<label class="f">'+esc(x.label)+star+'</label>'+help+'<div class="ch" role="'+(multi?'group':'radiogroup')+'" id="'+id+'">'+
+        x.options.map(o=>'<label><input type="'+(multi?'checkbox':'radio')+'" name="'+id+'" value="'+esc(o)+'"'+(sel.includes(o)?' checked':'')+'>'+esc(o)+'</label>').join('')+'</div>';
+    }
+    if(x.type==='photo') return lab+'<div class="ph" data-k="'+esc(x.name)+'"><input type="file" accept="image/*" capture="environment" id="'+id+'">'+
+      (isPhotoVal(v)?'<img src="'+v+'" alt=""><button type="button" class="phdel">Remove photo</button>':'')+'</div>';
+    return lab+'<input type="text" id="'+id+'" maxlength="300" value="'+(v==null?'':esc(v))+'">';
+  }).join('');
+}
+
+/* ---------- the module (laptop) ---------- */
+function fcCur(){ return fcForms.find(f=>f.id===fcSel)||null; }
+function fcDirty(){ markProjectDirty(); }
+function renderCollector(){
+  const host=document.getElementById('module-collect'); if(!host) return;
+  if(!fcCur()) fcSel=fcForms.length?fcForms[0].id:null;
+  renderFcForms();
+  document.querySelectorAll('#module-collect .fc-tab').forEach(t=>t.classList.toggle('active', t.dataset.t===fcTab));
+  const nData=fcData.reduce((n,d)=>n+d.fc.features.length,0);
+  document.getElementById('fcDataCount').textContent=nData?' ('+nData+')':'';
+  if(fcTab==='design') renderFcDesign(); else renderFcData();
+  renderFcPreview();
+}
+function renderFcForms(){
+  const box=document.getElementById('fcFormList');
+  box.innerHTML=fcForms.length ? fcForms.map(f=>{
+    const n=fcData.filter(d=>d.formId===f.id).reduce((a,d)=>a+d.fc.features.length,0);
+    return '<button class="fc-formitem'+(f.id===fcSel?' active':'')+'" data-id="'+esc(f.id)+'"><b>'+esc(f.title)+'</b><span>'+f.fields.length+' field'+(f.fields.length===1?'':'s')+(n?' · '+n+' point'+(n===1?'':'s')+' received':'')+'</span></button>';
+  }).join('') : '<p class="kv">No forms yet.</p>';
+  box.querySelectorAll('.fc-formitem').forEach(b=>b.onclick=()=>{ fcSel=b.dataset.id; renderCollector(); });
+  const cur=fcCur();
+  document.getElementById('fcDupForm').disabled=!cur;
+  const del=document.getElementById('fcDelForm'); del.disabled=!cur; del._armed=false; del.textContent='Delete form';
+}
+function renderFcDesign(){
+  const body=document.getElementById('fcBody'), f=fcCur();
   if(!f){
-    host.innerHTML='<p class="kv" style="margin-top:0;">Design a short form, then open it on phones with a link or QR code. Each point records GPS location, answers and photos, and comes back here as a layer.</p>'+
-      '<div class="cl-btns"><button class="btn small" id="clNew">+ New collection form</button><button class="btn small light" id="clRecv">📱 Receive from phone…</button></div>';
-    document.getElementById('clNew').onclick=()=>{ collectForm=newCollectForm(); markProjectDirty(); renderCollectPanel(); };
-    document.getElementById('clRecv').onclick=openQrReceiver;
-    return;
+    body.innerHTML='<div class="fc-empty"><h3>Collect data in the field with phones</h3><p>Design a form here, open it on phones with a link or QR code, and record points with GPS location, answers and photos. The points come back to this computer and go to Map Maker as a layer.</p><button class="btn" id="fcFirst">+ New form</button></div>';
+    document.getElementById('fcFirst').onclick=fcNewForm; return;
   }
-  const typeOpts=(t)=>Object.keys(COLLECT_TYPES).map(k=>'<option value="'+k+'"'+(k===t?' selected':'')+'>'+COLLECT_TYPES[k]+'</option>').join('');
-  host.innerHTML='<label class="kv" style="display:block;margin:0 0 2px;">Form title</label>'+
-    '<input type="text" id="clTitle" maxlength="80" value="'+esc(f.title)+'" style="width:100%;">'+
-    '<div class="kv" style="margin:8px 0 2px;">Fields</div>'+
-    f.fields.map((x,i)=>'<div class="cl-row" data-i="'+i+'">'+
-      '<input type="text" class="cl-name" maxlength="40" value="'+esc(x.name)+'" placeholder="Field name" aria-label="Field name">'+
-      '<select class="cl-type" aria-label="Field type">'+typeOpts(x.type)+'</select>'+
-      '<label class="cl-req" title="Must be filled in"><input type="checkbox"'+(x.req?' checked':'')+'>req.</label>'+
-      '<button class="btn small light cl-del" title="Remove this field" aria-label="Remove field">✕</button>'+
-      (x.type==='choice'?'<input type="text" class="cl-opts" value="'+esc(x.options.join(', '))+'" placeholder="Choices, separated by commas" aria-label="Choices">':'')+
-      '</div>').join('')+
-    '<button class="btn small light" id="clAddField" style="margin-top:4px;">+ Add field</button>'+
-    '<details class="cl-adv"><summary>Web address of Map-O-Matic</summary>'+
-      '<input type="text" id="clBase" value="'+esc(collectBase())+'" style="width:100%;margin-top:4px;">'+
-      '<p class="kv">Phones open the form from this online copy. GPS only works on an https page.</p></details>'+
-    '<div class="cl-btns"><button class="btn small" id="clMake">Make link &amp; QR</button>'+
-    '<button class="btn small light" id="clRecv">📱 Receive from phone…</button>'+
-    '<button class="btn small light" id="clDelForm">Delete form</button></div>'+
-    '<div id="clOut"></div>'+
-    '<p class="kv">Photos are shrunk to 800 px. Remind students to photograph places, not people, and to ask before photographing anyone\'s property.</p>';
-  const stale=()=>{ const o=document.getElementById('clOut'); if(o) o.innerHTML=''; markProjectDirty(); };
-  document.getElementById('clTitle').oninput=e=>{ f.title=e.target.value; stale(); };
-  host.querySelectorAll('.cl-row').forEach(row=>{
-    const x=f.fields[+row.dataset.i];
-    row.querySelector('.cl-name').oninput=e=>{ x.name=e.target.value; stale(); };
-    row.querySelector('.cl-type').onchange=e=>{ x.type=e.target.value; if(x.type==='choice' && !x.options.length) x.options=['Yes','No']; stale(); renderCollectPanel(); };
-    row.querySelector('.cl-req input').onchange=e=>{ x.req=e.target.checked; stale(); };
-    row.querySelector('.cl-del').onclick=()=>{ f.fields.splice(+row.dataset.i,1); stale(); renderCollectPanel(); };
-    const op=row.querySelector('.cl-opts');
-    if(op) op.oninput=e=>{ x.options=e.target.value.split(',').map(s=>s.trim()).filter(Boolean); stale(); };
-  });
-  document.getElementById('clAddField').onclick=()=>{
-    if(f.fields.length>=25){ toast('A form can have up to 25 fields.'); return; }
-    f.fields.push({name:'field'+(f.fields.length+1), type:'text', options:[], req:false}); stale(); renderCollectPanel();
+  const typeOpts=t=>Object.keys(COLLECT_TYPES).map(k=>'<option value="'+k+'"'+(k===t?' selected':'')+'>'+COLLECT_TYPES[k]+'</option>').join('');
+  const defCtl=x=>{
+    if(x.type==='photo') return '';
+    if(x.type==='choice') return '<label>Default<select class="f-def"><option value="">(none)</option>'+x.options.map(o=>'<option'+(o===x.def?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select></label>';
+    if(x.type==='date') return '<label>Default<select class="f-def"><option value="">(none)</option><option value="today"'+(x.def==='today'?' selected':'')+'>Today</option></select></label>';
+    return '<label>Default<input type="'+(x.type==='number'?'number':'text')+'" class="f-def" value="'+esc(x.def)+'" placeholder="(none)"'+(x.type==='multi'?' title="Several choices: separate with ;"':'')+'></label>';
   };
-  document.getElementById('clBase').onchange=e=>{
+  body.innerHTML='<div class="fc-sec"><label class="fc-lbl" for="fcTitle">Form title</label><input type="text" id="fcTitle" class="fc-title" maxlength="80" value="'+esc(f.title)+'">'+
+    '<label class="fc-lbl" for="fcIntro">Instructions shown at the top of the phone page (optional)</label><textarea id="fcIntro" maxlength="600" rows="2">'+esc(f.intro)+'</textarea></div>'+
+    '<h3 class="fc-h">Fields <span class="kv">drag ⋮⋮ to reorder · the field name becomes the column name in the data</span></h3>'+
+    '<div id="fcFields">'+f.fields.map((x,i)=>'<div class="fc-card" data-i="'+i+'" draggable="true">'+
+      '<span class="fc-grip" title="Drag to reorder">⋮⋮</span>'+
+      '<div class="fc-grid">'+
+        '<label>Question or label<input type="text" class="f-label" maxlength="80" value="'+esc(x.label)+'"></label>'+
+        '<label>Field name<input type="text" class="f-name" maxlength="40" value="'+esc(x.name)+'"></label>'+
+        '<label>Type<select class="f-type">'+typeOpts(x.type)+'</select></label>'+
+        '<label class="fc-chk"><input type="checkbox" class="f-req"'+(x.req?' checked':'')+'> Required</label>'+
+        ((x.type==='choice'||x.type==='multi')?'<label class="fc-span">Choices, one per line<textarea class="f-opts" rows="'+Math.min(8,Math.max(3,x.options.length+1))+'">'+esc(x.options.join('\n'))+'</textarea></label>':'')+
+        '<label class="fc-span2">Help text (optional)<input type="text" class="f-help" maxlength="200" value="'+esc(x.help)+'"></label>'+
+        defCtl(x)+
+      '</div>'+
+      '<div class="fc-card-foot"><button class="btn small light f-up" title="Move up"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light f-down" title="Move down"'+(i===f.fields.length-1?' disabled':'')+'>↓</button>'+
+      '<button class="btn small light f-dup" title="Duplicate this field">Duplicate</button><button class="btn small light f-del">Remove</button></div>'+
+    '</div>').join('')+'</div>'+
+    '<button class="btn small" id="fcAddField">+ Add field</button>'+
+    '<h3 class="fc-h" style="margin-top:22px;">Settings</h3><div class="fc-sec fc-settings">'+
+      '<label class="fc-lbl">Placing points<select id="fcPlacement"><option value="both">GPS location, or tap the map</option><option value="gps">GPS location only</option><option value="tap">Tap the map only</option></select></label>'+
+      '<label class="fc-lbl">Photo size (longest side)<select id="fcPhotoSize">'+PHOTO_SIZES.map(n=>'<option value="'+n+'">'+n+' px</option>').join('')+'</select></label>'+
+      '<label class="fc-lbl fc-wide">Web address of Map-O-Matic that phones open<input type="text" id="fcBase" value="'+esc(collectBase())+'"></label>'+
+      '<p class="kv fc-wide">GPS only works on an https address. Photos are resized on the phone and lose their camera metadata (including the location stored in the file).</p></div>';
+  document.getElementById('fcPlacement').value=f.placement;
+  document.getElementById('fcPhotoSize').value=String(f.photoSize);
+  const changed=(rerender)=>{ fcLinkStale(); fcDirty(); if(rerender) renderCollector(); else { renderFcPreview(); renderFcForms(); } };
+  document.getElementById('fcTitle').oninput=e=>{ f.title=e.target.value; changed(); };
+  document.getElementById('fcIntro').oninput=e=>{ f.intro=e.target.value; changed(); };
+  document.getElementById('fcPlacement').onchange=e=>{ f.placement=e.target.value; changed(); };
+  document.getElementById('fcPhotoSize').onchange=e=>{ f.photoSize=+e.target.value; changed(); };
+  document.getElementById('fcBase').onchange=e=>{
     const v=e.target.value.trim();
     try{ if(v) localStorage.setItem('mom_collect_base', v); else localStorage.removeItem('mom_collect_base'); }catch(_){}
-    stale();
+    fcLinkStale();
   };
-  document.getElementById('clMake').onclick=makeCollectLink;
-  document.getElementById('clRecv').onclick=openQrReceiver;
-  const del=document.getElementById('clDelForm');
-  del.onclick=()=>{
-    if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete form'; } }, 4000); return; }
-    collectForm=null; markProjectDirty(); renderCollectPanel();
+  document.getElementById('fcAddField').onclick=()=>{
+    if(f.fields.length>=40){ toast('A form can have up to 40 fields.'); return; }
+    let n=f.fields.length+1; while(f.fields.some(x=>x.name==='question_'+n)) n++;
+    f.fields.push({name:'question_'+n, label:'Question '+n, type:'text', options:[], req:false, help:'', def:''});
+    changed(true);
+    setTimeout(()=>{ const c=document.querySelector('#fcFields .fc-card:last-child .f-label'); if(c){ c.focus(); c.select(); } }, 30);
   };
+  let dragFrom=null;
+  document.querySelectorAll('#fcFields .fc-card').forEach(card=>{
+    const i=+card.dataset.i, x=f.fields[i];
+    const q=s=>card.querySelector(s);
+    q('.f-label').oninput=e=>{ const old=x.label; x.label=e.target.value; if(!x.name || x.name===fcSlug(old)){ x.name=fcSlug(x.label)||x.name; q('.f-name').value=x.name; } changed(); };
+    q('.f-name').oninput=e=>{ x.name=e.target.value; changed(); };
+    q('.f-name').onblur=()=>{ const clean=sanitizeCollectForm(f); if(clean){ const nx=clean.fields.find((y,j)=>j===i); if(nx && nx.name!==x.name){ x.name=nx.name; q('.f-name').value=x.name; toast('Field names must be unique and cannot be '+COLLECT_RESERVED.join(', ')+'.', 3500); } } };
+    q('.f-type').onchange=e=>{ x.type=e.target.value; if((x.type==='choice'||x.type==='multi') && !x.options.length) x.options=['Yes','No']; x.def=''; changed(true); };
+    q('.f-req').onchange=e=>{ x.req=e.target.checked; changed(); };
+    q('.f-help').oninput=e=>{ x.help=e.target.value; changed(); };
+    const op=q('.f-opts'); if(op) op.oninput=e=>{ x.options=e.target.value.split('\n').map(s=>s.trim()).filter(Boolean); changed(); };
+    if(op) op.onblur=()=>renderCollector();
+    const df=q('.f-def'); if(df) df[df.tagName==='SELECT'?'onchange':'oninput']=e=>{ x.def=e.target.value; changed(); };
+    q('.f-up').onclick=()=>{ f.fields.splice(i-1,0,f.fields.splice(i,1)[0]); changed(true); };
+    q('.f-down').onclick=()=>{ f.fields.splice(i+1,0,f.fields.splice(i,1)[0]); changed(true); };
+    q('.f-dup').onclick=()=>{ const c=JSON.parse(JSON.stringify(x)); c.name=x.name+'_2'; c.label=x.label+' (copy)'; f.fields.splice(i+1,0,c); changed(true); };
+    const del=q('.f-del');
+    del.onclick=()=>{
+      if(!del._armed){ del._armed=true; del.textContent='Click again'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Remove'; } }, 3500); return; }
+      f.fields.splice(i,1); changed(true);
+    };
+    /* drag only from the grip, so text in the boxes can still be selected */
+    q('.fc-grip').onmousedown=()=>{ card._grip=true; };
+    card.addEventListener('dragstart', e=>{ if(!card._grip){ e.preventDefault(); return; } dragFrom=i; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', String(i)); }catch(_){} card.classList.add('dragging'); });
+    card.addEventListener('dragend', ()=>{ card._grip=false; card.classList.remove('dragging'); document.querySelectorAll('#fcFields .fc-card').forEach(c=>c.classList.remove('dragover')); });
+    card.addEventListener('dragover', e=>{ if(dragFrom==null) return; e.preventDefault(); card.classList.add('dragover'); });
+    card.addEventListener('dragleave', ()=>card.classList.remove('dragover'));
+    card.addEventListener('drop', e=>{ e.preventDefault(); if(dragFrom==null||dragFrom===i) return; f.fields.splice(i,0,f.fields.splice(dragFrom,1)[0]); dragFrom=null; changed(true); });
+  });
 }
+function renderFcPreview(){
+  const box=document.getElementById('fcPreview'), f=fcCur();
+  if(!f){ box.innerHTML=''; return; }
+  const clean=sanitizeCollectForm(f);
+  box.innerHTML='<div class="fc-phone"><div class="cl-top">'+esc(clean.title)+'</div><div class="cl-sheet fc-prev-sheet"><div class="sh">'+
+    (clean.intro?'<div class="cl-intro">'+esc(clean.intro)+'</div>':'')+
+    '<b style="font-size:16px;">New point</b><div class="loc">'+(clean.placement==='tap'?'Placed by tapping the map':'GPS location, ±5 m')+'</div>'+
+    clFieldsHtml(clean, null, 'fcpv')+
+    '<div class="row"><button type="button">Cancel</button><button type="button" class="pri">Save point</button></div></div></div></div>'+
+    '<p class="kv" style="text-align:center;margin:6px 0 0;">Preview of the phone form</p>';
+}
+function fcLinkStale(){ const o=document.getElementById('fcLinkOut'); if(o && o.innerHTML) o.innerHTML='<p class="kv">The form has changed. Make the link again so phones get this version.</p>'; }
+function fcNewForm(){ const f=newCollectForm(); fcForms.push(f); fcSel=f.id; fcTab='design'; fcDirty(); renderCollector(); document.getElementById('fcLinkOut').innerHTML=''; setTimeout(()=>{ const t=document.getElementById('fcTitle'); if(t){ t.focus(); t.select(); } },30); }
 async function makeCollectLink(){
-  const f=sanitizeCollectForm(collectForm);
-  if(!f || !f.fields.length){ toast('Add at least one field first.'); return; }
-  const bad=f.fields.find(x=>x.type==='choice' && x.options.length<2);
-  if(bad){ toast('"'+bad.name+'" needs at least two choices.'); return; }
-  collectForm=f; renderCollectPanel(); markProjectDirty();
-  const out=document.getElementById('clOut');
+  const f0=fcCur(); if(!f0) return;
+  const f=sanitizeCollectForm(f0);
+  if(!f.fields.length){ toast('Add at least one field first.'); return; }
+  const bad=f.fields.find(x=>(x.type==='choice'||x.type==='multi') && x.options.length<2);
+  if(bad){ toast('"'+bad.label+'" needs at least two choices.'); return; }
+  Object.assign(f0, f); renderCollector(); fcDirty();
+  const out=document.getElementById('fcLinkOut');
   out.innerHTML='<p class="kv">Making the link…</p>';
   let url;
-  try{ url=collectBase().split('#')[0]+'#c='+(await encodeShare({v:1, kind:'mom-collect', form:f})); }
+  try{ url=collectBase().split('#')[0]+'#c='+(await encodeShare({v:2, kind:'mom-collect', form:f})); }
   catch(e){ out.innerHTML='<p class="kv">Could not build the link: '+esc(e.message)+'</p>'; return; }
   out.innerHTML='<div class="cl-link"><input type="text" readonly id="clLink" value="'+esc(url)+'"><button class="btn small" id="clCopy">Copy</button></div>'+
     '<div id="clQr" class="cl-qr"></div>'+
@@ -8090,17 +8277,183 @@ async function makeCollectLink(){
   document.getElementById('clCopy').onclick=e=>copyToClipboard(url, e.target);
   try{
     await loadLib('qrcode');
-    const cv=qrToCanvas(url, 240, url.length>1200?'L':'M');
-    cv.style.width='200px'; cv.style.height='200px';
+    const ecl=url.length>1200?'L':'M';
+    const cv=qrToCanvas(url, 260, ecl); cv.style.width='220px'; cv.style.height='220px';
     document.getElementById('clQr').appendChild(cv);
     document.getElementById('clQrPng').onclick=()=>{
-      const big=qrToCanvas(url, 900, url.length>1200?'L':'M');
+      const big=qrToCanvas(url, 900, ecl);
       const a=document.createElement('a'); a.href=big.toDataURL('image/png');
-      a.download=(f.title.replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'')||'form')+'_collect-QR.png'; a.click();
+      a.download=(fcSlug(f.title)||'form')+'_collect-QR.png'; a.click();
     };
   }catch(e){ document.getElementById('clQr').innerHTML='<p class="kv">'+esc(e.message)+' The link still works.</p>'; }
   mlog('data','Made the field collection form "'+f.title+'" ('+f.fields.map(x=>x.name+' ['+COLLECT_TYPES[x.type].toLowerCase()+']').join(', ')+').');
 }
+/* ---- received data ---- */
+function fcCleanFC(fc, allowPhotos){
+  if(!fc || !Array.isArray(fc.features)) return null;
+  const feats=fc.features.slice(0,50000).map(f=>{
+    const c=f&&f.geometry&&f.geometry.coordinates;
+    if(!f || !f.geometry || f.geometry.type!=='Point' || !Array.isArray(c)) return null;
+    const lng=+c[0], lat=+c[1];
+    if(!isFinite(lng)||!isFinite(lat)||Math.abs(lat)>90||Math.abs(lng)>180) return null;
+    const props={};
+    Object.keys(f.properties||{}).slice(0,60).forEach(k=>{
+      const v=f.properties[k], key=String(k).slice(0,40);
+      if(v==null || typeof v==='number' || typeof v==='boolean') props[key]=v;
+      else if(allowPhotos && isPhotoVal(v)) props[key]=v;
+      else props[key]=String(v).slice(0,4000);
+    });
+    return {type:'Feature', properties:props, geometry:{type:'Point', coordinates:[lng,lat]}};
+  }).filter(Boolean);
+  return feats.length ? {type:'FeatureCollection', features:feats} : null;
+}
+function fcAddDataset(fc, meta){
+  const f=fcForms.find(x=>x.id===meta.formId);
+  const d={id:uid(), name:String(meta.name||(f?f.title:'Field data')).slice(0,120), formId:meta.formId||null, formTitle:meta.formTitle||(f?f.title:''),
+    received:Date.now(), via:meta.via||'file', fc};
+  fcData.push(d); fcChecked=new Set([d.id]); fcView=d.id;
+  if(f) fcSel=f.id;
+  fcTab='data'; fcDirty(); renderCollector();
+  const photos=fc.features.reduce((n,ft)=>n+Object.values(ft.properties).filter(isPhotoVal).length,0);
+  mlog('data','Received '+fc.features.length+' field points'+(d.formTitle?' for the form "'+d.formTitle+'"':'')+(meta.via==='qr'?' from a phone by QR transfer':' from the file '+(meta.file||''))+(photos?' ('+photos+' photos)':'')+'.');
+  return d;
+}
+function fcDateStr(t){ const d=new Date(t); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }
+function renderFcData(){
+  const body=document.getElementById('fcBody');
+  const rows=fcData.slice().sort((a,b)=>b.received-a.received);
+  body.innerHTML='<div class="fc-databar"><button class="btn small" id="fcRecvQr">📷 Receive from phone (QR)</button>'+
+    '<button class="btn small secondary" id="fcRecvFile">⬆ Upload a phone file (GeoJSON or CSV)</button><input type="file" id="fcFileIn" accept=".geojson,.json,.csv" multiple hidden></div>'+
+    (rows.length ? '<table class="fc-dtable"><tr><th></th><th>Received data</th><th>Form</th><th>Points</th><th>Photos</th><th>Received</th></tr>'+
+      rows.map(d=>{
+        const ph=d.fc.features.reduce((n,ft)=>n+Object.values(ft.properties).filter(isPhotoVal).length,0);
+        return '<tr data-id="'+esc(d.id)+'"'+(d.id===fcView?' class="on"':'')+'><td><input type="checkbox" class="fc-ck"'+(fcChecked.has(d.id)?' checked':'')+' aria-label="Select"></td>'+
+          '<td><input type="text" class="fc-dname" value="'+esc(d.name)+'" title="Rename"></td><td>'+esc(d.formTitle||'')+'</td><td>'+d.fc.features.length+'</td><td>'+(ph||'')+'</td><td>'+esc(fcDateStr(d.received))+(d.via==='qr'?' · QR':' · file')+'</td></tr>';
+      }).join('')+'</table>'+
+      '<div class="fc-databar"><span class="kv" id="fcSelInfo"></span><button class="btn small" id="fcToMaker">Send to Map Maker ▸</button>'+
+      '<button class="btn small light" id="fcDlGeo">⬇ GeoJSON</button><button class="btn small light" id="fcDlCsv">⬇ CSV</button><button class="btn small light" id="fcDelData">Delete</button></div>'+
+      '<div id="fcDetail"></div>'
+    : '<div class="fc-empty"><p>No data received yet. On a phone, collect points with the form, then tap <b>Send to laptop</b> and click <b>Receive from phone</b> here, or save the GeoJSON on the phone and upload it.</p></div>');
+  document.getElementById('fcRecvQr').onclick=openQrReceiver;
+  const fin=document.getElementById('fcFileIn');
+  document.getElementById('fcRecvFile').onclick=()=>fin.click();
+  fin.onchange=e=>{ Array.from(e.target.files||[]).forEach(fcReadFile); e.target.value=''; };
+  if(!rows.length) return;
+  const info=()=>{
+    const sel=fcData.filter(d=>fcChecked.has(d.id)), n=sel.reduce((a,d)=>a+d.fc.features.length,0);
+    document.getElementById('fcSelInfo').textContent=sel.length? sel.length+' selected, '+n+' point'+(n===1?'':'s')+(sel.length>1?' (combined into one layer; repeated points are dropped)':'') : 'Tick the data to use.';
+    ['fcToMaker','fcDlGeo','fcDlCsv','fcDelData'].forEach(id=>document.getElementById(id).disabled=!sel.length);
+  };
+  body.querySelectorAll('.fc-dtable tr[data-id]').forEach(tr=>{
+    const id=tr.dataset.id, d=fcData.find(x=>x.id===id);
+    tr.querySelector('.fc-ck').onchange=e=>{ if(e.target.checked) fcChecked.add(id); else fcChecked.delete(id); info(); };
+    const nm=tr.querySelector('.fc-dname');
+    nm.onchange=()=>{ d.name=nm.value.trim().slice(0,120)||d.name; fcDirty(); };
+    tr.onclick=e=>{ if(e.target.closest('input')) return; fcView=id; body.querySelectorAll('.fc-dtable tr').forEach(r=>r.classList.toggle('on', r.dataset.id===id)); renderFcDetail(); };
+  });
+  document.getElementById('fcToMaker').onclick=fcSendToMaker;
+  document.getElementById('fcDlGeo').onclick=()=>{ const {fc,name}=fcCombined(); downloadBlob((fcSlug(name)||'field-data')+'.geojson', new Blob([JSON.stringify(fc)],{type:'application/geo+json'})); };
+  document.getElementById('fcDlCsv').onclick=()=>{
+    const {fc,name}=fcCombined();
+    const rowsC=fc.features.map(f=>{ const o={lat:f.geometry.coordinates[1], lng:f.geometry.coordinates[0]}; Object.keys(f.properties).forEach(k=>{ const v=f.properties[k]; o[k]=isPhotoVal(v)?'photo':v; }); return o; });
+    downloadBlob((fcSlug(name)||'field-data')+'.csv', new Blob([Papa.unparse(rowsC)],{type:'text/csv'}));
+  };
+  const del=document.getElementById('fcDelData');
+  del.onclick=()=>{
+    if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete'; } }, 4000); return; }
+    fcData=fcData.filter(d=>!fcChecked.has(d.id)); fcChecked.clear(); fcDirty(); renderCollector();
+  };
+  info(); renderFcDetail();
+}
+function renderFcDetail(){
+  const box=document.getElementById('fcDetail'); if(!box) return;
+  const d=fcData.find(x=>x.id===fcView);
+  if(!d){ box.innerHTML='<p class="kv">Click a row to see its points.</p>'; return; }
+  const cols=[]; d.fc.features.forEach(f=>Object.keys(f.properties).forEach(k=>{ if(!cols.includes(k)) cols.push(k); }));
+  const shown=d.fc.features.slice(0,300);
+  box.innerHTML='<h3 class="fc-h">'+esc(d.name)+' <span class="kv">'+d.fc.features.length+' points'+(d.fc.features.length>300?', first 300 shown':'')+'</span></h3>'+
+    '<div class="fc-ptwrap"><table class="fc-pts"><tr><th>#</th><th>lat</th><th>lng</th>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+
+    shown.map((f,i)=>'<tr><td>'+(i+1)+'</td><td>'+f.geometry.coordinates[1].toFixed(6)+'</td><td>'+f.geometry.coordinates[0].toFixed(6)+'</td>'+cols.map(c=>{ const v=f.properties[c]; return '<td>'+(isPhotoVal(v)?'<img src="'+v+'" alt="">':esc(v==null?'':v))+'</td>'; }).join('')+'</tr>').join('')+
+    '</table></div>';
+}
+function fcCombined(){
+  const sel=fcData.filter(d=>fcChecked.has(d.id));
+  const seen=new Map(), feats=[];
+  sel.forEach(d=>d.fc.features.forEach(f=>{
+    const pid=f.properties.point_id;
+    if(pid && seen.has(pid)){
+      /* the same point came twice (QR and file): keep any photos the file carried */
+      const prev=seen.get(pid).properties;
+      Object.keys(f.properties).forEach(k=>{ if(isPhotoVal(f.properties[k]) && !isPhotoVal(prev[k])) prev[k]=f.properties[k]; });
+      return;
+    }
+    const props=Object.assign({}, f.properties);
+    if(sel.length>1) props.source=d.name;
+    const ft={type:'Feature', properties:props, geometry:{type:'Point', coordinates:f.geometry.coordinates.slice()}};
+    if(pid) seen.set(pid, ft);
+    feats.push(ft);
+  }));
+  const titles=Array.from(new Set(sel.map(d=>d.formTitle).filter(Boolean)));
+  const name= sel.length===1 ? sel[0].name : (titles.length===1 ? titles[0] : 'Field data');
+  return {fc:{type:'FeatureCollection', features:feats}, name, n:sel.length};
+}
+function fcSendToMaker(){
+  const {fc,name,n}=fcCombined();
+  if(!fc.features.length){ toast('Nothing selected.'); return; }
+  switchModule('maker');
+  addMakerLayer(fc, name, {source:{kind:'field-collector'}});
+  mlog('data','Sent '+fc.features.length+' field points ('+n+' received batch'+(n===1?'':'es')+') from the Field Collector to Map Maker as "'+name+'".');
+}
+function fcReadFile(file){
+  const r=new FileReader();
+  r.onload=()=>{
+    let fc=null;
+    try{
+      if(/\.csv$/i.test(file.name)){
+        const rows=Papa.parse(String(r.result),{header:true, skipEmptyLines:true, dynamicTyping:true}).data;
+        fc={type:'FeatureCollection', features:rows.map(o=>{
+          const lat=+(o.lat??o.latitude??o.y), lng=+(o.lng??o.lon??o.longitude??o.x);
+          const p=Object.assign({}, o); ['lat','lng','lon','latitude','longitude','x','y'].forEach(k=>delete p[k]);
+          return {type:'Feature', properties:p, geometry:{type:'Point', coordinates:[lng,lat]}};
+        })};
+      } else fc=JSON.parse(String(r.result));
+    }catch(_){ toast(file.name+' could not be read.'); return; }
+    const clean=fcCleanFC(fc, true);
+    if(!clean){ toast(file.name+' has no points with coordinates.'); return; }
+    const base=file.name.replace(/\.(geo)?json$|\.csv$/i,'').replace(/_\d{8}-\d{4}$/,'');
+    const f=fcForms.find(x=>fcSlug(x.title)===fcSlug(base.replace(/-/g,' ')));
+    fcAddDataset(clean, {name:file.name.replace(/\.(geo)?json$|\.csv$/i,''), formId:f?f.id:null, formTitle:f?f.title:'', via:'file', file:file.name});
+  };
+  r.readAsText(file);
+}
+function fcSerialize(){ return {forms:fcForms.map(f=>sanitizeCollectForm(f)).filter(Boolean), data:fcData}; }
+function fcLoad(data){
+  const c=(data && data.collector) || {};
+  fcForms=(Array.isArray(c.forms)?c.forms:[]).map(sanitizeCollectForm).filter(Boolean);
+  if(!fcForms.length && data && data.maker && data.maker.collectForm){ const f=sanitizeCollectForm(data.maker.collectForm); if(f) fcForms=[f]; }
+  fcData=(Array.isArray(c.data)?c.data:[]).map(d=>{
+    if(!d || !d.fc) return null;
+    const fc=fcCleanFC(d.fc, true); if(!fc) return null;
+    return {id:String(d.id||uid()).slice(0,40), name:String(d.name||'Field data').slice(0,120), formId:d.formId?String(d.formId).slice(0,40):null,
+      formTitle:String(d.formTitle||'').slice(0,80), received:+d.received||Date.now(), via:d.via==='qr'?'qr':'file', fc};
+  }).filter(Boolean);
+  fcSel=fcForms.length?fcForms[0].id:null; fcView=null; fcChecked=new Set(); fcTab='design';
+  const o=document.getElementById('fcLinkOut'); if(o) o.innerHTML='';
+  if(document.getElementById('module-collect')) renderCollector();
+}
+(function(){
+  const m=document.getElementById('module-collect'); if(!m) return;
+  document.getElementById('fcNewForm').onclick=fcNewForm;
+  document.getElementById('fcDupForm').onclick=()=>{ const f=fcCur(); if(!f) return; const c=JSON.parse(JSON.stringify(sanitizeCollectForm(f))); c.id=uid(); c.title=(f.title+' (copy)').slice(0,80); fcForms.push(c); fcSel=c.id; fcDirty(); renderCollector(); };
+  const del=document.getElementById('fcDelForm');
+  del.onclick=()=>{
+    if(!fcCur()) return;
+    if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete form'; } }, 4000); return; }
+    fcForms=fcForms.filter(f=>f.id!==fcSel); fcSel=null; fcDirty(); document.getElementById('fcLinkOut').innerHTML=''; renderCollector();
+  };
+  m.querySelectorAll('.fc-tab').forEach(t=>t.onclick=()=>{ fcTab=t.dataset.t; renderCollector(); });
+  document.getElementById('fcMakeLink').onclick=makeCollectLink;
+})();
 
 /* ---------- laptop side: read the phone's QR codes with the webcam ---------- */
 let qrRecv=null;
@@ -8111,7 +8464,6 @@ function stopQrReceiver(){
   qrRecv=null;
 }
 async function openQrReceiver(){
-  if(addMenuList) addMenuList.classList.add('hidden');
   let ov=document.getElementById('modal-qrrecv');
   if(!ov){
     ov=document.createElement('div'); ov.className='modal-overlay hidden'; ov.id='modal-qrrecv';
@@ -8129,7 +8481,7 @@ async function openQrReceiver(){
   bar.style.width='0%';
   const st=qrRecv={stream:null, stopped:false, sid:null, n:0, parts:{}, got:0, det:null};
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    status.textContent='This browser cannot use a camera here. Export a GeoJSON file on the phone and add it with Upload files instead.'; return;
+    status.textContent='This browser cannot use a camera here. Save a GeoJSON file on the phone and upload it instead.'; return;
   }
   try{
     if('BarcodeDetector' in window){
@@ -8142,7 +8494,7 @@ async function openQrReceiver(){
   try{
     st.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment', width:{ideal:1280}}, audio:false});
   }catch(e){
-    status.textContent='The camera could not start ('+(e.name||e.message)+'). Allow camera access for this page, or export a GeoJSON file on the phone and upload it.'; return;
+    status.textContent='The camera could not start ('+(e.name||e.message)+'). Allow camera access for this page, or save a GeoJSON file on the phone and upload it.'; return;
   }
   if(st.stopped){ st.stream.getTracks().forEach(t=>t.stop()); return; }
   video.srcObject=st.stream;
@@ -8189,31 +8541,16 @@ function qrRecvFrame(st, text){
   let enc=''; for(let k=0;k<n;k++) enc+=st.parts[k];
   stopQrReceiver();
   decodeShare(enc).then(p=>{
-    const fc=collectedToLayer(p);
+    const fc=(p && p.kind==='mom-points') ? fcCleanFC(p.fc, false) : null;
     if(!fc){ status.textContent='The codes were read but did not contain field points. Try again.'; return; }
     closeModal('modal-qrrecv');
     const title=String(p.title||'Field data').slice(0,80);
-    addMakerLayer(fc, title+' (field data)', {source:{kind:'phone-qr'}});
-    mlog('data','Received '+fc.features.length+' field points from a phone ("'+title+'") by QR transfer (photos not included).');
+    const f=fcForms.find(x=>x.id===p.formId);
+    if(document.getElementById('module-collect').classList.contains('hidden')) switchModule('collect');
+    fcAddDataset(fc, {name:title+' · '+fcDateStr(Date.now()), formId:f?f.id:null, formTitle:f?f.title:title, via:'qr'});
+    toast('Received '+fc.features.length+' points.');
   }).catch(()=>{ status.textContent='The codes did not fit together. Close this window and try again.'; });
   return true;
-}
-function collectedToLayer(p){
-  if(!p || p.kind!=='mom-points' || !p.fc || !Array.isArray(p.fc.features)) return null;
-  const feats=p.fc.features.slice(0,20000).map(f=>{
-    const c=f&&f.geometry&&f.geometry.coordinates;
-    if(!f || !f.geometry || f.geometry.type!=='Point' || !Array.isArray(c)) return null;
-    const lng=+c[0], lat=+c[1];
-    if(!isFinite(lng)||!isFinite(lat)||Math.abs(lat)>90||Math.abs(lng)>180) return null;
-    const props={};
-    Object.keys(f.properties||{}).slice(0,40).forEach(k=>{
-      const v=f.properties[k];
-      if(v==null || typeof v==='number' || typeof v==='boolean') props[String(k).slice(0,40)]=v;
-      else props[String(k).slice(0,40)]=String(v).slice(0,2000);
-    });
-    return {type:'Feature', properties:props, geometry:{type:'Point', coordinates:[lng,lat]}};
-  }).filter(Boolean);
-  return feats.length ? {type:'FeatureCollection', features:feats} : null;
 }
 
 /* ---------- phone side: the collector ---------- */
@@ -8233,11 +8570,11 @@ function clDbDo(d, mode, fn){
     tx.onabort=()=>rej(tx.error||new Error('The phone refused to store the point (storage may be full).'));
   });
 }
-function clResizePhoto(file){
+function clResizePhoto(file, max){
   return new Promise((res,rej)=>{
     const url=URL.createObjectURL(file), im=new Image();
     im.onload=()=>{
-      const s=Math.min(1, 800/Math.max(im.naturalWidth, im.naturalHeight));
+      const s=Math.min(1, (max||800)/Math.max(im.naturalWidth, im.naturalHeight));
       const cv=document.createElement('canvas'); cv.width=Math.round(im.naturalWidth*s); cv.height=Math.round(im.naturalHeight*s);
       cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
       URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg',0.72));
@@ -8247,17 +8584,17 @@ function clResizePhoto(file){
   });
 }
 const CL_CSS=`
-#toast{z-index:8000 !important;}
 #collector{position:fixed;inset:0;overflow:auto;background:#f6f7f9;color:#22293a;font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;z-index:5000;-webkit-text-size-adjust:100%;}
 #collector header{position:sticky;top:0;z-index:600;background:#2f7d78;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:8px;}
 #collector header b{flex:1;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #collector header span{font-size:13px;background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;}
 #clMap{height:44vh;min-height:220px;}
+#collector .cl-intro{margin:10px 14px 0;}
 #collector .cl-gps{padding:6px 14px;font-size:13px;background:#fff;border-bottom:1px solid #dde1e7;}
 #collector .cl-gps i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#999;}
 #collector .cl-acts{display:flex;gap:8px;padding:10px 14px;}
-#collector button{font:inherit;border-radius:8px;border:1px solid #c9ced6;background:#fff;color:#22293a;padding:10px 12px;min-height:44px;}
-#collector button.pri{background:#2f7d78;border-color:#2f7d78;color:#fff;font-weight:600;flex:1;}
+#collector button,.cl-sheet button{font:inherit;border-radius:8px;border:1px solid #c9ced6;background:#fff;color:#22293a;padding:10px 12px;min-height:44px;}
+#collector button.pri,.cl-sheet button.pri{background:#2f7d78;border-color:#2f7d78;color:#fff;font-weight:600;flex:1;}
 #collector button.on{background:#fbe7c6;border-color:#d99a2b;}
 #collector h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#5b6475;margin:10px 14px 4px;}
 #clList{padding:0 14px;}
@@ -8266,27 +8603,30 @@ const CL_CSS=`
 #clList .it small{color:#5b6475;display:block;}
 #collector .cl-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px;}
 #collector .cl-note{font-size:12.5px;color:#5b6475;padding:0 14px 24px;}
+.cl-intro{background:#eef6f5;border:1px solid #cfe3e0;border-radius:8px;padding:8px 10px;font-size:13.5px;white-space:pre-wrap;margin-bottom:10px;}
 #clSheet{position:fixed;inset:0;z-index:6000;background:rgba(20,25,35,.45);display:flex;align-items:flex-end;}
 #clSheet.hidden{display:none;}
 #clSheet .sh{background:#fff;width:100%;max-height:92vh;overflow:auto;border-radius:14px 14px 0 0;padding:14px 16px 20px;box-sizing:border-box;}
-#clSheet label.f{display:block;font-weight:600;margin:12px 0 4px;}
-#clSheet label.f em{color:#b3452f;font-style:normal;}
-#clSheet input[type=text],#clSheet input[type=number],#clSheet textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:9px;border:1px solid #c9ced6;border-radius:8px;}
-#clSheet textarea{min-height:80px;}
-#clSheet .ch{display:flex;flex-wrap:wrap;gap:6px;}
-#clSheet .ch label{border:1px solid #c9ced6;border-radius:18px;padding:8px 12px;}
-#clSheet .ch input{margin-right:6px;}
-#clSheet .ch label:has(input:checked){background:#e1f0ee;border-color:#2f7d78;}
-#clSheet .ph img{max-width:100%;max-height:220px;display:block;margin-top:6px;border-radius:6px;}
-#clSheet .loc{font-size:13px;color:#5b6475;}
-#clSheet .warn{color:#b3452f;}
-#clSheet .row{display:flex;gap:8px;margin-top:16px;}
-#clSheet .row button{flex:1;}
-#clSheet .consent{font-size:12.5px;color:#5b6475;margin:4px 0 0;}
+.cl-sheet{font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;color:#22293a;}
+.cl-sheet label.f{display:block;font-weight:600;margin:12px 0 4px;}
+.cl-sheet label.f em{color:#b3452f;font-style:normal;}
+.cl-sheet .hp{font-size:12.5px;color:#5b6475;margin:-2px 0 4px;}
+.cl-sheet input[type=text],.cl-sheet input[type=number],.cl-sheet input[type=date],.cl-sheet textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:9px;border:1px solid #c9ced6;border-radius:8px;background:#fff;}
+.cl-sheet textarea{min-height:80px;}
+.cl-sheet .ch{display:flex;flex-wrap:wrap;gap:6px;}
+.cl-sheet .ch label{border:1px solid #c9ced6;border-radius:18px;padding:8px 12px;background:#fff;}
+.cl-sheet .ch input{margin-right:6px;}
+.cl-sheet .ch label:has(input:checked){background:#e1f0ee;border-color:#2f7d78;}
+.cl-sheet .ph img{max-width:100%;max-height:220px;display:block;margin-top:6px;border-radius:6px;}
+.cl-sheet .loc{font-size:13px;color:#5b6475;}
+.cl-sheet .warn{color:#b3452f;}
+.cl-sheet .row{display:flex;gap:8px;margin-top:16px;}
+.cl-sheet .row button{flex:1;}
 #clSend{position:fixed;inset:0;z-index:7000;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;}
 #clSend canvas{width:min(92vw,62vh);height:auto;image-rendering:pixelated;}
 #clSend .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
 `;
+(function(){ const css=document.createElement('style'); css.textContent=CL_CSS; document.head.appendChild(css); })();
 async function enterCollector(){
   let form=null;
   try{ const m=location.hash.match(/[#&]c=([^&]+)/); const p=await decodeShare(m[1]); if(p && p.kind==='mom-collect') form=sanitizeCollectForm(p.form); }catch(_){}
@@ -8296,19 +8636,20 @@ async function enterCollector(){
   document.getElementById('topbar').classList.add('hidden');
   document.querySelectorAll('.module').forEach(m=>m.classList.add('hidden'));
   document.title=form.title+' — Map-O-Matic field collector';
-  const css=document.createElement('style'); css.textContent=CL_CSS; document.head.appendChild(css);
+  const css=document.createElement('style'); css.textContent='#toast{z-index:8000 !important;}'; document.head.appendChild(css);
   const root=document.createElement('div'); root.id='collector'; document.body.appendChild(root);
   root.innerHTML='<header><b>'+esc(form.title)+'</b><span id="clCount">0 points</span></header>'+
+    (form.intro?'<div class="cl-intro">'+esc(form.intro)+'</div>':'')+
     '<div id="clMap"></div>'+
     '<div class="cl-gps" id="clGps"><i></i>Finding your location…</div>'+
-    '<div class="cl-acts"><button class="pri" id="clAddGps">📍 Add point here</button><button id="clTap">Tap map</button></div>'+
+    '<div class="cl-acts">'+(form.placement!=='tap'?'<button class="pri" id="clAddGps">📍 Add point here</button>':'')+(form.placement!=='gps'?'<button id="clTap"'+(form.placement==='tap'?' class="pri"':'')+'>'+(form.placement==='tap'?'📍 Tap the map to add a point':'Tap map')+'</button>':'')+'</div>'+
     '<h3>Points on this phone</h3><div id="clList"></div>'+
     '<div class="cl-foot"><button class="pri" id="clSendBtn" style="grid-column:1/3;">📤 Send to laptop (QR codes)</button>'+
     '<button id="clGeo">⬇ GeoJSON (with photos)</button><button id="clCsv">⬇ CSV</button>'+
     '<button id="clShareBtn">Share file…</button><button id="clWipe">Delete all points</button></div>'+
     '<p class="cl-note">Points are kept in this browser until you delete them. Keep this tab open, or open the same link again to come back to them. Open the link once while you have a signal; GPS needs the https address.</p>'+
-    '<div id="clSheet" class="hidden"><div class="sh" role="dialog" aria-modal="true" aria-label="Point details"></div></div>';
-  const C={form, points:[], fix:null, tapMode:false, db:null, markers:null, me:null, meAcc:null, first:true};
+    '<div id="clSheet" class="cl-sheet hidden"><div class="sh" role="dialog" aria-modal="true" aria-label="Point details"></div></div>';
+  const C={form, points:[], fix:null, tapMode:form.placement==='tap', db:null, markers:null, me:null, meAcc:null, first:true};
   window.__collector=C;             /* testing hook */
   try{ C.db=await clDbOpen(); }catch(e){ toast('This browser will not store points (private mode?). Export before closing the tab.', 6000); }
   const map=L.map('clMap',{zoomControl:true, preferCanvas:true}).setView([49.94,-119.40], 13);
@@ -8318,8 +8659,8 @@ async function enterCollector(){
 
   const gpsEl=document.getElementById('clGps');
   const setGps=(txt,col)=>{ gpsEl.innerHTML='<i style="background:'+col+'"></i>'+txt; };
-  if(!window.isSecureContext) setGps('GPS needs the https address of this page. You can still tap the map to place points.','#b3452f');
-  else if(!navigator.geolocation) setGps('This browser has no GPS access. Tap the map to place points.','#b3452f');
+  if(!window.isSecureContext) setGps('GPS needs the https address of this page.'+(form.placement!=='gps'?' You can still tap the map to place points.':''),'#b3452f');
+  else if(!navigator.geolocation) setGps('This browser has no GPS access.'+(form.placement!=='gps'?' Tap the map to place points.':''),'#b3452f');
   else navigator.geolocation.watchPosition(pos=>{
     const c=pos.coords; C.fix={lat:c.latitude, lng:c.longitude, acc:c.accuracy};
     const ll=[c.latitude,c.longitude];
@@ -8327,20 +8668,22 @@ async function enterCollector(){
     else{ C.me.setLatLng(ll); C.meAcc.setLatLng(ll).setRadius(c.accuracy); }
     if(C.first){ C.first=false; map.setView(ll, 17); }
     const a=Math.round(c.accuracy);
-    setGps('GPS accuracy ±'+a+' m'+(a>30?' (weak: wait, move into the open, or tap the map)':''), a<=10?'#2e9e5b':a<=30?'#d99a2b':'#b3452f');
+    setGps('GPS accuracy ±'+a+' m'+(a>30?' (weak: wait, or move into the open'+(form.placement!=='gps'?', or tap the map':'')+')':''), a<=10?'#2e9e5b':a<=30?'#d99a2b':'#b3452f');
   }, err=>{
-    setGps((err.code===1?'Location permission was refused. Allow it in the browser settings, or tap the map.':'No GPS fix yet ('+err.message+'). You can tap the map.'),'#b3452f');
+    setGps((err.code===1?'Location permission was refused. Allow it in the browser settings'+(form.placement!=='gps'?', or tap the map.':'.'):'No GPS fix yet ('+err.message+').'),'#b3452f');
   }, {enableHighAccuracy:true, maximumAge:3000, timeout:30000});
 
   const tapBtn=document.getElementById('clTap');
-  tapBtn.onclick=()=>{ C.tapMode=!C.tapMode; tapBtn.classList.toggle('on', C.tapMode); tapBtn.textContent=C.tapMode?'Tap a spot…':'Tap map'; };
+  if(tapBtn && form.placement!=='tap') tapBtn.onclick=()=>{ C.tapMode=!C.tapMode; tapBtn.classList.toggle('on', C.tapMode); tapBtn.textContent=C.tapMode?'Tap a spot…':'Tap map'; };
+  if(tapBtn && form.placement==='tap') tapBtn.onclick=()=>toast('Tap the spot on the map.');
   map.on('click', e=>{
     if(!C.tapMode) return;
-    C.tapMode=false; tapBtn.classList.remove('on'); tapBtn.textContent='Tap map';
+    if(form.placement!=='tap'){ C.tapMode=false; tapBtn.classList.remove('on'); tapBtn.textContent='Tap map'; }
     clOpenSheet(C, {lat:e.latlng.lat, lng:e.latlng.lng, acc:null, placed:'map'});
   });
-  document.getElementById('clAddGps').onclick=()=>{
-    if(!C.fix){ toast('No GPS fix yet. Wait a moment, or use Tap map.', 3500); return; }
+  const gpsBtn=document.getElementById('clAddGps');
+  if(gpsBtn) gpsBtn.onclick=()=>{
+    if(!C.fix){ toast('No GPS fix yet. Wait a moment'+(form.placement!=='gps'?', or use Tap map.':'.'), 3500); return; }
     clOpenSheet(C, {lat:C.fix.lat, lng:C.fix.lng, acc:C.fix.acc, placed:'gps'});
   };
   document.getElementById('clGeo').onclick=()=>clDownload(C,'geojson');
@@ -8370,7 +8713,7 @@ function clRenderList(C){
   document.getElementById('clCount').textContent=C.points.length+(C.points.length===1?' point':' points');
   const list=document.getElementById('clList');
   C.markers.clearLayers();
-  if(!C.points.length){ list.innerHTML='<p class="cl-note" style="padding:0;">None yet. Stand at a spot and tap Add point here.</p>'; return; }
+  if(!C.points.length){ list.innerHTML='<p class="cl-note" style="padding:0;">None yet.</p>'; return; }
   const photoKeys=C.form.fields.filter(x=>x.type==='photo').map(x=>x.name);
   list.innerHTML=C.points.map((p,i)=>{
     const ph=photoKeys.map(k=>p.props[k]).find(isPhotoVal);
@@ -8380,38 +8723,29 @@ function clRenderList(C){
   list.querySelectorAll('.it').forEach(b=>b.onclick=()=>{ const p=C.points.find(x=>x.id===b.dataset.id); if(p) clOpenSheet(C,p,true); });
   C.points.forEach((p,i)=>{
     L.circleMarker([p.lat,p.lng],{radius:7, color:'#fff', weight:2, fillColor:'#b3452f', fillOpacity:1})
-      .bindTooltip(String(i+1),{permanent:false}).on('click',()=>{ if(!C.tapMode) clOpenSheet(C,p,true); }).addTo(C.markers);
+      .bindTooltip(String(i+1),{permanent:false}).on('click',ev=>{ L.DomEvent.stop(ev); clOpenSheet(C,p,true); }).addTo(C.markers);
   });
 }
 function clOpenSheet(C, base, existing){
   const sheet=document.getElementById('clSheet'), sh=sheet.querySelector('.sh');
-  const vals=Object.assign({}, existing? base.props : {});
+  const vals=existing? Object.assign({}, base.props) : null;
+  const photoVals={}; C.form.fields.forEach(x=>{ if(x.type==='photo' && vals && isPhotoVal(vals[x.name])) photoVals[x.name]=vals[x.name]; });
   const loc = base.acc!=null ? 'GPS location, ±'+Math.round(base.acc)+' m'+(base.acc>30?' <span class="warn">(weak signal)</span>':'') : 'Placed by tapping the map';
   sh.innerHTML='<b style="font-size:17px;">'+(existing?'Edit point':'New point')+'</b><div class="loc">'+loc+'</div>'+
-    C.form.fields.map((x,i)=>{
-      const id='clf'+i, lab='<label class="f" for="'+id+'">'+esc(x.name)+(x.req?' <em>*</em>':'')+'</label>', v=vals[x.name];
-      if(x.type==='number') return lab+'<input type="number" inputmode="decimal" step="any" id="'+id+'" value="'+(v==null?'':esc(v))+'">';
-      if(x.type==='notes') return lab+'<textarea id="'+id+'" maxlength="1000">'+esc(v==null?'':v)+'</textarea>';
-      if(x.type==='choice') return '<label class="f">'+esc(x.name)+(x.req?' <em>*</em>':'')+'</label><div class="ch" role="radiogroup" id="'+id+'">'+
-        x.options.map(o=>'<label><input type="radio" name="'+id+'" value="'+esc(o)+'"'+(v===o?' checked':'')+'>'+esc(o)+'</label>').join('')+'</div>';
-      if(x.type==='photo') return lab+'<div class="ph" data-k="'+esc(x.name)+'"><input type="file" accept="image/*" capture="environment" id="'+id+'">'+
-        (isPhotoVal(v)?'<img src="'+v+'" alt=""><button type="button" class="phdel">Remove photo</button>':'')+'</div>'+
-        '<p class="consent">Photograph places and things, not people. Ask before photographing anyone or their property.</p>';
-      return lab+'<input type="text" id="'+id+'" maxlength="200" value="'+(v==null?'':esc(v))+'">';
-    }).join('')+
+    clFieldsHtml(C.form, vals, 'clf')+
     '<div class="row"><button id="clCancel">Cancel</button>'+(existing?'<button id="clDel">Delete</button>':'')+'<button class="pri" id="clSave">Save point</button></div>';
   sheet.classList.remove('hidden');
   C.form.fields.forEach((x,i)=>{
     if(x.type!=='photo') return;
     const box=sh.querySelector('#clf'+i).parentElement;
-    const bindDel=()=>{ const d=box.querySelector('.phdel'); if(d) d.onclick=()=>{ delete vals[x.name]; box.querySelectorAll('img,.phdel').forEach(n=>n.remove()); }; };
+    const bindDel=()=>{ const d=box.querySelector('.phdel'); if(d) d.onclick=()=>{ delete photoVals[x.name]; box.querySelectorAll('img,.phdel').forEach(n=>n.remove()); }; };
     bindDel();
     sh.querySelector('#clf'+i).onchange=async e=>{
       const file=e.target.files&&e.target.files[0]; if(!file) return;
       try{
-        vals[x.name]=await clResizePhoto(file);
+        photoVals[x.name]=await clResizePhoto(file, C.form.photoSize);
         box.querySelectorAll('img,.phdel').forEach(n=>n.remove());
-        box.insertAdjacentHTML('beforeend','<img src="'+vals[x.name]+'" alt=""><button type="button" class="phdel">Remove photo</button>');
+        box.insertAdjacentHTML('beforeend','<img src="'+photoVals[x.name]+'" alt=""><button type="button" class="phdel">Remove photo</button>');
         bindDel();
       }catch(err){ toast(err.message); }
     };
@@ -8429,10 +8763,11 @@ function clOpenSheet(C, base, existing){
     for(let i=0;i<C.form.fields.length;i++){
       const x=C.form.fields[i]; let v;
       if(x.type==='choice'){ const r=sh.querySelector('input[name="clf'+i+'"]:checked'); v=r?r.value:''; }
-      else if(x.type==='photo') v=vals[x.name]||'';
+      else if(x.type==='multi'){ v=Array.from(sh.querySelectorAll('input[name="clf'+i+'"]:checked')).map(r=>r.value).join('; '); }
+      else if(x.type==='photo') v=photoVals[x.name]||'';
       else v=sh.querySelector('#clf'+i).value.trim();
-      if(x.type==='number' && v!==''){ const n=Number(v); if(!isFinite(n)){ toast('"'+x.name+'" must be a number.'); return; } v=n; }
-      if(x.req && (v==='' || v==null)){ toast('Please fill in "'+x.name+'".'); return; }
+      if(x.type==='number' && v!==''){ const n=Number(v); if(!isFinite(n)){ toast('"'+x.label+'" must be a number.'); return; } v=n; }
+      if(x.req && (v==='' || v==null)){ toast('Please fill in "'+x.label+'".'); return; }
       props[x.name]= v===''? null : v;
     }
     const rec= existing ? Object.assign({}, base, {props}) :
@@ -8452,7 +8787,7 @@ function clFeatureCollection(C, withPhotos){
   return {type:'FeatureCollection', features:C.points.map(p=>{
     const props={};
     C.form.fields.forEach(x=>{ const v=p.props[x.name]; props[x.name]= photo.has(x.name) ? (withPhotos ? (v||null) : (v?'yes':null)) : (v==null?null:v); });
-    props.time=p.time; props.gps_acc_m=p.acc==null?null:Math.round(p.acc*10)/10; props.placed_by=p.placed;
+    props.time=p.time; props.gps_acc_m=p.acc==null?null:Math.round(p.acc*10)/10; props.placed_by=p.placed; props.point_id=p.id;
     return {type:'Feature', properties:props, geometry:{type:'Point', coordinates:[Math.round(p.lng*1e7)/1e7, Math.round(p.lat*1e7)/1e7]}};
   })};
 }
@@ -8484,13 +8819,13 @@ async function clShareFile(C){
 async function clSendQr(C){
   if(!C.points.length){ toast('No points yet.'); return; }
   try{ await loadLib('qrcode'); }catch(e){ toast(e.message, 4000); return; }
-  const enc=await encodeShare({v:1, kind:'mom-points', title:C.form.title, formId:C.form.id, fc:clFeatureCollection(C,false)});
+  const enc=await encodeShare({v:2, kind:'mom-points', title:C.form.title, formId:C.form.id, fc:clFeatureCollection(C,false)});
   const SZ=320, sid=Math.random().toString(36).slice(2,7), n=Math.ceil(enc.length/SZ);
   const frames=[]; for(let i=0;i<n;i++) frames.push(qrToCanvas('MOM1|'+sid+'|'+i+'|'+n+'|'+enc.slice(i*SZ,(i+1)*SZ), 600, 'L'));
   const ov=document.createElement('div'); ov.id='clSend';
   ov.innerHTML='<b>Hold this screen up to the laptop camera</b><div id="clSendCv"></div><div id="clSendN"></div>'+
     '<div class="row"><button id="clSlow">Slower</button><button id="clFast">Faster</button><button class="pri" id="clDone">Done</button></div>'+
-    '<p class="cl-note" style="padding:0;">On the laptop: Add data → From phone (QR). '+C.points.length+' points in '+n+' code'+(n>1?'s':'')+'. Photos travel only in the GeoJSON file. Turn the screen brightness up.</p>';
+    '<p class="cl-note" style="padding:0;">On the laptop: Field Collector → Collected data → Receive from phone. '+C.points.length+' points in '+n+' code'+(n>1?'s':'')+'. Photos travel only in the GeoJSON file. Turn the screen brightness up.</p>';
   document.getElementById('collector').appendChild(ov);
   let i=0, ms=450; const host=ov.querySelector('#clSendCv'), lab=ov.querySelector('#clSendN');
   const show=()=>{ host.innerHTML=''; host.appendChild(frames[i]); lab.textContent='Code '+(i+1)+' of '+n; i=(i+1)%n; };
@@ -8504,9 +8839,8 @@ async function clSendQr(C){
   const obs=new MutationObserver(()=>{ if(!ov.isConnected){ obs.disconnect(); if(wl) wl.release().catch(()=>{}); } });
   obs.observe(document.getElementById('collector'), {childList:true});
 }
-window.__qrRecvFrame=(t)=>qrRecv? qrRecvFrame(qrRecv,t) : (qrRecv={stream:null, stopped:false, sid:null, n:0, parts:{}, got:0}, qrRecvFrame(qrRecv,t));
-window.__collectForm=()=>collectForm;
-window.__setCollectForm=(f)=>{ collectForm=f; renderCollectPanel(); };
+window.__qrRecvFrame=(t)=>{ if(!qrRecv){ openQrReceiver(); } return qrRecvFrame(qrRecv||{stream:null, stopped:false, sid:null, n:0, parts:{}, got:0}, t); };
+window.__fc=()=>({forms:fcForms, data:fcData, sel:fcSel});
 
 /* ================= BATCH GEOCODER =================
    Turn a CSV column of addresses or place names into mapped points.
@@ -8540,7 +8874,7 @@ function renderGeocodePanel(){
           '<div class="calc-row" style="margin-top:6px;"><label>Address column</label>'+
             '<select id="gcCol">'+geocodeCols.map(c=>'<option'+(c===guessAddressCol(geocodeCols)?' selected':'')+'>'+esc(c)+'</option>').join('')+'</select></div>'+
           '<div class="calc-row"><label>Add to the search (optional) — narrows results</label>'+
-            '<input type="text" id="gcSuffix" placeholder="e.g. Kelowna, BC, Canada"></div>'+
+            '<input type="text" id="gcSuffix" placeholder="e.g. a city, region and country"></div>'+
           '<div class="kv" id="gcCount"></div>'+
           '<button class="btn small" id="gcRun" style="margin-top:6px;">Geocode '+Math.min(geocodeRows.length,GEOCODE_MAX)+' rows</button>'+
         '</div>'
@@ -8656,12 +8990,9 @@ window.__mkLayerByName=(n)=>mkLayers.find(l=>l.name===n||l.name.indexOf(n)===0);
   if(!tab||!sel) return;
   let html='<div class="acc open" id="acc-edit"><button class="acc-h">Edit features<span class="chev">▾</span></button>'+
            '<div class="acc-b"><div id="mk-edit-panel"></div></div></div>'+
-           '<div class="acc" id="acc-geocode"><button class="acc-h">Geocode addresses<span class="chev">▾</span></button>'+
-           '<div class="acc-b"><div id="mk-geocode-panel"></div></div></div>'+
-           '<div class="acc" id="acc-georef"><button class="acc-h">Georeference an image<span class="chev">▾</span></button>'+
-           '<div class="acc-b"><div id="mk-georef-panel"></div></div></div>'+
-           '<div class="acc" id="acc-collect"><button class="acc-h">Field data collection (phones)<span class="chev">▾</span></button>'+
-           '<div class="acc-b"><div id="mk-collect-panel"></div></div></div>';
+           '<div class="acc" id="acc-georef"><button class="acc-h">Georeferencing<span class="chev">▾</span></button>'+
+           '<div class="acc-b"><div class="gr-sub">Geocode addresses</div><div id="mk-geocode-panel"></div>'+
+           '<div class="gr-sub" style="border-top:1px solid var(--line);padding-top:10px;">Georeference images</div><div id="mk-georef-panel"></div></div></div>';
   Array.from(sel.children).forEach((node,i)=>{
     if(node.tagName==='OPTGROUP'){
       html+='<div class="acc'+(i===0?' open':'')+'"><button class="acc-h">'+esc(node.label)+'<span class="chev">▾</span></button><div class="acc-b">';
@@ -8678,7 +9009,6 @@ window.__mkLayerByName=(n)=>mkLayers.find(l=>l.name===n||l.name.indexOf(n)===0);
   renderEditPanel();
   renderGeocodePanel();
   renderGeorefPanel();
-  renderCollectPanel();
   tab.querySelectorAll('.tool-item').forEach(b=>{
     b.onclick=()=>{
       const op=b.getAttribute('data-op');
@@ -11866,6 +12196,7 @@ window.__layout={receiveFromMaker, canvas:()=>canvas, fabric:()=>fabric};
 /* ---------- apply project data to UI (storage handled by project manager) ---------- */
 function loadProjectData(data){
   restoring=true;
+  fcLoad(data);
   if(data.page){
     pageState.size=data.page.size||'letter';
     pageState.orientation=data.page.orientation||'portrait';
@@ -11885,7 +12216,6 @@ function loadProjectData(data){
     if(typeof endGeoref==='function') endGeoref();
     if(typeof closeCompare==='function') closeCompare();
     mkOverlays.forEach(o=>{ if(o.leaflet) try{ mkMap.removeLayer(o.leaflet); }catch(_){} });
-    collectForm=sanitizeCollectForm(data.maker.collectForm); if(typeof renderCollectPanel==='function') renderCollectPanel();
     mkOverlays=(data.maker.overlays||[]).filter(o=>o&&typeof o.src==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(o.src)&&Array.isArray(o.bounds)).map(o=>Object.assign({}, o, {leaflet:null}));
     (data.maker.layers||[]).forEach(sl=>{
       mkLayers.push(Object.assign({id:uid(), leaflet:null}, sl));
@@ -11901,11 +12231,13 @@ function loadProjectData(data){
 
 /* ---------- module switching ---------- */
 function switchModule(which){
-  ['home','maker','layout'].forEach(m=>{
+  ['home','maker','layout','collect'].forEach(m=>{
     document.getElementById('module-'+m).classList.toggle('hidden', m!==which);
   });
   document.getElementById('modMakerBtn').classList.toggle('active', which==='maker');
   document.getElementById('modLayoutBtn').classList.toggle('active', which==='layout');
+  document.getElementById('modCollectBtn').classList.toggle('active', which==='collect');
+  if(which==='collect') renderCollector();
   document.getElementById('grp-page').style.display=which==='layout'?'flex':'none';
   document.body.classList.toggle('on-home', which==='home');
   if(which==='maker' && mkMap) setTimeout(()=>mkMap.invalidateSize(), 60);
@@ -11915,6 +12247,7 @@ function switchModule(which){
 }
 document.getElementById('modMakerBtn').onclick=()=>{ requireProject(()=>switchModule('maker')); };
 document.getElementById('modLayoutBtn').onclick=()=>{ requireProject(()=>switchModule('layout')); };
+document.getElementById('modCollectBtn').onclick=()=>{ requireProject(()=>switchModule('collect')); };
 document.getElementById('btnHelp').onclick=()=>openModal('modal-help');
 document.getElementById('loPanelToggle').onclick=()=>{
   const rp=document.getElementById('rightpanel');
@@ -12554,7 +12887,7 @@ document.querySelectorAll('.online-tab').forEach(btn=>{
     document.querySelectorAll('.online-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const t=btn.getAttribute('data-t');
-    ['ne','osm','portal','bc','url'].forEach(x=>{
+    ['ne','osm','bc','url'].forEach(x=>{
       document.getElementById('online-'+x).classList.toggle('hidden', x!==t);
     });
     onlineStatus(''); hidePending();
@@ -12569,7 +12902,7 @@ function onlineStatus(msg){ document.getElementById('onlineStatus').textContent=
 function bcSourceVal(){ return document.getElementById('bcSource').value; }
 document.getElementById('bcSource').addEventListener('change', ()=>{
   const v=bcSourceVal();
-  document.getElementById('bcHubWrap').classList.toggle('hidden', v!=='hub:__custom');
+  document.getElementById('bcHubWrap').classList.toggle('hidden', !/:__custom$/.test(v));
   document.getElementById('bcAgolBCWrap').style.display = v==='agol' ? 'flex' : 'none';
   document.getElementById('bcResults').innerHTML='';
 });
@@ -12620,10 +12953,15 @@ async function runBcSearch(){
   if(!q){ onlineStatus('Enter a search term.'); return; }
   out.innerHTML=''; onlineStatus('Searching…');
   try{
-    if(v.indexOf('hub:')===0){
+    if(v.indexOf('ods:')===0){
       let host=v.slice(4);
       if(host==='__custom') host=(document.getElementById('bcHubDomain').value||'').trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
-      if(!host){ onlineStatus('Enter the Hub site address.'); return; }
+      if(!host){ onlineStatus('Enter the portal address.'); return; }
+      runPortalSearch(host, q, out);
+    } else if(v.indexOf('hub:')===0){
+      let host=v.slice(4);
+      if(host==='__custom') host=(document.getElementById('bcHubDomain').value||'').trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+      if(!host){ onlineStatus('Enter the portal address.'); return; }
       const j=await fetchJson('https://'+host+'/api/search/v1/collections/dataset/items?limit=30&q='+encodeURIComponent(q));
       const items=(j.features||[]).map(f=>f.properties||{}).filter(p=>p.url && /(Feature|Map)Server/.test(p.url));
       if(!items.length){ out.innerHTML='<div class="empty-hint">No map layers found for that search.</div>'; onlineStatus(''); return; }
@@ -12631,9 +12969,10 @@ async function runBcSearch(){
       out.querySelectorAll('.libpick-row').forEach((row,i)=>{ row.querySelector('button').onclick=()=>bcAddEsri(items[i].url, items[i].title||'layer', row); });
       onlineStatus(items.length+' layer'+(items.length===1?'':'s')+' found on '+host+'.');
     } else if(v==='agol'){
-      const bc=document.getElementById('bcAgolBC').checked;
+      let bbox='';
+      if(document.getElementById('bcAgolBC').checked && mkMap){ const bb=mkMap.getBounds(); bbox='&bbox='+[bb.getWest(),bb.getSouth(),bb.getEast(),bb.getNorth()].map(n=>Math.max(-180,Math.min(180,n)).toFixed(3)).join(','); }
       const url='https://www.arcgis.com/sharing/rest/search?f=json&num=40&sortField=numviews&sortOrder=desc&q='+
-        encodeURIComponent(q+' (type:"Feature Service" OR type:"Map Service") -type:"Service Definition"')+(bc?'&bbox=-139.1,48.2,-114.0,60.0':'');
+        encodeURIComponent(q+' (type:"Feature Service" OR type:"Map Service") -type:"Service Definition"')+bbox;
       const j=await fetchJson(url);
       const items=(j.results||[]).filter(r=>r.url && r.access==='public');
       if(!items.length){ out.innerHTML='<div class="empty-hint">No public layers found for that search.</div>'; onlineStatus(''); return; }
@@ -12817,25 +13156,12 @@ document.getElementById('osmAddBtn').onclick=()=>{
     .catch(err=>onlineStatus('Query failed: '+err.message));
 };
 
-/* ---------- open data portal search (Opendatasoft) ---------- */
-document.getElementById('portalDomain').addEventListener('change', e=>{
-  document.getElementById('portalCustomWrap').classList.toggle('hidden', e.target.value!=='__custom');
-});
-function portalHost(){
-  const v=document.getElementById('portalDomain').value;
-  if(v!=='__custom') return v;
-  return (document.getElementById('portalCustom').value||'').trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
-}
-function runPortalSearch(){
-  const host=portalHost();
-  const q=(document.getElementById('portalQ').value||'').trim();
-  if(!host){ onlineStatus('Enter a portal domain.'); return; }
-  if(!q){ onlineStatus('Enter a search term.'); return; }
+/* ---------- open data portal search (Opendatasoft), run from the Open data portals tab ---------- */
+function runPortalSearch(host, q, el){
   onlineStatus('Searching '+host+'…');
   const url='https://'+host+'/api/explore/v2.1/catalog/datasets?limit=20&search='+encodeURIComponent(q);
   fetchJson(url).then(data=>{
     const results=(data.results||[]).filter(r=>(r.features||[]).includes('geo'));
-    const el=document.getElementById('portalResults');
     if(!results.length){
       el.innerHTML='<div class="empty-hint">No mappable datasets found for that search'+((data.results||[]).length?' (some matches had no geometry)':'')+'.</div>';
       onlineStatus('');
@@ -12874,14 +13200,13 @@ function runPortalSearch(){
         } else dl();
       };
     });
-  }).catch(err=>onlineStatus('Search failed: '+err.message+' — check the portal domain.'));
+  }).catch(err=>onlineStatus('Search failed: '+err.message+'. Check the portal address.'));
 }
 function resetPendingHandlers(){
   document.getElementById('onlineLoadAll').onclick=()=>{ if(onlinePending&&onlinePending.gj) onlineFinish(onlinePending.gj, onlinePending.name, onlinePending.source); };
   document.getElementById('onlineLoadSome').onclick=()=>{ if(onlinePending&&onlinePending.gj) onlineFinish(onlinePending.gj, onlinePending.name, onlinePending.source, ONLINE_CAP); };
 }
-document.getElementById('portalSearchBtn').onclick=runPortalSearch;
-document.getElementById('portalQ').addEventListener('keydown', e=>{ if(e.key==='Enter') runPortalSearch(); });
+
 
 /* ---------- from URL ---------- */
 async function fetchEsriAll(base, token){
@@ -12960,7 +13285,11 @@ document.getElementById('urlAddBtn').onclick=()=>{
 
    Uses the File System Access API, so it needs Chrome or Edge. The handle is
    kept in IndexedDB and survives reloads (the browser re-asks for permission). */
-const SYNC_EXT='.cartostudio.json';
+const SYNC_EXT='.mapomatic.json';
+/* files written before the rename are still read; saving renames them */
+const SYNC_EXT_OLD='.cartostudio.json';
+const SYNC_RE=/--([a-z0-9]+)\.(mapomatic|cartostudio)\.json$/i;
+function isSyncFile(name){ return name.endsWith(SYNC_EXT)||name.endsWith(SYNC_EXT_OLD); }
 let syncDir=null;               /* FileSystemDirectoryHandle */
 let syncWriteTimer=null, syncBusy=false, lastSyncAt=0;
 const syncSeen={};              /* projectId -> lastModified we last read/wrote */
@@ -13041,7 +13370,7 @@ function syncFileName(rec){
 }
 function syncPayload(rec){
   const usedIds=Array.from(new Set(((rec.maker||{}).layers||[]).map(l=>l.datasetId).filter(Boolean)));
-  return {version:4, app:'carto-studio', savedAt:Date.now(), project:rec,
+  return {version:4, app:'map-o-matic', savedAt:Date.now(), project:rec,
     datasets: usedIds.map(did=>{
       const d=datasetById(did);
       return d? {id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived} : null;
@@ -13085,7 +13414,7 @@ async function syncFilesForId(id){
   const out=[];
   try{
     for await (const [name, handle] of syncDir.entries()){
-      if(handle.kind==='file' && name.endsWith('--'+id+SYNC_EXT)){ const f=await handle.getFile(); out.push({name, handle, file:f}); }
+      if(handle.kind==='file' && (name.endsWith('--'+id+SYNC_EXT)||name.endsWith('--'+id+SYNC_EXT_OLD))){ const f=await handle.getFile(); out.push({name, handle, file:f}); }
     }
   }catch(_){}
   return out.sort((a,b)=>b.file.lastModified-a.file.lastModified);
@@ -13095,7 +13424,7 @@ async function syncMoveToDeleted(name){
   const sub=await syncDir.getDirectoryHandle('_deleted',{create:true});
   const fh=await syncDir.getFileHandle(name);
   let target=name;
-  try{ await sub.getFileHandle(target); target=name.replace(SYNC_EXT,'')+'--'+Date.now()+SYNC_EXT; }catch(_){}
+  try{ await sub.getFileHandle(target); target=name.replace(SYNC_RE, m=>m.replace(/\.(mapomatic|cartostudio)\.json$/i,''))+'--'+Date.now()+SYNC_EXT; }catch(_){}
   try{ if(typeof fh.move==='function'){ await fh.move(sub, target); return; } }catch(_){}
   const f=await fh.getFile();
   const nf=await sub.getFileHandle(target,{create:true});
@@ -13180,16 +13509,25 @@ async function syncScanFolder(){
   if(!ok) return syncFolderProjects;
   try{
     for await (const [name, handle] of syncDir.entries()){
-      if(handle.kind!=='file' || !name.endsWith(SYNC_EXT)) continue;
+      if(handle.kind!=='file' || !isSyncFile(name)) continue;
       const f=await handle.getFile();
-      const m=name.match(/--([a-z0-9]+)\.cartostudio\.json$/i);
+      const m=name.match(SYNC_RE);
       syncFolderProjects.push({
         fileName:name, handle, modified:f.lastModified, size:f.size,
         id:m?m[1]:null,
-        name:name.replace(/--[a-z0-9]+\.cartostudio\.json$/i,'').replace(/-/g,' ')
+        name:name.replace(SYNC_RE,'').replace(/-/g,' ')
       });
     }
   }catch(_){}
+  /* an old-name and a new-name file for the same project: list the newer one */
+  const byId={};
+  syncFolderProjects=syncFolderProjects.filter(p=>{
+    if(!p.id) return true;
+    const prev=byId[p.id];
+    if(!prev){ byId[p.id]=p; return true; }
+    if(p.modified>prev.modified){ Object.assign(prev,p); }
+    return false;
+  });
   syncFolderProjects.sort((a,b)=>b.modified-a.modified);
   return syncFolderProjects;
 }
@@ -13517,9 +13855,9 @@ function serializeCurrentProject(){
       view: mkMap? {center:[mkMap.getCenter().lat, mkMap.getCenter().lng], zoom:mkMap.getZoom()} : null,
       layers: mkLayers.map(l=>({name:l.name, geom:l.geom, visible:l.visible, opacity:l.opacity,
         style:l.style, labels:l.labels, filter:l.filter, datasetId:l.datasetId})),
-      overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit})),
-      collectForm: collectForm
-    }
+      overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit}))
+    },
+    collector: fcSerialize()
   };
 }
 function saveCurrentProject(showToast){
@@ -13550,7 +13888,7 @@ function applyProjectRecord(rec){
     if(!ds){ missing++; return null; }
     return Object.assign({}, sl, {geojson:ds.geojson});
   }).filter(Boolean);
-  const data={page:rec.page, canvasJSON:rec.canvasJSON,
+  const data={page:rec.page, canvasJSON:rec.canvasJSON, collector:rec.collector,
     maker:Object.assign({}, rec.maker, {layers})};
   loadProjectData(data);
   history.stack=[]; history.idx=-1; histImages.length=0; histImageIdx.clear();
@@ -13626,9 +13964,9 @@ function exportProjectFile(id){
   const rec=(id===currentProjectId)? serializeCurrentProject() : projectsCache.find(p=>p.id===id);
   if(!rec) return;
   const usedIds=Array.from(new Set(((rec.maker||{}).layers||[]).map(l=>l.datasetId).filter(Boolean)));
-  const payload={version:4, app:'carto-studio', project:rec,
+  const payload={version:4, app:'map-o-matic', project:rec,
     datasets: usedIds.map(did=>{ const d=datasetById(did); return d? {id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}:null; }).filter(Boolean)};
-  downloadBlob(rec.name.replace(/[^a-z0-9\-_]+/gi,'_')+'.cartoproj.json',
+  downloadBlob(rec.name.replace(/[^a-z0-9\-_]+/gi,'_')+'.mapomatic-project.json',
     new Blob([JSON.stringify(payload)],{type:'application/json'}));
   noteProjectExported(rec.id);
   toast('Project file downloaded (datasets embedded — portable to any computer).');
@@ -14168,7 +14506,7 @@ function embedLayerData(lyr, compact){
   }
   const feats=visibleFeatures(lyr).map(f=>({
     type:'Feature',
-    properties:Object.assign(stripPhotos(f.properties), {_cs:bakeFeatureStyle(lyr,f,compact)}),
+    properties:Object.assign({}, f.properties, {_cs:bakeFeatureStyle(lyr,f,compact)}),
     geometry: compact ? roundGeom(f.geometry, 5) : f.geometry
   }));
   return {name:lyr.name, geom:lyr.geom, fc:{type:'FeatureCollection', features:feats}};
@@ -14228,7 +14566,7 @@ ${bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${b
 function styleFn(f){var s=f.properties._cs||{};return{color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};}
 function ptLayer(f,ll){var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]})});}return L.circleMarker(ll,{radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo});}
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+E(p[k])+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
+function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src=\"'+v+'\" alt=\"\" style=\"max-width:220px;max-height:200px;display:block\">':E(v))+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
 function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,0],n:['top',0,-d],s:['bottom',0,d],e:['right',d,0],w:['left',-d,0],ne:['right',d,-d],se:['right',d,d],nw:['left',-d,-d],sw:['left',-d,d]};var p=P[lb.p]||P.ne;return{direction:p[0],offset:[p[1],p[2]]};}
 function label(f,layer,lb,li){if(!lb||!lb.f)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
@@ -14342,7 +14680,7 @@ function runExport(fmt, name, dpi){
     if(mkLayers.length) layersToZip(zip, zip.folder('layers'));
     const rec=serializeCurrentProject();
     const usedIds=Array.from(new Set(mkLayers.map(l=>l.datasetId).filter(Boolean)));
-    zip.file(name+'.cartoproj.json', JSON.stringify({version:4, app:'carto-studio', project:rec,
+    zip.file(name+'.mapomatic-project.json', JSON.stringify({version:4, app:'map-o-matic', project:rec,
       datasets: usedIds.map(did=>{ const d=datasetById(did); return d?{id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}:null; }).filter(Boolean)}));
     zip.generateAsync({type:'blob'}).then(blob=>{ downloadBlob(name+'_archive.zip', blob); toast('Project archive exported.'); noteProjectExported(rec.id); })
       .catch(err=>toast('Archive failed: '+err.message, 6000));
@@ -14506,7 +14844,7 @@ function svPtLayer(f,ll){ const s=f.properties._cs||{};
   return L.circleMarker(ll,{radius:svNum(s.r,5,0.5,200), color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40), opacity:svNum(s.so,1,0,1),
     fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.8,0,1)}); }
 function svPopup(f,layer){ const p=f.properties||{}; let r='';
-  for(const k in p){ if(k.charAt(0)==='_') continue; r+='<tr><td class="k">'+esc(k)+'</td><td>'+(p[k]==null?'':esc(String(p[k])))+'</td></tr>'; }
+  for(const k in p){ if(k.charAt(0)==='_') continue; r+='<tr><td class="k">'+esc(k)+'</td><td>'+(isPhotoVal(p[k])?'<img src="'+p[k]+'" alt="" style="max-width:220px;max-height:200px;display:block;">':(p[k]==null?'':esc(String(p[k]))))+'</td></tr>'; }
   if(r) layer.bindPopup('<div class="sv-popup"><table>'+r+'</table></div>'); }
 /* labels carried across from Map Maker, with the same offset/position */
 function svInjectLabelCss(li, lbl){
@@ -14578,7 +14916,7 @@ async function enterShareViewer(){
    holding the OAuth client secret — the one piece a static page can't keep), then
    talk to GitHub's CORS-enabled REST API directly to commit the file and enable
    Pages. If not configured, the button explains that and the Netlify route stays. */
-function cfgPublish(){ return Object.assign({clientId:'', gatekeeper:'', repo:'carto-maps'}, window.CARTO_PUBLISH||{}); }
+function cfgPublish(){ return Object.assign({clientId:'', gatekeeper:'', repo:'map-o-matic-maps'}, window.CARTO_PUBLISH||{}, window.MAPOMATIC_PUBLISH||{}); }
 function ghToken(){ try{ return sessionStorage.getItem('cs_gh_token'); }catch(_){ return null; } }
 function b64EncodeUtf8(str){
   const bytes=new TextEncoder().encode(str); let bin=''; const ch=0x8000;
@@ -14654,7 +14992,7 @@ async function doGhPublish(){
   const st=document.getElementById('ghStatus'), res=document.getElementById('ghResult'), btn=document.getElementById('ghPublishBtn');
   if(btn) btn.disabled=true; if(res) res.textContent='';
   try{
-    const url=await ghPublish(ghToken(), html, embedFileName, cfgPublish().repo||'carto-maps', m=>{ if(st) st.textContent=m; });
+    const url=await ghPublish(ghToken(), html, embedFileName, cfgPublish().repo||'map-o-matic-maps', m=>{ if(st) st.textContent=m; });
     if(st) st.textContent='';
     if(res) res.innerHTML='Published: <a href="'+esc(url)+'" target="_blank" rel="noopener">'+esc(url)+'</a><br><span class="kv">GitHub Pages can take a minute to go live the first time.</span>';
     setEmbedSnippet(url);
@@ -14670,7 +15008,7 @@ function renderGhPublishBox(){
   const box=document.getElementById('ghPublishBox'); if(!box) return;
   const c=cfgPublish();
   if(!c.clientId || !c.gatekeeper){
-    box.innerHTML='<div class="kv">One-click GitHub publishing isn’t enabled on this copy — use the Netlify Drop steps above. An instructor can switch it on (see the publishing setup guide).</div>';
+    box.innerHTML='<div class="kv">One-click GitHub publishing isn’t enabled on this copy — use the Netlify Drop steps above. Whoever hosts this copy can switch it on (see the publishing setup guide).</div>';
     return;
   }
   if(!ghToken()){

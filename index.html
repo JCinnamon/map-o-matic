@@ -36,7 +36,7 @@
      (search results, selection actions) render behind the map. */
   #topbar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:var(--navy);color:#fff;flex-wrap:wrap;position:relative;z-index:900;}
   #topbar h1{font-size:15px;font-weight:600;margin:0 8px 0 0;white-space:nowrap;}
-  .mod-tabs{display:flex;background:#111d38;border-radius:7px;padding:3px;gap:3px;}
+  .mod-tabs{display:flex;background:#111d38;border-radius:7px;padding:3px;gap:3px;margin-right:18px;}
   .mod-tabs button{background:transparent;border:none;color:#aab6d4;font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:5px;}
   .mod-tabs button.active{background:var(--teal);color:#fff;}
   #topbar .grp{display:flex;align-items:center;gap:5px;padding:0 6px;border-right:1px solid rgba(255,255,255,.18);}
@@ -44,6 +44,8 @@
   #topbar .btn.small{padding:4px 7px;}
   @media (max-width:1500px){ #topbar .grp{gap:4px;padding:0 4px;} #topbar .btn.small{padding:4px 6px;} }
   @media (max-width:1420px){ #topbar label{display:none;} #syncState{display:none;} #topbar select{max-width:120px;} }
+  @media (max-width:1480px){ .mod-tabs button{padding:5px 9px;} .mod-tabs{margin-right:12px;} }
+  @media (max-width:1400px){ #wordmark .wm-t{display:none;} #topbar select{max-width:104px;} }
   #topbar .grp:last-child{border-right:none;margin-left:auto;}
   #topbar label{font-size:11px;color:#c9d2e6;}
   #topbar select{padding:3px 5px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;}
@@ -250,6 +252,16 @@
   .cl-qr{margin:6px 0;} .cl-qr canvas{image-rendering:pixelated;border:1px solid var(--line);}
   .qr-cam{background:#111;border-radius:6px;overflow:hidden;aspect-ratio:4/3;} .qr-cam video{width:100%;height:100%;object-fit:cover;display:block;}
   .qr-prog{height:8px;background:#e3e6eb;border-radius:4px;margin-top:8px;overflow:hidden;} .qr-prog div{height:100%;width:0;background:#2f7d78;transition:width .2s;}
+  .mk-pop-audio{width:230px;height:34px;display:block;margin-top:3px;}
+  .rx-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:6px 0 10px;}
+  .rx-col{display:flex;flex-direction:column;gap:8px;}
+  .rx-step{font-size:13px;line-height:1.4;display:flex;gap:8px;align-items:flex-start;}
+  .rx-step span{flex:none;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-size:12px;}
+  .rx-qr{display:flex;align-items:center;justify-content:center;min-height:240px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--muted);font-size:13px;}
+  .rx-qr canvas{image-rendering:pixelated;}
+  .fc-geoms{display:flex;gap:16px;flex-wrap:wrap;margin-top:3px;} .fc-geoms label{display:flex;gap:5px;align-items:center;color:var(--text);font-size:13px;}
+  .fc-phone .cl-top small{margin-bottom:1px;}
+  .fc-pts audio{height:30px;width:200px;display:block;}
   .mk-pop-photo{width:220px;height:auto;max-height:220px;object-fit:contain;display:block;margin-top:3px;border-radius:4px;}
   #module-collect{display:flex;background:#f4f6f9;}
   .fc-left{width:230px;flex:none;border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;gap:8px;padding:14px 12px;overflow:auto;}
@@ -424,6 +436,14 @@
   #rampBody textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:5px;font-size:12px;font-family:monospace;}
 
   #mk-left.collapsed,#mk-right.collapsed{display:none;}
+  .sp-collapsed{display:none !important;}
+  #mk-center,#module-layout > main,.fc-main{isolation:isolate;}
+  .splitter{flex:none;width:9px;margin:0 -4px;position:relative;cursor:col-resize;z-index:40;touch-action:none;}
+  .splitter::before{content:"";position:absolute;top:0;bottom:0;left:4px;width:1px;background:transparent;transition:background .15s;}
+  .splitter:hover::before,.splitter.dragging::before{background:var(--teal);width:3px;left:3px;}
+  .splitter.closed{margin:0;width:12px;background:#eef1f6;border-left:1px solid var(--line);border-right:1px solid var(--line);}
+  .splitter-tab{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:15px;height:46px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff;color:#56627a;font-size:13px;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 1px 4px rgba(20,30,50,.15);}
+  .splitter-tab:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
 
   /* ---------- home / projects ---------- */
   #module-home{overflow-y:auto;background:var(--bg);}
@@ -553,7 +573,7 @@
   #guideV{width:1px;top:0;bottom:0;} #guideH{height:1px;left:0;right:0;}
   .embed-frame{position:absolute;z-index:30;border:0;pointer-events:none;}
   .embed-frame.interactive{pointer-events:auto;}
-  #rightpanel{width:340px;min-width:250px;max-width:560px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
+  #rightpanel{width:340px;min-width:250px;max-width:600px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
   #loPanelResize{position:absolute;top:0;left:-3px;width:6px;height:100%;cursor:col-resize;z-index:25;}
   #loPanelResize:hover,#loPanelResize.dragging{background:var(--teal);opacity:.5;}
   #rightpanel.collapsed #loPanelResize{display:none;}
@@ -685,11 +705,11 @@
 <body>
 
 <div id="topbar">
-  <h1 id="wordmark" title="Back to projects home" role="button" tabindex="0">🗺️ Map-O-Matic</h1>
+  <h1 id="wordmark" title="Back to projects home" role="button" tabindex="0">🗺️ <span class="wm-t">Map-O-Matic</span></h1>
   <div class="mod-tabs">
     <button id="modMakerBtn" class="active">Map Maker</button>
     <button id="modLayoutBtn">Map Composer</button>
-    <button id="modCollectBtn">Field Collector</button>
+    <button id="modCollectBtn">Field Mapper</button>
   </div>
   <div class="grp" id="grp-page">
     <label>Page</label>
@@ -894,12 +914,10 @@
     <div class="sec" style="border-bottom:none;padding-bottom:4px;"><h3>Layers</h3></div>
     <div id="mk-layerlist"><div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div></div>
     <div id="mk-overlaylist"></div>
-    <div id="mkLeftResize" class="panel-resize-handle" title="Drag to resize"></div>
   </aside>
 
   <div id="mk-center">
     <div id="mk-toolbar">
-      <button class="btn light small" id="mkToggleLeft" title="Show or hide the layers panel">⟨ Layers</button>
       <button class="btn light small" id="mkUndo" title="Undo (Ctrl+Z)" disabled>↩</button>
       <button class="btn light small" id="mkRedo" title="Redo (Ctrl+Shift+Z)" disabled>↪</button>
       <span class="kv" id="mkStatus"></span>
@@ -910,7 +928,6 @@
         <button class="btn light small" id="mkSelClear" title="Clear selection">✕</button>
       </span>
       <button class="btn small" id="mkSendBtn">Send to Composer ▸</button>
-      <button class="btn light small" id="mkToggleRight" title="Show or hide the style panel">Menu ⟩</button>
     </div>
     <div id="mk-map"></div>
     <div id="mk-proj" class="hidden">
@@ -981,11 +998,9 @@
   </main>
 
   <aside id="rightpanel">
-    <div id="loPanelResize" title="Drag to resize"></div>
     <div class="tabs" id="lo-tabs">
       <button class="tab-btn active" data-tab="props">Properties</button>
       <button class="tab-btn" data-tab="layers">Elements</button>
-      <span class="panel-tools"><button id="loPanelToggle" title="Hide menu">Menu ⟩</button></span>
     </div>
     <div id="tab-props" class="tabcontent">
       <div class="empty-hint">Select an object on the page to edit it, or use the tools on the left to add a new one.</div>
@@ -1004,12 +1019,12 @@
       <p style="margin-top:6px;"><b>B. Bring your own map image.</b> Made a map elsewhere (any GIS or graphics software)? Export it as an image and upload it in the Layout module via <b>Map Frame</b>, then calibrate the scale bar by drawing a reference line of known distance.</p>
     </div>
     <div class="help-step"><b>Map Maker basics.</b>
-      <p>The <b>+ Add data</b> menu takes uploads (GeoJSON, CSV or Excel with coordinate columns, zipped shapefile), your data library, and online sources: Natural Earth base layers, OpenStreetMap features for your map area, open-data portal search (Opendatasoft and ArcGIS Hub sites, ArcGIS Online), or any GeoJSON/CSV/feature-service URL. Select a layer to set its symbology (single, categories, graduated colour with equal interval / quantile / natural breaks / manual classification, graduated symbol size), filters, and labels. The attribute table includes the filter builder and Field Calculator (e.g. <i>rate = count / population * 1000</i>). Spatial tools: join a table (CSV, Excel or another layer) by a shared field, buffer, select by location, points-in-polygons statistics, clip, erase, intersect, union, dissolve, merge, centroids, convex hull, bounding box, simplify, nearest-neighbour join, and distance matrix. The ⬇ button on each layer exports valid GeoJSON or CSV, including calculated fields. The ⟨ ⟩ buttons collapse the side panels.</p>
+      <p>The <b>+ Add data</b> menu takes uploads (GeoJSON, CSV or Excel with coordinate columns, zipped shapefile), your data library, and online sources: Natural Earth base layers, OpenStreetMap features for your map area, open-data portal search (Opendatasoft and ArcGIS Hub sites, ArcGIS Online), or any GeoJSON/CSV/feature-service URL. Select a layer to set its symbology (single, categories, graduated colour with equal interval / quantile / natural breaks / manual classification, graduated symbol size), filters, and labels. The attribute table includes the filter builder and Field Calculator (e.g. <i>rate = count / population * 1000</i>). Spatial tools: join a table (CSV, Excel or another layer) by a shared field, buffer, select by location, points-in-polygons statistics, clip, erase, intersect, union, dissolve, merge, centroids, convex hull, bounding box, simplify, nearest-neighbour join, and distance matrix. The ⬇ button on each layer exports valid GeoJSON or CSV, including calculated fields. Drag the divider beside a side panel to resize it, or click the small ‹ › tab on the divider to hide or show it.</p>
       <p><b>Process log.</b> The 📝 Process Log button lists every data step you took (data added, filters, tools, joins, calculations, edits, exports) and the current design settings, ready to copy into a report.</p>
       <p><b>Coordinates in metres?</b> If a CSV's X/Y columns hold UTM or other projected values in metres, Map-O-Matic asks which coordinate system they use, shows where the data would land, and converts them. Rows at 0,0 or with blank coordinates are skipped and counted in the report.</p>
     </div>
-    <div class="help-step"><b>Field Collector.</b>
-      <p>The <b>Field Collector</b> module designs forms for collecting points with phones: text, numbers, dates, choices, notes and photos. <b>Make link &amp; QR code</b> opens the form on any phone browser, where each point records its GPS location (or a spot tapped on the map) with the answers. Points come back through the laptop's webcam (<b>Collected data → Receive from phone</b>) or as a GeoJSON/CSV file, and <b>Send to Map Maker</b> turns them into a layer.</p>
+    <div class="help-step"><b>Field Mapper.</b>
+      <p>The <b>Field Mapper</b> module designs forms for mapping with phones: points, lines and areas, with text, numbers, dates, choices, notes, photos and audio. <b>Make link &amp; QR code</b> opens the form on any phone browser, where features are placed by GPS (walking lines and boundaries) or by tapping the map. Data come back over a direct link set up by scanning QR codes (<b>Collected data → Receive from phone</b>), as text-only QR codes, or as a GeoJSON/CSV file, and <b>Send to Map Maker</b> turns them into layers.</p>
     </div>
     <div class="help-step"><b>Projections.</b>
       <p>The <b>Projection</b> selector switches the map from the Web Mercator editing view into any of 13 projections — world (Equal Earth, Robinson, Winkel Tripel, Mollweide, Mercator, Orthographic), regional conic (Albers, Lambert Conformal, with adjustable centre and standard parallels), azimuthal (Equidistant, Stereographic), and historical (Gall–Peters, Goode, Bonne). Projected view draws your vector layers with an optional graticule and world-land backdrop; raster basemaps can't be reprojected in the browser, so they hide. Send to Composer captures the projected map (scale bars don't apply — scale varies across a projection).</p>
@@ -2965,16 +2980,6 @@ function setBasemap(key){
 }
 document.getElementById('mkBasemap').addEventListener('change', e=>setBasemap(e.target.value));
 window.__setBasemap=setBasemap;      /* automated-testing hook */
-
-/* ---------- collapsible panels ---------- */
-function togglePanel(id, btnId, openLabel, closedLabel){
-  const p=document.getElementById(id);
-  p.classList.toggle('collapsed');
-  document.getElementById(btnId).textContent = p.classList.contains('collapsed') ? closedLabel : openLabel;
-  setTimeout(()=>{ if(mkMap) mkMap.invalidateSize(); }, 220);
-}
-document.getElementById('mkToggleLeft').onclick=()=>togglePanel('mk-left','mkToggleLeft','⟨ Layers','⟩ Layers');
-document.getElementById('mkToggleRight').onclick=()=>togglePanel('mk-right','mkToggleRight','Menu ⟩','⟨ Menu');
 
 /* ---------- add-data menu ---------- */
 const addMenuList=document.getElementById('mkAddMenuList');
@@ -5330,37 +5335,6 @@ function featuresToCSV(lyr, feats){
   clr.onclick=()=>clearSelection();
 })();
 
-/* ---------- resizable Layers panel ---------- */
-(function(){
-  const MK_LEFT_W_KEY='cartoStudio_mkLeftWidth';
-  const left=document.getElementById('mk-left');
-  const handle=document.getElementById('mkLeftResize');
-  if(!left||!handle) return;
-  const saved=parseInt(localStorage.getItem(MK_LEFT_W_KEY),10);
-  if(saved && saved>=190 && saved<=480) left.style.width=saved+'px';
-  let dragging=false, startX=0, startW=0;
-  handle.addEventListener('mousedown', e=>{
-    dragging=true; startX=e.clientX; startW=left.getBoundingClientRect().width;
-    handle.classList.add('dragging');
-    document.body.style.userSelect='none';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    const w=Math.max(190, Math.min(480, startW + (e.clientX-startX)));
-    left.style.width=w+'px';
-    if(mkMap) mkMap.invalidateSize();
-  });
-  window.addEventListener('mouseup', ()=>{
-    if(!dragging) return;
-    dragging=false;
-    handle.classList.remove('dragging');
-    document.body.style.userSelect='';
-    localStorage.setItem(MK_LEFT_W_KEY, Math.round(left.getBoundingClientRect().width));
-    if(mkMap) mkMap.invalidateSize();
-  });
-})();
-
 /* ---------- layer export (valid GeoJSON / CSV) ---------- */
 function openExportLayer(preselectId){
   if(!mkLayers.length){ toast('No layers to export.'); return; }
@@ -7036,6 +7010,7 @@ function renderAttrTable(){
           const has=pend!==undefined;
           const v=has? pend : (f.properties||{})[c];
           if(isPhotoVal(v)) return '<td data-c="'+esc(c)+'" class="photo-td"><img src="'+v+'" alt="Photo" style="height:36px;border-radius:3px;display:block;"></td>';
+          if(isAudioVal(v)) return '<td data-c="'+esc(c)+'" class="photo-td"><audio controls preload="none" src="'+v+'" style="height:28px;width:170px;display:block;"></audio></td>';
           return '<td data-c="'+esc(c)+'"'+(editMode?' contenteditable="true"':'')+(has?' class="pending"':'')+'>'+esc(v)+'</td>';
         }).join('')+'</tr>';
       }).join('');
@@ -8046,29 +8021,36 @@ function endGeoref(){
   document.getElementById('mk-map').classList.remove('georef-mode');
   geoRef=null; renderGeorefPanel();
 }
-/* ================= FIELD COLLECTOR (v43) =================
+/* ================= FIELD MAPPER (v43, renamed and extended in v44) =================
    A module of its own. Forms are designed on the laptop and travel to phones
    inside a link (#c=…), so nothing is uploaded anywhere. Phones keep their points
    in their own browser storage and hand them back as a run of QR codes read by
    the laptop's webcam, or as a GeoJSON/CSV file. Received data sits in the
    module until it is sent to Map Maker as a layer. */
-const COLLECT_TYPES={text:'Short text', number:'Number', choice:'Choice (one)', multi:'Choice (several)', date:'Date', notes:'Long notes', photo:'Photo'};
-const COLLECT_RESERVED=['lat','lng','time','gps_acc_m','placed_by','point_id','source'];
+const COLLECT_TYPES={text:'Short text', number:'Number', choice:'Choice (one)', multi:'Choice (several)', date:'Date', notes:'Long notes', photo:'Photo', audio:'Audio recording'};
+const COLLECT_RESERVED=['lat','lng','time','gps_acc_m','placed_by','point_id','source','length_m','area_m2','geometry','wkt'];
+const GEOM_LABEL={point:'Point', line:'Line', polygon:'Area'};
+const AUDIO_MAX=[30,60,120,300];
 const COLLECT_DEFAULT_BASE='https://www.jonathancinnamon.com/map-o-matic/';
 const PHOTO_SIZES=[640,800,1200,1600];
 const PHOTO_RE=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 function isPhotoVal(v){ return typeof v==='string' && v.length>30 && v.length<4e6 && v.charCodeAt(0)===100 && PHOTO_RE.test(v); }
+const AUDIO_RE=/^data:audio\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[a-z0-9=.+-]+)*;base64,[A-Za-z0-9+/=]+$/;
+function isAudioVal(v){ return typeof v==='string' && v.length>30 && v.length<1.2e7 && v.charCodeAt(0)===100 && AUDIO_RE.test(v); }
+function isMediaVal(v){ return isPhotoVal(v)||isAudioVal(v); }
+const MEDIA_LEFT='(on phone, not sent)';
 function makerPopupHtml(p){
   return Object.keys(p).slice(0,14).map(k=>{
     const v=p[k];
     if(isPhotoVal(v)) return '<b>'+esc(k)+':</b><br><img class="mk-pop-photo" src="'+v+'" alt="Photo: '+esc(k)+'">';
+    if(isAudioVal(v)) return '<b>'+esc(k)+':</b><br><audio class="mk-pop-audio" controls preload="none" src="'+v+'"></audio>';
     return '<b>'+esc(k)+':</b> '+esc(v);
   }).join('<br>');
 }
 let fcForms=[], fcData=[], fcSel=null, fcTab='design', fcView=null, fcChecked=new Set();
 function fcSlug(s){ return String(s||'').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'_').replace(/^_+|_+$/g,'').slice(0,40); }
 function newCollectForm(){
-  return {id:uid(), title:'New survey', intro:'', photoSize:800, placement:'both', fields:[
+  return {id:uid(), title:'New survey', intro:'', photoSize:800, audioMax:60, placement:'both', geoms:['point'], fields:[
     {name:'category', label:'Category', type:'choice', options:['Option A','Option B','Option C'], req:true, help:'', def:''},
     {name:'notes', label:'Notes', type:'notes', options:[], req:false, help:'', def:''},
     {name:'photo', label:'Photo', type:'photo', options:[], req:false, help:'', def:''}]};
@@ -8092,12 +8074,14 @@ function sanitizeCollectForm(f){
     if(type==='choice' && def && !options.includes(def)) def='';
     if(type==='multi') def=def.split(';').map(s=>s.trim()).filter(s=>options.includes(s)).join('; ');
     if(type==='date' && def && !/^\d{4}-\d{2}-\d{2}$/.test(def) && def!=='today') def='';
-    if(type==='photo') def='';
+    if(type==='photo'||type==='audio') def='';
     return {name, label:str(x.label,80).replace(/\n/g,' ')||name, type, options, req:!!x.req, help:str(x.help,200).replace(/\n/g,' '), def};
   }).filter(Boolean);
   return {id:(str(f.id,40).replace(/[^A-Za-z0-9_-]/g,''))||uid(), title:str(f.title,80).replace(/\n/g,' ')||'Field survey',
     intro:str(f.intro,600), photoSize:PHOTO_SIZES.includes(+f.photoSize)?+f.photoSize:800,
-    placement:['both','gps','tap'].includes(f.placement)?f.placement:'both', fields};
+    placement:['both','gps','tap'].includes(f.placement)?f.placement:'both',
+    geoms:(Array.isArray(f.geoms)?['point','line','polygon'].filter(g=>f.geoms.includes(g)):[]).concat([]).length ? ['point','line','polygon'].filter(g=>f.geoms.includes(g)) : ['point'],
+    audioMax:AUDIO_MAX.includes(+f.audioMax)?+f.audioMax:60, fields};
 }
 function collectBase(){
   let b=''; try{ b=localStorage.getItem('mom_collect_base')||''; }catch(_){}
@@ -8133,6 +8117,8 @@ function clFieldsHtml(form, vals, pre){
     }
     if(x.type==='photo') return lab+'<div class="ph" data-k="'+esc(x.name)+'"><input type="file" accept="image/*" capture="environment" id="'+id+'">'+
       (isPhotoVal(v)?'<img src="'+v+'" alt=""><button type="button" class="phdel">Remove photo</button>':'')+'</div>';
+    if(x.type==='audio') return lab+'<div class="au" data-k="'+esc(x.name)+'" id="'+id+'"><div class="au-row"><button type="button" class="au-rec">● Record</button><span class="au-t">'+(isAudioVal(v)?'Recorded':'Up to '+form.audioMax+' s')+'</span></div>'+
+      (isAudioVal(v)?'<audio controls src="'+v+'"></audio><button type="button" class="audel">Remove recording</button>':'')+'</div>';
     return lab+'<input type="text" id="'+id+'" maxlength="300" value="'+(v==null?'':esc(v))+'">';
   }).join('');
 }
@@ -8154,7 +8140,7 @@ function renderFcForms(){
   const box=document.getElementById('fcFormList');
   box.innerHTML=fcForms.length ? fcForms.map(f=>{
     const n=fcData.filter(d=>d.formId===f.id).reduce((a,d)=>a+d.fc.features.length,0);
-    return '<button class="fc-formitem'+(f.id===fcSel?' active':'')+'" data-id="'+esc(f.id)+'"><b>'+esc(f.title)+'</b><span>'+f.fields.length+' field'+(f.fields.length===1?'':'s')+(n?' · '+n+' point'+(n===1?'':'s')+' received':'')+'</span></button>';
+    return '<button class="fc-formitem'+(f.id===fcSel?' active':'')+'" data-id="'+esc(f.id)+'"><b>'+esc(f.title)+'</b><span>'+f.fields.length+' field'+(f.fields.length===1?'':'s')+(n?' · '+n+' record'+(n===1?'':'s')+' received':'')+'</span></button>';
   }).join('') : '<p class="kv">No forms yet.</p>';
   box.querySelectorAll('.fc-formitem').forEach(b=>b.onclick=()=>{ fcSel=b.dataset.id; renderCollector(); });
   const cur=fcCur();
@@ -8164,12 +8150,12 @@ function renderFcForms(){
 function renderFcDesign(){
   const body=document.getElementById('fcBody'), f=fcCur();
   if(!f){
-    body.innerHTML='<div class="fc-empty"><h3>Collect data in the field with phones</h3><p>Design a form here, open it on phones with a link or QR code, and record points with GPS location, answers and photos. The points come back to this computer and go to Map Maker as a layer.</p><button class="btn" id="fcFirst">+ New form</button></div>';
+    body.innerHTML='<div class="fc-empty"><h3>Map in the field with phones</h3><p>Design a form here, open it on phones with a link or QR code, and map points, lines and areas with GPS or by tapping the map, with answers, photos and audio. The data come back to this computer and go to Map Maker as layers.</p><button class="btn" id="fcFirst">+ New form</button></div>';
     document.getElementById('fcFirst').onclick=fcNewForm; return;
   }
   const typeOpts=t=>Object.keys(COLLECT_TYPES).map(k=>'<option value="'+k+'"'+(k===t?' selected':'')+'>'+COLLECT_TYPES[k]+'</option>').join('');
   const defCtl=x=>{
-    if(x.type==='photo') return '';
+    if(x.type==='photo'||x.type==='audio') return '';
     if(x.type==='choice') return '<label>Default<select class="f-def"><option value="">(none)</option>'+x.options.map(o=>'<option'+(o===x.def?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select></label>';
     if(x.type==='date') return '<label>Default<select class="f-def"><option value="">(none)</option><option value="today"'+(x.def==='today'?' selected':'')+'>Today</option></select></label>';
     return '<label>Default<input type="'+(x.type==='number'?'number':'text')+'" class="f-def" value="'+esc(x.def)+'" placeholder="(none)"'+(x.type==='multi'?' title="Several choices: separate with ;"':'')+'></label>';
@@ -8193,17 +8179,26 @@ function renderFcDesign(){
     '</div>').join('')+'</div>'+
     '<button class="btn small" id="fcAddField">+ Add field</button>'+
     '<h3 class="fc-h" style="margin-top:22px;">Settings</h3><div class="fc-sec fc-settings">'+
-      '<label class="fc-lbl">Placing points<select id="fcPlacement"><option value="both">GPS location, or tap the map</option><option value="gps">GPS location only</option><option value="tap">Tap the map only</option></select></label>'+
+      '<div class="fc-lbl fc-wide">What can be mapped<div class="fc-geoms">'+['point','line','polygon'].map(g=>'<label><input type="checkbox" class="fc-geom" value="'+g+'"'+(f.geoms.includes(g)?' checked':'')+'> '+{point:'● Points',line:'〰 Lines',polygon:'⬠ Areas (polygons)'}[g]+'</label>').join('')+'</div></div>'+
+      '<label class="fc-lbl">Placing features<select id="fcPlacement"><option value="both">GPS location, or tapping the map</option><option value="gps">GPS location only (walk lines and areas)</option><option value="tap">Tapping the map only</option></select></label>'+
+      '<label class="fc-lbl">Longest audio recording<select id="fcAudioMax">'+AUDIO_MAX.map(n=>'<option value="'+n+'">'+(n<60?n+' seconds':(n/60)+' minute'+(n>60?'s':''))+'</option>').join('')+'</select></label>'+
       '<label class="fc-lbl">Photo size (longest side)<select id="fcPhotoSize">'+PHOTO_SIZES.map(n=>'<option value="'+n+'">'+n+' px</option>').join('')+'</select></label>'+
       '<label class="fc-lbl fc-wide">Web address of Map-O-Matic that phones open<input type="text" id="fcBase" value="'+esc(collectBase())+'"></label>'+
-      '<p class="kv fc-wide">GPS only works on an https address. Photos are resized on the phone and lose their camera metadata (including the location stored in the file).</p></div>';
+      '<p class="kv fc-wide">GPS only works on an https address. Photos are resized on the phone and lose their camera metadata (including the location stored in the file). Audio is recorded at speech quality, about 250 KB a minute.</p></div>';
   document.getElementById('fcPlacement').value=f.placement;
   document.getElementById('fcPhotoSize').value=String(f.photoSize);
+  document.getElementById('fcAudioMax').value=String(f.audioMax||60);
   const changed=(rerender)=>{ fcLinkStale(); fcDirty(); if(rerender) renderCollector(); else { renderFcPreview(); renderFcForms(); } };
   document.getElementById('fcTitle').oninput=e=>{ f.title=e.target.value; changed(); };
   document.getElementById('fcIntro').oninput=e=>{ f.intro=e.target.value; changed(); };
   document.getElementById('fcPlacement').onchange=e=>{ f.placement=e.target.value; changed(); };
   document.getElementById('fcPhotoSize').onchange=e=>{ f.photoSize=+e.target.value; changed(); };
+  document.getElementById('fcAudioMax').onchange=e=>{ f.audioMax=+e.target.value; changed(); };
+  document.querySelectorAll('.fc-geom').forEach(cb=>cb.onchange=()=>{
+    const g=Array.from(document.querySelectorAll('.fc-geom:checked')).map(c=>c.value);
+    if(!g.length){ cb.checked=true; toast('Keep at least one kind of feature.'); return; }
+    f.geoms=g; changed();
+  });
   document.getElementById('fcBase').onchange=e=>{
     const v=e.target.value.trim();
     try{ if(v) localStorage.setItem('mom_collect_base', v); else localStorage.removeItem('mom_collect_base'); }catch(_){}
@@ -8250,9 +8245,11 @@ function renderFcPreview(){
   const box=document.getElementById('fcPreview'), f=fcCur();
   if(!f){ box.innerHTML=''; return; }
   const clean=sanitizeCollectForm(f);
-  box.innerHTML='<div class="fc-phone"><div class="cl-top">'+esc(clean.title)+'</div><div class="cl-sheet fc-prev-sheet"><div class="sh">'+
+  const g0=clean.geoms[0];
+  box.innerHTML='<div class="fc-phone"><div class="cl-top"><small>Map-O-Matic Field Mapper</small>'+esc(clean.title)+'</div><div class="cl-sheet fc-prev-sheet"><div class="sh">'+
     (clean.intro?'<div class="cl-intro">'+esc(clean.intro)+'</div>':'')+
-    '<b style="font-size:16px;">New point</b><div class="loc">'+(clean.placement==='tap'?'Placed by tapping the map':'GPS location, ±5 m')+'</div>'+
+    (clean.geoms.length>1?'<div class="cl-geomsel">'+clean.geoms.map((g,i)=>'<span'+(i===0?' class="on"':'')+'>'+{point:'● Point',line:'〰 Line',polygon:'⬠ Area'}[g]+'</span>').join('')+'</div>':'')+
+    '<b style="font-size:16px;">New '+GEOM_LABEL[g0].toLowerCase()+'</b><div class="loc">'+(clean.placement==='tap'?'Placed by tapping the map':(g0==='point'?'GPS location, ±5 m':'Walked with GPS'))+'</div>'+
     clFieldsHtml(clean, null, 'fcpv')+
     '<div class="row"><button type="button">Cancel</button><button type="button" class="pri">Save point</button></div></div></div></div>'+
     '<p class="kv" style="text-align:center;margin:6px 0 0;">Preview of the phone form</p>';
@@ -8269,7 +8266,7 @@ async function makeCollectLink(){
   const out=document.getElementById('fcLinkOut');
   out.innerHTML='<p class="kv">Making the link…</p>';
   let url;
-  try{ url=collectBase().split('#')[0]+'#c='+(await encodeShare({v:2, kind:'mom-collect', form:f})); }
+  try{ url=collectBase().split('#')[0]+'#c='+(await encodeShare({v:3, kind:'mom-collect', form:f})); }
   catch(e){ out.innerHTML='<p class="kv">Could not build the link: '+esc(e.message)+'</p>'; return; }
   out.innerHTML='<div class="cl-link"><input type="text" readonly id="clLink" value="'+esc(url)+'"><button class="btn small" id="clCopy">Copy</button></div>'+
     '<div id="clQr" class="cl-qr"></div>'+
@@ -8289,24 +8286,34 @@ async function makeCollectLink(){
   mlog('data','Made the field collection form "'+f.title+'" ('+f.fields.map(x=>x.name+' ['+COLLECT_TYPES[x.type].toLowerCase()+']').join(', ')+').');
 }
 /* ---- received data ---- */
-function fcCleanFC(fc, allowPhotos){
+function fcGeomOK(g){
+  const pt=c=>Array.isArray(c)&&c.length>=2&&isFinite(+c[0])&&isFinite(+c[1])&&Math.abs(+c[1])<=90&&Math.abs(+c[0])<=180;
+  const ln=a=>Array.isArray(a)&&a.length>=2&&a.length<=20000&&a.every(pt);
+  if(!g||!g.coordinates) return null;
+  const P=c=>[+c[0],+c[1]];
+  if(g.type==='Point' && pt(g.coordinates)) return {type:'Point', coordinates:P(g.coordinates)};
+  if(g.type==='LineString' && ln(g.coordinates)) return {type:'LineString', coordinates:g.coordinates.map(P)};
+  if(g.type==='Polygon' && Array.isArray(g.coordinates) && g.coordinates.length && g.coordinates.every(r=>ln(r)&&r.length>=4)) return {type:'Polygon', coordinates:g.coordinates.map(r=>r.map(P))};
+  return null;
+}
+function fcCleanFC(fc, allowMedia){
   if(!fc || !Array.isArray(fc.features)) return null;
   const feats=fc.features.slice(0,50000).map(f=>{
-    const c=f&&f.geometry&&f.geometry.coordinates;
-    if(!f || !f.geometry || f.geometry.type!=='Point' || !Array.isArray(c)) return null;
-    const lng=+c[0], lat=+c[1];
-    if(!isFinite(lng)||!isFinite(lat)||Math.abs(lat)>90||Math.abs(lng)>180) return null;
+    const geom=f && fcGeomOK(f.geometry);
+    if(!geom) return null;
     const props={};
     Object.keys(f.properties||{}).slice(0,60).forEach(k=>{
       const v=f.properties[k], key=String(k).slice(0,40);
       if(v==null || typeof v==='number' || typeof v==='boolean') props[key]=v;
-      else if(allowPhotos && isPhotoVal(v)) props[key]=v;
+      else if(allowMedia && isMediaVal(v)) props[key]=v;
       else props[key]=String(v).slice(0,4000);
     });
-    return {type:'Feature', properties:props, geometry:{type:'Point', coordinates:[lng,lat]}};
+    return {type:'Feature', properties:props, geometry:geom};
   }).filter(Boolean);
   return feats.length ? {type:'FeatureCollection', features:feats} : null;
 }
+function fcMediaCount(fc){ let ph=0, au=0, left=0; fc.features.forEach(ft=>Object.values(ft.properties).forEach(v=>{ if(isPhotoVal(v)) ph++; else if(isAudioVal(v)) au++; else if(v===MEDIA_LEFT) left++; })); return {ph, au, left}; }
+function fcGeomLabel(g){ return g.type==='Point'?'Point':g.type==='LineString'?'Line':'Area'; }
 function fcAddDataset(fc, meta){
   const f=fcForms.find(x=>x.id===meta.formId);
   const d={id:uid(), name:String(meta.name||(f?f.title:'Field data')).slice(0,120), formId:meta.formId||null, formTitle:meta.formTitle||(f?f.title:''),
@@ -8314,26 +8321,28 @@ function fcAddDataset(fc, meta){
   fcData.push(d); fcChecked=new Set([d.id]); fcView=d.id;
   if(f) fcSel=f.id;
   fcTab='data'; fcDirty(); renderCollector();
-  const photos=fc.features.reduce((n,ft)=>n+Object.values(ft.properties).filter(isPhotoVal).length,0);
-  mlog('data','Received '+fc.features.length+' field points'+(d.formTitle?' for the form "'+d.formTitle+'"':'')+(meta.via==='qr'?' from a phone by QR transfer':' from the file '+(meta.file||''))+(photos?' ('+photos+' photos)':'')+'.');
+  const mc=fcMediaCount(fc);
+  const via=meta.via==='qr'?' from a phone by QR codes':meta.via==='link'?' from a phone by direct link':' from the file '+(meta.file||'');
+  mlog('data','Received '+fc.features.length+' field records'+(d.formTitle?' for the form "'+d.formTitle+'"':'')+via+(mc.ph?', '+mc.ph+' photos':'')+(mc.au?', '+mc.au+' audio recordings':'')+'.');
+  if(mc.left) loadReport(mc.left+' photo'+(mc.left===1?' or recording':'s or recordings')+' stayed on the phone, because QR codes carry text only. On the phone, use Send to laptop → Scan the laptop\'s code (direct link), or save the GeoJSON and upload it here. Matching records are merged, so nothing is doubled.', {append:true, nolog:true});
   return d;
 }
 function fcDateStr(t){ const d=new Date(t); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }
 function renderFcData(){
   const body=document.getElementById('fcBody');
   const rows=fcData.slice().sort((a,b)=>b.received-a.received);
-  body.innerHTML='<div class="fc-databar"><button class="btn small" id="fcRecvQr">📷 Receive from phone (QR)</button>'+
+  body.innerHTML='<div class="fc-databar"><button class="btn small" id="fcRecvQr">📱 Receive from phone</button>'+
     '<button class="btn small secondary" id="fcRecvFile">⬆ Upload a phone file (GeoJSON or CSV)</button><input type="file" id="fcFileIn" accept=".geojson,.json,.csv" multiple hidden></div>'+
-    (rows.length ? '<table class="fc-dtable"><tr><th></th><th>Received data</th><th>Form</th><th>Points</th><th>Photos</th><th>Received</th></tr>'+
+    (rows.length ? '<table class="fc-dtable"><tr><th></th><th>Received data</th><th>Form</th><th>Records</th><th>Media</th><th>Received</th></tr>'+
       rows.map(d=>{
-        const ph=d.fc.features.reduce((n,ft)=>n+Object.values(ft.properties).filter(isPhotoVal).length,0);
+        const mc=fcMediaCount(d.fc), ph=[mc.ph?mc.ph+' 📷':'', mc.au?mc.au+' 🔊':'', mc.left?'<span title="Still on the phone">'+mc.left+' not sent</span>':''].filter(Boolean).join(' · ');
         return '<tr data-id="'+esc(d.id)+'"'+(d.id===fcView?' class="on"':'')+'><td><input type="checkbox" class="fc-ck"'+(fcChecked.has(d.id)?' checked':'')+' aria-label="Select"></td>'+
-          '<td><input type="text" class="fc-dname" value="'+esc(d.name)+'" title="Rename"></td><td>'+esc(d.formTitle||'')+'</td><td>'+d.fc.features.length+'</td><td>'+(ph||'')+'</td><td>'+esc(fcDateStr(d.received))+(d.via==='qr'?' · QR':' · file')+'</td></tr>';
+          '<td><input type="text" class="fc-dname" value="'+esc(d.name)+'" title="Rename"></td><td>'+esc(d.formTitle||'')+'</td><td>'+d.fc.features.length+'</td><td>'+(ph||'')+'</td><td>'+esc(fcDateStr(d.received))+({qr:' · QR codes',link:' · direct link',file:' · file'}[d.via]||'')+'</td></tr>';
       }).join('')+'</table>'+
       '<div class="fc-databar"><span class="kv" id="fcSelInfo"></span><button class="btn small" id="fcToMaker">Send to Map Maker ▸</button>'+
       '<button class="btn small light" id="fcDlGeo">⬇ GeoJSON</button><button class="btn small light" id="fcDlCsv">⬇ CSV</button><button class="btn small light" id="fcDelData">Delete</button></div>'+
       '<div id="fcDetail"></div>'
-    : '<div class="fc-empty"><p>No data received yet. On a phone, collect points with the form, then tap <b>Send to laptop</b> and click <b>Receive from phone</b> here, or save the GeoJSON on the phone and upload it.</p></div>');
+    : '<div class="fc-empty"><p>No data received yet. On a phone, map features with the form, then click <b>Receive from phone</b> here and tap <b>Send to laptop</b> on the phone. The phone can also save a GeoJSON file to upload.</p></div>');
   document.getElementById('fcRecvQr').onclick=openQrReceiver;
   const fin=document.getElementById('fcFileIn');
   document.getElementById('fcRecvFile').onclick=()=>fin.click();
@@ -8341,7 +8350,7 @@ function renderFcData(){
   if(!rows.length) return;
   const info=()=>{
     const sel=fcData.filter(d=>fcChecked.has(d.id)), n=sel.reduce((a,d)=>a+d.fc.features.length,0);
-    document.getElementById('fcSelInfo').textContent=sel.length? sel.length+' selected, '+n+' point'+(n===1?'':'s')+(sel.length>1?' (combined into one layer; repeated points are dropped)':'') : 'Tick the data to use.';
+    document.getElementById('fcSelInfo').textContent=sel.length? sel.length+' selected, '+n+' record'+(n===1?'':'s')+(sel.length>1?' (combined; records received twice appear once)':'') : 'Tick the data to use.';
     ['fcToMaker','fcDlGeo','fcDlCsv','fcDelData'].forEach(id=>document.getElementById(id).disabled=!sel.length);
   };
   body.querySelectorAll('.fc-dtable tr[data-id]').forEach(tr=>{
@@ -8355,7 +8364,7 @@ function renderFcData(){
   document.getElementById('fcDlGeo').onclick=()=>{ const {fc,name}=fcCombined(); downloadBlob((fcSlug(name)||'field-data')+'.geojson', new Blob([JSON.stringify(fc)],{type:'application/geo+json'})); };
   document.getElementById('fcDlCsv').onclick=()=>{
     const {fc,name}=fcCombined();
-    const rowsC=fc.features.map(f=>{ const o={lat:f.geometry.coordinates[1], lng:f.geometry.coordinates[0]}; Object.keys(f.properties).forEach(k=>{ const v=f.properties[k]; o[k]=isPhotoVal(v)?'photo':v; }); return o; });
+    const rowsC=fc.features.map(f=>fcCsvRow(f));
     downloadBlob((fcSlug(name)||'field-data')+'.csv', new Blob([Papa.unparse(rowsC)],{type:'text/csv'}));
   };
   const del=document.getElementById('fcDelData');
@@ -8371,9 +8380,9 @@ function renderFcDetail(){
   if(!d){ box.innerHTML='<p class="kv">Click a row to see its points.</p>'; return; }
   const cols=[]; d.fc.features.forEach(f=>Object.keys(f.properties).forEach(k=>{ if(!cols.includes(k)) cols.push(k); }));
   const shown=d.fc.features.slice(0,300);
-  box.innerHTML='<h3 class="fc-h">'+esc(d.name)+' <span class="kv">'+d.fc.features.length+' points'+(d.fc.features.length>300?', first 300 shown':'')+'</span></h3>'+
-    '<div class="fc-ptwrap"><table class="fc-pts"><tr><th>#</th><th>lat</th><th>lng</th>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+
-    shown.map((f,i)=>'<tr><td>'+(i+1)+'</td><td>'+f.geometry.coordinates[1].toFixed(6)+'</td><td>'+f.geometry.coordinates[0].toFixed(6)+'</td>'+cols.map(c=>{ const v=f.properties[c]; return '<td>'+(isPhotoVal(v)?'<img src="'+v+'" alt="">':esc(v==null?'':v))+'</td>'; }).join('')+'</tr>').join('')+
+  box.innerHTML='<h3 class="fc-h">'+esc(d.name)+' <span class="kv">'+d.fc.features.length+' records'+(d.fc.features.length>300?', first 300 shown':'')+'</span></h3>'+
+    '<div class="fc-ptwrap"><table class="fc-pts"><tr><th>#</th><th>type</th><th>lat</th><th>lng</th>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+
+    shown.map((f,i)=>{ const c=fcAnchor(f.geometry); return '<tr><td>'+(i+1)+'</td><td>'+fcGeomLabel(f.geometry)+'</td><td>'+c[1].toFixed(6)+'</td><td>'+c[0].toFixed(6)+'</td>'+cols.map(k=>{ const v=f.properties[k]; return '<td>'+(isPhotoVal(v)?'<img src="'+v+'" alt="">':isAudioVal(v)?'<audio controls preload="none" src="'+v+'"></audio>':esc(v==null?'':v))+'</td>'; }).join('')+'</tr>'; }).join('')+
     '</table></div>';
 }
 function fcCombined(){
@@ -8384,12 +8393,12 @@ function fcCombined(){
     if(pid && seen.has(pid)){
       /* the same point came twice (QR and file): keep any photos the file carried */
       const prev=seen.get(pid).properties;
-      Object.keys(f.properties).forEach(k=>{ if(isPhotoVal(f.properties[k]) && !isPhotoVal(prev[k])) prev[k]=f.properties[k]; });
+      Object.keys(f.properties).forEach(k=>{ if(isMediaVal(f.properties[k]) && !isMediaVal(prev[k])) prev[k]=f.properties[k]; });
       return;
     }
     const props=Object.assign({}, f.properties);
     if(sel.length>1) props.source=d.name;
-    const ft={type:'Feature', properties:props, geometry:{type:'Point', coordinates:f.geometry.coordinates.slice()}};
+    const ft={type:'Feature', properties:props, geometry:JSON.parse(JSON.stringify(f.geometry))};
     if(pid) seen.set(pid, ft);
     feats.push(ft);
   }));
@@ -8397,12 +8406,34 @@ function fcCombined(){
   const name= sel.length===1 ? sel[0].name : (titles.length===1 ? titles[0] : 'Field data');
   return {fc:{type:'FeatureCollection', features:feats}, name, n:sel.length};
 }
+/* a representative position: the point itself, a line's middle vertex, an area's centre */
+function fcAnchor(g){
+  if(g.type==='Point') return g.coordinates;
+  if(g.type==='LineString') return g.coordinates[Math.floor(g.coordinates.length/2)];
+  try{ return turf.centroid({type:'Feature',properties:{},geometry:g}).geometry.coordinates; }catch(_){ return g.coordinates[0][0]; }
+}
+function fcWkt(g){
+  const c=p=>p[0]+' '+p[1];
+  if(g.type==='Point') return 'POINT ('+c(g.coordinates)+')';
+  if(g.type==='LineString') return 'LINESTRING ('+g.coordinates.map(c).join(', ')+')';
+  return 'POLYGON ('+g.coordinates.map(r=>'('+r.map(c).join(', ')+')').join(', ')+')';
+}
+function fcCsvRow(f){
+  const a=fcAnchor(f.geometry), o={lat:a[1], lng:a[0]};
+  if(f.geometry.type!=='Point'){ o.geometry=fcGeomLabel(f.geometry).toLowerCase(); o.wkt=fcWkt(f.geometry); }
+  Object.keys(f.properties).forEach(k=>{ const v=f.properties[k]; o[k]=isPhotoVal(v)?'photo':isAudioVal(v)?'audio':v; });
+  return o;
+}
 function fcSendToMaker(){
   const {fc,name,n}=fcCombined();
   if(!fc.features.length){ toast('Nothing selected.'); return; }
   switchModule('maker');
-  addMakerLayer(fc, name, {source:{kind:'field-collector'}});
-  mlog('data','Sent '+fc.features.length+' field points ('+n+' received batch'+(n===1?'':'es')+') from the Field Collector to Map Maker as "'+name+'".');
+  const groups={Point:[], LineString:[], Polygon:[]};
+  fc.features.forEach(f=>groups[f.geometry.type].push(f));
+  const kinds=Object.keys(groups).filter(k=>groups[k].length);
+  const suffix={Point:' (points)', LineString:' (lines)', Polygon:' (areas)'};
+  kinds.forEach(k=>addMakerLayer({type:'FeatureCollection', features:groups[k]}, name+(kinds.length>1?suffix[k]:''), {source:{kind:'field-mapper'}}));
+  mlog('data','Sent '+fc.features.length+' field records ('+n+' received batch'+(n===1?'':'es')+') from the Field Mapper to Map Maker as '+kinds.map(k=>'"'+name+(kinds.length>1?suffix[k]:'')+'" ('+groups[k].length+')').join(', ')+'.');
 }
 function fcReadFile(file){
   const r=new FileReader();
@@ -8423,6 +8454,7 @@ function fcReadFile(file){
     const base=file.name.replace(/\.(geo)?json$|\.csv$/i,'').replace(/_\d{8}-\d{4}$/,'');
     const f=fcForms.find(x=>fcSlug(x.title)===fcSlug(base.replace(/-/g,' ')));
     fcAddDataset(clean, {name:file.name.replace(/\.(geo)?json$|\.csv$/i,''), formId:f?f.id:null, formTitle:f?f.title:'', via:'file', file:file.name});
+    toast('Added '+clean.features.length+' records from '+file.name+'.');
   };
   r.readAsText(file);
 }
@@ -8435,7 +8467,7 @@ function fcLoad(data){
     if(!d || !d.fc) return null;
     const fc=fcCleanFC(d.fc, true); if(!fc) return null;
     return {id:String(d.id||uid()).slice(0,40), name:String(d.name||'Field data').slice(0,120), formId:d.formId?String(d.formId).slice(0,40):null,
-      formTitle:String(d.formTitle||'').slice(0,80), received:+d.received||Date.now(), via:d.via==='qr'?'qr':'file', fc};
+      formTitle:String(d.formTitle||'').slice(0,80), received:+d.received||Date.now(), via:['qr','link','file'].includes(d.via)?d.via:'file', fc};
   }).filter(Boolean);
   fcSel=fcForms.length?fcForms[0].id:null; fcView=null; fcChecked=new Set(); fcTab='design';
   const o=document.getElementById('fcLinkOut'); if(o) o.innerHTML='';
@@ -8456,21 +8488,41 @@ function fcLoad(data){
 })();
 
 /* ---------- laptop side: read the phone's QR codes with the webcam ---------- */
+
+/* ---------- laptop side: receive from a phone ----------
+   Two routes run in the same window. The direct link: the laptop shows a QR
+   code holding a WebRTC offer, the phone scans it and shows its reply as QR
+   codes, the laptop's webcam reads them, and the two connect peer to peer to
+   send everything, media included (no server holds the data; public STUN
+   servers only help the two find each other). The QR route: the phone plays its
+   records as QR codes, text only. The webcam loop reads both. */
+const RTC_CFG={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]};
+function rtcGather(pc, ms){
+  return new Promise(res=>{
+    if(pc.iceGatheringState==='complete') return res();
+    const t=setTimeout(res, ms||3000);
+    pc.addEventListener('icegatheringstatechange',()=>{ if(pc.iceGatheringState==='complete'){ clearTimeout(t); res(); } });
+  });
+}
 let qrRecv=null;
-function stopQrReceiver(){
+function stopQrReceiver(keepLink){
   if(!qrRecv) return;
+  if(qrRecv.stream){ qrRecv.stream.getTracks().forEach(t=>t.stop()); qrRecv.stream=null; }
+  if(keepLink){ qrRecv.camStopped=true; return; }
   qrRecv.stopped=true;
-  if(qrRecv.stream) qrRecv.stream.getTracks().forEach(t=>t.stop());
+  try{ if(qrRecv.pc) qrRecv.pc.close(); }catch(_){}
+  clearTimeout(qrRecv.linkTimer);
   qrRecv=null;
 }
 async function openQrReceiver(){
   let ov=document.getElementById('modal-qrrecv');
   if(!ov){
     ov=document.createElement('div'); ov.className='modal-overlay hidden'; ov.id='modal-qrrecv';
-    ov.innerHTML='<div class="modal" style="max-width:560px;"><h2>Receive points from a phone</h2>'+
-      '<p class="kv">On the phone, tap <b>Send to laptop</b> and hold the screen 20–40 cm from this camera. The codes play in a loop, so missed ones come round again. Photos come across only in the GeoJSON file.</p>'+
-      '<div class="qr-cam"><video id="qrVideo" playsinline muted></video></div>'+
-      '<div class="qr-prog"><div id="qrBar"></div></div><p class="kv" id="qrStatus">Starting the camera…</p>'+
+    ov.innerHTML='<div class="modal" style="max-width:860px;width:94%;"><h2>Receive from a phone</h2>'+
+      '<div class="rx-grid"><div class="rx-col"><div class="rx-step"><span>1</span><div>On the phone, tap <b>Send to laptop</b>, then <b>Scan the laptop\'s code</b>, and point it at this code.</div></div><div id="rxOffer" class="rx-qr">Preparing…</div></div>'+
+      '<div class="rx-col"><div class="rx-step"><span>2</span><div>Then hold the phone\'s screen up to this computer\'s camera, 20–40 cm away. The transfer starts on its own.</div></div><div class="qr-cam"><video id="qrVideo" playsinline muted></video></div></div></div>'+
+      '<div class="qr-prog"><div id="qrBar"></div></div><p class="kv" id="qrStatus">Starting…</p>'+
+      '<p class="kv">This link sends everything, photos and audio included. If it will not connect (some networks block it), save the GeoJSON on the phone and use <b>Upload a phone file</b>. Text-only QR codes played by the phone are read here too.</p>'+
       '<div class="modal-close-row"><button class="btn ghost" id="qrCancel">Close</button></div></div>';
     document.body.appendChild(ov);
     document.getElementById('qrCancel').onclick=()=>{ stopQrReceiver(); closeModal('modal-qrrecv'); };
@@ -8479,7 +8531,25 @@ async function openQrReceiver(){
   openModal('modal-qrrecv');
   const status=document.getElementById('qrStatus'), bar=document.getElementById('qrBar'), video=document.getElementById('qrVideo');
   bar.style.width='0%';
-  const st=qrRecv={stream:null, stopped:false, sid:null, n:0, parts:{}, got:0, det:null};
+  const st=qrRecv={stream:null, stopped:false, sid:null, n:0, parts:{}, got:0, det:null, pc:null, dc:null, offerText:null, rx:null};
+  /* 1. the offer */
+  (async ()=>{
+    const box=document.getElementById('rxOffer');
+    try{
+      if(!window.RTCPeerConnection) throw new Error('This browser has no direct-link support.');
+      const pc=st.pc=new RTCPeerConnection(RTC_CFG);
+      const dc=st.dc=pc.createDataChannel('mom',{ordered:true});
+      rxBindChannel(st, dc);
+      pc.onconnectionstatechange=()=>{ if(pc.connectionState==='failed' && qrRecv===st && !st.done) rxLinkFailed(st); };
+      await pc.setLocalDescription(await pc.createOffer());
+      await rtcGather(pc, 3000);
+      if(st.stopped) return;
+      st.offerText='MOMO|'+(await encodeShare({t:'offer', s:pc.localDescription.sdp}));
+      await loadLib('qrcode');
+      box.innerHTML=''; const cv=qrToCanvas(st.offerText, 320, 'L'); cv.style.width='100%'; cv.style.maxWidth='300px'; cv.style.height='auto'; box.appendChild(cv);
+    }catch(e){ box.innerHTML='<p class="kv">'+esc(e.message)+' Use the QR-code or file route instead.</p>'; }
+  })();
+  /* 2. the webcam */
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
     status.textContent='This browser cannot use a camera here. Save a GeoJSON file on the phone and upload it instead.'; return;
   }
@@ -8496,13 +8566,13 @@ async function openQrReceiver(){
   }catch(e){
     status.textContent='The camera could not start ('+(e.name||e.message)+'). Allow camera access for this page, or save a GeoJSON file on the phone and upload it.'; return;
   }
-  if(st.stopped){ st.stream.getTracks().forEach(t=>t.stop()); return; }
+  if(st.stopped||st.camStopped){ st.stream.getTracks().forEach(t=>t.stop()); st.stream=null; return; }
   video.srcObject=st.stream;
   try{ await video.play(); }catch(_){}
-  status.textContent='Looking for codes…';
+  if(!st.rx) status.textContent='Waiting for the phone…';
   const cv=document.createElement('canvas'), g=cv.getContext('2d',{willReadFrequently:true});
   const tick=async ()=>{
-    if(st.stopped || qrRecv!==st) return;
+    if(st.stopped || st.camStopped || qrRecv!==st) return;
     if(document.getElementById('modal-qrrecv').classList.contains('hidden')){ stopQrReceiver(); return; }
     let texts=[];
     try{
@@ -8523,37 +8593,83 @@ async function openQrReceiver(){
   };
   tick();
 }
-/* one decoded code; returns true when the transfer is complete */
+function rxLinkFailed(st){
+  const status=document.getElementById('qrStatus');
+  if(status) status.innerHTML='<b>The direct link could not connect.</b> This network may block it. On the phone, tap <b>Save GeoJSON</b> and use <b>Upload a phone file</b>, or tap <b>Show codes</b> for the text only.';
+}
+function rxBindChannel(st, dc){
+  const status=()=>document.getElementById('qrStatus'), bar=()=>document.getElementById('qrBar');
+  dc.onopen=()=>{ clearTimeout(st.linkTimer); stopQrReceiver(true); const s=status(); if(s) s.textContent='Connected. Receiving…'; };
+  dc.onmessage=e=>{
+    const m=String(e.data);
+    if(m.charCodeAt(0)===123){           /* { … } control message */
+      let o=null; try{ o=JSON.parse(m); }catch(_){ return; }
+      if(o.h){ st.rx={size:+o.size||0, got:0, parts:[]}; return; }
+      if(o.e && st.rx){
+        const text=st.rx.parts.join(''); st.rx=null;
+        let p=null; try{ p=JSON.parse(text); }catch(_){}
+        const fc=(p && p.kind==='mom-points') ? fcCleanFC(p.fc, true) : null;
+        if(!fc){ const s=status(); if(s) s.textContent='The data arrived but could not be read. Try again.'; return; }
+        try{ dc.send('ok'); }catch(_){}
+        st.done=true;
+        rxFinish(p, fc, 'link');
+      }
+      return;
+    }
+    if(m.charCodeAt(0)===99 && st.rx){   /* 'c' + chunk */
+      st.rx.parts.push(m.slice(1)); st.rx.got+=m.length-1;
+      const pct=st.rx.size?Math.min(100,Math.round(st.rx.got/st.rx.size*100)):0;
+      const b=bar(); if(b) b.style.width=pct+'%';
+      const s=status(); if(s) s.textContent='Receiving… '+pct+'% ('+Math.round(st.rx.got/1024)+' KB)';
+    }
+  };
+}
+function rxFinish(p, fc, via){
+  closeModal('modal-qrrecv');
+  const title=String(p.title||'Field data').slice(0,80);
+  const f=fcForms.find(x=>x.id===p.formId);
+  if(document.getElementById('module-collect').classList.contains('hidden')) switchModule('collect');
+  fcAddDataset(fc, {name:title+' · '+fcDateStr(Date.now()), formId:f?f.id:null, formTitle:f?f.title:title, via});
+  const mc=fcMediaCount(fc);
+  toast('Received '+fc.features.length+' records'+(mc.ph||mc.au?' with '+[mc.ph?mc.ph+' photos':'', mc.au?mc.au+' recordings':''].filter(Boolean).join(' and '):'')+'.', 3500);
+  setTimeout(()=>stopQrReceiver(), 1500);
+}
+/* one decoded code; returns true when the camera can stop */
 function qrRecvFrame(st, text){
   const status=document.getElementById('qrStatus'), bar=document.getElementById('qrBar');
-  const m=/^MOM1\|([A-Za-z0-9]{1,12})\|(\d{1,4})\|(\d{1,4})\|([A-Za-z0-9_-]+)$/.exec(String(text||''));
+  const m=/^MOM([1A])\|([A-Za-z0-9]{1,12})\|(\d{1,4})\|(\d{1,4})\|([A-Za-z0-9_-]+)$/.exec(String(text||''));
   if(!m){
-    if(/[#&]c=/.test(text||'')) status.textContent='That is a form link. On the phone, tap Send to laptop to show the data codes.';
+    if(/[#&]c=/.test(text||'')) status.textContent='That is a form link. On the phone, tap Send to laptop to show the transfer codes.';
     return false;
   }
-  const sid=m[1], i=+m[2], n=+m[3];
+  const kind=m[1], sid=m[2], i=+m[3], n=+m[4];
   if(!n || i>=n || n>3000) return false;
-  if(sid!==st.sid){ st.sid=sid; st.n=n; st.parts={}; st.got=0; }
-  if(st.parts[i]==null){ st.parts[i]=m[4]; st.got++; }
+  if(sid!==st.sid){ st.sid=sid; st.n=n; st.parts={}; st.got=0; st.kind=kind; }
+  if(st.parts[i]==null){ st.parts[i]=m[5]; st.got++; }
   bar.style.width=Math.round(st.got/n*100)+'%';
-  status.textContent='Received '+st.got+' of '+n+' codes'+(st.got<n?'. Keep the phone steady.':'.');
+  status.textContent=(kind==='A'?'Reading the phone\'s reply: ':'Reading records: ')+st.got+' of '+n+' codes'+(st.got<n?'. Keep the phone steady.':'.');
   if(st.got<n) return false;
   let enc=''; for(let k=0;k<n;k++) enc+=st.parts[k];
+  if(kind==='A'){
+    stopQrReceiver(true);
+    decodeShare(enc).then(async a=>{
+      if(!a || a.t!=='answer' || typeof a.s!=='string' || !st.pc) throw new Error('bad answer');
+      await st.pc.setRemoteDescription({type:'answer', sdp:a.s});
+      status.textContent='Connecting to the phone…'; bar.style.width='0%';
+      st.linkTimer=setTimeout(()=>{ if(qrRecv===st && !(st.dc && st.dc.readyState==='open')) rxLinkFailed(st); }, 25000);
+    }).catch(()=>{ status.textContent='The phone\'s reply could not be read. Close this window and try again.'; });
+    return true;
+  }
   stopQrReceiver();
   decodeShare(enc).then(p=>{
     const fc=(p && p.kind==='mom-points') ? fcCleanFC(p.fc, false) : null;
-    if(!fc){ status.textContent='The codes were read but did not contain field points. Try again.'; return; }
-    closeModal('modal-qrrecv');
-    const title=String(p.title||'Field data').slice(0,80);
-    const f=fcForms.find(x=>x.id===p.formId);
-    if(document.getElementById('module-collect').classList.contains('hidden')) switchModule('collect');
-    fcAddDataset(fc, {name:title+' · '+fcDateStr(Date.now()), formId:f?f.id:null, formTitle:f?f.title:title, via:'qr'});
-    toast('Received '+fc.features.length+' points.');
+    if(!fc){ status.textContent='The codes were read but did not contain field records. Try again.'; return; }
+    rxFinish(p, fc, 'qr');
   }).catch(()=>{ status.textContent='The codes did not fit together. Close this window and try again.'; });
   return true;
 }
 
-/* ---------- phone side: the collector ---------- */
+/* ---------- phone side: the Field Mapper ---------- */
 function isCollectMode(){ return /[#&]c=[^&]+/.test(location.hash); }
 function clDbOpen(){
   return new Promise((res,rej)=>{
@@ -8567,7 +8683,7 @@ function clDbDo(d, mode, fn){
     const tx=d.transaction('points',mode); const req=fn(tx.objectStore('points')); let out;
     if(req) req.onsuccess=()=>{ out=req.result; };
     tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error);
-    tx.onabort=()=>rej(tx.error||new Error('The phone refused to store the point (storage may be full).'));
+    tx.onabort=()=>rej(tx.error||new Error('The phone refused to store the record (storage may be full).'));
   });
 }
 function clResizePhoto(file, max){
@@ -8585,18 +8701,34 @@ function clResizePhoto(file, max){
 }
 const CL_CSS=`
 #collector{position:fixed;inset:0;overflow:auto;background:#f6f7f9;color:#22293a;font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;z-index:5000;-webkit-text-size-adjust:100%;}
-#collector header{position:sticky;top:0;z-index:600;background:#2f7d78;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:8px;}
-#collector header b{flex:1;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#collector header span{font-size:13px;background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;}
-#clMap{height:44vh;min-height:220px;}
+#collector header{position:sticky;top:0;z-index:600;background:#2f7d78;color:#fff;padding:8px 14px;display:flex;align-items:center;gap:8px;}
+#collector header .hd{flex:1;min-width:0;}
+#collector header small,.fc-phone .cl-top small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.8;}
+#collector header b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#collector header span{font-size:13px;background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;white-space:nowrap;}
+#clMap{height:42vh;min-height:220px;}
 #collector .cl-intro{margin:10px 14px 0;}
 #collector .cl-gps{padding:6px 14px;font-size:13px;background:#fff;border-bottom:1px solid #dde1e7;}
 #collector .cl-gps i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#999;}
-#collector .cl-acts{display:flex;gap:8px;padding:10px 14px;}
+#collector .cl-acts{padding:10px 14px 4px;}
+.cl-geomsel{display:flex;gap:0;margin-bottom:8px;border:1px solid #c9ced6;border-radius:9px;overflow:hidden;background:#fff;}
+.cl-geomsel button,.cl-geomsel span{flex:1;border:none !important;border-radius:0 !important;background:#fff;padding:9px 4px !important;min-height:40px;font-weight:600;color:#56627a;text-align:center;}
+.cl-geomsel button+button,.cl-geomsel span+span{border-left:1px solid #c9ced6 !important;}
+.cl-geomsel .on{background:#e1f0ee !important;color:#1f5f5b;}
+#collector .cl-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#collector .cl-two.one{grid-template-columns:1fr;}
+#collector .cl-two button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:70px;font-weight:600;background:#2f7d78;border-color:#2f7d78;color:#fff;}
+#collector .cl-two button i{font-style:normal;font-size:22px;line-height:1;}
+#collector .cl-two button.on{background:#d99a2b;border-color:#d99a2b;}
+#clCap{position:sticky;bottom:0;z-index:650;background:#22293a;color:#fff;padding:10px 14px;display:none;}
+#clCap.show{display:block;}
+#clCap .ci{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:8px;}
+#clCap .cb{display:flex;gap:6px;}
+#clCap .cb button{flex:1;min-height:42px;padding:6px;background:#39445c;border-color:#4d5870;color:#fff;}
+#clCap .cb button.pri{background:#2f7d78;border-color:#2f7d78;}
 #collector button,.cl-sheet button{font:inherit;border-radius:8px;border:1px solid #c9ced6;background:#fff;color:#22293a;padding:10px 12px;min-height:44px;}
 #collector button.pri,.cl-sheet button.pri{background:#2f7d78;border-color:#2f7d78;color:#fff;font-weight:600;flex:1;}
-#collector button.on{background:#fbe7c6;border-color:#d99a2b;}
-#collector h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#5b6475;margin:10px 14px 4px;}
+#collector h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#5b6475;margin:12px 14px 4px;}
 #clList{padding:0 14px;}
 #clList .it{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dde1e7;border-radius:8px;padding:8px 10px;margin-bottom:6px;width:100%;text-align:left;}
 #clList .it img{width:42px;height:42px;object-fit:cover;border-radius:4px;}
@@ -8618,49 +8750,63 @@ const CL_CSS=`
 .cl-sheet .ch input{margin-right:6px;}
 .cl-sheet .ch label:has(input:checked){background:#e1f0ee;border-color:#2f7d78;}
 .cl-sheet .ph img{max-width:100%;max-height:220px;display:block;margin-top:6px;border-radius:6px;}
+.cl-sheet .au-row{display:flex;align-items:center;gap:10px;}
+.cl-sheet .au-rec{min-width:120px;}
+.cl-sheet .au-rec.rec{background:#b3452f;border-color:#b3452f;color:#fff;}
+.cl-sheet .au audio{width:100%;margin-top:6px;}
+.cl-sheet .au-t{font-size:13px;color:#5b6475;}
 .cl-sheet .loc{font-size:13px;color:#5b6475;}
 .cl-sheet .warn{color:#b3452f;}
 .cl-sheet .row{display:flex;gap:8px;margin-top:16px;}
 .cl-sheet .row button{flex:1;}
-#clSend{position:fixed;inset:0;z-index:7000;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;}
+#clSend,#clScan,#clMenu{position:fixed;inset:0;z-index:7000;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;box-sizing:border-box;}
 #clSend canvas{width:min(92vw,62vh);height:auto;image-rendering:pixelated;}
-#clSend .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+#clSend .row,#clScan .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+#clScan video{width:min(92vw,60vh);aspect-ratio:1;object-fit:cover;background:#111;border-radius:10px;}
+#clMenu{justify-content:flex-end;background:rgba(20,25,35,.45);padding:0;}
+#clMenu .mm{background:#fff;width:100%;border-radius:14px 14px 0 0;padding:16px;display:flex;flex-direction:column;gap:8px;text-align:left;box-sizing:border-box;}
+#clMenu .mm button{text-align:left;display:flex;flex-direction:column;gap:2px;}
+#clMenu .mm button small{font-weight:400;color:inherit;opacity:.8;font-size:12.5px;}
+#clLinkProg{width:min(80vw,360px);height:10px;background:#e3e6eb;border-radius:5px;overflow:hidden;}
+#clLinkProg div{height:100%;width:0;background:#2f7d78;transition:width .2s;}
 `;
 (function(){ const css=document.createElement('style'); css.textContent=CL_CSS; document.head.appendChild(css); })();
+const GEOM_ICON={point:'●', line:'〰', polygon:'⬠'};
 async function enterCollector(){
   let form=null;
   try{ const m=location.hash.match(/[#&]c=([^&]+)/); const p=await decodeShare(m[1]); if(p && p.kind==='mom-collect') form=sanitizeCollectForm(p.form); }catch(_){}
   if(!form || !form.fields.length){
-    document.body.innerHTML='<div style="font-family:sans-serif;padding:40px;color:#22293a;">This collection link could not be read. It may be incomplete. Ask for the link or QR code again.</div>'; return;
+    document.body.innerHTML='<div style="font-family:sans-serif;padding:40px;color:#22293a;">This Field Mapper link could not be read. It may be incomplete. Ask for the link or QR code again.</div>'; return;
   }
   document.getElementById('topbar').classList.add('hidden');
   document.querySelectorAll('.module').forEach(m=>m.classList.add('hidden'));
-  document.title=form.title+' — Map-O-Matic field collector';
+  document.title=form.title+' — Map-O-Matic Field Mapper';
   const css=document.createElement('style'); css.textContent='#toast{z-index:8000 !important;}'; document.head.appendChild(css);
   const root=document.createElement('div'); root.id='collector'; document.body.appendChild(root);
-  root.innerHTML='<header><b>'+esc(form.title)+'</b><span id="clCount">0 points</span></header>'+
+  root.innerHTML='<header><div class="hd"><small>Map-O-Matic Field Mapper</small><b>'+esc(form.title)+'</b></div><span id="clCount">0 features</span></header>'+
     (form.intro?'<div class="cl-intro">'+esc(form.intro)+'</div>':'')+
     '<div id="clMap"></div>'+
     '<div class="cl-gps" id="clGps"><i></i>Finding your location…</div>'+
-    '<div class="cl-acts">'+(form.placement!=='tap'?'<button class="pri" id="clAddGps">📍 Add point here</button>':'')+(form.placement!=='gps'?'<button id="clTap"'+(form.placement==='tap'?' class="pri"':'')+'>'+(form.placement==='tap'?'📍 Tap the map to add a point':'Tap map')+'</button>':'')+'</div>'+
-    '<h3>Points on this phone</h3><div id="clList"></div>'+
-    '<div class="cl-foot"><button class="pri" id="clSendBtn" style="grid-column:1/3;">📤 Send to laptop (QR codes)</button>'+
-    '<button id="clGeo">⬇ GeoJSON (with photos)</button><button id="clCsv">⬇ CSV</button>'+
-    '<button id="clShareBtn">Share file…</button><button id="clWipe">Delete all points</button></div>'+
-    '<p class="cl-note">Points are kept in this browser until you delete them. Keep this tab open, or open the same link again to come back to them. Open the link once while you have a signal; GPS needs the https address.</p>'+
-    '<div id="clSheet" class="cl-sheet hidden"><div class="sh" role="dialog" aria-modal="true" aria-label="Point details"></div></div>';
-  const C={form, points:[], fix:null, tapMode:form.placement==='tap', db:null, markers:null, me:null, meAcc:null, first:true};
+    '<div class="cl-acts" id="clActs"></div>'+
+    '<div id="clCap"></div>'+
+    '<h3>Mapped on this phone</h3><div id="clList"></div>'+
+    '<div class="cl-foot"><button class="pri" id="clSendBtn" style="grid-column:1/3;">📤 Send to laptop</button>'+
+    '<button id="clGeo">⬇ Save GeoJSON</button><button id="clCsv">⬇ Save CSV</button>'+
+    '<button id="clShareBtn">Share file…</button><button id="clWipe">Delete all</button></div>'+
+    '<p class="cl-note">Everything is kept in this browser until you delete it. Keep this tab open, or open the same link again to come back to it. Open the link once while you have a signal; GPS needs the https address. The GeoJSON file includes photos and audio.</p>'+
+    '<div id="clSheet" class="cl-sheet hidden"><div class="sh" role="dialog" aria-modal="true" aria-label="Details"></div></div>';
+  const C={form, points:[], fix:null, db:null, markers:null, me:null, meAcc:null, first:true, geom:form.geoms[0], cap:null, pointTap:false};
   window.__collector=C;             /* testing hook */
-  try{ C.db=await clDbOpen(); }catch(e){ toast('This browser will not store points (private mode?). Export before closing the tab.', 6000); }
+  try{ C.db=await clDbOpen(); }catch(e){ toast('This browser will not store data (private mode?). Save the GeoJSON before closing the tab.', 6000); }
   const map=L.map('clMap',{zoomControl:true, preferCanvas:true}).setView([49.94,-119.40], 13);
   L.tileLayer(BASEMAPS.osm.urls[0],{maxZoom:19, attribution:OSM_ATTR}).addTo(map);
   C.map=map; C.markers=L.layerGroup().addTo(map);
   setTimeout(()=>map.invalidateSize(), 200);
-
   const gpsEl=document.getElementById('clGps');
   const setGps=(txt,col)=>{ gpsEl.innerHTML='<i style="background:'+col+'"></i>'+txt; };
-  if(!window.isSecureContext) setGps('GPS needs the https address of this page.'+(form.placement!=='gps'?' You can still tap the map to place points.':''),'#b3452f');
-  else if(!navigator.geolocation) setGps('This browser has no GPS access.'+(form.placement!=='gps'?' Tap the map to place points.':''),'#b3452f');
+  const canTap=form.placement!=='gps';
+  if(!window.isSecureContext) setGps('GPS needs the https address of this page.'+(canTap?' You can still tap the map.':''),'#b3452f');
+  else if(!navigator.geolocation) setGps('This browser has no GPS access.'+(canTap?' Tap the map instead.':''),'#b3452f');
   else navigator.geolocation.watchPosition(pos=>{
     const c=pos.coords; C.fix={lat:c.latitude, lng:c.longitude, acc:c.accuracy};
     const ll=[c.latitude,c.longitude];
@@ -8668,89 +8814,226 @@ async function enterCollector(){
     else{ C.me.setLatLng(ll); C.meAcc.setLatLng(ll).setRadius(c.accuracy); }
     if(C.first){ C.first=false; map.setView(ll, 17); }
     const a=Math.round(c.accuracy);
-    setGps('GPS accuracy ±'+a+' m'+(a>30?' (weak: wait, or move into the open'+(form.placement!=='gps'?', or tap the map':'')+')':''), a<=10?'#2e9e5b':a<=30?'#d99a2b':'#b3452f');
+    setGps('GPS accuracy ±'+a+' m'+(a>30?' (weak: wait, or move into the open'+(canTap?', or tap the map':'')+')':''), a<=10?'#2e9e5b':a<=30?'#d99a2b':'#b3452f');
+    clWalkFix(C);
   }, err=>{
-    setGps((err.code===1?'Location permission was refused. Allow it in the browser settings'+(form.placement!=='gps'?', or tap the map.':'.'):'No GPS fix yet ('+err.message+').'),'#b3452f');
-  }, {enableHighAccuracy:true, maximumAge:3000, timeout:30000});
-
-  const tapBtn=document.getElementById('clTap');
-  if(tapBtn && form.placement!=='tap') tapBtn.onclick=()=>{ C.tapMode=!C.tapMode; tapBtn.classList.toggle('on', C.tapMode); tapBtn.textContent=C.tapMode?'Tap a spot…':'Tap map'; };
-  if(tapBtn && form.placement==='tap') tapBtn.onclick=()=>toast('Tap the spot on the map.');
+    setGps((err.code===1?'Location permission was refused. Allow it in the browser settings'+(canTap?', or tap the map.':'.'):'No GPS fix yet ('+err.message+').'),'#b3452f');
+  }, {enableHighAccuracy:true, maximumAge:2000, timeout:30000});
   map.on('click', e=>{
-    if(!C.tapMode) return;
-    if(form.placement!=='tap'){ C.tapMode=false; tapBtn.classList.remove('on'); tapBtn.textContent='Tap map'; }
-    clOpenSheet(C, {lat:e.latlng.lat, lng:e.latlng.lng, acc:null, placed:'map'});
+    if(C.cap && C.cap.method==='tap'){ clAddVertex(C, [e.latlng.lng, e.latlng.lat], null); return; }
+    if(C.pointTap){ clEndCapture(C); clOpenSheet(C, {geom:'point', lat:e.latlng.lat, lng:e.latlng.lng, acc:null, placed:'map'}); }
   });
-  const gpsBtn=document.getElementById('clAddGps');
-  if(gpsBtn) gpsBtn.onclick=()=>{
-    if(!C.fix){ toast('No GPS fix yet. Wait a moment'+(form.placement!=='gps'?', or use Tap map.':'.'), 3500); return; }
-    clOpenSheet(C, {lat:C.fix.lat, lng:C.fix.lng, acc:C.fix.acc, placed:'gps'});
-  };
+  clRenderActs(C);
   document.getElementById('clGeo').onclick=()=>clDownload(C,'geojson');
   document.getElementById('clCsv').onclick=()=>clDownload(C,'csv');
   document.getElementById('clShareBtn').onclick=()=>clShareFile(C);
-  document.getElementById('clSendBtn').onclick=()=>clSendQr(C);
+  document.getElementById('clSendBtn').onclick=()=>clSendMenu(C);
   const wipe=document.getElementById('clWipe');
   wipe.onclick=async ()=>{
     if(!C.points.length) return;
-    if(!wipe._armed){ wipe._armed=true; wipe.textContent='Tap again: delete '+C.points.length+'?'; setTimeout(()=>{ wipe._armed=false; wipe.textContent='Delete all points'; }, 4000); return; }
-    wipe._armed=false; wipe.textContent='Delete all points';
+    if(!wipe._armed){ wipe._armed=true; wipe.textContent='Tap again: delete '+C.points.length+'?'; setTimeout(()=>{ wipe._armed=false; wipe.textContent='Delete all'; }, 4000); return; }
+    wipe._armed=false; wipe.textContent='Delete all';
     if(C.db) for(const p of C.points) await clDbDo(C.db,'readwrite',s=>s.delete(p.id)).catch(()=>{});
-    C.points=[]; clRenderList(C); toast('All points deleted from this phone.');
+    C.points=[]; clRenderList(C); toast('Everything was deleted from this phone.');
   };
   if(C.db){
     const all=await clDbDo(C.db,'readonly',s=>s.getAll()).catch(()=>[]);
     C.points=(all||[]).filter(p=>p.formId===form.id).sort((a,b)=>a.time<b.time?-1:1);
   }
   clRenderList(C);
-  if(C.points.length){ try{ map.fitBounds(L.latLngBounds(C.points.map(p=>[p.lat,p.lng])).pad(0.2), {maxZoom:17}); C.first=false; }catch(_){} }
+  if(C.points.length){ try{ map.fitBounds(L.latLngBounds(C.points.flatMap(p=>clLatLngs(p))).pad(0.2), {maxZoom:17}); C.first=false; }catch(_){} }
 }
+/* the action area: what to map, then two equal buttons */
+function clRenderActs(C){
+  const box=document.getElementById('clActs'), f=C.form, g=C.geom;
+  const sel = f.geoms.length>1 ? '<div class="cl-geomsel" role="tablist">'+f.geoms.map(x=>'<button type="button" data-g="'+x+'" class="'+(x===g?'on':'')+'">'+GEOM_ICON[x]+' '+GEOM_LABEL[x]+'</button>').join('')+'</div>' : '';
+  const gps = g==='point' ? {i:'📍', t:'Use my GPS location'} : {i:'🚶', t:(g==='line'?'Walk the line with GPS':'Walk the boundary with GPS')};
+  const tap = g==='point' ? {i:'👆', t:'Tap location on map'} : {i:'👆', t:'Tap points on map'};
+  const btns=[];
+  if(f.placement!=='tap') btns.push('<button type="button" id="clBtnGps"><i>'+gps.i+'</i>'+gps.t+'</button>');
+  if(f.placement!=='gps') btns.push('<button type="button" id="clBtnTap"'+(C.pointTap?' class="on"':'')+'><i>'+tap.i+'</i>'+tap.t+'</button>');
+  box.innerHTML=sel+'<div class="cl-two'+(btns.length===1?' one':'')+'">'+btns.join('')+'</div>';
+  box.querySelectorAll('.cl-geomsel button').forEach(b=>b.onclick=()=>{ if(C.cap||C.pointTap) clEndCapture(C); C.geom=b.dataset.g; clRenderActs(C); });
+  const bg=document.getElementById('clBtnGps'), bt=document.getElementById('clBtnTap');
+  if(bg) bg.onclick=()=>{
+    if(C.geom==='point'){
+      if(!C.fix){ toast('No GPS fix yet. Wait a moment'+(bt?', or tap the location on the map.':'.'), 3500); return; }
+      clOpenSheet(C, {geom:'point', lat:C.fix.lat, lng:C.fix.lng, acc:C.fix.acc, placed:'gps'});
+    } else clStartCapture(C, C.geom, 'walk');
+  };
+  if(bt) bt.onclick=()=>{
+    if(C.geom==='point'){ if(C.pointTap){ clEndCapture(C); return; } clEndCapture(C); C.pointTap=true; clRenderActs(C); clCapBar(C); }
+    else clStartCapture(C, C.geom, 'tap');
+  };
+}
+function clLen(pts){ let m=0; for(let i=1;i<pts.length;i++) m+=turf.distance(pts[i-1],pts[i])*1000; return m; }
+function clArea(pts){ if(pts.length<3) return 0; try{ return turf.area(turf.polygon([pts.concat([pts[0]])])); }catch(_){ return 0; } }
+function clFmtLen(m){ return m>=1000?(m/1000).toFixed(2)+' km':Math.round(m)+' m'; }
+function clFmtArea(a){ return a>=10000?(a/10000).toFixed(2)+' ha':Math.round(a)+' m²'; }
+function clCapBar(C){
+  const bar=document.getElementById('clCap');
+  if(C.pointTap){
+    bar.className='show';
+    bar.innerHTML='<div class="ci"><b>Tap the location on the map</b></div><div class="cb"><button type="button" id="clCapCancel">Cancel</button></div>';
+    document.getElementById('clCapCancel').onclick=()=>clEndCapture(C);
+    return;
+  }
+  const cap=C.cap; if(!cap){ bar.className=''; bar.innerHTML=''; return; }
+  const n=cap.pts.length, what=cap.geom==='line'?'line':'area';
+  const meas= cap.geom==='line' ? clFmtLen(clLen(cap.pts)) : (n>=3?clFmtArea(clArea(cap.pts)):'');
+  const how= cap.method==='walk' ? (cap.paused?'Paused':'Walking the '+what) : (cap.geom==='line'?'Tap each point along the line':'Tap each corner of the area');
+  bar.className='show';
+  bar.innerHTML='<div class="ci"><b>'+how+'</b><span>'+n+' point'+(n===1?'':'s')+(meas?' · '+meas:'')+'</span></div>'+
+    '<div class="cb"><button type="button" id="clCapUndo"'+(n?'':' disabled')+'>↶ Undo</button>'+
+    (cap.method==='walk'?'<button type="button" id="clCapPause">'+(cap.paused?'▶ Resume':'⏸ Pause')+'</button>':'')+
+    '<button type="button" id="clCapCancel">Cancel</button><button type="button" class="pri" id="clCapDone">✓ Finish</button></div>';
+  document.getElementById('clCapUndo').onclick=()=>{ cap.pts.pop(); cap.accs.pop(); clDrawCap(C); };
+  const pz=document.getElementById('clCapPause'); if(pz) pz.onclick=()=>{ cap.paused=!cap.paused; clCapBar(C); };
+  document.getElementById('clCapCancel').onclick=()=>clEndCapture(C);
+  document.getElementById('clCapDone').onclick=()=>{
+    const need=cap.geom==='line'?2:3;
+    if(cap.pts.length<need){ toast('A '+(cap.geom==='line'?'line':'n area')+' needs at least '+need+' points.'); return; }
+    const accs=cap.accs.filter(a=>a!=null);
+    const base={geom:cap.geom, coords:cap.pts.slice(), acc:accs.length?accs.reduce((a,b)=>a+b,0)/accs.length:null, placed:cap.method==='walk'?'gps':'map'};
+    const c0=cap.pts[Math.floor(cap.pts.length/2)]; base.lng=c0[0]; base.lat=c0[1];
+    clEndCapture(C); clOpenSheet(C, base);
+  };
+}
+function clStartCapture(C, geom, method){
+  clEndCapture(C);
+  if(method==='walk' && !C.fix) toast('Waiting for GPS. Points are added as you move.', 3000);
+  const style={color:'#d99a2b', weight:4, fillOpacity:.2, dashArray:method==='tap'?'6 6':null};
+  C.cap={geom, method, pts:[], accs:[], paused:false, layer:(geom==='line'?L.polyline([],style):L.polygon([],style)).addTo(C.map), vx:L.layerGroup().addTo(C.map)};
+  clCapBar(C);
+  if(method==='walk') clWalkFix(C);
+}
+function clAddVertex(C, p, acc){
+  const cap=C.cap; if(!cap) return;
+  cap.pts.push(p); cap.accs.push(acc); clDrawCap(C);
+}
+function clWalkFix(C){
+  const cap=C.cap, f=C.fix;
+  if(!cap || cap.method!=='walk' || cap.paused || !f) return;
+  if(f.acc>35) return;
+  const p=[f.lng,f.lat], last=cap.pts[cap.pts.length-1];
+  if(last && turf.distance(last,p)*1000<3) return;
+  clAddVertex(C, p, f.acc);
+}
+function clDrawCap(C){
+  const cap=C.cap; if(!cap) return;
+  const ll=cap.pts.map(p=>[p[1],p[0]]);
+  cap.layer.setLatLngs(ll);
+  cap.vx.clearLayers(); ll.forEach(q=>L.circleMarker(q,{radius:4,color:'#fff',weight:1.5,fillColor:'#d99a2b',fillOpacity:1}).addTo(cap.vx));
+  clCapBar(C);
+}
+function clEndCapture(C){
+  if(C.cap){ C.map.removeLayer(C.cap.layer); C.map.removeLayer(C.cap.vx); C.cap=null; }
+  const was=C.pointTap; C.pointTap=false;
+  clCapBar(C);
+  if(was) clRenderActs(C);
+}
+function clLatLngs(p){ return (p.geom&&p.geom!=='point') ? p.coords.map(c=>[c[1],c[0]]) : [[p.lat,p.lng]]; }
 function clLabel(C,p){
-  const f=C.form.fields.find(x=>x.type!=='photo' && p.props[x.name]!=null && p.props[x.name]!=='');
+  const f=C.form.fields.find(x=>x.type!=='photo' && x.type!=='audio' && p.props[x.name]!=null && p.props[x.name]!=='');
   return f ? String(p.props[f.name]).slice(0,60) : '(no answers)';
 }
+function clDesc(p){
+  const g=p.geom||'point';
+  if(g==='line') return 'line, '+clFmtLen(clLen(p.coords));
+  if(g==='polygon') return 'area, '+clFmtArea(clArea(p.coords));
+  return p.acc!=null?'±'+Math.round(p.acc)+' m':'placed on map';
+}
 function clRenderList(C){
-  document.getElementById('clCount').textContent=C.points.length+(C.points.length===1?' point':' points');
+  document.getElementById('clCount').textContent=C.points.length+(C.points.length===1?' feature':' features');
   const list=document.getElementById('clList');
   C.markers.clearLayers();
-  if(!C.points.length){ list.innerHTML='<p class="cl-note" style="padding:0;">None yet.</p>'; return; }
-  const photoKeys=C.form.fields.filter(x=>x.type==='photo').map(x=>x.name);
+  if(!C.points.length){ list.innerHTML='<p class="cl-note" style="padding:0;">Nothing mapped yet.</p>'; return; }
+  const photoKeys=C.form.fields.filter(x=>x.type==='photo').map(x=>x.name), audioKeys=C.form.fields.filter(x=>x.type==='audio').map(x=>x.name);
   list.innerHTML=C.points.map((p,i)=>{
-    const ph=photoKeys.map(k=>p.props[k]).find(isPhotoVal);
-    return '<button class="it" data-id="'+esc(p.id)+'">'+(ph?'<img src="'+ph+'" alt="">':'')+'<span><b>'+(i+1)+'.</b> '+esc(clLabel(C,p))+
-      '<small>'+esc(new Date(p.time).toLocaleString())+(p.acc!=null?' · ±'+Math.round(p.acc)+' m':' · placed on map')+'</small></span></button>';
+    const ph=photoKeys.map(k=>p.props[k]).find(isPhotoVal), au=audioKeys.some(k=>isAudioVal(p.props[k]));
+    return '<button class="it" data-id="'+esc(p.id)+'">'+(ph?'<img src="'+ph+'" alt="">':'')+'<span><b>'+(i+1)+'. '+GEOM_ICON[p.geom||'point']+'</b> '+esc(clLabel(C,p))+(au?' 🔊':'')+
+      '<small>'+esc(new Date(p.time).toLocaleString())+' · '+esc(clDesc(p))+'</small></span></button>';
   }).reverse().join('');
   list.querySelectorAll('.it').forEach(b=>b.onclick=()=>{ const p=C.points.find(x=>x.id===b.dataset.id); if(p) clOpenSheet(C,p,true); });
   C.points.forEach((p,i)=>{
-    L.circleMarker([p.lat,p.lng],{radius:7, color:'#fff', weight:2, fillColor:'#b3452f', fillOpacity:1})
-      .bindTooltip(String(i+1),{permanent:false}).on('click',ev=>{ L.DomEvent.stop(ev); clOpenSheet(C,p,true); }).addTo(C.markers);
+    const g=p.geom||'point', ll=clLatLngs(p);
+    const lyr = g==='point' ? L.circleMarker(ll[0],{radius:7, color:'#fff', weight:2, fillColor:'#b3452f', fillOpacity:1})
+      : g==='line' ? L.polyline(ll,{color:'#b3452f', weight:4}) : L.polygon(ll,{color:'#b3452f', weight:3, fillOpacity:.2});
+    lyr.bindTooltip(String(i+1)).on('click',ev=>{ L.DomEvent.stop(ev); if(C.cap&&C.cap.method==='tap'){ clAddVertex(C,[ev.latlng.lng,ev.latlng.lat],null); return; } if(!C.cap && !C.pointTap) clOpenSheet(C,p,true); }).addTo(C.markers);
   });
 }
 function clOpenSheet(C, base, existing){
   const sheet=document.getElementById('clSheet'), sh=sheet.querySelector('.sh');
   const vals=existing? Object.assign({}, base.props) : null;
-  const photoVals={}; C.form.fields.forEach(x=>{ if(x.type==='photo' && vals && isPhotoVal(vals[x.name])) photoVals[x.name]=vals[x.name]; });
-  const loc = base.acc!=null ? 'GPS location, ±'+Math.round(base.acc)+' m'+(base.acc>30?' <span class="warn">(weak signal)</span>':'') : 'Placed by tapping the map';
-  sh.innerHTML='<b style="font-size:17px;">'+(existing?'Edit point':'New point')+'</b><div class="loc">'+loc+'</div>'+
+  const media={}; C.form.fields.forEach(x=>{ if((x.type==='photo'||x.type==='audio') && vals && isMediaVal(vals[x.name])) media[x.name]=vals[x.name]; });
+  const g=base.geom||'point';
+  const loc = g==='point'
+    ? (base.acc!=null ? 'GPS location, ±'+Math.round(base.acc)+' m'+(base.acc>30?' <span class="warn">(weak signal)</span>':'') : 'Placed by tapping the map')
+    : (g==='line'?'Line':'Area')+', '+base.coords.length+' points, '+(g==='line'?clFmtLen(clLen(base.coords)):clFmtArea(clArea(base.coords)))+(base.placed==='gps'?' (walked with GPS)':' (tapped on the map)');
+  sh.innerHTML='<b style="font-size:17px;">'+(existing?'Edit ':'New ')+GEOM_LABEL[g].toLowerCase()+'</b><div class="loc">'+loc+'</div>'+
     clFieldsHtml(C.form, vals, 'clf')+
-    '<div class="row"><button id="clCancel">Cancel</button>'+(existing?'<button id="clDel">Delete</button>':'')+'<button class="pri" id="clSave">Save point</button></div>';
+    '<div class="row"><button id="clCancel">Cancel</button>'+(existing?'<button id="clDel">Delete</button>':'')+'<button class="pri" id="clSave">Save</button></div>';
   sheet.classList.remove('hidden');
+  let recorder=null;
+  const stopRec=()=>{ if(recorder && recorder.state!=='inactive'){ try{ recorder.stop(); }catch(_){} } };
   C.form.fields.forEach((x,i)=>{
-    if(x.type!=='photo') return;
-    const box=sh.querySelector('#clf'+i).parentElement;
-    const bindDel=()=>{ const d=box.querySelector('.phdel'); if(d) d.onclick=()=>{ delete photoVals[x.name]; box.querySelectorAll('img,.phdel').forEach(n=>n.remove()); }; };
-    bindDel();
-    sh.querySelector('#clf'+i).onchange=async e=>{
-      const file=e.target.files&&e.target.files[0]; if(!file) return;
-      try{
-        photoVals[x.name]=await clResizePhoto(file, C.form.photoSize);
-        box.querySelectorAll('img,.phdel').forEach(n=>n.remove());
-        box.insertAdjacentHTML('beforeend','<img src="'+photoVals[x.name]+'" alt=""><button type="button" class="phdel">Remove photo</button>');
-        bindDel();
-      }catch(err){ toast(err.message); }
-    };
+    if(x.type==='photo'){
+      const box=sh.querySelector('#clf'+i).parentElement;
+      const bindDel=()=>{ const d=box.querySelector('.phdel'); if(d) d.onclick=()=>{ delete media[x.name]; box.querySelectorAll('img,.phdel').forEach(n=>n.remove()); }; };
+      bindDel();
+      sh.querySelector('#clf'+i).onchange=async e=>{
+        const file=e.target.files&&e.target.files[0]; if(!file) return;
+        try{
+          media[x.name]=await clResizePhoto(file, C.form.photoSize);
+          box.querySelectorAll('img,.phdel').forEach(n=>n.remove());
+          box.insertAdjacentHTML('beforeend','<img src="'+media[x.name]+'" alt=""><button type="button" class="phdel">Remove photo</button>');
+          bindDel();
+        }catch(err){ toast(err.message); }
+      };
+    }
+    if(x.type==='audio'){
+      const box=sh.querySelector('#clf'+i), btn=box.querySelector('.au-rec'), tl=box.querySelector('.au-t');
+      const paint=()=>{
+        box.querySelectorAll('audio,.audel').forEach(n=>n.remove());
+        if(isAudioVal(media[x.name])){
+          box.insertAdjacentHTML('beforeend','<audio controls src="'+media[x.name]+'"></audio><button type="button" class="audel">Remove recording</button>');
+          box.querySelector('.audel').onclick=()=>{ delete media[x.name]; tl.textContent='Up to '+C.form.audioMax+' s'; btn.textContent='● Record'; paint(); };
+          btn.textContent='● Record again';
+        }
+      };
+      paint();
+      btn.onclick=async ()=>{
+        if(recorder && recorder.state==='recording'){ stopRec(); return; }
+        if(!navigator.mediaDevices || !window.MediaRecorder){ toast('This browser cannot record audio.'); return; }
+        let stream;
+        try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+        catch(e){ toast('The microphone could not start. Allow it in the browser settings.', 4000); return; }
+        const mime=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(t=>MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t))||'';
+        try{ recorder=new MediaRecorder(stream, mime?{mimeType:mime, audioBitsPerSecond:32000}:{audioBitsPerSecond:32000}); }
+        catch(_){ recorder=new MediaRecorder(stream); }
+        const chunks=[], t0=Date.now();
+        recorder.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+        recorder.onstop=()=>{
+          clearInterval(recorder._t); stream.getTracks().forEach(t=>t.stop());
+          btn.classList.remove('rec');
+          const blob=new Blob(chunks,{type:(recorder.mimeType||mime||'audio/webm')});
+          const fr=new FileReader();
+          fr.onload=()=>{
+            const url=String(fr.result).replace(/^data:audio\/([a-z0-9.+-]+);[^,]*?base64,/i, (m0,t)=>'data:audio/'+t+';base64,');
+            if(isAudioVal(url)){ media[x.name]=url; tl.textContent='Recorded, '+Math.round((Date.now()-t0)/1000)+' s'; paint(); }
+            else toast('The recording could not be saved in this browser.');
+          };
+          fr.readAsDataURL(blob);
+        };
+        recorder.start(1000); btn.classList.add('rec'); btn.textContent='■ Stop';
+        recorder._t=setInterval(()=>{
+          const s=Math.round((Date.now()-t0)/1000); tl.textContent='Recording… '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' / '+C.form.audioMax+' s';
+          if(s>=C.form.audioMax) stopRec();
+        }, 250);
+      };
+    }
   });
-  const close=()=>{ sheet.classList.add('hidden'); sh.innerHTML=''; };
+  const close=()=>{ stopRec(); sheet.classList.add('hidden'); sh.innerHTML=''; };
   sh.querySelector('#clCancel').onclick=close;
   const del=sh.querySelector('#clDel');
   if(del) del.onclick=async ()=>{
@@ -8759,36 +9042,40 @@ function clOpenSheet(C, base, existing){
     C.points=C.points.filter(p=>p.id!==base.id); clRenderList(C); close();
   };
   sh.querySelector('#clSave').onclick=async ()=>{
+    if(recorder && recorder.state==='recording'){ toast('Stop the recording first.'); return; }
     const props={};
     for(let i=0;i<C.form.fields.length;i++){
       const x=C.form.fields[i]; let v;
       if(x.type==='choice'){ const r=sh.querySelector('input[name="clf'+i+'"]:checked'); v=r?r.value:''; }
       else if(x.type==='multi'){ v=Array.from(sh.querySelectorAll('input[name="clf'+i+'"]:checked')).map(r=>r.value).join('; '); }
-      else if(x.type==='photo') v=photoVals[x.name]||'';
+      else if(x.type==='photo'||x.type==='audio') v=media[x.name]||'';
       else v=sh.querySelector('#clf'+i).value.trim();
       if(x.type==='number' && v!==''){ const n=Number(v); if(!isFinite(n)){ toast('"'+x.label+'" must be a number.'); return; } v=n; }
       if(x.req && (v==='' || v==null)){ toast('Please fill in "'+x.label+'".'); return; }
       props[x.name]= v===''? null : v;
     }
     const rec= existing ? Object.assign({}, base, {props}) :
-      {id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), formId:C.form.id, lat:base.lat, lng:base.lng,
-       acc:base.acc, placed:base.placed, time:new Date().toISOString(), props};
+      Object.assign({id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), formId:C.form.id, time:new Date().toISOString(), props}, base);
     if(C.db){
       try{ await clDbDo(C.db,'readwrite',s=>s.put(rec)); }
-      catch(e){ toast(e.message+' Export what you have now.', 6000); return; }
+      catch(e){ toast(e.message+' Save the GeoJSON now.', 6000); return; }
     }
     if(existing) C.points=C.points.map(p=>p.id===rec.id?rec:p); else C.points.push(rec);
     clRenderList(C); close();
-    toast(existing?'Point updated.':'Point '+C.points.length+' saved.');
+    toast(existing?'Updated.':GEOM_LABEL[g]+' '+C.points.length+' saved.');
   };
 }
-function clFeatureCollection(C, withPhotos){
-  const photo=new Set(C.form.fields.filter(x=>x.type==='photo').map(x=>x.name));
+function clFeatureCollection(C, withMedia){
+  const media=new Set(C.form.fields.filter(x=>x.type==='photo'||x.type==='audio').map(x=>x.name));
   return {type:'FeatureCollection', features:C.points.map(p=>{
-    const props={};
-    C.form.fields.forEach(x=>{ const v=p.props[x.name]; props[x.name]= photo.has(x.name) ? (withPhotos ? (v||null) : (v?'yes':null)) : (v==null?null:v); });
+    const props={}, g=p.geom||'point', r7=c=>[Math.round(c[0]*1e7)/1e7, Math.round(c[1]*1e7)/1e7];
+    C.form.fields.forEach(x=>{ const v=p.props[x.name]; props[x.name]= media.has(x.name) ? (v ? (withMedia ? v : MEDIA_LEFT) : null) : (v==null?null:v); });
     props.time=p.time; props.gps_acc_m=p.acc==null?null:Math.round(p.acc*10)/10; props.placed_by=p.placed; props.point_id=p.id;
-    return {type:'Feature', properties:props, geometry:{type:'Point', coordinates:[Math.round(p.lng*1e7)/1e7, Math.round(p.lat*1e7)/1e7]}};
+    let geometry;
+    if(g==='line'){ geometry={type:'LineString', coordinates:p.coords.map(r7)}; props.length_m=Math.round(clLen(p.coords)*10)/10; }
+    else if(g==='polygon'){ const ring=p.coords.map(r7); ring.push(ring[0].slice()); geometry={type:'Polygon', coordinates:[ring]}; props.area_m2=Math.round(clArea(p.coords)); }
+    else geometry={type:'Point', coordinates:r7([p.lng,p.lat])};
+    return {type:'Feature', properties:props, geometry};
   })};
 }
 function clFileName(C, ext){
@@ -8797,49 +9084,150 @@ function clFileName(C, ext){
 }
 function clMakeFile(C, kind){
   if(kind==='csv'){
-    const fc=clFeatureCollection(C,false);
-    const rows=fc.features.map(f=>Object.assign({lat:f.geometry.coordinates[1], lng:f.geometry.coordinates[0]}, f.properties));
-    return new File([Papa.unparse(rows)], clFileName(C,'csv'), {type:'text/csv'});
+    const fc=clFeatureCollection(C,true);
+    return new File([Papa.unparse(fc.features.map(fcCsvRow))], clFileName(C,'csv'), {type:'text/csv'});
   }
   return new File([JSON.stringify(clFeatureCollection(C,true))], clFileName(C,'geojson'), {type:'application/json'});
 }
 function clDownload(C, kind){
-  if(!C.points.length){ toast('No points yet.'); return; }
+  if(!C.points.length){ toast('Nothing mapped yet.'); return; }
   const f=clMakeFile(C, kind), a=document.createElement('a');
   a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
 }
 async function clShareFile(C){
-  if(!C.points.length){ toast('No points yet.'); return; }
+  if(!C.points.length){ toast('Nothing mapped yet.'); return; }
   const f=clMakeFile(C,'geojson');
   if(navigator.canShare && navigator.canShare({files:[f]})){
     try{ await navigator.share({files:[f], title:C.form.title}); }catch(e){ if(e.name!=='AbortError') toast('Sharing failed: '+e.message); }
-  } else { toast('This phone cannot share files from the browser. Use the GeoJSON button instead.', 4000); }
+  } else { toast('This phone cannot share files from the browser. Use Save GeoJSON instead.', 4000); }
 }
-async function clSendQr(C){
-  if(!C.points.length){ toast('No points yet.'); return; }
-  try{ await loadLib('qrcode'); }catch(e){ toast(e.message, 4000); return; }
-  const enc=await encodeShare({v:2, kind:'mom-points', title:C.form.title, formId:C.form.id, fc:clFeatureCollection(C,false)});
-  const SZ=320, sid=Math.random().toString(36).slice(2,7), n=Math.ceil(enc.length/SZ);
-  const frames=[]; for(let i=0;i<n;i++) frames.push(qrToCanvas('MOM1|'+sid+'|'+i+'|'+n+'|'+enc.slice(i*SZ,(i+1)*SZ), 600, 'L'));
+function clCountMedia(C){ let n=0; const media=C.form.fields.filter(x=>x.type==='photo'||x.type==='audio').map(x=>x.name); C.points.forEach(p=>media.forEach(k=>{ if(p.props[k]) n++; })); return n; }
+function clSendMenu(C){
+  if(!C.points.length){ toast('Nothing mapped yet.'); return; }
+  const nm=clCountMedia(C);
+  const ov=document.createElement('div'); ov.id='clMenu';
+  ov.innerHTML='<div class="mm"><b style="font-size:17px;">Send to laptop</b><span class="cl-note" style="padding:0;">On the laptop, open Field Mapper → Collected data → Receive from phone.</span>'+
+    '<button class="pri" id="clmScan">📷 Scan the laptop\'s code<small>Sends everything'+(nm?', including '+nm+' photo'+(nm===1?'':'s')+'/recording'+(nm===1?'':'s'):'')+'. Both need a connection.</small></button>'+
+    '<button id="clmCodes">▦ Show codes for the laptop to read<small>Text only'+(nm?'; photos and audio stay on the phone':'')+'. Works without a connection.</small></button>'+
+    '<button id="clmFile">⬇ Save GeoJSON instead<small>Everything, as a file to upload on the laptop.</small></button>'+
+    '<button id="clmCancel">Cancel</button></div>';
+  document.getElementById('collector').appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('#clmCancel').onclick=close;
+  ov.onclick=e=>{ if(e.target===ov) close(); };
+  ov.querySelector('#clmFile').onclick=()=>{ close(); clDownload(C,'geojson'); };
+  ov.querySelector('#clmCodes').onclick=()=>{ close(); clSendQr(C); };
+  ov.querySelector('#clmScan').onclick=()=>{ close(); clScanLaptop(C); };
+}
+/* a full-screen loop of QR codes; returns a handle to update or close it */
+async function clQrLoop(texts, title, note){
+  await loadLib('qrcode');
+  const frames=texts.map(t=>qrToCanvas(t, 600, 'L')), n=frames.length;
   const ov=document.createElement('div'); ov.id='clSend';
-  ov.innerHTML='<b>Hold this screen up to the laptop camera</b><div id="clSendCv"></div><div id="clSendN"></div>'+
-    '<div class="row"><button id="clSlow">Slower</button><button id="clFast">Faster</button><button class="pri" id="clDone">Done</button></div>'+
-    '<p class="cl-note" style="padding:0;">On the laptop: Field Collector → Collected data → Receive from phone. '+C.points.length+' points in '+n+' code'+(n>1?'s':'')+'. Photos travel only in the GeoJSON file. Turn the screen brightness up.</p>';
+  ov.innerHTML='<b>'+title+'</b><div id="clSendCv"></div><div id="clSendN"></div><div id="clSendSt" class="cl-note" style="padding:0;"></div>'+
+    '<div class="row">'+(n>1?'<button id="clSlow">Slower</button><button id="clFast">Faster</button>':'')+'<button class="pri" id="clDone">Done</button></div>'+
+    '<p class="cl-note" style="padding:0;">'+note+' Turn the screen brightness up.</p>';
   document.getElementById('collector').appendChild(ov);
   let i=0, ms=450; const host=ov.querySelector('#clSendCv'), lab=ov.querySelector('#clSendN');
-  const show=()=>{ host.innerHTML=''; host.appendChild(frames[i]); lab.textContent='Code '+(i+1)+' of '+n; i=(i+1)%n; };
+  const show=()=>{ host.innerHTML=''; host.appendChild(frames[i]); lab.textContent=n>1?'Code '+(i+1)+' of '+n:''; i=(i+1)%n; };
   show();
   let timer=n>1 ? setInterval(show, ms) : null;
   const reset=()=>{ if(timer){ clearInterval(timer); timer=setInterval(show, ms); } };
-  ov.querySelector('#clSlow').onclick=()=>{ ms=Math.min(2000, ms+250); reset(); };
-  ov.querySelector('#clFast').onclick=()=>{ ms=Math.max(200, ms-150); reset(); };
-  ov.querySelector('#clDone').onclick=()=>{ if(timer) clearInterval(timer); ov.remove(); };
+  const h={el:ov, onclose:null, close:()=>{ if(timer) clearInterval(timer); timer=null; if(ov.isConnected) ov.remove(); if(wl) wl.release().catch(()=>{}); if(h.onclose) h.onclose(); },
+    hideCodes:()=>{ if(timer) clearInterval(timer); timer=null; host.innerHTML=''; lab.textContent=''; ov.querySelectorAll('#clSlow,#clFast').forEach(b=>b.remove()); },
+    status:html=>{ ov.querySelector('#clSendSt').innerHTML=html; }};
+  if(n>1){ ov.querySelector('#clSlow').onclick=()=>{ ms=Math.min(2000, ms+250); reset(); }; ov.querySelector('#clFast').onclick=()=>{ ms=Math.max(200, ms-150); reset(); }; }
+  ov.querySelector('#clDone').onclick=()=>h.close();
   let wl=null; try{ if(navigator.wakeLock) wl=await navigator.wakeLock.request('screen'); }catch(_){}
-  const obs=new MutationObserver(()=>{ if(!ov.isConnected){ obs.disconnect(); if(wl) wl.release().catch(()=>{}); } });
-  obs.observe(document.getElementById('collector'), {childList:true});
+  return h;
+}
+function clFrames(prefix, enc){ const SZ=320, sid=Math.random().toString(36).slice(2,7), n=Math.ceil(enc.length/SZ); const out=[]; for(let i=0;i<n;i++) out.push(prefix+'|'+sid+'|'+i+'|'+n+'|'+enc.slice(i*SZ,(i+1)*SZ)); return out; }
+async function clSendQr(C){
+  try{ await loadLib('qrcode'); }catch(e){ toast(e.message, 4000); return; }
+  const enc=await encodeShare({v:3, kind:'mom-points', title:C.form.title, formId:C.form.id, fc:clFeatureCollection(C,false)});
+  const texts=clFrames('MOM1', enc);
+  C.lastFrames=texts;
+  const nm=clCountMedia(C);
+  await clQrLoop(texts, 'Hold this screen up to the laptop camera', C.points.length+' features in '+texts.length+' code'+(texts.length>1?'s':'')+'.'+(nm?' Photos and audio stay on the phone; use Scan the laptop\'s code or Save GeoJSON for those.':''));
+}
+/* the phone scans the laptop's offer, answers with QR codes, then sends over the link */
+async function clScanLaptop(C){
+  const ov=document.createElement('div'); ov.id='clScan';
+  ov.innerHTML='<b>Point the camera at the code on the laptop screen</b><video playsinline muted></video><div class="cl-note" id="clScanSt" style="padding:0;">Starting the camera…</div><div class="row"><button id="clScanX">Cancel</button></div>';
+  document.getElementById('collector').appendChild(ov);
+  const video=ov.querySelector('video'), stEl=ov.querySelector('#clScanSt');
+  let stream=null, stop=false;
+  const end=()=>{ stop=true; if(stream) stream.getTracks().forEach(t=>t.stop()); ov.remove(); };
+  ov.querySelector('#clScanX').onclick=end;
+  let det=null;
+  try{ if('BarcodeDetector' in window){ const fm=await BarcodeDetector.getSupportedFormats(); if(fm.includes('qr_code')) det=new BarcodeDetector({formats:['qr_code']}); } }catch(_){}
+  try{ if(!det) await loadLib('jsQR'); }catch(e){ stEl.textContent=e.message; return; }
+  try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false}); }
+  catch(e){ stEl.textContent='The camera could not start. Allow camera access, or go back and use Save GeoJSON.'; return; }
+  if(stop){ stream.getTracks().forEach(t=>t.stop()); return; }
+  video.srcObject=stream; try{ await video.play(); }catch(_){}
+  stEl.textContent='Looking for the laptop\'s code…';
+  const cv=document.createElement('canvas'), g=cv.getContext('2d',{willReadFrequently:true});
+  const tick=async ()=>{
+    if(stop) return;
+    let texts=[];
+    try{
+      if(video.readyState>=2){
+        if(det) texts=(await det.detect(video)).map(c=>c.rawValue);
+        else{ const s=Math.min(1, 800/(video.videoWidth||800)); cv.width=Math.round(video.videoWidth*s); cv.height=Math.round(video.videoHeight*s); g.drawImage(video,0,0,cv.width,cv.height); const im=g.getImageData(0,0,cv.width,cv.height); const r=jsQR(im.data,im.width,im.height,{inversionAttempts:'dontInvert'}); if(r) texts=[r.data]; }
+      }
+    }catch(_){}
+    const t=texts.find(x=>/^MOMO\|/.test(x));
+    if(t){ end(); clLinkAnswer(C, t); return; }
+    setTimeout(tick, 120);
+  };
+  tick();
+}
+async function clLinkAnswer(C, text){
+  let offer=null;
+  try{ offer=await decodeShare(text.slice(5)); }catch(_){}
+  if(!offer || offer.t!=='offer' || typeof offer.s!=='string'){ toast('That code could not be read. Try again.'); return; }
+  if(!window.RTCPeerConnection){ toast('This browser cannot make a direct link. Use Save GeoJSON.', 4000); return; }
+  const pc=new RTCPeerConnection(RTC_CFG);
+  C.link={pc};
+  let h=null, opened=false;
+  const nFeat=C.points.length;
+  pc.ondatachannel=e=>{
+    const dc=e.channel; C.link.dc=dc;
+    dc.onopen=()=>{ opened=true; if(h){ h.hideCodes(); h.status('<div id="clLinkProg"><div></div></div><p>Connected. Sending '+nFeat+' features…</p>'); } clLinkSend(C, dc, h); };
+    dc.onmessage=m=>{ if(m.data==='ok'){ if(h) h.status('<p style="font-size:18px;color:#2e9e5b;"><b>✓ Sent</b></p><p>The laptop has all '+nFeat+' features. Keep them here until you have checked them on the laptop.</p>'); C.link.done=true; try{ pc.close(); }catch(_){} } };
+  };
+  try{
+    await pc.setRemoteDescription({type:'offer', sdp:offer.s});
+    await pc.setLocalDescription(await pc.createAnswer());
+    await rtcGather(pc, 3000);
+    const enc=await encodeShare({t:'answer', s:pc.localDescription.sdp});
+    const texts=clFrames('MOMA', enc); C.lastFrames=texts;
+    h=await clQrLoop(texts, 'Now hold this screen up to the laptop camera', 'The laptop reads this reply, then the two connect and everything is sent.');
+    h.onclose=()=>{ if(!C.link.done) try{ pc.close(); }catch(_){} };
+    setTimeout(()=>{ if(!opened && h.el.isConnected) h.status('<p class="warn"><b>No connection yet.</b> If the laptop has read the codes and nothing happens, this network may block direct links. Tap Done and use Save GeoJSON instead.</p>'); }, 30000);
+  }catch(e){ toast('The direct link failed: '+e.message, 4000); try{ pc.close(); }catch(_){} }
+}
+async function clLinkSend(C, dc, h){
+  const text=JSON.stringify({v:3, kind:'mom-points', title:C.form.title, formId:C.form.id, fc:clFeatureCollection(C,true)});
+  const CH=16000, n=Math.ceil(text.length/CH);
+  dc.bufferedAmountLowThreshold=256*1024;
+  const wait=()=>new Promise(r=>{ if(dc.bufferedAmount<1024*1024) return r(); dc.onbufferedamountlow=()=>{ dc.onbufferedamountlow=null; r(); }; });
+  try{
+    dc.send(JSON.stringify({h:1, size:text.length, n}));
+    for(let i=0;i<n;i++){
+      await wait();
+      dc.send('c'+text.slice(i*CH,(i+1)*CH));
+      if(h && i%4===0){ const b=h.el.querySelector('#clLinkProg div'); if(b) b.style.width=Math.round((i+1)/n*100)+'%'; }
+    }
+    dc.send(JSON.stringify({e:1}));
+    const b=h&&h.el.querySelector('#clLinkProg div'); if(b) b.style.width='100%';
+  }catch(e){ if(h) h.status('<p class="warn">Sending stopped: '+esc(e.message)+'. Tap Done and use Save GeoJSON.</p>'); }
 }
 window.__qrRecvFrame=(t)=>{ if(!qrRecv){ openQrReceiver(); } return qrRecvFrame(qrRecv||{stream:null, stopped:false, sid:null, n:0, parts:{}, got:0}, t); };
+window.__rx=()=>qrRecv;
+window.__clLinkAnswer=(t)=>clLinkAnswer(window.__collector, t);
 window.__fc=()=>({forms:fcForms, data:fcData, sel:fcSel});
 
 /* ================= BATCH GEOCODER =================
@@ -12249,57 +12637,69 @@ document.getElementById('modMakerBtn').onclick=()=>{ requireProject(()=>switchMo
 document.getElementById('modLayoutBtn').onclick=()=>{ requireProject(()=>switchModule('layout')); };
 document.getElementById('modCollectBtn').onclick=()=>{ requireProject(()=>switchModule('collect')); };
 document.getElementById('btnHelp').onclick=()=>openModal('modal-help');
-document.getElementById('loPanelToggle').onclick=()=>{
-  const rp=document.getElementById('rightpanel');
-  rp.classList.toggle('collapsed');
-  const col=rp.classList.contains('collapsed');
-  /* the resize handle leaves an inline width, which would beat the collapsed
-     rule and leave a full-width empty panel — park it and put it back after */
-  if(col){
-    if(rp.style.width) rp.dataset.openWidth=rp.style.width;
-    rp.style.width='';
-  } else if(rp.dataset.openWidth){
-    rp.style.width=rp.dataset.openWidth;
-  }
-  const b=document.getElementById('loPanelToggle');
-  b.textContent = col ? '⟨' : 'Menu ⟩';
-  b.title = col ? 'Show menu' : 'Hide menu';
-  setTimeout(()=>{ canvas.calcOffset(); canvas.renderAll(); positionEmbedFrames(); }, 180);
+/* ---------- side panels: drag the divider to resize, click its tab to hide ----------
+   One splitter serves every side panel (Map Maker, Map Composer, Field Mapper).
+   Dragging a panel narrower than its minimum hides it; the tab stays at the edge
+   to bring it back. Widths and hidden state are remembered per panel. */
+function makeSplitter(panel, side, key, min, max, onChange){
+  if(!panel) return;
+  const sp=document.createElement('div');
+  sp.className='splitter splitter-'+side; sp.setAttribute('role','separator'); sp.setAttribute('aria-orientation','vertical');
+  sp.innerHTML='<button class="splitter-tab" type="button"></button>';
+  if(side==='left') panel.after(sp); else panel.before(sp);
+  const tab=sp.firstChild;
+  let st={w:null, hidden:false};
+  try{ st=Object.assign(st, JSON.parse(localStorage.getItem('mom_panel_'+key)||'{}')); }catch(_){}
+  const save=()=>{ try{ localStorage.setItem('mom_panel_'+key, JSON.stringify(st)); }catch(_){} };
+  const paint=()=>{
+    panel.classList.toggle('sp-collapsed', !!st.hidden);
+    sp.classList.toggle('closed', !!st.hidden);
+    if(st.w && !st.hidden){ panel.style.width=st.w+'px'; panel.style.minWidth='0'; panel.style.maxWidth='none'; }
+    const openCh= side==='left' ? '‹' : '›', shutCh= side==='left' ? '›' : '‹';
+    tab.textContent= st.hidden ? shutCh : openCh;
+    tab.title= st.hidden ? 'Show panel' : 'Hide panel (drag the divider to resize)';
+    tab.setAttribute('aria-label', tab.title);
+  };
+  const changed=()=>{ paint(); save(); if(onChange) setTimeout(onChange, 30); };
+  paint();
+  let drag=null;
+  sp.addEventListener('pointerdown', e=>{
+    if(e.button!==0) return;
+    const r=panel.getBoundingClientRect();
+    drag={x:e.clientX, w:st.hidden?0:r.width, moved:false, onTab:e.target===tab};
+    sp.setPointerCapture(e.pointerId); sp.classList.add('dragging');
+    document.body.style.userSelect='none'; e.preventDefault();
+  });
+  sp.addEventListener('pointermove', e=>{
+    if(!drag) return;
+    const dx=e.clientX-drag.x;
+    if(Math.abs(dx)>3) drag.moved=true;
+    if(!drag.moved) return;
+    let w=drag.w + (side==='left'? dx : -dx);
+    if(w<min*0.6){ if(!st.hidden){ st.hidden=true; paint(); if(onChange) onChange(); } return; }
+    st.hidden=false; st.w=Math.round(Math.max(min, Math.min(max, w))); paint(); if(onChange) onChange();
+  });
+  const end=e=>{
+    if(!drag) return;
+    const d=drag; drag=null; sp.classList.remove('dragging'); document.body.style.userSelect='';
+    try{ sp.releasePointerCapture(e.pointerId); }catch(_){}
+    if(!d.moved && d.onTab){ st.hidden=!st.hidden; }
+    changed();
+  };
+  sp.addEventListener('pointerup', end); sp.addEventListener('pointercancel', end);
+  sp.addEventListener('dblclick', e=>{ if(e.target!==tab){ st.w=null; panel.style.width=''; panel.style.minWidth=''; panel.style.maxWidth=''; changed(); } });
+  tab.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); st.hidden=!st.hidden; changed(); } });
+  return {toggle:()=>{ st.hidden=!st.hidden; changed(); }, el:sp};
+}
+const onMakerResize=()=>{ if(mkMap) mkMap.invalidateSize(); };
+const onLayoutResize=()=>{ canvas.calcOffset(); canvas.renderAll(); positionEmbedFrames(); };
+window.__splitters={
+  mkLeft: makeSplitter(document.getElementById('mk-left'),'left','mkLeft',190,520,onMakerResize),
+  mkRight: makeSplitter(document.getElementById('mk-right'),'right','mkRight',250,600,onMakerResize),
+  loRight: makeSplitter(document.getElementById('rightpanel'),'right','loRight',250,600,onLayoutResize),
+  fcLeft: makeSplitter(document.querySelector('#module-collect .fc-left'),'left','fcLeft',180,420,null),
+  fcRight: makeSplitter(document.querySelector('#module-collect .fc-right'),'right','fcRight',280,560,null)
 };
-
-/* ---------- resizable layout panel ---------- */
-(function(){
-  const KEY='cartoStudio_loPanelWidth';
-  const panel=document.getElementById('rightpanel');
-  const handle=document.getElementById('loPanelResize');
-  if(!panel||!handle) return;
-  const saved=parseInt(localStorage.getItem(KEY),10);
-  if(saved && saved>=250 && saved<=560) panel.style.width=saved+'px';
-  let dragging=false, startX=0, startW=0, lastW=0;
-  handle.addEventListener('mousedown', e=>{
-    dragging=true; startX=e.clientX; startW=panel.getBoundingClientRect().width; lastW=startW;
-    handle.classList.add('dragging');
-    document.body.style.userSelect='none';
-    /* the panel animates its width; that lags a drag and reports stale sizes */
-    panel.style.transition='none';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    /* handle is on the panel's left edge, so dragging left widens it */
-    lastW=Math.max(250, Math.min(560, startW - (e.clientX-startX)));
-    panel.style.width=lastW+'px';
-  });
-  window.addEventListener('mouseup', ()=>{
-    if(!dragging) return;
-    dragging=false;
-    handle.classList.remove('dragging');
-    document.body.style.userSelect='';
-    panel.style.transition='';
-    localStorage.setItem(KEY, Math.round(lastW));   /* the width we set, not a mid-animation read */
-    canvas.calcOffset(); canvas.renderAll(); positionEmbedFrames();
-  });
-})();
 
 /* ================= SKETCH / DRAWING TOOLS =================
    Behaves like a simple graphics program: pick a tool, draw one shape, and the
@@ -14566,7 +14966,7 @@ ${bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${b
 function styleFn(f){var s=f.properties._cs||{};return{color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};}
 function ptLayer(f,ll){var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]})});}return L.circleMarker(ll,{radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo});}
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src=\"'+v+'\" alt=\"\" style=\"max-width:220px;max-height:200px;display:block\">':E(v))+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
+function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src=\"'+v+'\" alt=\"\" style=\"max-width:220px;max-height:200px;display:block\">':(typeof v==='string'&&/^data:audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[a-z0-9=.+-]+)*;base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<audio controls preload=\"none\" src=\"'+v+'\" style=\"width:220px;height:34px;display:block\"></audio>':E(v))+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
 function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,0],n:['top',0,-d],s:['bottom',0,d],e:['right',d,0],w:['left',-d,0],ne:['right',d,-d],se:['right',d,d],nw:['left',-d,-d],sw:['left',-d,d]};var p=P[lb.p]||P.ne;return{direction:p[0],offset:[p[1],p[2]]};}
 function label(f,layer,lb,li){if(!lb||!lb.f)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
@@ -14844,7 +15244,7 @@ function svPtLayer(f,ll){ const s=f.properties._cs||{};
   return L.circleMarker(ll,{radius:svNum(s.r,5,0.5,200), color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40), opacity:svNum(s.so,1,0,1),
     fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.8,0,1)}); }
 function svPopup(f,layer){ const p=f.properties||{}; let r='';
-  for(const k in p){ if(k.charAt(0)==='_') continue; r+='<tr><td class="k">'+esc(k)+'</td><td>'+(isPhotoVal(p[k])?'<img src="'+p[k]+'" alt="" style="max-width:220px;max-height:200px;display:block;">':(p[k]==null?'':esc(String(p[k]))))+'</td></tr>'; }
+  for(const k in p){ if(k.charAt(0)==='_') continue; r+='<tr><td class="k">'+esc(k)+'</td><td>'+(isPhotoVal(p[k])?'<img src="'+p[k]+'" alt="" style="max-width:220px;max-height:200px;display:block;">':isAudioVal(p[k])?'<audio controls preload="none" src="'+p[k]+'" style="width:220px;height:34px;display:block;"></audio>':(p[k]==null?'':esc(String(p[k]))))+'</td></tr>'; }
   if(r) layer.bindPopup('<div class="sv-popup"><table>'+r+'</table></div>'); }
 /* labels carried across from Map Maker, with the same offset/position */
 function svInjectLabelCss(li, lbl){

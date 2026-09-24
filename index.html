@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Map-O-Matic</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%232f7d78%22/%3E%3Cpolygon%20points%3D%226.5%2C7.5%2011.25%2C12.25%2011.25%2C25.75%206.5%2C23.5%22%20fill%3D%22%23fff%22/%3E%3Cpolygon%20points%3D%2211.25%2C12.25%2016%2C17%2016%2C23.5%2011.25%2C25.75%22%20fill%3D%22%23bfe0db%22/%3E%3Cpolygon%20points%3D%2216%2C17%2020.75%2C12.25%2020.75%2C25.75%2016%2C23.5%22%20fill%3D%22%23fff%22/%3E%3Cpolygon%20points%3D%2220.75%2C12.25%2025.5%2C7.5%2025.5%2C23.5%2020.75%2C25.75%22%20fill%3D%22%23bfe0db%22/%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2210.2%22%20r%3D%222.1%22%20fill%3D%22%23f2b84b%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.1/maplibre-gl.css" integrity="sha384-Nq6PQ+9vJPvw7U/VfDELyrWoGQMsy0gi6QShhaSrGzkpF5KkM40csg2leky+YMTd" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.20.0/dist/leaflet-geoman.css" integrity="sha384-++juJE6hRzkkV4Ri9H2C+3yjCTdEk4PaZxptm3cpgKKjuMcAHErn35Q/0sGitZCR" crossorigin="anonymous">
@@ -36,7 +37,7 @@
      (search results, selection actions) render behind the map. */
   #topbar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:var(--navy);color:#fff;flex-wrap:wrap;position:relative;z-index:900;}
   #topbar h1{font-size:15px;font-weight:600;margin:0 8px 0 0;white-space:nowrap;}
-  .mod-tabs{display:flex;background:#111d38;border-radius:7px;padding:3px;gap:3px;margin-right:18px;}
+  .mod-tabs{display:flex;background:#111d38;border-radius:7px;padding:3px;gap:3px;}
   .mod-tabs button{background:transparent;border:none;color:#aab6d4;font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:5px;}
   .mod-tabs button.active{background:var(--teal);color:#fff;}
   #topbar .grp{display:flex;align-items:center;gap:5px;padding:0 6px;border-right:1px solid rgba(255,255,255,.18);}
@@ -44,9 +45,22 @@
   #topbar .btn.small{padding:4px 7px;}
   @media (max-width:1500px){ #topbar .grp{gap:4px;padding:0 4px;} #topbar .btn.small{padding:4px 6px;} }
   @media (max-width:1420px){ #topbar label{display:none;} #syncState{display:none;} #topbar select{max-width:120px;} }
-  @media (max-width:1480px){ .mod-tabs button{padding:5px 9px;} .mod-tabs{margin-right:12px;} }
-  @media (max-width:1400px){ #wordmark .wm-t{display:none;} #topbar select{max-width:104px;} }
-  #topbar .grp:last-child{border-right:none;margin-left:auto;}
+  @media (max-width:1400px){ #topbar select{max-width:104px;} #topbar .btn.small{padding:4px 5px;} #topbar .grp{padding:0 3px;} }
+  #topbar .grp:last-child{border-right:none;}
+  #topbar .tb-spacer{flex:1 1 0;min-width:8px;}
+  #topbar{gap:4px;padding:7px 10px;}
+  #grp-page label{display:none;}
+  #topbar #pageSize{max-width:96px;} #topbar #pageOrientation{max-width:82px;} #topbar #projectSwitcher{max-width:140px;}
+  #topbar .grp{padding:0 5px;gap:4px;} #topbar h1{margin-right:4px;}
+  @media (max-width:1500px){ #syncState{display:none;} }
+  @media (max-width:1340px){ .mod-tabs button{padding:5px 10px;} #topbar #projectSwitcher{max-width:96px !important;} #topbar #pageSize{max-width:78px !important;} #topbar #pageOrientation{max-width:70px !important;} }
+  @media (max-width:1500px){ #topbar #projectSwitcher{max-width:112px;} #topbar #pageSize{max-width:86px;} #topbar #pageOrientation{max-width:76px;} #topbar .grp{padding:0 3px;gap:3px;} }
+  #topbar .grp.tb-mid-last{border-right:none;}
+  #topbar h1{display:flex;align-items:center;gap:7px;}
+  .mom-logo{flex:none;display:inline-block;vertical-align:middle;}
+  .home-hero h1{display:flex;align-items:center;gap:12px;}
+  .proj-logo{opacity:.55;}
+  .sv-brand .mom-logo{margin-right:5px;vertical-align:-3px;}
   #topbar label{font-size:11px;color:#c9d2e6;}
   #topbar select{padding:3px 5px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;}
   .btn{background:var(--teal);color:#fff;border:none;border-radius:5px;padding:6px 11px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
@@ -705,12 +719,13 @@
 <body>
 
 <div id="topbar">
-  <h1 id="wordmark" title="Back to projects home" role="button" tabindex="0">🗺️ <span class="wm-t">Map-O-Matic</span></h1>
+  <h1 id="wordmark" title="Back to projects home" role="button" tabindex="0"><svg class="mom-logo" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Map-O-Matic</h1>
   <div class="mod-tabs">
     <button id="modMakerBtn" class="active">Map Maker</button>
     <button id="modLayoutBtn">Map Composer</button>
     <button id="modCollectBtn">Field Mapper</button>
   </div>
+  <div class="tb-spacer"></div>
   <div class="grp" id="grp-page">
     <label>Page</label>
     <select id="pageSize">
@@ -743,12 +758,13 @@
       </div>
     </span>
   </div>
-  <div class="grp">
+  <div class="grp tb-mid-last">
     <button class="btn ghost small" id="btnHome" title="Projects home">🏠</button>
     <select id="projectSwitcher" title="Switch project"></select>
     <button class="btn secondary small" id="btnSave" title="Save this project to browser storage">Save</button>
     <button class="btn ghost small" id="btnSync" title="Save projects to a synced folder as well as this browser">☁ <span id="syncState">Sync off</span></button>
   </div>
+  <div class="tb-spacer"></div>
   <div class="grp">
     <button class="btn small" id="btnShareOpen" title="Share this map as a live link or embed">🔗 Share</button>
     <button class="btn small" id="btnExportOpen">Export ▸</button>
@@ -765,7 +781,7 @@
   <!-- hero ribbon: short blurb explaining the tool (Vis-O-Matic style) -->
   <section class="home-hero">
     <div class="home-hero-in">
-      <h1>🗺️ Map-O-Matic</h1>
+      <h1><svg class="mom-logo mom-logo-hero" width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Map-O-Matic</h1>
       <p>A free, browser-based cartography studio. Build a map from your own spatial data, style it with proper GIS symbology and classification, then compose a finished, print-ready layout with a legend, scale bar and north arrow — or share it as a live, interactive web map. Everything runs in your browser: nothing is installed, and your data never leaves your computer.</p>
       <div class="home-hero-tags">
         <span>Runs in the browser</span><span>Nothing uploaded</span><span>No installation</span><span>No account</span><span>Free &amp; open</span>
@@ -1237,7 +1253,7 @@
     <div class="inset-basemaprow">
       <label class="kv" style="font-weight:700;">Basemap</label>
       <select id="insetBasemap" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:12px;"></select>
-      <button class="btn small ghost" id="insetPartsBtn" title="Turn parts of the basemap on/off">🗺️ Layers</button>
+      <button class="btn small ghost" id="insetPartsBtn" title="Turn parts of the basemap on/off"><svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3 2 8l10 5 10-5z" fill="currentColor"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Layers</button>
       <span class="kv" id="insetBasemapAttr" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
     </div>
     <div id="inset-mapwrap" style="position:relative;">
@@ -2300,7 +2316,7 @@ function addMapToolControls(){
     c.innerHTML=
       '<a href="#" id="mkGlobeBtn" title="Globe view (orthographic)">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
-      '<a href="#" id="mkBasemapBtn" title="Basemap layers — turn parts on/off">🗺️</a>'+
+      '<a href="#" id="mkBasemapBtn" title="Basemap layers — turn parts on/off"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:-3px\"><path d=\"M12 3 2 8l10 5 10-5z\" fill=\"#2f7d78\"/><path d=\"m2 12 10 5 10-5M2 16l10 5 10-5\" fill=\"none\" stroke=\"#2f7d78\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg></a>'+
       '<a href="#" id="mkFindBtn" title="Go to place — search for somewhere">🔍</a>'+
       '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
@@ -8632,7 +8648,7 @@ function rxFinish(p, fc, via){
   fcAddDataset(fc, {name:title+' · '+fcDateStr(Date.now()), formId:f?f.id:null, formTitle:f?f.title:title, via});
   const mc=fcMediaCount(fc);
   toast('Received '+fc.features.length+' records'+(mc.ph||mc.au?' with '+[mc.ph?mc.ph+' photos':'', mc.au?mc.au+' recordings':''].filter(Boolean).join(' and '):'')+'.', 3500);
-  setTimeout(()=>stopQrReceiver(), 1500);
+  const mine=qrRecv; setTimeout(()=>{ if(qrRecv===mine) stopQrReceiver(); }, 1500);
 }
 /* one decoded code; returns true when the camera can stop */
 function qrRecvFrame(st, text){
@@ -8783,7 +8799,7 @@ async function enterCollector(){
   document.title=form.title+' — Map-O-Matic Field Mapper';
   const css=document.createElement('style'); css.textContent='#toast{z-index:8000 !important;}'; document.head.appendChild(css);
   const root=document.createElement('div'); root.id='collector'; document.body.appendChild(root);
-  root.innerHTML='<header><div class="hd"><small>Map-O-Matic Field Mapper</small><b>'+esc(form.title)+'</b></div><span id="clCount">0 features</span></header>'+
+  root.innerHTML='<header><svg class="mom-logo" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg><div class="hd"><small>Map-O-Matic Field Mapper</small><b>'+esc(form.title)+'</b></div><span id="clCount">0 features</span></header>'+
     (form.intro?'<div class="cl-intro">'+esc(form.intro)+'</div>':'')+
     '<div id="clMap"></div>'+
     '<div class="cl-gps" id="clGps"><i></i>Finding your location…</div>'+
@@ -14505,7 +14521,7 @@ function renderProjectsGrid(){
     const okThumb=typeof p.thumbnail==='string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.thumbnail);
     const thumb=okThumb? 'style="background-image:url('+p.thumbnail+')"' : '';
     return `<div class="proj-card" data-id="${esc(p.id)}">
-      <div class="proj-thumb" ${thumb}>${okThumb?'':'🗺️'}</div>
+      <div class="proj-thumb" ${thumb}>${okThumb?'':'<svg class="mom-logo proj-logo" width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>'}</div>
       <div class="proj-body">
         <div class="pname">${esc(p.name)}${p.id===currentProjectId?' <span style="color:var(--teal);font-size:10px;">● open</span>':''}</div>
         <div class="pmeta">${nLayers} layer${nLayers===1?'':'s'} · edited ${fmtDate(p.modified)}</div>
@@ -15304,7 +15320,7 @@ async function enterShareViewer(){
     d.querySelector('select').onchange=e=>svSetBasemap(e.target.value);
     return d;
   }; bmCtl.addTo(svMap);
-  const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.textContent='Made with Map-O-Matic'; return d; }; brand.addTo(svMap);
+  const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Made with Map-O-Matic'; return d; }; brand.addTo(svMap);
   window.__svMap=svMap;            /* testing hook */
   setTimeout(()=>svMap.invalidateSize(), 150);
 }

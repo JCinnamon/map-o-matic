@@ -50,11 +50,11 @@
   #topbar .tb-spacer{flex:1 1 0;min-width:8px;}
   #topbar{gap:4px;padding:7px 10px;}
   #grp-page label{display:none;}
-  #topbar #pageSize{max-width:96px;} #topbar #pageOrientation{max-width:82px;} #topbar #projectSwitcher{max-width:140px;}
+  #topbar #pageSize{max-width:96px;} #topbar #pageOrientation{max-width:82px;} #topbar #projectSwitcher{width:260px;max-width:none;}
   #topbar .grp{padding:0 5px;gap:4px;} #topbar h1{margin-right:4px;}
   @media (max-width:1500px){ #syncState{display:none;} }
-  @media (max-width:1340px){ .mod-tabs button{padding:5px 10px;} #topbar #projectSwitcher{max-width:96px !important;} #topbar #pageSize{max-width:78px !important;} #topbar #pageOrientation{max-width:70px !important;} }
-  @media (max-width:1500px){ #topbar #projectSwitcher{max-width:112px;} #topbar #pageSize{max-width:86px;} #topbar #pageOrientation{max-width:76px;} #topbar .grp{padding:0 3px;gap:3px;} }
+  @media (max-width:1340px){ .mod-tabs button{padding:5px 10px;} body.mod-layout #topbar #projectSwitcher{width:128px !important;} #topbar #projectSwitcher{width:200px;} #topbar #pageSize{max-width:78px !important;} #topbar #pageOrientation{max-width:70px !important;} }
+  @media (max-width:1500px){ body.mod-layout #topbar #projectSwitcher{width:120px;} body.mod-layout .mod-tabs button{padding:5px 11px;} #topbar #pageSize{max-width:86px;} #topbar #pageOrientation{max-width:76px;} #topbar .grp{padding:0 3px;gap:3px;} }
   #topbar .grp.tb-mid-last{border-right:none;}
   #topbar h1{display:flex;align-items:center;gap:7px;}
   .mom-logo{flex:none;display:inline-block;vertical-align:middle;}
@@ -319,6 +319,47 @@
   .fc-ptwrap{overflow:auto;max-height:50vh;border:1px solid var(--line);border-radius:8px;background:#fff;}
   .fc-pts{border-collapse:collapse;font-size:12px;white-space:nowrap;} .fc-pts th{position:sticky;top:0;background:#f4f6f9;text-align:left;padding:5px 8px;font-weight:600;}
   .fc-pts td{padding:4px 8px;border-top:1px solid #eef0f4;vertical-align:middle;max-width:260px;overflow:hidden;text-overflow:ellipsis;} .fc-pts img{height:44px;border-radius:3px;display:block;}
+  #module-atlas{display:flex;background:#f4f6f9;}
+  .at-left{width:250px;flex:none;background:#fff;border-right:1px solid var(--line);padding:14px 12px;overflow:auto;display:flex;flex-direction:column;gap:8px;}
+  #atList{display:flex;flex-direction:column;gap:6px;}
+  .at-item{display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:7px;padding:6px;background:#fff;cursor:pointer;color:var(--text);font-size:12.5px;}
+  .at-item.active{border-color:var(--teal);background:#e8f3f1;} .at-item.dragover{box-shadow:0 0 0 2px var(--teal);} .at-item.dragging{opacity:.5;}
+  .at-item.at-auto{opacity:.7;cursor:default;}
+  .at-th{width:46px;height:58px;flex:none;border-radius:3px;background:#f4f1ea;border:1px solid #e0d9c8;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#8a826f;font-size:20px;}
+  .at-th img{width:100%;height:100%;object-fit:cover;}
+  .at-meta{display:flex;flex-direction:column;min-width:0;} .at-meta b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .at-meta span{font-size:11px;color:var(--muted);}
+  .at-addwrap{position:relative;} .at-addmenu{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(20,30,50,.18);z-index:30;padding:4px;}
+  .at-addmenu button{display:flex;flex-direction:column;width:100%;text-align:left;background:none;border:none;padding:7px 9px;border-radius:5px;font-size:13px;font-weight:600;color:var(--text);}
+  .at-addmenu button small{font-weight:400;color:var(--muted);font-size:11px;} .at-addmenu button:hover{background:#eef3f7;}
+  .at-main{flex:1;min-width:0;overflow:auto;} .at-body{max-width:980px;margin:0 auto;padding:20px 26px 40px;}
+  .at-right{width:300px;flex:none;background:#fff;border-left:1px solid var(--line);padding:14px;overflow:auto;display:flex;flex-direction:column;gap:4px;}
+  .at-right input[type=text],.at-ed input[type=text],.at-ed select{font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-family:inherit;}
+  .at-cvrow{display:flex;gap:14px;align-items:flex-end;} .at-cvrow input[type=color]{width:52px;height:30px;padding:0;border:1px solid var(--line);border-radius:5px;}
+  .at-cvbtns{display:flex;gap:4px;}
+  .at-modes{display:flex;flex-direction:column;gap:6px;} .at-modes label{border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;font-weight:600;cursor:pointer;} .at-modes label span{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-left:20px;}
+  .at-modes label:has(input:checked){border-color:var(--teal);background:#e8f3f1;}
+  .fc-chk2{display:flex;gap:6px;align-items:center;font-size:13px;margin:8px 0 4px;}
+  .at-go{display:flex;flex-direction:column;gap:6px;margin-top:12px;} .at-go .btn{justify-content:center;}
+  .at-ed{display:flex;flex-direction:column;gap:10px;} .at-row{display:flex;gap:10px;align-items:flex-end;} .at-pbtns{display:flex;gap:4px;}
+  .at-media{background:#fbf8f1;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;min-height:240px;max-height:62vh;overflow:hidden;}
+  .at-media img{max-width:100%;max-height:60vh;object-fit:contain;} .at-mapbox{height:58vh;} .at-mapbox iframe{width:100%;height:100%;border:0;}
+  .at-missing{color:var(--muted);font-size:13px;}
+  .at-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .at-rt-bar{display:flex;flex-wrap:wrap;gap:2px;border:1px solid var(--line);border-bottom:none;border-radius:6px 6px 0 0;background:#f4f6f9;padding:3px;}
+  .at-rt-bar button{background:#fff;border:1px solid var(--line);border-radius:4px;padding:3px 8px;font-size:12px;min-width:30px;}
+  .at-rt{min-height:180px;border:1px solid var(--line);border-radius:0 0 6px 6px;background:#fff;padding:12px 14px;font:15px/1.55 Georgia,serif;outline:none;}
+  .at-rt:focus{border-color:var(--teal);} .at-rt h2{font-size:21px;font-weight:400;margin:.4em 0;} .at-rt h3{font-size:17px;margin:.4em 0;} .at-rt blockquote{border-left:3px solid #c9b98f;margin:.4em 0;padding-left:10px;color:#5b5446;font-style:italic;} .at-rt p{margin:0 0 .6em;}
+  .at-cvprev{width:min(420px,90%);aspect-ratio:1/1.32;margin:10px auto;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.3);color:#fff;display:flex;align-items:flex-end;font-family:Georgia,serif;}
+  .at-cvprev>div{padding:30px;background:linear-gradient(to top,rgba(0,0,0,.5),rgba(0,0,0,0));width:100%;box-sizing:border-box;}
+  .at-cvprev .t{font-size:34px;line-height:1.1;} .at-cvprev .s{font-size:17px;font-style:italic;margin-top:6px;} .at-cvprev .a{font:600 12px -apple-system,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-top:18px;opacity:.85;}
+  #atPreviewOv{position:fixed;inset:0;z-index:3000;background:#222;} #atPreviewOv iframe{width:100%;height:100%;border:0;} #atPreviewOv #atPrevX{position:absolute;top:10px;right:14px;z-index:2;}
+  #stage-wrap{position:relative;} .cvd-banner{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:5;background:#fff3d6;border:1px solid #e3c47a;color:#6b5314;font-size:12px;padding:5px 12px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+  #toolrail .cvd-sel{width:100%;font-size:11px;padding:3px;border:1px solid var(--line);border-radius:5px;margin-top:2px;}
+  #toolrail .cvd-lbl{font-size:10.5px;font-weight:600;color:var(--text);text-align:center;margin-top:4px;}
+  .send-names{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;display:flex;flex-direction:column;gap:6px;}
+  .sn-h{font-size:12px;font-weight:700;color:var(--navy);} .sn-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
+  .sn-row input{padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;}
   .gr-sub{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 6px;} .gr-sub+div{margin-bottom:14px;}
   .gr-table{font-size:12px;border-collapse:collapse;width:100%;margin:4px 0;} .gr-table td,.gr-table th{padding:2px 4px;border-bottom:1px solid var(--line);text-align:left;}
   .swipe-bar{position:absolute;top:0;bottom:0;width:0;z-index:950;pointer-events:none;border-left:3px solid #1b2a4a;box-shadow:0 0 0 1px rgba(255,255,255,.8);}
@@ -724,6 +765,7 @@
     <button id="modMakerBtn" class="active">Map Maker</button>
     <button id="modLayoutBtn">Map Composer</button>
     <button id="modCollectBtn">Field Mapper</button>
+    <button id="modAtlasBtn">Atlas</button>
   </div>
   <div class="tb-spacer"></div>
   <div class="grp" id="grp-page">
@@ -759,7 +801,6 @@
     </span>
   </div>
   <div class="grp tb-mid-last">
-    <button class="btn ghost small" id="btnHome" title="Projects home">🏠</button>
     <select id="projectSwitcher" title="Switch project"></select>
     <button class="btn secondary small" id="btnSave" title="Save this project to browser storage">Save</button>
     <button class="btn ghost small" id="btnSync" title="Save projects to a synced folder as well as this browser">☁ <span id="syncState">Sync off</span></button>
@@ -840,6 +881,23 @@
       <div id="fcLinkOut"></div>
     </div>
   </aside>
+</div>
+
+<!-- ================= ATLAS ================= -->
+<div id="module-atlas" class="module hidden">
+  <aside class="at-left">
+    <h3 class="fc-h" style="margin-top:0;">Pages</h3>
+    <div id="atList"></div>
+    <div class="at-addwrap"><button class="btn small" id="atAddBtn" style="width:100%;justify-content:center;">+ Add page ▾</button>
+      <div class="at-addmenu hidden" id="atAddMenu">
+        <button data-k="map">🧭 Live map<small>the layers on in Map Maker, interactive</small></button>
+        <button data-k="layout">▣ Map layout<small>the finished Map Composer page</small></button>
+        <button data-k="image">🖼 Image<small>a photo, scan or figure</small></button>
+        <button data-k="text">¶ Text<small>an introduction, essay or notes</small></button>
+      </div></div>
+  </aside>
+  <main class="at-main"><div class="at-body" id="atBody"></div></main>
+  <aside class="at-right" id="atSettings"></aside>
 </div>
 
 <!-- ================= MAP MAKER ================= -->
@@ -1003,9 +1061,20 @@
     <div class="tool-btn" id="toolMargins" title="Toggle margin guides (not exported)"><span class="ic">⌗</span>Margins</div>
     <div class="tool-btn" id="toolDuplicate"><span class="ic">⧉</span>Duplicate</div>
     <div class="tool-btn" id="toolDelete"><span class="ic">🗑️</span>Delete</div>
+    <div class="tool-sep"></div>
+    <label class="cvd-lbl" for="cvdSel">👁 View as</label>
+    <select id="cvdSel" class="cvd-sel" title="Check how the page looks with colour-vision deficiency or in greyscale (preview only; exports are unchanged)">
+      <option value="">Normal vision</option><option value="deut">Deuteranopia (green-blind)</option><option value="prot">Protanopia (red-blind)</option><option value="trit">Tritanopia (blue-blind)</option><option value="grey">Greyscale print</option>
+    </select>
   </aside>
 
   <main id="stage-wrap">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <filter id="cvd-deut"><feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/></filter>
+      <filter id="cvd-prot"><feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/></filter>
+      <filter id="cvd-trit"><feColorMatrix type="matrix" values="1.255528 -0.076749 -0.178779 0 0  -0.078411 0.930809 0.147602 0 0  0.004733 0.691367 0.303900 0 0  0 0 0 1 0"/></filter>
+      <filter id="cvd-grey"><feColorMatrix type="saturate" values="0"/></filter>
+    </defs></svg>
     <div id="stage">
       <canvas id="c"></canvas>
       <div class="guideline" id="guideV"></div>
@@ -1052,7 +1121,7 @@
       <p>Scale bars link to a map frame. Frames sent from Map Maker (in Web Mercator view) are calibrated automatically. For uploaded images, select the frame, click <b>Calibrate scale</b>, click two points with a known real-world distance between them, and enter the distance. The bar resizes automatically if you resize the frame.</p>
     </div>
     <div class="help-step"><b>Projects and the data library.</b>
-      <p>The 🏠 home screen lists all your projects (stored in this browser — nothing goes to a server) with rename, duplicate, delete, import, and export. The project dropdown in the top bar jumps between them; work is autosaved as you go. Datasets live in a shared <b>Data library</b> usable across projects — "+ Add data → From my library" adds one to the current project. On shared computers, always download a project file or archive as backup before you leave.</p>
+      <p>The home screen (click the Map-O-Matic name at top left, or choose 🏠 Projects… in the project dropdown) lists all your projects (stored in this browser — nothing goes to a server) with rename, duplicate, delete, import, and export. The project dropdown in the top bar jumps between them; work is autosaved as you go. Datasets live in a shared <b>Data library</b> usable across projects — "+ Add data → From my library" adds one to the current project. On shared computers, always download a project file or archive as backup before you leave.</p>
     </div>
     <div class="help-step"><b>Exporting.</b>
       <p><b>Export</b> covers everything: the layout as print-ready PDF/PNG; the Map Maker view as a georeferenced PNG with world file (usable in other GIS software); all data layers as a zip of GeoJSON files; or a full project archive (layout + layers + project file) — the complete package in one download.</p>
@@ -1238,6 +1307,7 @@
     <div class="checkline"><input type="checkbox" id="sendLegend" checked><label for="sendLegend" style="margin:0;font-size:12.5px;color:var(--text);">Add legend built from my symbology</label></div>
     <div class="checkline"><input type="checkbox" id="sendScale" checked><label for="sendScale" style="margin:0;font-size:12.5px;color:var(--text);">Add a calibrated scale bar</label></div>
     <div class="checkline"><input type="checkbox" id="sendLabels"><label for="sendLabels" style="margin:0;font-size:12.5px;color:var(--text);">Bring labels as editable text (so they can be moved on the page)</label></div>
+    <div id="sendNames"></div>
     <div class="kv" id="sendStatus"></div>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-send')">Cancel</button>
@@ -9246,6 +9316,500 @@ window.__rx=()=>qrRecv;
 window.__clLinkAnswer=(t)=>clLinkAnswer(window.__collector, t);
 window.__fc=()=>({forms:fcForms, data:fcData, sel:fcSel});
 
+/* ================= ATLAS VIEWER (v47) =================
+   Runs both inside Map-O-Matic (preview) and in the exported atlas file, so it
+   uses nothing from the app: it is copied into the export with toString(). */
+function atlasViewer(root, D){
+  var doc=root.ownerDocument, win=doc.defaultView;
+  var E=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  var IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
+  var COL=/^#[0-9a-f]{6}$/i;
+  var pages=D.pages||[], mode=D.mode==='scroll'?'scroll':'book';
+  var coverCol=COL.test(D.coverColor||'')?D.coverColor:'#1f3b57';
+  /* the page sequence: cover, contents, the author's pages, back cover */
+  var seq=[{kind:'cover'}];
+  if(D.contents && pages.length) seq.push({kind:'contents'});
+  pages.forEach(function(p){ seq.push(p); });
+  var numbered=function(i){ return i>0 && seq[i] && seq[i].kind!=='back' && seq[i].kind!=='blank'; };
+  var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text'}[p.kind]||''); };
+  function logo(sz){ return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>'; }
+  function mediaHtml(p, live){
+    if(p.kind==='map'){
+      if(live && p.mapHtml) return '<div class="av-media av-map" data-map="'+E(p.id)+'"></div>';
+      return '<div class="av-media av-map av-still">'+(IMG.test(p.thumb||'')?'<img src="'+p.thumb+'" alt="">':'')+'<span>Interactive map</span></div>';
+    }
+    if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media"><img src="'+p.src+'" alt="'+E(p.alt||p.caption||p.title||'')+'"'+(live?' data-zoom="1"':'')+'></div>';
+    return '';
+  }
+  function pageHtml(i, live){
+    var p=seq[i]; if(!p) return '<div class="av-pg av-empty"></div>';
+    if(p.kind==='cover'){
+      var bg=IMG.test(D.coverImage||'')?'background-image:url('+D.coverImage+');':'';
+      return '<div class="av-pg av-cover'+(bg?' has-img':'')+'" style="background-color:'+coverCol+';'+bg+'"><div class="av-cv-in">'+
+        '<div class="av-cv-t">'+E(D.title||'Atlas')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
+        (D.author?'<div class="av-cv-a">'+E(D.author)+'</div>':'')+'</div></div>';
+    }
+    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></div></div>';
+    if(p.kind==='blank') return '<div class="av-pg av-blank"></div>';
+    var foot='<div class="av-foot"><span>'+E(D.title||'')+'</span><span>'+i+'</span></div>';
+    if(p.kind==='contents'){
+      var rows=seq.map(function(q,j){ return (j>0 && q.kind!=='contents' && q.kind!=='back' && q.kind!=='blank')?'<a class="av-toc-r" data-go="'+j+'"><span>'+E(titleOf(q))+'</span><i></i><b>'+j+'</b></a>':''; }).join('');
+      return '<div class="av-pg av-inner"><h2 class="av-h">Contents</h2><div class="av-toc">'+rows+'</div>'+foot+'</div>';
+    }
+    var text=p.text?'<div class="av-text">'+p.text+'</div>':'';
+    var cap=p.caption?'<div class="av-cap">'+E(p.caption)+'</div>':'';
+    var media=mediaHtml(p, live);
+    return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
+  }
+  function mountMaps(el){
+    el.querySelectorAll('.av-map[data-map]').forEach(function(m){
+      if(m.firstChild) return;
+      var p=pages.filter(function(q){ return q.id===m.getAttribute('data-map'); })[0]; if(!p) return;
+      var f=doc.createElement('iframe'); f.setAttribute('sandbox','allow-scripts allow-popups'); f.setAttribute('title', titleOf(p)); f.setAttribute('loading','lazy');
+      f.srcdoc=p.mapHtml; m.appendChild(f);
+    });
+    el.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(){ go(+a.getAttribute('data-go')); }; });
+    el.querySelectorAll('img[data-zoom]').forEach(function(im){ im.onclick=function(){ zoomImg(im.src); }; });
+  }
+  function zoomImg(src){
+    var z=doc.createElement('div'); z.className='av-zoom'; z.innerHTML='<img src="'+src+'" alt=""><button class="av-zx" aria-label="Close">✕</button>';
+    z.onclick=function(){ z.remove(); }; root.appendChild(z);
+  }
+  var go=function(){};
+  root.innerHTML='';
+  root.className='av-root av-mode-'+mode;
+  if(mode==='scroll'){
+    var html='<nav class="av-snav"><span class="av-sbrand">'+E(D.title||'Atlas')+'</span>'+(pages.length?'<select class="av-sjump" aria-label="Go to page"><option value="">Contents…</option>'+seq.map(function(q,j){ return (j>0&&q.kind!=='contents')?'<option value="'+j+'">'+E(titleOf(q))+'</option>':''; }).join('')+'</select>':'')+'</nav>';
+    seq.forEach(function(q,j){
+      if(q.kind==='contents') return;
+      if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<div class="av-down">↓</div></section>'; return; }
+      var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
+      html+='<section class="av-s av-k-'+q.kind+'" id="av-s'+j+'">'+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
+    });
+    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></section>';
+    root.innerHTML=html;
+    var sel=root.querySelector('.av-sjump'); if(sel) sel.onchange=function(){ if(sel.value) go(+sel.value); sel.value=''; };
+    go=function(j){ var s=root.querySelector('#av-s'+j); if(s) s.scrollIntoView({behavior:'smooth'}); };
+    var io=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mountMaps(e.target); io.unobserve(e.target); } }); },{rootMargin:'300px'}) : null;
+    root.querySelectorAll('.av-s').forEach(function(s){ if(io) io.observe(s); else mountMaps(s); });
+    mountMaps(root.querySelector('.av-scover'));
+    return {go:go};
+  }
+  /* ---- book ---- */
+  var inner=seq.slice(1);
+  if(inner.length%2===1) inner.push({kind:'blank'});
+  seq=[seq[0]].concat(inner).concat([{kind:'back'}]);
+  /* spreads: [ -, cover ], [1,2], [3,4] … [back, -] */
+  var spreads=[[null,0]];
+  for(var k=1;k<seq.length-1;k+=2) spreads.push([k,k+1]);
+  spreads.push([seq.length-1,null]);
+  var si=0, busy=false, single=false;
+  root.innerHTML='<div class="av-stage"><div class="av-book"><div class="av-side av-l"></div><div class="av-side av-r"></div><div class="av-spine"></div></div></div>'+
+    '<div class="av-nav"><button class="av-prev" aria-label="Previous page">‹</button><span class="av-pn"></span><button class="av-next" aria-label="Next page">›</button>'+
+    (pages.length&&D.contents?'<button class="av-tocb" title="Contents">☰</button>':'')+'<button class="av-fs" title="Full screen">⛶</button></div>';
+  var book=root.querySelector('.av-book'), L=root.querySelector('.av-l'), R=root.querySelector('.av-r'), pn=root.querySelector('.av-pn');
+  function slot(el, i){ el.innerHTML= i==null ? '' : pageHtml(i, true); el.classList.toggle('av-none', i==null); mountMaps(el); }
+  function size(){
+    var st=root.querySelector('.av-stage'), w=st.clientWidth-24, h=st.clientHeight-24;
+    single = w<760;
+    var ph=Math.min(h, (single?w:w/2)*1.32), pw=ph/1.32;
+    book.style.width=(single?pw:pw*2)+'px'; book.style.height=ph+'px';
+    book.style.fontSize=(ph/60)+'px';
+    root.classList.toggle('av-single', single);
+  }
+  var cur=0;   /* single-page mode: index into seq */
+  function paint(){
+    if(single){ slot(L, null); slot(R, cur); L.classList.add('av-none'); pn.textContent=(cur===0?'Cover':cur===seq.length-1?'Back cover':'Page '+cur); return; }
+    var s=spreads[si]; slot(L, s[0]); slot(R, s[1]);
+    book.classList.toggle('av-closed-l', s[0]==null); book.classList.toggle('av-closed-r', s[1]==null);
+    pn.textContent= si===0 ? 'Cover' : si===spreads.length-1 ? 'Back cover' : 'Pages '+s[0]+'–'+s[1]+' of '+(seq.length-2);
+  }
+  function stillClone(i){ var d=doc.createElement('div'); d.innerHTML=pageHtml(i,false); return d.firstChild; }
+  function flip(dir, target){
+    if(busy) return;
+    if(single){
+      var nc= target!=null ? target : cur+dir; if(nc<0||nc>=seq.length) return;
+      busy=true; R.classList.add(dir>0?'av-out-l':'av-out-r');
+      setTimeout(function(){ cur=nc; R.classList.remove('av-out-l','av-out-r'); paint(); busy=false; }, 260);
+      return;
+    }
+    var ns= target!=null ? target : si+dir; if(ns<0||ns>=spreads.length||ns===si) return;
+    dir = ns>si?1:-1;
+    busy=true;
+    var from=spreads[si], to=spreads[ns];
+    var leaf=doc.createElement('div'); leaf.className='av-leaf '+(dir>0?'av-leaf-r':'av-leaf-l');
+    var front=doc.createElement('div'); front.className='av-face av-front';
+    var back=doc.createElement('div'); back.className='av-face av-backf';
+    var fi= dir>0?from[1]:from[0], bi= dir>0?to[0]:to[1];
+    if(fi!=null) front.appendChild(stillClone(fi)); else front.classList.add('av-none');
+    if(bi!=null) back.appendChild(stillClone(bi)); else back.classList.add('av-none');
+    leaf.appendChild(front); leaf.appendChild(back);
+    var sh=doc.createElement('div'); sh.className='av-shade'; leaf.appendChild(sh);
+    book.appendChild(leaf);
+    /* reveal what lies under the turning leaf */
+    if(dir>0){ slot(R, to[1]); book.classList.toggle('av-closed-r', to[1]==null); }
+    else { slot(L, to[0]); book.classList.toggle('av-closed-l', to[0]==null); }
+    win.requestAnimationFrame(function(){ win.requestAnimationFrame(function(){ leaf.classList.add('av-turn'); }); });
+    setTimeout(function(){ si=ns; paint(); leaf.remove(); busy=false; }, 760);
+  }
+  go=function(j){
+    if(single){ flip(0, j); return; }
+    for(var q=0;q<spreads.length;q++){ if(spreads[q][0]===j||spreads[q][1]===j){ flip(0,q); return; } }
+  };
+  root.querySelector('.av-prev').onclick=function(){ flip(-1); };
+  root.querySelector('.av-next').onclick=function(){ flip(1); };
+  var tb=root.querySelector('.av-tocb'); if(tb) tb.onclick=function(){ go(1); };
+  root.querySelector('.av-fs').onclick=function(){ var el=doc.documentElement; if(doc.fullscreenElement) doc.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen(); };
+  doc.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('input,textarea,select')) return; if(e.key==='ArrowRight'||e.key==='PageDown') flip(1); if(e.key==='ArrowLeft'||e.key==='PageUp') flip(-1); });
+  var px=null;
+  book.addEventListener('pointerdown', function(e){ if(e.target.closest('.av-map')) return; px=e.clientX; });
+  book.addEventListener('pointerup', function(e){ if(px==null) return; var dx=e.clientX-px; px=null; if(Math.abs(dx)>50) flip(dx<0?1:-1); });
+  /* click the outer edge of a page to turn it */
+  book.addEventListener('click', function(e){
+    if(e.target.closest('a,button,img,.av-map,.av-text')) return;
+    var r=book.getBoundingClientRect(), x=(e.clientX-r.left)/r.width;
+    if(x>0.9) flip(1); else if(x<0.1) flip(-1);
+  });
+  var wasSingle=null;
+  function resize(){ size(); if(wasSingle!==single){ if(single){ var s=spreads[si]; cur=s[1]!=null?s[1]:s[0]; } else { for(var q=0;q<spreads.length;q++){ if(spreads[q][0]===cur||spreads[q][1]===cur){ si=q; break; } } } wasSingle=single; paint(); } }
+  win.addEventListener('resize', resize);
+  resize(); paint();
+  return {go:go};
+}
+const ATLAS_CSS=`
+.av-root{position:absolute;inset:0;font-family:Georgia,'Times New Roman',serif;color:#22293a;}
+.av-root.av-mode-book{background:radial-gradient(ellipse at center,#565b66 0%,#2c2f36 80%);overflow:hidden;}
+.av-stage{position:absolute;inset:0 0 54px 0;display:flex;align-items:center;justify-content:center;perspective:2600px;}
+.av-book{position:relative;display:flex;transform-style:preserve-3d;}
+.av-side{flex:1;position:relative;height:100%;background:#fbf8f1;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);}
+.av-l{border-radius:4px 0 0 4px;} .av-r{border-radius:0 4px 4px 0;}
+.av-l::after{content:"";position:absolute;inset:0 0 0 auto;width:12%;background:linear-gradient(to left,rgba(0,0,0,.18),rgba(0,0,0,0));pointer-events:none;z-index:3;}
+.av-r::after{content:"";position:absolute;inset:0 auto 0 0;width:12%;background:linear-gradient(to right,rgba(0,0,0,.2),rgba(0,0,0,0));pointer-events:none;z-index:3;}
+.av-side.av-none{background:transparent;box-shadow:none;} .av-side.av-none::after{display:none;}
+.av-spine{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(0,0,0,.25);z-index:4;pointer-events:none;}
+.av-closed-l .av-spine,.av-closed-r .av-spine,.av-single .av-spine{display:none;}
+.av-single .av-l{display:none;} .av-single .av-r{border-radius:4px;} .av-single .av-r::after{display:none;}
+.av-r.av-out-l{transition:transform .25s,opacity .25s;transform:translateX(-30px);opacity:0;}
+.av-r.av-out-r{transition:transform .25s,opacity .25s;transform:translateX(30px);opacity:0;}
+.av-pg{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
+.av-inner{padding:7% 8% 9%;}
+.av-h{font-size:2.3em;font-weight:400;margin:0 0 .6em;letter-spacing:.01em;color:#1f2f45;border-bottom:1px solid #d9d1bf;padding-bottom:.35em;}
+.av-media{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;}
+.av-media img{max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:zoom-in;}
+.av-map{border:1px solid #cfc6b2;background:#e8ecef;align-items:stretch;}
+.av-map iframe{border:0;width:100%;height:100%;display:block;}
+.av-still{align-items:center;color:#667;font:600 1.2em -apple-system,Segoe UI,sans-serif;}
+.av-still img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;box-shadow:none;opacity:.9;}
+.av-still span{position:relative;background:rgba(255,255,255,.85);padding:.3em .8em;border-radius:1em;}
+.av-cap{font-size:1.15em;font-style:italic;color:#5b5446;margin:.5em 0 0;}
+.av-text{font-size:1.35em;line-height:1.55;margin-top:.8em;overflow:auto;}
+.av-split .av-media{flex:1 1 58%;} .av-split .av-text{flex:0 1 auto;max-height:38%;}
+.av-k-text .av-text{margin-top:0;flex:1;}
+.av-text h2{font-size:1.5em;font-weight:400;margin:.6em 0 .3em;} .av-text h3{font-size:1.2em;margin:.6em 0 .3em;}
+.av-text p{margin:0 0 .7em;} .av-text blockquote{margin:.6em 0;padding-left:1em;border-left:3px solid #c9b98f;color:#5b5446;font-style:italic;}
+.av-text a{color:#2f6f6b;}
+.av-foot{position:absolute;left:8%;right:8%;bottom:3.2%;display:flex;justify-content:space-between;font:1em -apple-system,Segoe UI,sans-serif;color:#8a826f;letter-spacing:.04em;}
+.av-l .av-foot{flex-direction:row-reverse;}
+.av-cover{background-size:cover;background-position:center;color:#fff;justify-content:flex-end;}
+.av-cover.has-img::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.08) 60%);}
+.av-cv-in{position:relative;padding:10% 9% 14%;}
+.av-cv-t{font-size:4.2em;line-height:1.05;letter-spacing:.01em;}
+.av-cv-s{font-size:1.9em;margin-top:.5em;opacity:.9;font-style:italic;}
+.av-cv-a{font:600 1.3em -apple-system,Segoe UI,sans-serif;margin-top:2.2em;letter-spacing:.08em;text-transform:uppercase;opacity:.85;}
+.av-cover::after{content:"";position:absolute;left:4%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.18);}
+.av-back{color:#fff;justify-content:flex-end;}
+.av-bk-in{padding:10% 9%;font:1.2em -apple-system,Segoe UI,sans-serif;opacity:.9;}
+.av-brand{display:flex;align-items:center;gap:.5em;font:600 1em -apple-system,Segoe UI,sans-serif;opacity:.85;}
+.av-toc{font-size:1.4em;display:flex;flex-direction:column;gap:.35em;overflow:auto;}
+.av-toc-r{display:flex;align-items:baseline;gap:.4em;cursor:pointer;color:#22293a;text-decoration:none;}
+.av-toc-r i{flex:1;border-bottom:1px dotted #a89f88;transform:translateY(-.25em);}
+.av-toc-r:hover span{color:#2f6f6b;text-decoration:underline;}
+.av-leaf{position:absolute;top:0;width:50%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.45,.05,.3,1);z-index:10;}
+.av-leaf-r{left:50%;transform-origin:left center;} .av-leaf-l{left:0;transform-origin:right center;}
+.av-leaf-r.av-turn{transform:rotateY(-180deg);} .av-leaf-l.av-turn{transform:rotateY(180deg);}
+.av-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fbf8f1;overflow:hidden;}
+.av-face.av-none{background:transparent;}
+.av-backf{transform:rotateY(180deg);}
+.av-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,rgba(0,0,0,.25),rgba(0,0,0,0) 40%);opacity:0;transition:opacity .75s;}
+.av-turn .av-shade{opacity:.6;}
+.av-nav{position:absolute;left:0;right:0;bottom:0;height:54px;display:flex;align-items:center;justify-content:center;gap:14px;color:#e8e4da;font:13px -apple-system,Segoe UI,sans-serif;}
+.av-nav button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:18px;min-width:36px;height:32px;font-size:18px;cursor:pointer;}
+.av-nav button:hover{background:rgba(255,255,255,.25);}
+.av-pn{min-width:150px;text-align:center;}
+.av-zoom{position:fixed;inset:0;background:rgba(10,12,16,.92);display:flex;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;}
+.av-zoom img{max-width:96vw;max-height:94vh;}
+.av-zx{position:absolute;top:14px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
+.av-root.av-mode-scroll{overflow:auto;background:#fbf8f1;}
+.av-snav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 22px;background:rgba(251,248,241,.94);border-bottom:1px solid #e3dccb;font:13px -apple-system,Segoe UI,sans-serif;}
+.av-sbrand{font-family:Georgia,serif;font-size:16px;}
+.av-sjump{font:13px -apple-system,Segoe UI,sans-serif;padding:4px 6px;}
+.av-s{max-width:980px;margin:0 auto;padding:60px 26px 40px;font-size:16px;}
+.av-s .av-h{font-size:34px;}
+.av-s .av-media{height:auto;} .av-s .av-media img{max-height:82vh;}
+.av-s .av-map{height:70vh;}
+.av-s .av-text{font-size:18px;max-width:720px;}
+.av-s.av-scover{max-width:none;padding:0;height:calc(100vh - 46px);position:relative;font-size:18px;}
+.av-s.av-scover .av-pg{position:absolute;}
+.av-down{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font-size:26px;opacity:.8;}
+.av-s.av-sback{max-width:none;padding:0;height:200px;position:relative;font-size:16px;}
+.av-sbt{position:absolute;left:26px;top:30px;right:26px;color:#fff;font:15px -apple-system,Segoe UI,sans-serif;opacity:.9;}
+.av-s.av-sback .av-brand{position:absolute;left:26px;bottom:22px;color:#fff;}
+@media print{ .av-nav,.av-snav{display:none;} }
+`;
+
+/* ================= ATLAS (v47) =================
+   A flip-book (or scrolling) atlas built from the project: live maps captured
+   from Map Maker, finished layouts from Map Composer, images and text. The same
+   viewer code runs the in-app preview and the exported single HTML file. */
+let atlas=null, atSel='cover';
+const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}};
+const AT_IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, pages:[]}; }
+/* rich text: keep a small set of tags and safe links only */
+function sanitizeRich(html){
+  const ok={P:1,H2:1,H3:1,B:1,STRONG:1,I:1,EM:1,U:1,UL:1,OL:1,LI:1,A:1,BR:1,BLOCKQUOTE:1,DIV:1};
+  const d=new DOMParser().parseFromString('<body>'+String(html||'')+'</body>','text/html');
+  const walk=n=>{
+    Array.from(n.childNodes).forEach(c=>{
+      if(c.nodeType===3) return;
+      if(c.nodeType!==1){ c.remove(); return; }
+      walk(c);
+      if(!ok[c.tagName]){ c.replaceWith(...Array.from(c.childNodes)); return; }
+      const href=c.tagName==='A'? c.getAttribute('href') : null;
+      Array.from(c.attributes).forEach(a=>c.removeAttribute(a.name));
+      if(c.tagName==='DIV'){ const p=d.createElement('p'); p.append(...Array.from(c.childNodes)); c.replaceWith(p); }
+      if(href && /^(https?:|mailto:)/i.test(href.trim())){ c.setAttribute('href', href.trim()); c.setAttribute('target','_blank'); c.setAttribute('rel','noopener'); }
+    });
+  };
+  walk(d.body);
+  return d.body.innerHTML.slice(0,40000);
+}
+function atSanitize(a){
+  if(!a || typeof a!=='object') return null;
+  const s=(v,n)=>String(v==null?'':v).slice(0,n);
+  const out=atDefault();
+  out.title=s(a.title,120)||'My Atlas'; out.subtitle=s(a.subtitle,200); out.author=s(a.author,160); out.backText=s(a.backText,400);
+  out.coverColor=/^#[0-9a-f]{6}$/i.test(a.coverColor||'')?a.coverColor:'#1f3b57';
+  out.coverImage=AT_IMG.test(a.coverImage||'')?a.coverImage:'';
+  out.mode=a.mode==='scroll'?'scroll':'book'; out.contents=a.contents!==false;
+  out.pages=(Array.isArray(a.pages)?a.pages:[]).slice(0,200).map(p=>{
+    if(!p || !AT_KINDS[p.kind]) return null;
+    return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
+      src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'',
+      mapHtml:(p.kind==='map' && typeof p.mapHtml==='string')?p.mapHtml.slice(0,30e6):'', basemap:s(p.basemap,40), captured:+p.captured||null};
+  }).filter(Boolean);
+  return out;
+}
+function atLoad(data){ atlas=atSanitize(data && data.atlas); atSel='cover'; if(document.getElementById('module-atlas') && !document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas(); }
+function atDirty(){ markProjectDirty(); }
+function atCur(){ return atlas && atlas.pages.find(p=>p.id===atSel); }
+function atThumbHtml(p){
+  const src=p.kind==='map'?p.thumb:(p.kind==='layout'||p.kind==='image')?p.src:'';
+  return AT_IMG.test(src||'') ? '<img src="'+src+'" alt="">' : '<span>'+AT_KINDS[p.kind].icon+'</span>';
+}
+function renderAtlas(){
+  const host=document.getElementById('module-atlas'); if(!host) return;
+  if(!atlas){
+    document.getElementById('atList').innerHTML='';
+    document.getElementById('atBody').innerHTML='<div class="fc-empty"><h3>Make an atlas</h3><p>An atlas is a book of maps: a cover, then pages holding live interactive maps from Map Maker, finished layouts from Map Composer, images and text. It reads like a real atlas with turning pages, or as one scrolling page, and exports as a single web page to share.</p><button class="btn" id="atStart">Start an atlas</button></div>';
+    document.getElementById('atSettings').innerHTML='';
+    document.getElementById('atStart').onclick=()=>{ atlas=atDefault(); const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec && rec.name) atlas.title=rec.name; atDirty(); renderAtlas(); mlog('compose','Started the atlas "'+atlas.title+'".'); };
+    return;
+  }
+  renderAtList(); renderAtBody(); renderAtSettings();
+}
+function renderAtList(){
+  const box=document.getElementById('atList');
+  let pn=atlas.contents&&atlas.pages.length?2:1;
+  box.innerHTML='<button class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></button>'+
+    (atlas.contents&&atlas.pages.length?'<div class="at-item at-auto"><div class="at-th"><span>☰</span></div><div class="at-meta"><b>Contents</b><span>page 1 · made automatically</span></div></div>':'')+
+    atlas.pages.map((p,i)=>'<button class="at-item'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" draggable="true" data-i="'+i+'"><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>page '+(pn+i)+' · '+AT_KINDS[p.kind].label+'</span></div></button>').join('')+
+    (atlas.pages.length?'':'<p class="kv">No pages yet. Add one below.</p>');
+  let from=null;
+  box.querySelectorAll('.at-item[data-id]').forEach(b=>{
+    b.onclick=()=>{ atSel=b.dataset.id; renderAtList(); renderAtBody(); };
+    if(b.dataset.i==null) return;
+    b.addEventListener('dragstart', e=>{ from=+b.dataset.i; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',''); }catch(_){} b.classList.add('dragging'); });
+    b.addEventListener('dragend', ()=>{ b.classList.remove('dragging'); box.querySelectorAll('.dragover').forEach(x=>x.classList.remove('dragover')); });
+    b.addEventListener('dragover', e=>{ if(from==null) return; e.preventDefault(); b.classList.add('dragover'); });
+    b.addEventListener('dragleave', ()=>b.classList.remove('dragover'));
+    b.addEventListener('drop', e=>{ e.preventDefault(); const to=+b.dataset.i; if(from==null||from===to) return; atlas.pages.splice(to,0,atlas.pages.splice(from,1)[0]); from=null; atDirty(); renderAtList(); });
+  });
+}
+function atRichEditor(host, html, onChange){
+  host.innerHTML='<div class="at-rt-bar">'+
+    [['bold','<b>B</b>','Bold'],['italic','<i>I</i>','Italic'],['h2','H1','Heading'],['h3','H2','Subheading'],['p','¶','Paragraph'],['insertUnorderedList','• List','Bulleted list'],['insertOrderedList','1. List','Numbered list'],['blockquote','❝','Quote'],['link','🔗','Link'],['removeFormat','⌫','Clear formatting']]
+      .map(b=>'<button type="button" data-c="'+b[0]+'" title="'+b[2]+'">'+b[1]+'</button>').join('')+'</div><div class="at-rt" contenteditable="true"></div>';
+  const ed=host.querySelector('.at-rt'); ed.innerHTML=html||'';
+  let t=null; const fire=()=>{ clearTimeout(t); t=setTimeout(()=>onChange(sanitizeRich(ed.innerHTML)), 300); };
+  ed.addEventListener('input', fire);
+  ed.addEventListener('paste', e=>{ e.preventDefault(); const txt=(e.clipboardData||window.clipboardData).getData('text/plain'); document.execCommand('insertText', false, txt); });
+  host.querySelectorAll('.at-rt-bar button').forEach(b=>b.onmousedown=e=>{
+    e.preventDefault(); ed.focus();
+    const c=b.dataset.c;
+    if(c==='h2'||c==='h3'||c==='p'||c==='blockquote') document.execCommand('formatBlock', false, c);
+    else if(c==='link'){ const u=prompt('Link address (https://…)'); if(u && /^https?:\/\//i.test(u.trim())) document.execCommand('createLink', false, u.trim()); }
+    else document.execCommand(c, false, null);
+    fire();
+  });
+}
+function renderAtBody(){
+  const body=document.getElementById('atBody');
+  if(atSel==='cover'){
+    body.innerHTML='<div class="at-cvprev" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"><div><div class="t">'+esc(atlas.title)+'</div>'+(atlas.subtitle?'<div class="s">'+esc(atlas.subtitle)+'</div>':'')+(atlas.author?'<div class="a">'+esc(atlas.author)+'</div>':'')+'</div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right.</p>';
+    return;
+  }
+  const p=atCur(); if(!p){ atSel='cover'; renderAtBody(); return; }
+  const i=atlas.pages.indexOf(p);
+  let media='';
+  if(p.kind==='map') media=p.mapHtml?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>';
+  else if(p.kind==='layout'||p.kind==='image') media=p.src?'<div class="at-media"><img src="'+p.src+'" alt=""></div>':'<div class="at-media at-missing">No image yet.</div>';
+  const bmOpts=document.getElementById('embedBasemap') ? document.getElementById('embedBasemap').innerHTML : '<option value="osm">OpenStreetMap</option>';
+  const act = p.kind==='map' ? '<div class="at-acts"><label class="kv" style="margin:0">Basemap <select id="atBm">'+bmOpts+'</select></label><button class="btn small" id="atRecap">↻ Recapture from Map Maker</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. It shows the layers switched on in Map Maker and the current view, and stays interactive in the atlas.</span></div>'
+    : p.kind==='layout' ? '<div class="at-acts"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. Readers can click it to enlarge.</span></div>'
+    : p.kind==='image' ? '<div class="at-acts"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div>' : '';
+  body.innerHTML='<div class="at-ed">'+
+    '<div class="at-row"><label class="fc-lbl" style="flex:1">Page title<input type="text" id="atPTitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+'"></label>'+
+    '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light" id="atDel">Delete page</button></div></div>'+
+    media+act+
+    (p.kind!=='text'?'<label class="fc-lbl">Caption (optional)<input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>':'')+
+    '<div class="fc-lbl">'+(p.kind==='text'?'Text':'Text on this page (optional)')+'</div><div id="atRich"></div></div>';
+  if(p.kind==='map' && p.mapHtml){ body.querySelector('.at-mapbox iframe').srcdoc=p.mapHtml; }
+  const bm=document.getElementById('atBm'); if(bm){ bm.value=p.basemap||'osm'; if(!bm.value) bm.selectedIndex=0; }
+  document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
+  const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
+  atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
+  document.getElementById('atUp').onclick=()=>{ atlas.pages.splice(i-1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
+  document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
+  const del=document.getElementById('atDel');
+  del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete page'; } },3500); return; }
+    atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
+  const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p, bm?bm.value:'osm'); else atCaptureLayout(p); };
+  const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
+  if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
+}
+function renderAtSettings(){
+  const box=document.getElementById('atSettings');
+  box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Atlas</h3>'+
+    '<label class="fc-lbl">Title<input type="text" id="atT" maxlength="120" value="'+esc(atlas.title)+'"></label>'+
+    '<label class="fc-lbl">Subtitle<input type="text" id="atS" maxlength="200" value="'+esc(atlas.subtitle)+'"></label>'+
+    '<label class="fc-lbl">Author(s)<input type="text" id="atA" maxlength="160" value="'+esc(atlas.author)+'"></label>'+
+    '<h3 class="fc-h">Cover</h3><div class="at-cvrow"><label class="fc-lbl">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"></label>'+
+    '<div class="fc-lbl">Image<div class="at-cvbtns"><button class="btn small light" id="atCvImg">'+(atlas.coverImage?'Replace':'Add image')+'</button>'+(atlas.coverImage?'<button class="btn small light" id="atCvX">Remove</button>':'')+'<input type="file" id="atCvIn" accept="image/*" hidden></div></div></div>'+
+    '<label class="fc-lbl">Back cover text (optional)<input type="text" id="atBk" maxlength="400" value="'+esc(atlas.backText)+'"></label>'+
+    '<h3 class="fc-h">Reading</h3><div class="at-modes">'+
+      '<label><input type="radio" name="atMode" value="book"'+(atlas.mode==='book'?' checked':'')+'> 📖 Book<span>Turn pages in two-page spreads, like a printed atlas</span></label>'+
+      '<label><input type="radio" name="atMode" value="scroll"'+(atlas.mode==='scroll'?' checked':'')+'> ↕ Scrolling<span>One long page, section after section</span></label></div>'+
+    '<label class="fc-chk2"><input type="checkbox" id="atToc"'+(atlas.contents?' checked':'')+'> Contents page</label>'+
+    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button></div>'+
+    '<p class="kv">The export is one HTML file. Host it like an interactive web map (Netlify Drop, GitHub Pages or any web host) and share the link. Live maps load their basemaps over the internet.</p>';
+  const up=(k,rerender)=>e=>{ atlas[k]=e.target.value; atDirty(); if(rerender) renderAtlas(); else { renderAtList(); if(atSel==='cover') renderAtBody(); } };
+  document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
+  document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value; atDirty(); };
+  document.getElementById('atCol').oninput=up('coverColor');
+  const ci=document.getElementById('atCvIn');
+  document.getElementById('atCvImg').onclick=()=>ci.click();
+  ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
+  const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
+  document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); });
+  document.getElementById('atToc').onchange=e=>{ atlas.contents=e.target.checked; atDirty(); renderAtList(); };
+  document.getElementById('atPrev').onclick=atPreview;
+  document.getElementById('atExport').onclick=atExport;
+}
+function atReadImage(file, max){
+  return new Promise((res,rej)=>{
+    if(!/^image\//.test(file.type)) return rej(new Error('That file is not an image.'));
+    const url=URL.createObjectURL(file), im=new Image();
+    im.onload=()=>{ const s=Math.min(1, max/Math.max(im.naturalWidth,im.naturalHeight)); const cv=document.createElement('canvas'); cv.width=Math.round(im.naturalWidth*s); cv.height=Math.round(im.naturalHeight*s);
+      const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg',0.86)); };
+    im.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('That image could not be read.')); };
+    im.src=url;
+  });
+}
+function atToJpeg(dataURL, max, q){
+  return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,max/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL('image/jpeg',q||0.85)); }; im.onerror=()=>res(''); im.src=dataURL; });
+}
+function atRasterBasemap(){
+  const k=mkBasemapKey, b=BASEMAPS[k];
+  return (b && b.kind==='raster') ? k : (k==='none'?'none':'osm');
+}
+async function atCaptureMap(p, basemap){
+  if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer in Map Maker first.', 3500); return false; }
+  if(mkGlobe || projActive){ toast('Switch Map Maker back to the Web Mercator view to capture a live map.', 4000); return false; }
+  toast('Capturing the map from Map Maker…');
+  const wasHidden=document.getElementById('module-maker').classList.contains('hidden');
+  p.mapHtml=buildEmbedHtml({name:(p.title||atlas.title||'Map'), basemap:basemap||atRasterBasemap(), popups:true, legend:true});
+  p.basemap=basemap||atRasterBasemap(); p.captured=Date.now();
+  /* a still for page thumbnails and the page-turn animation */
+  try{
+    if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
+    const url=await captureMapElement(document.getElementById('mk-map'), 1);
+    p.thumb=await atToJpeg(url, 900, 0.8);
+  }catch(_){ p.thumb=''; }
+  finally{ if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
+  atDirty(); renderAtlas();
+  mlog('compose','Captured a live map for the atlas page "'+(p.title||'Map')+'" ('+mkLayers.filter(l=>l.visible).map(l=>l.name).join(', ')+').');
+  return true;
+}
+async function atCaptureLayout(p){
+  if(!canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ toast('The Composer page is empty. Lay out a map there first.', 3500); return false; }
+  toast('Capturing the Composer page…');
+  let url='';
+  try{ url=layoutDataURL(150); }catch(e){ toast('Could not capture the page: '+e.message, 4000); return false; }
+  p.src=await atToJpeg(url, 2400, 0.88); p.captured=Date.now();
+  atDirty(); renderAtlas();
+  mlog('compose','Added the Composer layout to the atlas as "'+(p.title||'Map layout')+'".');
+  return true;
+}
+async function atAddPage(kind){
+  if(!atlas){ atlas=atDefault(); }
+  const p={id:uid(), kind, title:'', caption:'', text:'', src:'', thumb:'', mapHtml:'', basemap:'', captured:null};
+  if(kind==='map'){ const l0=mkLayers.find(l=>l.visible); p.title=l0? (l0.style.legendTitle||prettyName(l0.name)) : 'Map'; if(!(await atCaptureMap(p, atRasterBasemap()))) return; }
+  if(kind==='layout'){ const t=canvas.getObjects().find(o=>o.data&&o.data.type==='title'); p.title=t&&t.text?t.text:'Map'; if(!(await atCaptureLayout(p))) return; }
+  if(kind==='image'){
+    const f=await new Promise(res=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=()=>res(inp.files&&inp.files[0]); inp.click(); });
+    if(!f) return;
+    try{ p.src=await atReadImage(f, 2200); }catch(err){ toast(err.message); return; }
+    p.title=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ');
+  }
+  if(kind==='text') p.title='';
+  const cur=atCur(); const at=cur?atlas.pages.indexOf(cur)+1:atlas.pages.length;
+  atlas.pages.splice(at,0,p); atSel=p.id; atDirty(); renderAtlas();
+}
+function buildAtlasHtml(a){
+  const data=JSON.stringify(a).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+  const fav=document.querySelector('link[rel="icon"]');
+  return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+    '<title>'+esc(a.title||'Atlas')+'</title>'+(fav?'<link rel="icon" type="image/svg+xml" href="'+esc(fav.getAttribute('href'))+'">':'')+
+    '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
+    '<script>\n'+atlasViewer.toString()+'\natlasViewer(document.getElementById("atlas"), '+data+');\n<\/script></body></html>';
+}
+function atPreview(){
+  if(!atlas) return;
+  let ov=document.getElementById('atPreviewOv');
+  if(!ov){ ov=document.createElement('div'); ov.id='atPreviewOv'; ov.innerHTML='<iframe sandbox="allow-scripts allow-popups" title="Atlas preview"></iframe><button class="btn" id="atPrevX">✕ Close preview</button>'; document.body.appendChild(ov);
+    document.getElementById('atPrevX').onclick=()=>{ ov.classList.add('hidden'); ov.querySelector('iframe').srcdoc=''; }; }
+  ov.classList.remove('hidden');
+  ov.querySelector('iframe').srcdoc=buildAtlasHtml(atlas);
+}
+function atExport(){
+  if(!atlas) return;
+  const html=buildAtlasHtml(atlas);
+  const name=(atlas.title||'atlas').replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'atlas';
+  downloadBlob(name+'_atlas.html', new Blob([html],{type:'text/html'}));
+  window.__lastAtlasHtml=html;
+  mlog('export','Exported the atlas "'+atlas.title+'" ('+atlas.pages.length+' pages, '+(atlas.mode==='book'?'book':'scrolling')+' style) as a web page.');
+  toast('Atlas saved as '+name+'_atlas.html ('+Math.round(html.length/1024)+' KB).', 4000);
+}
+(function(){
+  const m=document.getElementById('module-atlas'); if(!m) return;
+  const menu=document.getElementById('atAddMenu');
+  document.getElementById('atAddBtn').onclick=e=>{ e.stopPropagation(); menu.classList.toggle('hidden'); };
+  document.addEventListener('click', ()=>menu.classList.add('hidden'));
+  menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{ menu.classList.add('hidden'); atAddPage(b.dataset.k); });
+})();
+window.__atlas=()=>atlas;
+
 /* ================= BATCH GEOCODER =================
    Turn a CSV column of addresses or place names into mapped points.
 
@@ -9840,10 +10404,45 @@ function goToPlace(r){
 }
 
 /* ---------- send to layout ---------- */
+/* U4: names readers will see, asked for before anything lands on the page */
+function prettyName(s){
+  let t=String(s||'').replace(/\.(geojson|json|csv|zip|shp|xlsx?)$/i,'').replace(/[_]+/g,' ').replace(/(\w)-(\w)/g,'$1 $2').replace(/\s+/g,' ').trim();
+  t=t.replace(/\b(stats|joined|clip|dissolved|buffer|centroids)\b/gi, m=>m.toLowerCase());
+  return t ? t.charAt(0).toUpperCase()+t.slice(1) : '';
+}
+function renderSendNames(){
+  const box=document.getElementById('sendNames'); if(!box) return;
+  const lyrs=mkLayers.filter(l=>l.visible).map(l=>({l, spec:legendSpecForLayer(l)})).filter(x=>x.spec.items.length);
+  const rec=projectsCache.find(p=>p.id===currentProjectId);
+  const existing=canvas.getObjects().find(o=>o.data&&o.data.type==='title'&&o.text&&o.text!=='Map Title');
+  const guess= existing ? existing.text : (lyrs.length===1 ? prettyName(lyrs[0].spec.title) : prettyName(rec&&rec.name&&!/^my first project$|^untitled/i.test(rec.name)?rec.name:''));
+  box.innerHTML='<div class="send-names"><div class="sn-h">Names on the page</div>'+
+    '<label class="sn-row"><span>Map title</span><input type="text" id="sendTitle" maxlength="140" value="'+esc(guess)+'" placeholder="Leave blank for no title"></label>'+
+    (lyrs.length?'<div class="sn-sub">Legend titles (the names readers see instead of file and field names)</div>'+lyrs.map((x,i)=>'<label class="sn-row"><span title="'+esc(x.l.name)+'">'+esc(x.l.name)+'</span><input type="text" class="sendLg" data-id="'+x.l.id+'" maxlength="140" value="'+esc(x.l.style.legendTitle||prettyName(x.spec.title))+'"></label>').join(''):'')+
+    '</div>';
+}
 document.getElementById('mkSendBtn').onclick=()=>{
+  renderSendNames();
   openModal('modal-send');
   document.getElementById('sendStatus').textContent='';
 };
+function applySendNames(){
+  document.querySelectorAll('#sendNames .sendLg').forEach(inp=>{
+    const l=mkLayers.find(x=>x.id===inp.dataset.id); if(!l) return;
+    const v=inp.value.trim(); if(v!==(l.style.legendTitle||'')){ l.style.legendTitle=v; }
+  });
+  const t=document.getElementById('sendTitle');
+  return t ? t.value.trim() : '';
+}
+function placeSendTitle(text){
+  if(!text) return;
+  let t=canvas.getObjects().find(o=>o.data&&o.data.type==='title');
+  if(t && t.type==='i-text'){ t.set({text}); canvas.requestRenderAll(); return; }
+  const ph=typeof firstPlaceholder==='function'? firstPlaceholder('title') : null;
+  const obj=new fabric.IText(text,{left:40, top:16, fontSize:30, fontWeight:'700', fontFamily:'Georgia, serif', fill:'#1b2a4a'});
+  if(ph){ obj.set({left:ph.left, top:ph.top}); canvas.remove(ph); }
+  addObj(obj,{type:'title'});
+}
 /* Labels are drawn into the captured image by default. Sending them as separate
    text objects instead lets them be nudged, restyled or deleted on the page. */
 function collectLabelPlacements(){
@@ -9883,6 +10482,8 @@ document.getElementById('sendGoBtn').onclick=()=>{
   const wantLegend=document.getElementById('sendLegend').checked;
   const wantScale=document.getElementById('sendScale').checked;
   const wantLabels=document.getElementById('sendLabels').checked;
+  const sendTitle=applySendNames();
+  setTimeout(()=>placeSendTitle(sendTitle), 900);
   const specs = wantLegend ? mkLayers.filter(l=>l.visible).map(legendSpecForLayer).filter(s=>s.items.length) : [];
   const labels = wantLabels ? collectLabelPlacements() : [];
   if(mkGlobe){
@@ -12601,6 +13202,7 @@ window.__layout={receiveFromMaker, canvas:()=>canvas, fabric:()=>fabric};
 function loadProjectData(data){
   restoring=true;
   fcLoad(data);
+  atLoad(data);
   if(data.page){
     pageState.size=data.page.size||'letter';
     pageState.orientation=data.page.orientation||'portrait';
@@ -12635,15 +13237,18 @@ function loadProjectData(data){
 
 /* ---------- module switching ---------- */
 function switchModule(which){
-  ['home','maker','layout','collect'].forEach(m=>{
+  ['home','maker','layout','collect','atlas'].forEach(m=>{
     document.getElementById('module-'+m).classList.toggle('hidden', m!==which);
   });
   document.getElementById('modMakerBtn').classList.toggle('active', which==='maker');
   document.getElementById('modLayoutBtn').classList.toggle('active', which==='layout');
   document.getElementById('modCollectBtn').classList.toggle('active', which==='collect');
+  document.getElementById('modAtlasBtn').classList.toggle('active', which==='atlas');
+  if(which==='atlas') renderAtlas();
   if(which==='collect') renderCollector();
   document.getElementById('grp-page').style.display=which==='layout'?'flex':'none';
   document.body.classList.toggle('on-home', which==='home');
+  document.body.classList.toggle('mod-layout', which==='layout');
   if(which==='maker' && mkMap) setTimeout(()=>mkMap.invalidateSize(), 60);
   if(which==='layout'){ canvas.calcOffset(); canvas.renderAll(); }
   positionEmbedFrames();
@@ -12652,6 +13257,7 @@ function switchModule(which){
 document.getElementById('modMakerBtn').onclick=()=>{ requireProject(()=>switchModule('maker')); };
 document.getElementById('modLayoutBtn').onclick=()=>{ requireProject(()=>switchModule('layout')); };
 document.getElementById('modCollectBtn').onclick=()=>{ requireProject(()=>switchModule('collect')); };
+document.getElementById('modAtlasBtn').onclick=()=>{ requireProject(()=>switchModule('atlas')); };
 document.getElementById('btnHelp').onclick=()=>openModal('modal-help');
 /* ---------- side panels: drag the divider to resize, click its tab to hide ----------
    One splitter serves every side panel (Map Maker, Map Composer, Field Mapper).
@@ -12714,8 +13320,26 @@ window.__splitters={
   mkRight: makeSplitter(document.getElementById('mk-right'),'right','mkRight',250,600,onMakerResize),
   loRight: makeSplitter(document.getElementById('rightpanel'),'right','loRight',250,600,onLayoutResize),
   fcLeft: makeSplitter(document.querySelector('#module-collect .fc-left'),'left','fcLeft',180,420,null),
-  fcRight: makeSplitter(document.querySelector('#module-collect .fc-right'),'right','fcRight',280,560,null)
+  fcRight: makeSplitter(document.querySelector('#module-collect .fc-right'),'right','fcRight',280,560,null),
+  atLeft: makeSplitter(document.querySelector('#module-atlas .at-left'),'left','atLeft',200,420,null),
+  atRight: makeSplitter(document.querySelector('#module-atlas .at-right'),'right','atRight',260,480,null)
 };
+
+/* ---------- P3: colour-vision and greyscale check (view only) ----------
+   Simulated with Machado, Oliveira & Fernandes (2009) matrices at full severity,
+   applied in linear RGB by the SVG filter. Nothing about the layout changes. */
+(function(){
+  const sel=document.getElementById('cvdSel'); if(!sel) return;
+  const names={deut:'deuteranopia (green-blind)', prot:'protanopia (red-blind)', trit:'tritanopia (blue-blind)', grey:'a greyscale print'};
+  sel.onchange=()=>{
+    const v=sel.value, stage=document.getElementById('stage'), wrap=document.getElementById('stage-wrap');
+    stage.style.filter=v?'url(#cvd-'+v+')':'';
+    let b=document.getElementById('cvdBanner');
+    if(v){ if(!b){ b=document.createElement('div'); b.id='cvdBanner'; b.className='cvd-banner'; wrap.insertBefore(b, stage); } b.innerHTML='Viewing the page as someone with '+names[v]+' would see it. Preview only; exports are unchanged. <a href="#" id="cvdOff">Back to normal</a>'; document.getElementById('cvdOff').onclick=e=>{ e.preventDefault(); sel.value=''; sel.onchange(); }; }
+    else if(b) b.remove();
+    if(v) mlog('compose','Checked the layout as '+names[v]+'.');
+  };
+})();
 
 /* ================= SKETCH / DRAWING TOOLS =================
    Behaves like a simple graphics program: pick a tool, draw one shape, and the
@@ -14273,7 +14897,8 @@ function serializeCurrentProject(){
         style:l.style, labels:l.labels, filter:l.filter, datasetId:l.datasetId})),
       overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit}))
     },
-    collector: fcSerialize()
+    collector: fcSerialize(),
+    atlas: atlas
   };
 }
 function saveCurrentProject(showToast){
@@ -14304,7 +14929,7 @@ function applyProjectRecord(rec){
     if(!ds){ missing++; return null; }
     return Object.assign({}, sl, {geojson:ds.geojson});
   }).filter(Boolean);
-  const data={page:rec.page, canvasJSON:rec.canvasJSON, collector:rec.collector,
+  const data={page:rec.page, canvasJSON:rec.canvasJSON, collector:rec.collector, atlas:rec.atlas,
     maker:Object.assign({}, rec.maker, {layers})};
   loadProjectData(data);
   history.stack=[]; history.idx=-1; histImages.length=0; histImageIdx.clear();
@@ -14715,7 +15340,7 @@ document.getElementById('btnSave').onclick=()=>{
   if(!currentProjectId){ toast('No project open.'); return; }
   saveCurrentProject(true);
 };
-document.getElementById('btnHome').onclick=()=>{
+const _btnHome=document.getElementById('btnHome'); if(_btnHome) _btnHome.onclick=()=>{
   if(currentProjectId) saveCurrentProject(false).then(()=>switchModule('home'));
   else switchModule('home');
 };

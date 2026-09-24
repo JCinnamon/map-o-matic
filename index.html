@@ -1061,6 +1061,7 @@
         <button id="projZoomIn" title="Zoom in">+</button>
         <button id="projZoomOut" title="Zoom out">−</button>
         <button id="projCompare" title="Compare two layers with a swipe divider" style="font-size:15px">⇆</button>
+        <button id="projZoomAll" title="Zoom to all layers" style="font-size:15px">⤢</button>
       </div>
     </div>
   </div>
@@ -1171,7 +1172,7 @@
     </div>
     <div class="help-step"><b>About.</b>
       <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs entirely in your browser: your data stay on your computer, and the only network requests are for basemaps and the online data sources you choose. The full user guide covers every tool.</p>
-      <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. It is a teaching and research tool: check your results before relying on them, respect the terms of the data sources and basemaps you use, and remember that you are responsible for the data you load and the maps you create and publish.</p>
+      <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. It is a teaching and research tool: check your results before relying on them, respect the terms of the data sources and basemaps you use, and remember that you are responsible for the data you load and the maps you publish.</p>
     </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
   </div>
@@ -2429,6 +2430,17 @@ function initMakerMap(){
 /* ---------- on-map tool controls (under the zoom control) ----------
    Globe view (orthographic), Measure distance, and a Basemap-layers panel that
    turns parts of the vector basemap on and off. */
+/* zoom out to everything that is switched on, in whichever view is showing */
+function mkZoomAll(){
+  if(typeof mkGlobe!=='undefined' && mkGlobe){ globeFitData(); return; }
+  if(projActive){ projFitToData(); return; }
+  let b=null;
+  mkLayers.filter(l=>l.visible).forEach(l=>{
+    [l.leaflet, l.densityLayer, l.dotLayer].forEach(x=>{ try{ if(x && x.getBounds){ const bb=x.getBounds(); if(bb && bb.isValid()) b = b ? b.extend(bb) : L.latLngBounds(bb.getSouthWest(), bb.getNorthEast()); } }catch(_){} });
+  });
+  if(!b){ toast('Turn on a layer to zoom to it.'); return; }
+  mkMap.fitBounds(b, {padding:[24,24]});
+}
 function addMapToolControls(){
   const Ctl=L.Control.extend({options:{position:'topleft'}, onAdd(){
     const c=L.DomUtil.create('div','leaflet-bar mk-mapctl');
@@ -2437,7 +2449,8 @@ function addMapToolControls(){
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
       '<a href="#" id="mkBasemapBtn" title="Basemap layers — turn parts on/off"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:-3px\"><path d=\"M12 3 2 8l10 5 10-5z\" fill=\"#2f7d78\"/><path d=\"m2 12 10 5 10-5M2 16l10 5 10-5\" fill=\"none\" stroke=\"#2f7d78\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg></a>'+
       '<a href="#" id="mkFindBtn" title="Go to place — search for somewhere">🔍</a>'+
-      '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
+      '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>'+
+      '<a href="#" id="mkZoomAllBtn" title="Zoom to all layers">⤢</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
   }});
@@ -2447,6 +2460,7 @@ function addMapToolControls(){
     const m=document.getElementById('mkMeasureBtn'); if(m) m.onclick=e=>{ e.preventDefault(); toggleMeasure(); };
     const b=document.getElementById('mkBasemapBtn'); if(b) b.onclick=e=>{ e.preventDefault(); toggleBasemapPanel(); };
     const cp=document.getElementById('mkCompareBtn'); if(cp) cp.onclick=e=>{ e.preventDefault(); if(swipe||document.getElementById('swipePanel')) closeCompare(); else openCompare(); };
+    const za=document.getElementById('mkZoomAllBtn'); if(za) za.onclick=e=>{ e.preventDefault(); mkZoomAll(); };
     /* the search box lives in the left panel now; this jumps focus to it */
     const fb=document.getElementById('mkFindBtn'); if(fb) fb.onclick=e=>{
       e.preventDefault();
@@ -2784,7 +2798,7 @@ function globeOpen(){
   /* zoom +/- and a compass that resets bearing (and pitch) back to north */
   mkGlobe.addControl(new maplibregl.NavigationControl({
     showZoom:true, showCompass:true, visualizePitch:true
-  }), 'top-right');
+  }), 'top-left');
   /* a "whole globe" button sitting with the zoom controls */
   const FullExtent=function(){};
   FullExtent.prototype.onAdd=function(map){
@@ -2795,7 +2809,7 @@ function globeOpen(){
     this._c=c; return c;
   };
   FullExtent.prototype.onRemove=function(){ if(this._c&&this._c.parentNode) this._c.parentNode.removeChild(this._c); };
-  mkGlobe.addControl(new FullExtent(), 'top-right');
+  mkGlobe.addControl(new FullExtent(), 'top-left');
   /* belt and braces: the compass should always return the globe to north-up */
   setTimeout(()=>{
     const cmp=document.querySelector('#mk-globe-map .maplibregl-ctrl-compass');
@@ -4904,6 +4918,7 @@ function cartoMorphLatLngs(m, t){
 }
 function cartoApplyMorph(lyr, t){
   lyr._morphT=t;
+  if(typeof projActive!=='undefined' && projActive){ if(!projWheelRaf) projWheelRaf=requestAnimationFrame(()=>{ projWheelRaf=0; renderProjection(); }); }
   if(!lyr.leaflet) return;
   const mapEl=document.getElementById('mk-map');
   if(mapEl) mapEl.classList.toggle('carto-morphing', t<0.999);
@@ -5033,6 +5048,7 @@ function renderLayer(lyr){
     const spo=swipePaneOpts(lyr);
     if(dl && spo.pane){ if(dl.options) dl.options.pane=spo.pane; if(dl.eachLayer) dl.eachLayer(x=>{ x.options.pane=spo.pane; if(x.options.renderer!==undefined||x instanceof L.Path) x.options.renderer=spo.renderer; }); }
     if(dl){ lyr.densityLayer=dl.addTo(mkMap); }
+    restackMakerLayers();
     updateLabelCss(lyr);
     updateMkStatus();
     scheduleGlobeSync();
@@ -5108,7 +5124,9 @@ function renderLayer(lyr){
   lyr.leaflet=L.geoJSON(drawFC, opts).addTo(mkMap);
   updateLabelCss(lyr);
   updateMkStatus();
-  if(selHighlight && selHighlight.bringToFront) selHighlight.bringToFront();
+  /* a layer that has just been redrawn lands on top of everything; put the
+     list order back so a lower layer never covers the ones above it */
+  restackMakerLayers();
   if(projActive) scheduleProjRender();
   scheduleGlobeSync();   /* keep an open globe in step with visibility/styling */
   cartoUpdateProjectionLock();
@@ -5156,10 +5174,17 @@ function renderAllMakerLayers(){
 /* Leaflet keeps whatever order things were added in; nudge each pane back into
    list order so reordering (or restyling one layer) can't leave it buried. */
 function restackMakerLayers(){
-  mkLayers.slice().reverse().forEach(l=>{
+  const n=mkLayers.length;
+  mkLayers.slice().reverse().forEach((l,k)=>{
+    if(l.densityLayer){
+      if(l.densityLayer.bringToFront) l.densityLayer.bringToFront();
+      else if(l.densityLayer._canvas && l.densityLayer._canvas.parentNode) l.densityLayer._canvas.parentNode.appendChild(l.densityLayer._canvas);   /* heatmap canvas */
+    }
     if(l.ghostLayer && l.ghostLayer.bringToFront) l.ghostLayer.bringToFront();
     if(l.dotLayer && l.dotLayer.bringToFront) l.dotLayer.bringToFront();
     if(l.leaflet && l.leaflet.bringToFront) l.leaflet.bringToFront();
+    /* symbol markers live in their own pane: order them by the list too */
+    if(l.leaflet && l.geom==='point' && l.style && l.style.symbol && l.style.symbol!=='circle' && l.leaflet.eachLayer) l.leaflet.eachLayer(m=>{ if(m.setZIndexOffset) m.setZIndexOffset(k*1000); });
   });
   if(selHighlight && selHighlight.bringToFront) selHighlight.bringToFront();
 }
@@ -9421,7 +9446,7 @@ function atlasViewer(root, D){
   var E=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
   var COL=/^#[0-9a-f]{6}$/i;
-  var THEMES={classic:1, modern:1, notebook:1, noir:1, retro:1};
+  var THEMES={classic:1, modern:1, notebook:1, noir:1, retro:1, historic:1};
   var theme=THEMES[D.theme]?D.theme:'classic';
   var pages=D.pages||[], mode=D.mode==='scroll'?'scroll':'book';
   var coverCol=COL.test(D.coverColor||'')?D.coverColor:'#1f3b57';
@@ -9451,7 +9476,7 @@ function atlasViewer(root, D){
   function pdfPic(src, fit){ return '<div class="av-pdfpic" style="background-image:url('+src+');background-size:'+fit+'"></div>'; }
   function mediaHtml(p, live){
     if(pdfMode){
-      if(p.kind==='map'){ var st=IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:''); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl">Interactive version: '+E(D.url)+'</div>':''); }
+      if(p.kind==='map'){ var st=IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:''); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl"><a href="'+E(D.url)+'">View the interactive map ›</a></div>':''); }
       if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media av-pdfm">'+pdfPic(p.src,'contain')+'</div>';
       return '';
     }
@@ -9464,10 +9489,13 @@ function atlasViewer(root, D){
   }
   /* retro theme: each page is a little window with a title bar */
   function winBar(p, i){
+    if(theme==='historic') return '<i class="av-orn tl">❦</i><i class="av-orn tr">❦</i><i class="av-orn bl">❦</i><i class="av-orn br">❦</i>';
     if(theme!=='retro') return '';
-    var nm=(titleOf(p)||'page').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,22)||'page';
-    var ext={map:'.map',layout:'.lyt',image:'.img',text:'.txt',contents:'.idx'}[p.kind]||'';
-    return '<div class="av-win"><span class="av-win-d"><i></i><i></i><i></i></span><span class="av-win-t">'+E(nm+ext)+'</span><span class="av-win-n">'+pad3(i)+'</span></div>';
+    /* an old DOS prompt: the command that "opened" this page */
+    var nm=(titleOf(p)||'page').toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,8)||'PAGE';
+    var ext={map:'MAP',layout:'LYT',image:'IMG',text:'TXT',contents:'IDX'}[p.kind]||'DAT';
+    var cmd={map:'VIEW',layout:'SHOW',image:'SHOW',text:'TYPE',contents:'DIR'}[p.kind]||'OPEN';
+    return '<div class="av-win"><span class="av-win-t">C:\\ATLAS&gt; '+cmd+' '+E(nm)+'.'+ext+'</span><span class="av-win-n">['+pad3(i)+']</span></div>';
   }
   function contentsRows(){
     return seq.map(function(q,j){ return (j>0 && q.kind!=='contents' && q.kind!=='back' && q.kind!=='blank' && q.kind!=='spreadR')?'<a class="av-toc-r" data-go="'+j+'"><span>'+E(titleOf(q))+'</span><i></i><b>'+pnum(j)+(isSpread(q)?'–'+pnum(j+1):'')+'</b></a>':''; }).join('');
@@ -9479,13 +9507,33 @@ function atlasViewer(root, D){
   /* full: render the whole two-page spread; otherwise one page */
   function pageHtml(i, live, full){
     var p=seq[i]; if(!p) return '<div class="av-pg av-empty"></div>';
+    if(p.kind==='cover' && theme==='retro'){
+      var rbg=IMG.test(D.coverImage||'')?'background-image:linear-gradient(rgba(6,11,24,.82),rgba(6,11,24,.82)),url('+D.coverImage+');':'';
+      var n=pages.length;
+      return '<div class="av-pg av-cover av-rcover" style="'+rbg+'"><div class="av-boot">'+
+        '<div>MAP-O-MATIC ATLAS BIOS v5.5</div><div>Checking memory ........ 640K OK</div><div>Loading basemaps ....... OK</div>'+
+        '<div>Reading '+n+' page'+(n===1?'':'s')+' ........ OK</div><div>&nbsp;</div><div>C:\\&gt; RUN ATLAS.EXE</div></div>'+
+        '<div class="av-cv-in"><div class="av-cv-t">'+(function(t){ var k=t.lastIndexOf(' '); return E(t.slice(0,k+1))+'<span style="white-space:nowrap">'+E(t.slice(k+1))+'<span class="av-caret">█</span></span>'; })(D.title||'Atlas')+'</div>'+
+        (D.subtitle?'<div class="av-cv-s">&gt; '+E(D.subtitle)+'</div>':'')+(D.author?'<div class="av-cv-a">&gt; BY '+E(D.author)+'</div>':'')+
+        '<div class="av-rkey">PRESS ANY KEY TO CONTINUE_</div></div></div>';
+    }
+    if(p.kind==='cover' && theme==='historic'){
+      var hbg=IMG.test(D.coverImage||'')?'background-image:linear-gradient(rgba(40,24,10,.55),rgba(40,24,10,.55)),url('+D.coverImage+');':'';
+      return '<div class="av-pg av-cover av-hcover" style="background-color:'+(coverCol==='#1f3b57'?'#5a2a1b':coverCol)+';'+hbg+'"><div class="av-hframe"><div class="av-hin">'+
+        '<svg class="av-rose" viewBox="-50 -50 100 100" aria-hidden="true"><circle r="44" fill="none" stroke="currentColor" stroke-width="1"/><circle r="38" fill="none" stroke="currentColor" stroke-width=".6"/>'+
+        '<polygon points="0,-46 6,-6 0,0 -6,-6" fill="currentColor"/><polygon points="0,46 6,6 0,0 -6,6" fill="currentColor" opacity=".55"/><polygon points="46,0 6,6 0,0 6,-6" fill="currentColor" opacity=".55"/><polygon points="-46,0 -6,6 0,0 -6,-6" fill="currentColor" opacity=".55"/>'+
+        '<polygon points="30,-30 4,-2 0,0 2,-4" fill="currentColor" opacity=".4"/><polygon points="-30,-30 -4,-2 0,0 -2,-4" fill="currentColor" opacity=".4"/><polygon points="30,30 4,2 0,0 2,4" fill="currentColor" opacity=".4"/><polygon points="-30,30 -4,2 0,0 -2,4" fill="currentColor" opacity=".4"/>'+
+        '<text y="-47" text-anchor="middle" font-size="9" fill="currentColor" font-family="serif">N</text></svg>'+
+        '<div class="av-cv-t">'+E(D.title||'Atlas')+'</div><div class="av-hrule">✦ ✦ ✦</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
+        (D.author?'<div class="av-cv-a">by '+E(D.author)+'</div>':'')+'</div></div></div>';
+    }
     if(p.kind==='cover'){
       var bg=IMG.test(D.coverImage||'')?'background-image:url('+D.coverImage+');':'';
       return '<div class="av-pg av-cover'+(bg?' has-img':'')+'" style="background-color:'+coverCol+';'+bg+'"><div class="av-cv-in">'+
-        '<div class="av-cv-t">'+E(D.title||'Atlas')+(theme==='retro'?'<span class="av-caret">▌</span>':'')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
+        '<div class="av-cv-t">'+E(D.title||'Atlas')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
         (D.author?'<div class="av-cv-a">'+E(D.author)+'</div>':'')+'</div></div>';
     }
-    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic<small>jonathancinnamon.com/map-o-matic</small></span></a></div></div>';
+    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div>';
     if(p.kind==='blank') return '<div class="av-pg av-blank"></div>';
     if(p.kind==='spreadR') return '<div class="av-pg av-blank"></div>';
     var foot='<div class="av-foot"><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i)+'</span></div>';
@@ -9539,7 +9587,7 @@ function atlasViewer(root, D){
       seq=bookSeq(baseSeq); pdfMode=true;
       var list=[]; seq.forEach(function(q,i){ if(q.kind==='blank'||q.kind==='spreadR') return; list.push(i); });
       host=doc.createElement('div'); host.className='av-root av-mode-book av-th-'+theme+' av-pdfhost'; doc.body.appendChild(host);
-      var PW=540, PH=712.8, W=900, H=Math.round(900*1.32), pdf=null;
+      var PW=540, PH=712.8, W=900, H=Math.round(900*1.32), pdf=null, links=[];
       var step=function(n){
         if(n>=list.length) return Promise.resolve();
         var i=list[n], full=isSpread(seq[i]), w=full?W*2:W;
@@ -9547,12 +9595,23 @@ function atlasViewer(root, D){
         host.innerHTML='<div class="av-pdfpage'+(i%2===1&&!full?' av-pdf-l':'')+'" style="width:'+w+'px;height:'+H+'px;font-size:'+(H/60)+'px">'+pageHtml(i,false,full)+(full?'<div class="av-gutter av-pdfgut"></div>':'')+'</div>';
         var el=host.firstChild;
         return new Promise(function(r){ setTimeout(r, 30); }).then(function(){
-          return win.html2canvas(el, {scale:1.7, useCORS:true, logging:false, backgroundColor:null, width:w, height:H, windowWidth:Math.max(w, 1200)});
+          /* where the links are, before the page becomes a picture */
+          var er=el.getBoundingClientRect();
+          links=[].slice.call(el.querySelectorAll('a[href],[data-go]')).map(function(a){ var r=a.getBoundingClientRect();
+            return {x:r.left-er.left, y:r.top-er.top, w:r.width, h:r.height, url:a.getAttribute('href'), go:a.getAttribute('data-go')}; }).filter(function(l){ return l.w>0 && l.h>0; });
+          return win.html2canvas(el, {scale:2.5, useCORS:true, logging:false, backgroundColor:null, width:w, height:H, windowWidth:Math.max(w, 1200)});
         }).then(function(cv){
-          var fw=full?PW*2:PW, img=cv.toDataURL('image/jpeg', 0.9);
+          var fw=full?PW*2:PW, img=cv.toDataURL('image/jpeg', 0.92), kx=fw/w, ky=PH/H;
           if(!pdf) pdf=new win.jspdf.jsPDF({unit:'pt', format:[fw,PH], orientation:fw>PH?'landscape':'portrait', compress:true});
           else pdf.addPage([fw,PH], fw>PH?'landscape':'portrait');
           pdf.addImage(img, 'JPEG', 0, 0, fw, PH, undefined, 'FAST');
+          /* live links over the picture: web addresses, and contents entries that jump to their page */
+          links.forEach(function(l){
+            var o=null;
+            if(l.go!=null){ var j=+l.go; while(j>0 && seq[j] && (seq[j].kind==='spreadR')) j--; var pg=list.indexOf(j); if(pg>=0) o={pageNumber:pg+1}; }
+            else if(/^(https?:|mailto:)/i.test(l.url||'')) o={url:l.url};
+            if(o) try{ pdf.link(l.x*kx, l.y*ky, l.w*kx, l.h*ky, o); }catch(_){}
+          });
           return step(n+1);
         });
       };
@@ -9587,7 +9646,7 @@ function atlasViewer(root, D){
       var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
       html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
     });
-    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic<small>jonathancinnamon.com/map-o-matic</small></span></a></section>';
+    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
     root.innerHTML=html;
     root.querySelector('.av-spdf').onclick=function(){ makePdf().catch(function(){}); };
@@ -9764,22 +9823,58 @@ const ATLAS_CSS=`
 .av-th-noir .av-map{padding:3px;background:#2a2e35;}
 .av-th-noir .av-l::after{background:linear-gradient(to left,rgba(0,0,0,.45),rgba(0,0,0,0));} .av-th-noir .av-r::after{background:linear-gradient(to right,rgba(0,0,0,.5),rgba(0,0,0,0));}
 .av-th-noir .av-cv-t{letter-spacing:.04em;}
-.av-th-retro{--paper:#f4f1e6;--ink:#1b2a4a;--head:#1b2a4a;--rule:#1b2a4a;--muted:#5d6b85;--cap:#3c4c6b;--accent:#2f7d78;--quote:#f2b84b;--mapb:#1b2a4a;--dots:#8a96ad;
-  --backdrop:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,#24365e 0%,#0f1830 85%);--navink:#bfe0db;--navbtn:rgba(47,125,120,.25);--navbord:#2f7d78;
-  --font:'IBM Plex Mono','Courier New',ui-monospace,monospace;--hfont:'Orbitron','Eurostile','Arial Black',sans-serif;--hweight:700;}
-.av-th-retro .av-h{font-size:1.9em;text-transform:uppercase;letter-spacing:.06em;border-bottom:3px double var(--rule);}
-.av-th-retro .av-inner{padding-top:5%;}
-.av-th-retro .av-win{display:flex;align-items:center;gap:.6em;margin:0 0 1.2em;padding:.3em .6em;background:#1b2a4a;color:#bfe0db;font:700 .95em var(--font);letter-spacing:.05em;border:2px solid #1b2a4a;box-shadow:.25em .25em 0 #2f7d78;}
-.av-th-retro .av-win-d{display:flex;gap:.3em;} .av-th-retro .av-win-d i{width:.7em;height:.7em;border-radius:50%;background:#f2b84b;display:block;} .av-th-retro .av-win-d i+i{background:#2f7d78;} .av-th-retro .av-win-d i+i+i{background:#e8e4da;}
-.av-th-retro .av-win-t{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;} .av-th-retro .av-win-n{color:#f2b84b;}
-.av-th-retro .av-map,.av-th-retro .av-media img{border:2px solid #1b2a4a;box-shadow:.3em .3em 0 #1b2a4a;}
-.av-th-retro .av-foot{font-family:var(--font);color:var(--accent);}
-.av-th-retro .av-cover{background-image:linear-gradient(rgba(191,224,219,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(191,224,219,.08) 1px,transparent 1px);background-size:2.4em 2.4em;}
-.av-th-retro .av-cv-t{font-family:var(--hfont);text-transform:uppercase;letter-spacing:.04em;text-shadow:0 0 .35em rgba(191,224,219,.55);}
-.av-th-retro .av-cv-a{font-family:var(--font);}
-.av-caret{display:inline-block;margin-left:.1em;color:#f2b84b;animation:av-blink 1.1s steps(1) infinite;}
+.av-th-retro{--paper:#101a33;--ink:#cfe6e2;--head:#f2b84b;--rule:#2f7d78;--muted:#7fa9a3;--cap:#9fc6c0;--accent:#5fd0c3;--quote:#f2b84b;--mapb:#2f7d78;--dots:#2f7d78;
+  --backdrop:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,#1a2848 0%,#070c18 85%);--navink:#bfe0db;--navbtn:rgba(47,125,120,.25);--navbord:#2f7d78;
+  --font:'IBM Plex Mono','Courier New',ui-monospace,monospace;--hfont:'IBM Plex Mono','Courier New',ui-monospace,monospace;--ui:'IBM Plex Mono','Courier New',ui-monospace,monospace;--hweight:600;}
+.av-th-retro .av-side,.av-th-retro .av-face,.av-th-retro .av-sov .av-pg,.av-th-retro .av-pdfpage{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px);}
+.av-th-retro .av-h{font-size:1.9em;text-transform:uppercase;letter-spacing:.04em;border-bottom:none;padding-bottom:0;text-shadow:0 0 .3em rgba(242,184,75,.35);}
+.av-th-retro .av-h::after{content:"════════════════════════════════════════════════════════════════════════════════";display:block;overflow:hidden;white-space:nowrap;color:var(--rule);font-size:.5em;letter-spacing:0;margin-top:.25em;text-shadow:none;}
+.av-th-retro .av-inner{padding-top:5.5%;}
+.av-th-retro .av-win{display:flex;align-items:baseline;gap:1em;margin:0 0 .9em;font:500 1em var(--font);color:var(--accent);letter-spacing:.02em;}
+.av-th-retro .av-win-t{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;} .av-th-retro .av-win-n{color:var(--muted);}
+.av-th-retro .av-map,.av-th-retro .av-media img{border:3px double var(--rule);box-shadow:none;}
+.av-th-retro .av-map{background:#0b1326;}
+.av-th-retro .av-foot{font-family:var(--font);color:var(--muted);}
+.av-th-retro .av-text a,.av-th-retro .av-toc-r:hover span{color:var(--head);}
+.av-th-retro .av-cap{font-style:normal;color:var(--cap);} .av-th-retro .av-cap::before{content:"// ";color:var(--muted);}
+.av-th-retro .av-text blockquote{font-style:normal;}
+.av-th-retro .av-toc-r b{font-family:var(--font);color:var(--head);}
+.av-rcover{background:#060b18 !important;background-size:cover !important;background-position:center !important;color:#cfe6e2;justify-content:space-between;font-family:'IBM Plex Mono','Courier New',monospace;}
+.av-rcover::after{display:none;}
+.av-rcover::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,rgba(47,125,120,.16),rgba(0,0,0,0) 70%);}
+.av-boot{position:relative;padding:9% 9% 0;font-size:1.15em;line-height:1.55;color:#5fd0c3;opacity:.85;}
+.av-rcover .av-cv-in{padding:0 9% 14%;}
+.av-rcover .av-cv-t{font-family:'IBM Plex Mono','Courier New',monospace;font-weight:600;font-size:3.6em;text-transform:uppercase;letter-spacing:.02em;color:#f2b84b;text-shadow:0 0 .35em rgba(242,184,75,.5);}
+.av-rcover .av-cv-s{font-style:normal;font-size:1.5em;color:#cfe6e2;margin-top:.8em;}
+.av-rcover .av-cv-a{font-family:inherit;font-size:1.2em;color:#5fd0c3;margin-top:.5em;letter-spacing:.04em;opacity:1;}
+.av-rkey{margin-top:2.4em;font-size:1em;color:#7fa9a3;letter-spacing:.08em;}
+.av-caret{display:inline-block;margin-left:.15em;color:#f2b84b;animation:av-blink 1.1s steps(1) infinite;font-size:.8em;}
 @keyframes av-blink{50%{opacity:0;}}
-.av-th-retro .av-toc-r b{font-family:var(--font);color:var(--accent);}
+.av-th-historic{--paper:#eee0bf;--ink:#3b2a1a;--head:#4a2f1a;--rule:#8b6b43;--muted:#8b6b43;--cap:#5c4127;--accent:#8a3b1c;--quote:#8b6b43;--mapb:#6b4f2e;--dots:#a8875c;
+  --backdrop:radial-gradient(ellipse at center,#5a3d24 0%,#1e130a 85%);--navink:#eee0bf;--navbtn:rgba(238,224,191,.12);--navbord:rgba(238,224,191,.35);
+  --font:'IM Fell English',Georgia,'Times New Roman',serif;--hfont:'IM Fell English SC','IM Fell English',Georgia,serif;--hweight:400;}
+.av-th-historic .av-side,.av-th-historic .av-face,.av-th-historic .av-sov .av-pg,.av-th-historic .av-pdfpage{background-image:radial-gradient(ellipse at center,rgba(255,250,235,.0) 55%,rgba(120,82,40,.22) 100%);}
+.av-th-historic .av-inner::before{content:"";position:absolute;inset:3.2%;border:.28em double var(--rule);pointer-events:none;}
+.av-th-historic .av-spreadpg::before{inset:3.2% 1.6%;}
+.av-orn{display:none;} .av-th-historic .av-orn{display:block;position:absolute;font-style:normal;color:var(--rule);font-size:1.5em;line-height:1;z-index:1;}
+.av-th-historic .av-orn.tl{left:2.4%;top:2.2%;} .av-th-historic .av-orn.tr{right:2.4%;top:2.2%;transform:scaleX(-1);} .av-th-historic .av-orn.bl{left:2.4%;bottom:2.2%;transform:scaleY(-1);} .av-th-historic .av-orn.br{right:2.4%;bottom:2.2%;transform:scale(-1,-1);}
+.av-th-historic .av-inner{padding:9% 10% 11%;} .av-th-historic .av-spreadpg{padding:4.4em 4.6em 5.4em;}
+.av-th-historic .av-h{text-align:center;font-size:2.5em;letter-spacing:.06em;border-bottom:none;padding-bottom:0;}
+.av-th-historic .av-h::after{content:"— ✦ —";display:block;text-align:center;font-size:.45em;color:var(--rule);margin-top:.2em;letter-spacing:.3em;}
+.av-th-historic .av-map,.av-th-historic .av-media img{border:1px solid var(--mapb);outline:.18em solid rgba(107,79,46,.35);outline-offset:.25em;box-shadow:none;}
+.av-th-historic .av-map img.av-mstill,.av-th-historic .av-map iframe{filter:sepia(.18) saturate(.9);}
+.av-th-historic .av-cap{text-align:center;} .av-th-historic .av-foot{font-family:var(--font);color:var(--muted);font-style:italic;left:12%;right:12%;bottom:5%;}
+.av-th-historic .av-toc-r b{font-weight:400;}
+.av-hcover{justify-content:center;align-items:stretch;color:#f3e6c4;}
+.av-hcover::after{display:none;}
+.av-hframe{position:absolute;inset:5%;border:.35em double rgba(243,230,196,.75);display:flex;align-items:center;justify-content:center;}
+.av-hframe::before{content:"";position:absolute;inset:.8em;border:1px solid rgba(243,230,196,.45);}
+.av-hin{position:relative;text-align:center;padding:0 10%;font-family:'IM Fell English',Georgia,serif;}
+.av-rose{width:6.5em;height:6.5em;color:#e8c98a;margin:0 auto 1.6em;display:block;}
+.av-hcover .av-cv-t{font-family:'IM Fell English SC','IM Fell English',Georgia,serif;font-size:3.9em;letter-spacing:.06em;line-height:1.1;}
+.av-hrule{color:#e8c98a;letter-spacing:.6em;margin:.8em 0;font-size:1.1em;}
+.av-hcover .av-cv-s{font-style:italic;font-size:1.7em;}
+.av-hcover .av-cv-a{font-family:'IM Fell English',Georgia,serif;text-transform:none;letter-spacing:.02em;font-size:1.5em;font-weight:400;font-style:italic;margin-top:1.4em;}
 .av-win{display:none;} .av-th-retro .av-win{display:flex;}
 /* ---- book ---- */
 .av-root.av-mode-book{background:var(--backdrop);overflow:hidden;}
@@ -9924,8 +10019,11 @@ const AT_THEMES=[
   {k:'modern', n:'Modern', d:'White pages, clean sans-serif', paper:'#ffffff', ink:'#12665f', bg:'#dfe4ea', acc:'#12837a'},
   {k:'notebook', n:'Field notebook', d:'Graph paper, handwritten headings', paper:'#f3ead3', ink:'#3b3226', bg:'#6b4f33', acc:'#a3452c'},
   {k:'noir', n:'Atlas noir', d:'Dark pages, gold accents', paper:'#1d2026', ink:'#e2c078', bg:'#0b0c0f', acc:'#e2c078'},
-  {k:'retro', n:'Map-O-Matic retro', d:'Terminal windows, monospace, scanlines', paper:'#f4f1e6', ink:'#1b2a4a', bg:'#1b2a4a', acc:'#2f7d78'}];
+  {k:'retro', n:'Map-O-Matic retro', d:'DOS screen, command-line headings, boot-up cover', paper:'#101a33', ink:'#f2b84b', bg:'#070c18', acc:'#2f7d78'},
+  {k:'historic', n:'19th-century atlas', d:'Aged paper, engraved type, ornate frames', paper:'#eee0bf', ink:'#4a2f1a', bg:'#3a2616', acc:'#8a3b1c'}];
 const AT_SPREAD={map:1, layout:1, image:1};
+const AT_FONTS={retro:'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap',
+  historic:'https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap'};
 /* page numbers as the book reader will show them (spreads start on a left page) */
 function atNumbers(){
   const m={}; if(!atlas) return m;
@@ -10097,7 +10195,7 @@ function renderAtBody(){
     atEnsureCss();
     body.innerHTML='<div class="at-cvwrap"><div class="at-cvbox"></div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right, in the '+esc((AT_THEMES.find(t=>t.k===atlas.theme)||AT_THEMES[0]).n)+' design.</p>';
     const bx=body.querySelector('.at-cvbox');
-    atlasViewer(bx, Object.assign({}, atlas, {pages:[], __cover:true}));
+    atlasViewer(bx, Object.assign({}, atlas, {pages:atlas.pages.map(p=>({id:p.id, kind:p.kind, title:p.title})), __cover:true}));
     bx.style.fontSize=(bx.clientHeight/60)+'px';
     return;
   }
@@ -10173,8 +10271,7 @@ function renderAtSettings(){
       '<label><input type="radio" name="atMode" value="scroll"'+(atlas.mode==='scroll'?' checked':'')+'> ↕ Scrolling<span>One long page, section after section</span></label></div>'+
     '<label class="fc-chk2"><input type="checkbox" id="atToc"'+(atlas.contents?' checked':'')+'> Contents page</label>'+
     '<label class="fc-lbl">Web address (optional)<input type="text" id="atUrl" maxlength="300" placeholder="https://… where the atlas will be online" value="'+esc(atlas.url||'')+'"></label>'+
-    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button><button class="btn secondary" id="atPdf">⬇ Download PDF</button></div>'+
-    '<p class="kv">The export is one HTML file. Host it like an interactive web map (Netlify Drop, GitHub Pages or any web host) and share the link. Live maps load their basemaps over the internet. The PDF has one page per atlas page in the chosen design; live maps appear as sharp snapshots, with the web address under them if you give one. Readers of the web version can download the PDF too.</p>';
+    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button><button class="btn secondary" id="atPdf">⬇ Download PDF</button></div>';
   const up=(k,rerender)=>e=>{ atlas[k]=e.target.value; atDirty(); if(rerender) renderAtlas(); else { renderAtList(); if(atSel==='cover') renderAtBody(); } };
   document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
   document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value; atDirty(); };
@@ -10184,7 +10281,7 @@ function renderAtSettings(){
   ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
   const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
   document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); renderAtList(); });
-  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); if(atSel!=='cover'){ atSel='cover'; renderAtList(); } renderAtBody(); if(atlas.theme==='retro') setTimeout(()=>{ if(atSel==='cover') renderAtBody(); }, 700); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
+  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); if(atSel!=='cover'){ atSel='cover'; renderAtList(); } renderAtBody(); if(AT_FONTS[atlas.theme]) setTimeout(()=>{ if(atSel==='cover') renderAtBody(); }, 700); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
   document.getElementById('atToc').onchange=e=>{ atlas.contents=e.target.checked; atDirty(); renderAtList(); };
   document.getElementById('atPrev').onclick=atPreview;
   document.getElementById('atExport').onclick=atExport;
@@ -10305,7 +10402,7 @@ function buildAtlasHtml(a0){
   const fav=document.querySelector('link[rel="icon"]');
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
     '<title>'+esc(a.title||'Atlas')+'</title>'+(fav?'<link rel="icon" type="image/svg+xml" href="'+esc(fav.getAttribute('href'))+'">':'')+
-    (a.theme==='retro'?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap">':'')+
+    (AT_FONTS[a.theme]?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="'+AT_FONTS[a.theme]+'">':'')+
     '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
     '<script>\n'+atlasViewer.toString()+'\natlasViewer(document.getElementById("atlas"), '+data+');\n<\/script></body></html>';
 }
@@ -10313,7 +10410,7 @@ function buildAtlasHtml(a0){
    exported atlas uses, with the app's own jsPDF and html2canvas) */
 function atEnsureCss(){
   if(!document.getElementById('atlasAppCss')){ const st=document.createElement('style'); st.id='atlasAppCss'; st.textContent=ATLAS_CSS; document.head.appendChild(st); }
-  if(atlas && atlas.theme==='retro' && !document.getElementById('atlasRetroFonts')){ const l=document.createElement('link'); l.id='atlasRetroFonts'; l.rel='stylesheet'; l.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap'; document.head.appendChild(l); return true; }
+  if(atlas && AT_FONTS[atlas.theme] && !document.getElementById('atlasFonts-'+atlas.theme)){ const l=document.createElement('link'); l.id='atlasFonts-'+atlas.theme; l.rel='stylesheet'; l.href=AT_FONTS[atlas.theme]; document.head.appendChild(l); return true; }
   return false;
 }
 async function atPdf(){
@@ -11525,10 +11622,27 @@ function renderProjection(){
     if(st.mode==='cat') computeCategories(lyr);
     let srcFeats;
     if(st.mode==='carto'){
-      const cfc=cartogramFC(lyr, cartoProjPlane());
+      const pl=cartoProjPlane();
+      const cfc=cartogramFC(lyr, pl);
       if(!cfc) return;
       cartoPrepColors(lyr);
+      /* the true boundaries, faintly, underneath (as on the flat map) */
+      if(st.cartoGhost!==false){
+        visibleFeatures(lyr).forEach(g0=>{ if(!g0.geometry || !/Polygon/.test(g0.geometry.type)) return;
+          try{ const g1=def.interrupted ? prepForInterrupted(g0) : g0; ctx.beginPath(); path(g1);
+            ctx.fillStyle='rgba(223,228,236,'+(0.25*lyr.opacity)+')'; ctx.fill();
+            ctx.strokeStyle='rgba(138,150,173,'+(0.7*lyr.opacity)+')'; ctx.lineWidth=0.8; ctx.stroke(); }catch(_){} });
+      }
       srcFeats=cfc.features;
+      /* part-way through the real-map-to-cartogram morph */
+      if(lyr._morphT!=null && lyr._morphT<0.999){
+        const t=lyr._morphT, inv=(x,y)=>pl? pl.i(x,y) : cartoInv(x,y);
+        srcFeats=srcFeats.map(f=>{ const m=f.__morph; if(!m) return f;
+          const polys=m.from.map((pp,pi)=>pp.map((r,ri)=>{ const q=m.to[pi]&&m.to[pi][ri];
+            if(!q||q.length!==r.length) return (t<0.5?r:(q||r)).map(pt=>inv(pt[0],pt[1]));
+            return r.map((pt,k)=>inv(pt[0]+(q[k][0]-pt[0])*t, pt[1]+(q[k][1]-pt[1])*t)); }));
+          return {type:'Feature', properties:f.properties, geometry: polys.length===1?{type:'Polygon',coordinates:polys[0]}:{type:'MultiPolygon',coordinates:polys}}; });
+      }
     } else srcFeats=visibleFeatures(lyr);
     srcFeats.forEach(f0=>{
       if(!f0.geometry) return;
@@ -11791,6 +11905,7 @@ if('ResizeObserver' in window){
   const zi=document.getElementById('projZoomIn'), zo=document.getElementById('projZoomOut');
   if(zi) zi.onclick=e=>{ e.stopPropagation(); zoomAbout(0,0,2); };
   if(zo) zo.onclick=e=>{ e.stopPropagation(); zoomAbout(0,0,1/2); };
+  const zab=document.getElementById('projZoomAll'); if(zab) zab.onclick=e=>{ e.stopPropagation(); projFitToData(); };
   const cpb=document.getElementById('projCompare');
   if(cpb) cpb.onclick=e=>{ e.stopPropagation(); if(swipe||document.getElementById('swipePanel')) closeCompare(); else openCompare(); };
 
@@ -16961,7 +17076,7 @@ async function enterShareViewer(){
     d.querySelector('select').onchange=e=>svSetBasemap(e.target.value);
     return d;
   }; bmCtl.addTo(svMap);
-  const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Made with Map-O-Matic'; return d; }; brand.addTo(svMap);
+  const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg><a href="'+esc(location.href.split('#')[0])+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Made with Map-O-Matic</a>'; return d; }; brand.addTo(svMap);
   window.__svMap=svMap;            /* testing hook */
   setTimeout(()=>svMap.invalidateSize(), 150);
 }
@@ -17131,7 +17246,7 @@ idbOpen().then(async ()=>{
   } else {
     const rec=await createProject('My first project');
     renderProjectSwitcher();
-    openProject(rec.id);
+    switchModule('home');
   }
 }).catch(err=>{
   console.error(err);

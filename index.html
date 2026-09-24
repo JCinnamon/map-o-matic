@@ -37,9 +37,10 @@
      (search results, selection actions) render behind the map. */
   #topbar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:var(--navy);color:#fff;flex-wrap:wrap;position:relative;z-index:900;}
   #topbar h1{font-size:15px;font-weight:600;margin:0 8px 0 0;white-space:nowrap;}
-  .mod-tabs{display:flex;background:#111d38;border-radius:7px;padding:3px;gap:3px;}
-  .mod-tabs button{background:transparent;border:none;color:#aab6d4;font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:5px;}
-  .mod-tabs button.active{background:var(--teal);color:#fff;}
+  .mod-tabs{display:flex;gap:6px;margin-left:4px;}
+  .mod-tabs button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);color:#c9d3ea;font-size:12.5px;font-weight:700;padding:4px 13px;border-radius:6px;box-shadow:0 1px 0 rgba(0,0,0,.25);}
+  .mod-tabs button:hover{background:rgba(255,255,255,.14);color:#fff;}
+  .mod-tabs button.active{background:var(--teal);border-color:#5fb3ab;color:#fff;box-shadow:0 0 0 1px rgba(95,179,171,.35),0 1px 0 rgba(0,0,0,.25);}
   #topbar .grp{display:flex;align-items:center;gap:5px;padding:0 6px;border-right:1px solid rgba(255,255,255,.18);}
   #topbar{gap:6px;}
   #topbar .btn.small{padding:4px 7px;}
@@ -367,13 +368,36 @@
   .mk-sendmenu .sm-pt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:12.5px;} .mk-sendmenu .sm-pt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .mk-sendmenu .sm-pt small{color:var(--muted);font-size:11px;}
   .mk-sendmenu .sm-foot{display:block;width:100%;text-align:right;background:none;border:none;border-top:1px solid var(--line);margin-top:4px;padding:7px 10px 4px;color:var(--teal);font-weight:600;font-size:12.5px;cursor:pointer;}
   .at-mapopts{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;} .at-mapopts select{font-size:13px;padding:5px 7px;border:1px solid var(--line);border-radius:5px;}
-  #exportMenuList,#loAtlasMenu{min-width:250px;} #exportMenuList button small,#loAtlasMenu button small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:1px;}
-  #loAtlasMenu{right:auto;left:0;}
+  #exportMenuList{width:310px;max-height:78vh;color:var(--text);} #exportMenuList>button small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:1px;}
+  #exportMenuList>button{font-weight:600;}
+  #exportMenuList .sm-exp{display:flex;align-items:center;gap:6px;font-weight:600;}
+  #exportMenuList .sm-exp .sm-n{background:#e3ecef;color:var(--navy);border-radius:9px;padding:0 7px;font-size:11px;} #exportMenuList .sm-exp .sm-car{margin-left:auto;color:var(--muted);transition:transform .15s;}
+  #exportMenuList .sm-exp.open .sm-car{transform:rotate(90deg);}
+  #exportMenuList .sm-pages{display:flex;flex-direction:column;gap:3px;padding:2px 8px 4px 16px;max-height:230px;overflow:auto;} #exportMenuList .sm-pages.hidden{display:none;}
+  #exportMenuList .sm-page{display:flex;align-items:center;gap:7px;padding:3px;border-radius:6px;} #exportMenuList .sm-page:hover{background:#f4f6f9;}
+  #exportMenuList .sm-page .btn{flex:none;display:inline-block;width:auto;padding:3px 9px;font-size:11.5px;font-weight:600;border-radius:5px;background:var(--teal);color:#fff;border:1px solid var(--teal);}
+  #exportMenuList .sm-page .btn.light{background:#fff;color:var(--navy);border-color:var(--line);}
+  #exportMenuList .sm-page .btn:hover{filter:brightness(1.08);}
+  #exportMenuList .sm-th{width:38px;height:28px;flex:none;border-radius:3px;overflow:hidden;background:#eef1f4;display:flex;align-items:center;justify-content:center;} #exportMenuList .sm-th img{width:100%;height:100%;object-fit:cover;}
+  #exportMenuList .sm-pt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:12px;} #exportMenuList .sm-pt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} #exportMenuList .sm-pt small{color:var(--muted);font-size:10.5px;}
+  #exportMenuList .sm-foot{text-align:right;color:var(--teal);font-weight:600;}
   @media (max-width:1400px){ body.mod-layout #wordmark{font-size:0;gap:0;} body.mod-layout #wordmark svg{margin-right:0;} body.mod-layout .tb-lbl{display:none;} }
   .send-names{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;display:flex;flex-direction:column;gap:6px;}
   .sn-h{font-size:12px;font-weight:700;color:var(--navy);} .sn-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
   .sn-row input{padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;}
+  .at-themes{display:flex;flex-direction:column;gap:5px;}
+  .at-theme{display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:7px;padding:5px 7px;background:#fff;cursor:pointer;color:var(--text);}
+  .at-theme.on{border-color:var(--teal);background:#e8f3f1;box-shadow:inset 0 0 0 1px var(--teal);}
+  .at-tsw{width:44px;height:32px;border-radius:4px;flex:none;display:flex;align-items:center;justify-content:center;}
+  .at-tsw i{width:22px;height:26px;border-radius:2px;border-left:3px solid;display:flex;flex-direction:column;gap:3px;padding:4px 3px;box-sizing:border-box;}
+  .at-tsw b{height:3px;width:80%;display:block;} .at-tsw u{height:6px;width:100%;display:block;opacity:.7;}
+  .at-tn{font-size:12.5px;font-weight:600;display:flex;flex-direction:column;} .at-tn small{font-weight:400;color:var(--muted);font-size:11px;}
+  .at-spchk{margin:2px 0 0;}
+  .at-ctimg{max-height:70px;max-width:120px;border-radius:4px;border:1px solid var(--line);}
+  .at-ctprev{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;background:#fbfcfd;}
+  .at-ctrow{display:flex;gap:6px;align-items:baseline;font:14px Georgia,serif;margin:3px 0;} .at-ctrow i{flex:1;border-bottom:1px dotted #bbb;} .at-ctrow b{font-weight:400;color:var(--muted);}
+  .at-th img{width:100%;height:100%;object-fit:cover;}
   .gr-sub{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 6px;} .gr-sub+div{margin-bottom:14px;}
   .gr-table{font-size:12px;border-collapse:collapse;width:100%;margin:4px 0;} .gr-table td,.gr-table th{padding:2px 4px;border-bottom:1px solid var(--line);text-align:left;}
   .swipe-bar{position:absolute;top:0;bottom:0;width:0;z-index:950;pointer-events:none;border-left:3px solid #1b2a4a;box-shadow:0 0 0 1px rgba(255,255,255,.8);}
@@ -813,9 +837,7 @@
         <button data-z="2">200%</button>
       </div>
     </span>
-    <span class="grp-div"></span>
-    <span class="zoom-menu"><button class="btn small" id="btnLoAtlas" aria-haspopup="true" title="Add this layout to the atlas as a page">📖 Atlas ▾</button>
-      <div id="loAtlasMenu" class="tools-menu hidden" role="menu"></div></span>
+
   </div>
   <div class="grp tb-mid-last">
     <select id="projectSwitcher" title="Switch project"></select>
@@ -824,11 +846,8 @@
   </div>
   <div class="tb-spacer"></div>
   <div class="grp">
-    <span class="zoom-menu"><button class="btn small" id="btnExportMenu" aria-haspopup="true" title="Share a link, or export files">Export ▾</button>
-      <div id="exportMenuList" class="tools-menu hidden" role="menu">
-        <button data-x="share" role="menuitem">🔗 Share link or embed…<small>A live link to the map, or embed code</small></button>
-        <button data-x="files" role="menuitem">⬇ Export files…<small>PDF, PNG, SVG, web map, data, archive</small></button>
-      </div></span>
+    <span class="zoom-menu"><button class="btn small" id="btnExportMenu" aria-haspopup="true" aria-expanded="false" title="Send this map to another module, share a link, or export files">Send / Export ▾</button>
+      <div id="exportMenuList" class="tools-menu hidden" role="menu"></div></span>
     <button id="btnShareOpen" hidden></button><button id="btnExportOpen" hidden></button>
     <button class="btn ghost small" id="btnMethods" title="The data steps and design choices behind this map, ready for a report">📝<span class="tb-lbl"> Process Log</span></button>
     <button class="btn ghost small" id="btnHelp">Help</button>
@@ -844,10 +863,8 @@
   <section class="home-hero">
     <div class="home-hero-in">
       <h1><svg class="mom-logo mom-logo-hero" width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Map-O-Matic</h1>
-      <p>A free, browser-based cartography studio. Build a map from your own spatial data, style it with proper GIS symbology and classification, then compose a finished, print-ready layout with a legend, scale bar and north arrow — or share it as a live, interactive web map. Everything runs in your browser: nothing is installed, and your data never leaves your computer.</p>
-      <div class="home-hero-tags">
-        <span>Runs in the browser</span><span>Nothing uploaded</span><span>No installation</span><span>No account</span><span>Free &amp; open</span>
-      </div>
+      <p>A free cartography studio that runs in your browser. Style your data as a map, compose a print-ready layout, collect field data on phones, and gather your maps into an interactive atlas. Nothing is installed or uploaded.</p>
+      
     </div>
   </section>
   <div id="home-wrap">
@@ -874,8 +891,7 @@
       <strong>Map-O-Matic</strong><span class="sep">·</span>
       <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a><span class="sep">·</span>
       <a href="https://github.com/jcinnamon" target="_blank" rel="noopener">GitHub</a><br>
-      Built for research and teaching · a single HTML file, MIT licensed. Part of the
-      <a href="https://www.jonathancinnamon.com/vis-o-matic/" target="_blank" rel="noopener">Vis-O-Matic</a> family of visual-research tools.<br>
+      Built for research and teaching · a single HTML file, MIT licensed.<br>
       <span class="home-foot-libs">Built with open tools: Leaflet · MapLibre GL · OpenFreeMap &amp; OpenMapTiles · Turf.js · Fabric.js · D3 &amp; d3-geo-projection · chroma.js · simple-statistics · PapaParse · JSZip · shpjs · jsPDF · html2canvas · Natural Earth &amp; OpenStreetMap data · title face Orbitron.</span>
     </div>
   </footer>
@@ -1022,9 +1038,7 @@
         <button class="btn light small" id="mkSelExport" title="Export or save the selected features">Selected ▾</button>
         <button class="btn light small" id="mkSelClear" title="Clear selection">✕</button>
       </span>
-      <span class="mk-sendwrap"><button class="btn small" id="mkSendMenuBtn" aria-haspopup="true" aria-expanded="false">Send to ▾</button>
-        <div class="mk-sendmenu hidden" id="mkSendMenu" role="menu"></div>
-        <button id="mkSendBtn" hidden></button></span>
+      <button id="mkSendBtn" hidden></button>
     </div>
     <div id="mk-map"></div>
     <div id="mk-proj" class="hidden">
@@ -1124,7 +1138,7 @@
   <div class="modal">
     <h2>Quick start</h2>
     <div class="help-step"><b>Two ways to work:</b>
-      <p><b>A. Map Maker → Layout (all in this tool).</b> Add data in Map Maker, filter and symbolize it, then click <b>Send to Composer</b> — your styled map arrives as a map frame with the scale already calibrated and a legend built from your symbology.</p>
+      <p><b>A. Map Maker → Layout (all in this tool).</b> Add data in Map Maker, filter and symbolize it, then choose <b>Send / Export ▾ → Map Composer</b> — your styled map arrives as a map frame with the scale already calibrated and a legend built from your symbology.</p>
       <p style="margin-top:6px;"><b>B. Bring your own map image.</b> Made a map elsewhere (any GIS or graphics software)? Export it as an image and upload it in the Layout module via <b>Map Frame</b>, then calibrate the scale bar by drawing a reference line of known distance.</p>
     </div>
     <div class="help-step"><b>Map Maker basics.</b>
@@ -2743,7 +2757,7 @@ function globeOpen(){
   document.getElementById('mk-center').classList.add('globe-open');
   const btn=document.getElementById('mkGlobeBtn'); if(btn) btn.classList.add('on');
   /* the flat-map projection picker doesn't apply while the globe is up */
-  const proj=document.getElementById('mkProjection'); if(proj) proj.disabled=true;
+  /* the projection list stays usable: choosing a projection closes the globe */
   const c=mkMap.getCenter(), z=mkMap.getZoom();
   const styleUrl=globeVectorStyleUrl(mkBasemapKey);
   const style=styleUrl || globeRasterStyle(mkBasemapKey);
@@ -2804,7 +2818,7 @@ function globeClose(){
 }
 function toggleGlobeView(){
   if(typeof swipe!=='undefined' && (swipe||document.getElementById('swipePanel'))) closeCompare();
-  if(projActive){ toast('Leave the projection preview first, then open the globe.'); return; }
+  if(projActive && !mkGlobe){ const sel=document.getElementById('mkProjection'); sel.value='mercator-edit'; setProjectionMode('mercator-edit'); setTimeout(globeOpen, 90); return; }
   if(mkGlobe) globeClose(); else globeOpen();
 }
 /* testing hook */
@@ -4896,7 +4910,6 @@ function cartoLocksProjection(){
 function cartoUpdateProjectionLock(){
   const sel=document.getElementById('mkProjection');
   if(!sel) return;
-  if(typeof mkGlobe!=='undefined' && mkGlobe) return;   /* the globe already owns this control */
   const lock=cartoLocksProjection();
   sel.disabled=lock;
   sel.title=lock ? 'Projections are unavailable while a cartogram is on the map, because cartogram units no longer sit at real-world coordinates.' : '';
@@ -5136,6 +5149,7 @@ function updateMkStatus(){
 /* ---------- layer list UI ---------- */
 function renderMakerLayerList(){
   const el=document.getElementById('mk-layerlist');
+  if(typeof cartoUpdateProjectionLock==='function') try{ cartoUpdateProjectionLock(); }catch(_){}
   if(typeof autoActivateLayer==='function') autoActivateLayer();
   if(!mkLayers.length){ el.innerHTML='<div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div>'; return; }
   el.innerHTML=mkLayers.map(l=>`
@@ -9356,22 +9370,29 @@ window.__rx=()=>qrRecv;
 window.__clLinkAnswer=(t)=>clLinkAnswer(window.__collector, t);
 window.__fc=()=>({forms:fcForms, data:fcData, sel:fcSel});
 
-/* ================= ATLAS VIEWER (v47) =================
+/* ================= ATLAS VIEWER (v51) =================
    Runs both inside Map-O-Matic (preview) and in the exported atlas file, so it
-   uses nothing from the app: it is copied into the export with toString(). */
+   uses nothing from the app: it is copied into the export with toString().
+   v51: design themes, two-page spreads, contents-page text and image, and a
+   tabbed navigation bar for the scrolling atlas. */
 function atlasViewer(root, D){
   var doc=root.ownerDocument, win=doc.defaultView;
   var E=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
   var COL=/^#[0-9a-f]{6}$/i;
+  var THEMES={classic:1, modern:1, notebook:1, noir:1, retro:1};
+  var theme=THEMES[D.theme]?D.theme:'classic';
   var pages=D.pages||[], mode=D.mode==='scroll'?'scroll':'book';
   var coverCol=COL.test(D.coverColor||'')?D.coverColor:'#1f3b57';
+  var SPREADABLE={map:1, layout:1, image:1};
+  var isSpread=function(p){ return !!(p && p.spread && SPREADABLE[p.kind]); };
   /* the page sequence: cover, contents, the author's pages, back cover */
   var seq=[{kind:'cover'}];
   if(D.contents && pages.length) seq.push({kind:'contents'});
   pages.forEach(function(p){ seq.push(p); });
-  var numbered=function(i){ return i>0 && seq[i] && seq[i].kind!=='back' && seq[i].kind!=='blank'; };
-  var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text'}[p.kind]||''); };
+  var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text',contents:'Contents'}[p.kind]||''); };
+  var pad3=function(n){ n=String(n); while(n.length<3) n='0'+n; return n; };
+  var pnum=function(n){ return theme==='retro' ? 'p.'+pad3(n) : String(n); };
   function logo(sz){ return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>'; }
   function mediaHtml(p, live){
     if(p.kind==='map'){
@@ -9381,26 +9402,47 @@ function atlasViewer(root, D){
     if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media"><img src="'+p.src+'" alt="'+E(p.alt||p.caption||p.title||'')+'"'+(live?' data-zoom="1"':'')+'></div>';
     return '';
   }
-  function pageHtml(i, live){
+  /* retro theme: each page is a little window with a title bar */
+  function winBar(p, i){
+    if(theme!=='retro') return '';
+    var nm=(titleOf(p)||'page').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,22)||'page';
+    var ext={map:'.map',layout:'.lyt',image:'.img',text:'.txt',contents:'.idx'}[p.kind]||'';
+    return '<div class="av-win"><span class="av-win-d"><i></i><i></i><i></i></span><span class="av-win-t">'+E(nm+ext)+'</span><span class="av-win-n">'+pad3(i)+'</span></div>';
+  }
+  function contentsRows(){
+    return seq.map(function(q,j){ return (j>0 && q.kind!=='contents' && q.kind!=='back' && q.kind!=='blank' && q.kind!=='spreadR')?'<a class="av-toc-r" data-go="'+j+'"><span>'+E(titleOf(q))+'</span><i></i><b>'+pnum(j)+(isSpread(q)?'–'+pnum(j+1):'')+'</b></a>':''; }).join('');
+  }
+  function contentsIntro(){
+    return (IMG.test(D.contentsImage||'')?'<div class="av-toc-img"><img src="'+D.contentsImage+'" alt=""></div>':'')+
+      (D.contentsText?'<div class="av-text av-toc-txt">'+D.contentsText+'</div>':'');
+  }
+  /* full: render the whole two-page spread; otherwise one page */
+  function pageHtml(i, live, full){
     var p=seq[i]; if(!p) return '<div class="av-pg av-empty"></div>';
     if(p.kind==='cover'){
       var bg=IMG.test(D.coverImage||'')?'background-image:url('+D.coverImage+');':'';
       return '<div class="av-pg av-cover'+(bg?' has-img':'')+'" style="background-color:'+coverCol+';'+bg+'"><div class="av-cv-in">'+
-        '<div class="av-cv-t">'+E(D.title||'Atlas')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
+        '<div class="av-cv-t">'+E(D.title||'Atlas')+(theme==='retro'?'<span class="av-caret">▌</span>':'')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
         (D.author?'<div class="av-cv-a">'+E(D.author)+'</div>':'')+'</div></div>';
     }
     if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></div></div>';
     if(p.kind==='blank') return '<div class="av-pg av-blank"></div>';
-    var foot='<div class="av-foot"><span>'+E(D.title||'')+'</span><span>'+i+'</span></div>';
+    if(p.kind==='spreadR') return '<div class="av-pg av-blank"></div>';
+    var foot='<div class="av-foot"><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i)+'</span></div>';
     if(p.kind==='contents'){
-      var rows=seq.map(function(q,j){ return (j>0 && q.kind!=='contents' && q.kind!=='back' && q.kind!=='blank')?'<a class="av-toc-r" data-go="'+j+'"><span>'+E(titleOf(q))+'</span><i></i><b>'+j+'</b></a>':''; }).join('');
-      return '<div class="av-pg av-inner"><h2 class="av-h">Contents</h2><div class="av-toc">'+rows+'</div>'+foot+'</div>';
+      return '<div class="av-pg av-inner av-k-contents">'+winBar(p,i)+'<h2 class="av-h">'+E(D.contentsTitle||'Contents')+'</h2>'+contentsIntro()+'<div class="av-toc">'+contentsRows()+'</div>'+foot+'</div>';
     }
     var text=p.text?'<div class="av-text">'+p.text+'</div>':'';
     var cap=p.caption?'<div class="av-cap">'+E(p.caption)+'</div>':'';
     var media=mediaHtml(p, live);
-    return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
+    if(full){
+      foot='<div class="av-foot av-foot2"><span class="av-pno">'+pnum(i)+'</span><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i+1)+'</span></div>';
+      return '<div class="av-pg av-inner av-spreadpg av-k-'+p.kind+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+
+        ((cap||text)?'<div class="av-sp-below">'+cap+text+'</div>':'')+foot+'</div>';
+    }
+    return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
   }
+  var frames=[];
   function mountMaps(el){
     el.querySelectorAll('.av-map[data-map]').forEach(function(m){
       if(m.querySelector('iframe')) return;
@@ -9411,7 +9453,7 @@ function atlasViewer(root, D){
       f._show=show; frames.push(f);
       f.srcdoc=p.mapHtml; m.appendChild(f);
     });
-    el.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(){ go(+a.getAttribute('data-go')); }; });
+    el.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(e){ e.preventDefault(); go(+a.getAttribute('data-go')); }; });
     el.querySelectorAll('img[data-zoom]').forEach(function(im){ im.onclick=function(){ zoomImg(im.src); }; });
   }
   function zoomImg(src){
@@ -9420,31 +9462,63 @@ function atlasViewer(root, D){
   }
   var go=function(){};
   /* a live map says when its basemap has drawn; only then does it replace the still */
-  var frames=[];
   win.addEventListener('message', function(e){ if(!e.data||!e.data.momMapReady) return;
     frames=frames.filter(function(f){ return f.isConnected; });
     frames.forEach(function(f){ if(f.contentWindow===e.source) f._show(); }); });
   root.innerHTML='';
-  root.className='av-root av-mode-'+mode;
+  root.className='av-root av-mode-'+mode+' av-th-'+theme;
+
+  /* ================= scrolling ================= */
   if(mode==='scroll'){
-    var html='<nav class="av-snav"><span class="av-sbrand">'+E(D.title||'Atlas')+'</span>'+(pages.length?'<select class="av-sjump" aria-label="Go to page"><option value="">Contents…</option>'+seq.map(function(q,j){ return (j>0&&q.kind!=='contents')?'<option value="'+j+'">'+E(titleOf(q))+'</option>':''; }).join('')+'</select>':'')+'</nav>';
+    var secs=[];
+    var html='<nav class="av-snav"><span class="av-sbrand">'+E(D.title||'Atlas')+'</span><div class="av-tabs" role="tablist">';
+    seq.forEach(function(q,j){ if(j>0) { secs.push(j); html+='<button class="av-tab" data-j="'+j+'" role="tab">'+E(titleOf(q.kind==='contents'?{kind:'contents',title:D.contentsTitle}:q))+'</button>'; } });
+    html+='</div><div class="av-sprog"><i></i></div></nav>';
     seq.forEach(function(q,j){
-      if(q.kind==='contents') return;
-      if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<div class="av-down">↓</div></section>'; return; }
+      if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<button class="av-down" data-go="1" aria-label="Start reading">↓</button></section>'; return; }
+      if(q.kind==='contents'){ html+='<section class="av-s av-k-contents" id="av-s'+j+'">'+winBar(q,j)+'<h2 class="av-h">'+E(D.contentsTitle||'Contents')+'</h2>'+contentsIntro()+'<div class="av-toc">'+contentsRows()+'</div></section>'; return; }
       var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
-      html+='<section class="av-s av-k-'+q.kind+'" id="av-s'+j+'">'+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
+      html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
     });
     html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<div class="av-brand">'+logo(18)+'Made with Map-O-Matic</div></section>';
+    html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
     root.innerHTML=html;
-    var sel=root.querySelector('.av-sjump'); if(sel) sel.onchange=function(){ if(sel.value) go(+sel.value); sel.value=''; };
+    var curJ=0;
     go=function(j){ var s=root.querySelector('#av-s'+j); if(s) s.scrollIntoView({behavior:'smooth'}); };
-    var io=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mountMaps(e.target); io.unobserve(e.target); } }); },{rootMargin:'300px'}) : null;
+    var tabs=[].slice.call(root.querySelectorAll('.av-tab'));
+    tabs.forEach(function(t){ t.onclick=function(){ go(+t.getAttribute('data-j')); }; });
+    var all=[0].concat(secs);
+    function setCur(j){
+      if(j===curJ) return; curJ=j;
+      tabs.forEach(function(t){ var on=+t.getAttribute('data-j')===j; t.classList.toggle('on', on); t.setAttribute('aria-selected', on?'true':'false'); if(on && t.scrollIntoView){ var bar=t.parentNode; bar.scrollTo({left:t.offsetLeft-bar.clientWidth/2+t.clientWidth/2, behavior:'smooth'}); } });
+    }
+    root.querySelector('.av-sup').onclick=function(){ var k=all.indexOf(curJ); if(k>0) go(all[k-1]); else root.scrollTo({top:0,behavior:'smooth'}); };
+    root.querySelector('.av-sdn').onclick=function(){ var k=all.indexOf(curJ); if(k<all.length-1) go(all[k+1]); };
+    var prog=root.querySelector('.av-sprog i');
+    root.addEventListener('scroll', function(){
+      var max=root.scrollHeight-root.clientHeight; prog.style.width=(max>0?100*root.scrollTop/max:0)+'%';
+      /* the current section is the last one whose top has passed a line a third of the way down */
+      var line=root.clientHeight/3, best=0;
+      all.forEach(function(j){ var s=root.querySelector('#av-s'+j); if(s && s.getBoundingClientRect().top-root.getBoundingClientRect().top<=line) best=j; });
+      setCur(best);
+    }, {passive:true});
+    doc.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('input,textarea,select')) return;
+      if(e.key==='PageDown'||(e.key==='ArrowDown'&&e.altKey)){ e.preventDefault(); root.querySelector('.av-sdn').click(); }
+      if(e.key==='PageUp'||(e.key==='ArrowUp'&&e.altKey)){ e.preventDefault(); root.querySelector('.av-sup').click(); } });
+    var io=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mountMaps(e.target); io.unobserve(e.target); } }); },{root:root, rootMargin:'300px'}) : null;
     root.querySelectorAll('.av-s').forEach(function(s){ if(io) io.observe(s); else mountMaps(s); });
     mountMaps(root.querySelector('.av-scover'));
+    curJ=-1; setCur(0);
     return {go:go};
   }
-  /* ---- book ---- */
-  var inner=seq.slice(1);
+
+  /* ================= book ================= */
+  /* a two-page spread always starts on a left page (odd index); pad with a blank when needed */
+  var inner=[];
+  seq.slice(1).forEach(function(p){
+    if(isSpread(p)){ if((inner.length+1)%2===0) inner.push({kind:'blank'}); inner.push(p); inner.push({kind:'spreadR', of:p}); }
+    else inner.push(p);
+  });
   if(inner.length%2===1) inner.push({kind:'blank'});
   seq=[seq[0]].concat(inner).concat([{kind:'back'}]);
   /* spreads: [ -, cover ], [1,2], [3,4] … [back, -] */
@@ -9452,11 +9526,22 @@ function atlasViewer(root, D){
   for(var k=1;k<seq.length-1;k+=2) spreads.push([k,k+1]);
   spreads.push([seq.length-1,null]);
   var si=0, busy=false, single=false;
-  root.innerHTML='<div class="av-stage"><div class="av-book"><div class="av-side av-l"></div><div class="av-side av-r"></div><div class="av-spine"></div></div></div>'+
+  root.innerHTML='<div class="av-stage"><div class="av-book"><div class="av-side av-l"></div><div class="av-side av-r"></div><div class="av-sov"></div><div class="av-gutter"></div><div class="av-spine"></div></div></div>'+
     '<div class="av-nav"><button class="av-prev" aria-label="Previous page">‹</button><span class="av-pn"></span><button class="av-next" aria-label="Next page">›</button>'+
     (pages.length&&D.contents?'<button class="av-tocb" title="Contents">☰</button>':'')+'<button class="av-fs" title="Full screen">⛶</button></div>';
-  var book=root.querySelector('.av-book'), L=root.querySelector('.av-l'), R=root.querySelector('.av-r'), pn=root.querySelector('.av-pn');
-  function slot(el, i){ if(el._i===i && el._set) return; el._i=i; el._set=true; el.innerHTML= i==null ? '' : pageHtml(i, true); el.classList.toggle('av-none', i==null); mountMaps(el); }
+  var book=root.querySelector('.av-book'), L=root.querySelector('.av-l'), R=root.querySelector('.av-r'), SOV=root.querySelector('.av-sov'), pn=root.querySelector('.av-pn');
+  /* half of a spread, as a still picture, for a side or a turning leaf */
+  function halfHtml(i){
+    var q=seq[i], left=q.kind!=='spreadR', idx=left?i:i-1;
+    return '<div class="av-half '+(left?'av-half-l':'av-half-r')+'">'+pageHtml(idx,false,true)+'</div>';
+  }
+  var spreadish=function(i){ return i!=null && seq[i] && (seq[i].kind==='spreadR' || (isSpread(seq[i]) && !single)); };
+  function slot(el, i){
+    var key= i==null ? 'none' : (spreadish(i)?'h':'p')+i;
+    if(el._k===key) return; el._k=key;
+    el.innerHTML= i==null ? '' : spreadish(i) ? halfHtml(i) : pageHtml(i, true);
+    el.classList.toggle('av-none', i==null); mountMaps(el);
+  }
   function size(){
     var st=root.querySelector('.av-stage'), w=st.clientWidth-24, h=st.clientHeight-24;
     single = w<760;
@@ -9466,24 +9551,36 @@ function atlasViewer(root, D){
     root.classList.toggle('av-single', single);
   }
   var cur=0;   /* single-page mode: index into seq */
-  function paint(){
-    if(single){ slot(L, null); slot(R, cur); L.classList.add('av-none'); pn.textContent=(cur===0?'Cover':cur===seq.length-1?'Back cover':'Page '+cur); return; }
-    var s=spreads[si]; slot(L, s[0]); slot(R, s[1]);
-    book.classList.toggle('av-closed-l', s[0]==null); book.classList.toggle('av-closed-r', s[1]==null);
-    pn.textContent= si===0 ? 'Cover' : si===spreads.length-1 ? 'Back cover' : 'Pages '+s[0]+'–'+s[1]+' of '+(seq.length-2);
+  var skip=function(i){ return seq[i] && (seq[i].kind==='spreadR' || seq[i].kind==='blank'); };
+  function setOverlay(i){
+    var key= i==null ? '' : 'sp'+i;
+    if(SOV._k===key) return; SOV._k=key;
+    SOV.innerHTML= i==null ? '' : pageHtml(i, true, true);
+    book.classList.toggle('av-has-spread', i!=null);
+    if(i!=null) mountMaps(SOV);
   }
-  function stillClone(i){ var d=doc.createElement('div'); d.innerHTML=pageHtml(i,false); return d.firstChild; }
+  function paint(){
+    if(single){ setOverlay(null); slot(L, null); slot(R, cur); L.classList.add('av-none'); pn.textContent=(cur===0?'Cover':cur===seq.length-1?'Back cover':'Page '+cur); return; }
+    var s=spreads[si]; slot(L, s[0]); slot(R, s[1]);
+    setOverlay(s[0]!=null && isSpread(seq[s[0]]) ? s[0] : null);
+    book.classList.toggle('av-closed-l', s[0]==null); book.classList.toggle('av-closed-r', s[1]==null);
+    pn.textContent= si===0 ? 'Cover' : si===spreads.length-1 ? 'Back cover' : (isSpread(seq[s[0]])?'Spread, pages ':'Pages ')+s[0]+'–'+s[1]+' of '+(seq.length-2);
+  }
+  function stillClone(i){ var d=doc.createElement('div'); d.innerHTML= spreadish(i) ? halfHtml(i) : pageHtml(i,false); return d.firstChild; }
   function flip(dir, target){
     if(busy) return;
     if(single){
-      var nc= target!=null ? target : cur+dir; if(nc<0||nc>=seq.length) return;
-      busy=true; R.classList.add(dir>0?'av-out-l':'av-out-r');
+      var nc= target!=null ? target : cur+dir;
+      while(nc>0 && nc<seq.length-1 && skip(nc)) nc+= (target!=null ? (seq[nc].kind==='spreadR'?-1:1) : dir);
+      if(nc<0||nc>=seq.length||nc===cur) return;
+      busy=true; R.classList.add(dir>=0?'av-out-l':'av-out-r');
       setTimeout(function(){ cur=nc; R.classList.remove('av-out-l','av-out-r'); paint(); busy=false; }, 260);
       return;
     }
     var ns= target!=null ? target : si+dir; if(ns<0||ns>=spreads.length||ns===si) return;
     dir = ns>si?1:-1;
     busy=true;
+    setOverlay(null);   /* the sides already hold the spread as stills */
     var from=spreads[si], to=spreads[ns];
     var leaf=doc.createElement('div'); leaf.className='av-leaf '+(dir>0?'av-leaf-r':'av-leaf-l');
     var front=doc.createElement('div'); front.className='av-face av-front';
@@ -9500,15 +9597,14 @@ function atlasViewer(root, D){
     /* the page on the leaf's back lands on the far side; build it early, hidden under the leaf until it lands */
     var land= dir>0 ? L : R, li= dir>0 ? to[0] : to[1];
     var pre=null;
-    if(li!=null && seq[li] && seq[li].kind==='map'){ pre=doc.createElement('div'); pre.className='av-pre'; pre.innerHTML=pageHtml(li,true); land.appendChild(pre); mountMaps(pre); }
+    if(li!=null && seq[li] && seq[li].kind==='map' && !spreadish(li)){ pre=doc.createElement('div'); pre.className='av-pre'; pre.innerHTML=pageHtml(li,true); land.appendChild(pre); mountMaps(pre); }
     win.requestAnimationFrame(function(){ win.requestAnimationFrame(function(){ leaf.classList.add('av-turn'); }); });
     setTimeout(function(){
-      if(pre){ /* keep the already-loaded map: promote the hidden copy instead of rebuilding the side */
-        /* moving an iframe reloads it, so the hidden holder itself becomes the page */
+      if(pre){ /* keep the already-loaded map: moving an iframe reloads it, so the hidden holder itself becomes the page */
         Array.from(land.childNodes).forEach(function(n){ if(n!==pre) n.remove(); });
         pre.className='av-prehold';
-        land._i=li; land._set=true; land.classList.toggle('av-none', false);
-        land.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(){ go(+a.getAttribute('data-go')); }; });
+        land._k='p'+li; land.classList.toggle('av-none', false);
+        land.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(e){ e.preventDefault(); go(+a.getAttribute('data-go')); }; });
       }
       si=ns; paint(); leaf.remove(); busy=false; }, 760);
   }
@@ -9531,94 +9627,170 @@ function atlasViewer(root, D){
     if(x>0.9) flip(1); else if(x<0.1) flip(-1);
   });
   var wasSingle=null;
-  function resize(){ size(); if(wasSingle!==single){ if(single){ var s=spreads[si]; cur=s[1]!=null?s[1]:s[0]; } else { for(var q=0;q<spreads.length;q++){ if(spreads[q][0]===cur||spreads[q][1]===cur){ si=q; break; } } } wasSingle=single; paint(); } }
+  function resize(){ size(); if(wasSingle!==single){
+      L._k=null; R._k=null; SOV._k=null;
+      if(single){ var s=spreads[si]; cur=s[1]!=null?s[1]:s[0]; while(cur>0 && skip(cur)) cur--; }
+      else { for(var q=0;q<spreads.length;q++){ if(spreads[q][0]===cur||spreads[q][1]===cur){ si=q; break; } } }
+      wasSingle=single; paint(); } }
   win.addEventListener('resize', resize);
   resize(); paint();
   return {go:go};
 }
 const ATLAS_CSS=`
-.av-root{position:absolute;inset:0;font-family:Georgia,'Times New Roman',serif;color:#22293a;}
-.av-root.av-mode-book{background:radial-gradient(ellipse at center,#565b66 0%,#2c2f36 80%);overflow:hidden;}
+.av-root{--paper:#fbf8f1;--ink:#22293a;--head:#1f2f45;--rule:#d9d1bf;--muted:#8a826f;--cap:#5b5446;--accent:#2f6f6b;--quote:#c9b98f;--mapb:#cfc6b2;--dots:#a89f88;
+  --backdrop:radial-gradient(ellipse at center,#565b66 0%,#2c2f36 80%);--navink:#e8e4da;--navbtn:rgba(255,255,255,.12);--navbord:rgba(255,255,255,.25);
+  --font:Georgia,'Times New Roman',serif;--hfont:Georgia,'Times New Roman',serif;--ui:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;--hweight:400;
+  position:absolute;inset:0;font-family:var(--font);color:var(--ink);}
+/* ---- themes ---- */
+.av-th-modern{--paper:#ffffff;--ink:#1d2330;--head:#12665f;--rule:#e3e7ec;--muted:#8a94a3;--cap:#5d6776;--accent:#12837a;--quote:#12837a;--mapb:#dde2e8;--dots:#c3cad3;
+  --backdrop:linear-gradient(160deg,#eef1f5,#d9dfe7);--navink:#27313f;--navbtn:#ffffff;--navbord:#c9d1db;
+  --font:var(--ui);--hfont:var(--ui);--hweight:700;}
+.av-th-modern .av-h{border-bottom:none;padding-bottom:0;letter-spacing:-.01em;}
+.av-th-modern .av-h::after{content:"";display:block;width:2.2em;height:.16em;background:var(--accent);margin-top:.35em;border-radius:1px;}
+.av-th-modern .av-side{box-shadow:0 10px 30px rgba(40,55,80,.18);}
+.av-th-modern .av-cv-t{font-family:var(--ui);font-weight:800;letter-spacing:-.02em;}
+.av-th-notebook{--paper:#f3ead3;--ink:#2e2a22;--head:#3b3226;--rule:#b9a57c;--muted:#8c7a58;--cap:#6a5b40;--accent:#a3452c;--quote:#a3452c;--mapb:#9c8a66;--dots:#b9a57c;
+  --backdrop:radial-gradient(ellipse at center,#8a6a48 0%,#4a3522 85%);--navink:#f3ead3;
+  --hfont:'Bradley Hand','Segoe Print','Chalkboard SE','Comic Sans MS',cursive;--font:'Iowan Old Style',Georgia,serif;}
+.av-th-notebook .av-side,.av-th-notebook .av-face,.av-th-notebook .av-sov .av-pg{background-image:linear-gradient(rgba(120,150,180,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,180,.16) 1px,transparent 1px);background-size:1.6em 1.6em;}
+.av-th-notebook .av-h{border-bottom:2px solid var(--rule);font-size:2.5em;}
+.av-th-notebook .av-map,.av-th-notebook .av-media img{box-shadow:.25em .3em 0 rgba(60,40,20,.18);transform:rotate(-.4deg);}
+.av-th-notebook .av-pno{display:inline-block;border:2px solid var(--accent);color:var(--accent);border-radius:50%;min-width:2em;height:2em;line-height:1.8em;text-align:center;transform:rotate(-8deg);font-weight:700;}
+.av-th-notebook .av-cv-t{font-family:var(--hfont);}
+.av-th-noir{--paper:#1d2026;--ink:#e4dfd3;--head:#e2c078;--rule:#3a3f48;--muted:#8b8f98;--cap:#b9b3a6;--accent:#e2c078;--quote:#e2c078;--mapb:#6c717b;--dots:#555a63;
+  --backdrop:radial-gradient(ellipse at center,#23262c 0%,#07080a 80%);--navink:#e4dfd3;}
+.av-th-noir .av-map{padding:3px;background:#2a2e35;}
+.av-th-noir .av-l::after{background:linear-gradient(to left,rgba(0,0,0,.45),rgba(0,0,0,0));} .av-th-noir .av-r::after{background:linear-gradient(to right,rgba(0,0,0,.5),rgba(0,0,0,0));}
+.av-th-noir .av-cv-t{letter-spacing:.04em;}
+.av-th-retro{--paper:#f4f1e6;--ink:#1b2a4a;--head:#1b2a4a;--rule:#1b2a4a;--muted:#5d6b85;--cap:#3c4c6b;--accent:#2f7d78;--quote:#f2b84b;--mapb:#1b2a4a;--dots:#8a96ad;
+  --backdrop:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,#24365e 0%,#0f1830 85%);--navink:#bfe0db;--navbtn:rgba(47,125,120,.25);--navbord:#2f7d78;
+  --font:'IBM Plex Mono','Courier New',ui-monospace,monospace;--hfont:'Orbitron','Eurostile','Arial Black',sans-serif;--hweight:700;}
+.av-th-retro .av-h{font-size:1.9em;text-transform:uppercase;letter-spacing:.06em;border-bottom:3px double var(--rule);}
+.av-th-retro .av-inner{padding-top:5%;}
+.av-th-retro .av-win{display:flex;align-items:center;gap:.6em;margin:0 0 1.2em;padding:.3em .6em;background:#1b2a4a;color:#bfe0db;font:700 .95em var(--font);letter-spacing:.05em;border:2px solid #1b2a4a;box-shadow:.25em .25em 0 #2f7d78;}
+.av-th-retro .av-win-d{display:flex;gap:.3em;} .av-th-retro .av-win-d i{width:.7em;height:.7em;border-radius:50%;background:#f2b84b;display:block;} .av-th-retro .av-win-d i+i{background:#2f7d78;} .av-th-retro .av-win-d i+i+i{background:#e8e4da;}
+.av-th-retro .av-win-t{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;} .av-th-retro .av-win-n{color:#f2b84b;}
+.av-th-retro .av-map,.av-th-retro .av-media img{border:2px solid #1b2a4a;box-shadow:.3em .3em 0 #1b2a4a;}
+.av-th-retro .av-foot{font-family:var(--font);color:var(--accent);}
+.av-th-retro .av-cover{background-image:linear-gradient(rgba(191,224,219,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(191,224,219,.08) 1px,transparent 1px);background-size:2.4em 2.4em;}
+.av-th-retro .av-cv-t{font-family:var(--hfont);text-transform:uppercase;letter-spacing:.04em;text-shadow:0 0 .35em rgba(191,224,219,.55);}
+.av-th-retro .av-cv-a{font-family:var(--font);}
+.av-caret{display:inline-block;margin-left:.1em;color:#f2b84b;animation:av-blink 1.1s steps(1) infinite;}
+@keyframes av-blink{50%{opacity:0;}}
+.av-th-retro .av-toc-r b{font-family:var(--font);color:var(--accent);}
+.av-win{display:none;} .av-th-retro .av-win{display:flex;}
+/* ---- book ---- */
+.av-root.av-mode-book{background:var(--backdrop);overflow:hidden;}
 .av-stage{position:absolute;inset:0 0 54px 0;display:flex;align-items:center;justify-content:center;perspective:2600px;}
 .av-book{position:relative;display:flex;transform-style:preserve-3d;}
-.av-side{flex:1;position:relative;height:100%;background:#fbf8f1;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);}
+.av-side{flex:1;position:relative;height:100%;background-color:var(--paper);overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);}
 .av-l{border-radius:4px 0 0 4px;} .av-r{border-radius:0 4px 4px 0;}
 .av-l::after{content:"";position:absolute;inset:0 0 0 auto;width:12%;background:linear-gradient(to left,rgba(0,0,0,.18),rgba(0,0,0,0));pointer-events:none;z-index:3;}
 .av-r::after{content:"";position:absolute;inset:0 auto 0 0;width:12%;background:linear-gradient(to right,rgba(0,0,0,.2),rgba(0,0,0,0));pointer-events:none;z-index:3;}
 .av-side.av-none{background:transparent;box-shadow:none;} .av-side.av-none::after{display:none;}
-.av-spine{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(0,0,0,.25);z-index:4;pointer-events:none;}
+.av-spine{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(0,0,0,.25);z-index:6;pointer-events:none;}
 .av-closed-l .av-spine,.av-closed-r .av-spine,.av-single .av-spine{display:none;}
 .av-single .av-l{display:none;} .av-single .av-r{border-radius:4px;} .av-single .av-r::after{display:none;}
 .av-r.av-out-l{transition:transform .25s,opacity .25s;transform:translateX(-30px);opacity:0;}
 .av-r.av-out-r{transition:transform .25s,opacity .25s;transform:translateX(30px);opacity:0;}
+/* a two-page spread lies across both pages; the gutter shading stays on top so it still reads as a bound book */
+.av-sov{position:absolute;inset:0;z-index:4;display:none;border-radius:4px;overflow:hidden;}
+.av-has-spread .av-sov{display:block;}
+.av-sov .av-pg{background-color:var(--paper);}
+.av-gutter{position:absolute;top:0;bottom:0;left:44%;width:12%;z-index:5;pointer-events:none;display:none;
+  background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 38%,rgba(0,0,0,.28) 49.5%,rgba(0,0,0,.28) 50.5%,rgba(0,0,0,.12) 62%,rgba(0,0,0,0) 100%);}
+.av-has-spread .av-gutter{display:block;}
+.av-half{position:absolute;top:0;bottom:0;width:200%;} .av-half-l{left:0;} .av-half-r{left:-100%;}
+.av-spreadpg{padding:3.4em 3.6em 4.6em;} .av-half .av-still span{display:none;}
+.av-spreadpg .av-map,.av-spreadpg .av-media{flex:1 1 auto;}
+.av-sp-below{display:flex;gap:4%;align-items:flex-start;max-height:22%;overflow:auto;}
+.av-sp-below .av-cap{flex:0 0 40%;margin-top:.8em;} .av-sp-below .av-text{flex:1;}
+.av-foot2 span:nth-child(2){flex:1;text-align:center;}
+.av-single .av-spreadpg{padding:7% 8% 9%;}
 .av-pg{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
 .av-inner{padding:7% 8% 9%;}
-.av-h{font-size:2.3em;font-weight:400;margin:0 0 .6em;letter-spacing:.01em;color:#1f2f45;border-bottom:1px solid #d9d1bf;padding-bottom:.35em;}
+.av-h{font-family:var(--hfont);font-size:2.3em;font-weight:var(--hweight);margin:0 0 .6em;letter-spacing:.01em;color:var(--head);border-bottom:1px solid var(--rule);padding-bottom:.35em;}
 .av-media{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;}
 .av-media img{max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:zoom-in;}
-.av-map{border:1px solid #cfc6b2;background:#e8ecef;align-items:stretch;}
+.av-map{border:1px solid var(--mapb);background:#e8ecef;align-items:stretch;}
 .av-map iframe{border:0;width:100%;height:100%;display:block;position:relative;z-index:1;opacity:0;transition:opacity .3s;}
 .av-map iframe.av-on{opacity:1;}
-.av-map img.av-mstill{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;box-shadow:none;border:0;margin:0;cursor:default;}
+.av-map img.av-mstill{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;box-shadow:none;border:0;margin:0;cursor:default;transform:none;}
 .av-pre{position:absolute;inset:0;z-index:0;visibility:hidden;}
 .av-prehold{position:absolute;inset:0;}
-.av-still{align-items:center;color:#667;font:600 1.2em -apple-system,Segoe UI,sans-serif;}
-.av-still img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;box-shadow:none;opacity:.9;}
+.av-still{align-items:center;color:#667;font:600 1.2em var(--ui);}
+.av-still img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;box-shadow:none;opacity:.9;transform:none;border:0;}
 .av-still span{position:relative;background:rgba(255,255,255,.85);padding:.3em .8em;border-radius:1em;}
-.av-cap{font-size:1.15em;font-style:italic;color:#5b5446;margin:.5em 0 0;}
+.av-cap{font-size:1.15em;font-style:italic;color:var(--cap);margin:.5em 0 0;}
 .av-text{font-size:1.35em;line-height:1.55;margin-top:.8em;overflow:auto;}
 .av-split .av-media{flex:1 1 58%;} .av-split .av-text{flex:0 1 auto;max-height:38%;}
 .av-k-text .av-text{margin-top:0;flex:1;}
-.av-text h2{font-size:1.5em;font-weight:400;margin:.6em 0 .3em;} .av-text h3{font-size:1.2em;margin:.6em 0 .3em;}
-.av-text p{margin:0 0 .7em;} .av-text blockquote{margin:.6em 0;padding-left:1em;border-left:3px solid #c9b98f;color:#5b5446;font-style:italic;}
-.av-text a{color:#2f6f6b;}
-.av-foot{position:absolute;left:8%;right:8%;bottom:3.2%;display:flex;justify-content:space-between;font:1em -apple-system,Segoe UI,sans-serif;color:#8a826f;letter-spacing:.04em;}
-.av-l .av-foot{flex-direction:row-reverse;}
+.av-text h2{font-family:var(--hfont);font-size:1.5em;font-weight:var(--hweight);margin:.6em 0 .3em;color:var(--head);} .av-text h3{font-size:1.2em;margin:.6em 0 .3em;}
+.av-text p{margin:0 0 .7em;} .av-text blockquote{margin:.6em 0;padding-left:1em;border-left:3px solid var(--quote);color:var(--cap);font-style:italic;}
+.av-text a{color:var(--accent);}
+.av-foot{position:absolute;left:8%;right:8%;bottom:3.2%;display:flex;justify-content:space-between;align-items:center;font:1em var(--ui);color:var(--muted);letter-spacing:.04em;}
+.av-spreadpg .av-foot{left:4%;right:4%;}
+.av-l .av-foot{flex-direction:row-reverse;} .av-l .av-foot2,.av-half .av-foot2{flex-direction:row;}
 .av-cover{background-size:cover;background-position:center;color:#fff;justify-content:flex-end;}
 .av-cover.has-img::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.08) 60%);}
 .av-cv-in{position:relative;padding:10% 9% 14%;}
-.av-cv-t{font-size:4.2em;line-height:1.05;letter-spacing:.01em;}
+.av-cv-t{font-family:var(--hfont);font-size:4.2em;line-height:1.05;letter-spacing:.01em;}
 .av-cv-s{font-size:1.9em;margin-top:.5em;opacity:.9;font-style:italic;}
-.av-cv-a{font:600 1.3em -apple-system,Segoe UI,sans-serif;margin-top:2.2em;letter-spacing:.08em;text-transform:uppercase;opacity:.85;}
+.av-cv-a{font:600 1.3em var(--ui);margin-top:2.2em;letter-spacing:.08em;text-transform:uppercase;opacity:.85;}
 .av-cover::after{content:"";position:absolute;left:4%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.18);}
 .av-back{color:#fff;justify-content:flex-end;}
-.av-bk-in{padding:10% 9%;font:1.2em -apple-system,Segoe UI,sans-serif;opacity:.9;}
-.av-brand{display:flex;align-items:center;gap:.5em;font:600 1em -apple-system,Segoe UI,sans-serif;opacity:.85;}
+.av-bk-in{padding:10% 9%;font:1.2em var(--ui);opacity:.9;}
+.av-brand{display:flex;align-items:center;gap:.5em;font:600 1em var(--ui);opacity:.85;}
+.av-toc-img{flex:0 1 auto;max-height:28%;margin:0 0 .8em;display:flex;} .av-toc-img img{max-width:100%;max-height:100%;object-fit:cover;border-radius:2px;}
+.av-toc-txt{flex:0 1 auto;margin:0 0 .9em;max-height:24%;}
 .av-toc{font-size:1.4em;display:flex;flex-direction:column;gap:.35em;overflow:auto;}
-.av-toc-r{display:flex;align-items:baseline;gap:.4em;cursor:pointer;color:#22293a;text-decoration:none;}
-.av-toc-r i{flex:1;border-bottom:1px dotted #a89f88;transform:translateY(-.25em);}
-.av-toc-r:hover span{color:#2f6f6b;text-decoration:underline;}
+.av-toc-r{display:flex;align-items:baseline;gap:.4em;cursor:pointer;color:var(--ink);text-decoration:none;}
+.av-toc-r i{flex:1;border-bottom:1px dotted var(--dots);transform:translateY(-.25em);}
+.av-toc-r:hover span{color:var(--accent);text-decoration:underline;}
 .av-leaf{position:absolute;top:0;width:50%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.45,.05,.3,1);z-index:10;}
 .av-leaf-r{left:50%;transform-origin:left center;} .av-leaf-l{left:0;transform-origin:right center;}
 .av-leaf-r.av-turn{transform:rotateY(-180deg);} .av-leaf-l.av-turn{transform:rotateY(180deg);}
-.av-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fbf8f1;overflow:hidden;}
+.av-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background-color:var(--paper);overflow:hidden;}
 .av-face.av-none{background:transparent;}
 .av-backf{transform:rotateY(180deg);}
 .av-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,rgba(0,0,0,.25),rgba(0,0,0,0) 40%);opacity:0;transition:opacity .75s;}
 .av-turn .av-shade{opacity:.6;}
-.av-nav{position:absolute;left:0;right:0;bottom:0;height:54px;display:flex;align-items:center;justify-content:center;gap:14px;color:#e8e4da;font:13px -apple-system,Segoe UI,sans-serif;}
-.av-nav button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:18px;min-width:36px;height:32px;font-size:18px;cursor:pointer;}
-.av-nav button:hover{background:rgba(255,255,255,.25);}
+.av-nav{position:absolute;left:0;right:0;bottom:0;height:54px;display:flex;align-items:center;justify-content:center;gap:14px;color:var(--navink);font:13px var(--ui);}
+.av-nav button{background:var(--navbtn);border:1px solid var(--navbord);color:var(--navink);border-radius:18px;min-width:36px;height:32px;font-size:18px;cursor:pointer;}
+.av-nav button:hover{filter:brightness(1.15);}
 .av-pn{min-width:150px;text-align:center;}
 .av-zoom{position:fixed;inset:0;background:rgba(10,12,16,.92);display:flex;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;}
 .av-zoom img{max-width:96vw;max-height:94vh;}
 .av-zx{position:absolute;top:14px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
-.av-root.av-mode-scroll{overflow:auto;background:#fbf8f1;}
-.av-snav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 22px;background:rgba(251,248,241,.94);border-bottom:1px solid #e3dccb;font:13px -apple-system,Segoe UI,sans-serif;}
-.av-sbrand{font-family:Georgia,serif;font-size:16px;}
-.av-sjump{font:13px -apple-system,Segoe UI,sans-serif;padding:4px 6px;}
-.av-s{max-width:980px;margin:0 auto;padding:60px 26px 40px;font-size:16px;}
+/* ---- scrolling ---- */
+.av-root.av-mode-scroll{overflow:auto;background:var(--paper);scroll-behavior:smooth;}
+.av-th-notebook.av-mode-scroll{background-image:linear-gradient(rgba(120,150,180,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,180,.14) 1px,transparent 1px);background-size:26px 26px;}
+.av-snav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:0 18px;height:48px;background:var(--paper);border-bottom:1px solid var(--rule);font:13px var(--ui);box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.av-sbrand{font-family:var(--hfont);font-weight:var(--hweight);font-size:16px;color:var(--head);white-space:nowrap;max-width:28%;overflow:hidden;text-overflow:ellipsis;flex:none;}
+.av-tabs{flex:1;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;height:100%;align-items:stretch;}
+.av-tabs::-webkit-scrollbar{display:none;}
+.av-tab{flex:none;background:none;border:none;border-bottom:3px solid transparent;padding:0 12px;font:13px var(--ui);color:var(--muted);cursor:pointer;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;}
+.av-tab:hover{color:var(--ink);} .av-tab.on{color:var(--head);border-bottom-color:var(--accent);font-weight:600;}
+.av-sprog{position:absolute;left:0;right:0;bottom:-1px;height:2px;} .av-sprog i{display:block;height:100%;width:0;background:var(--accent);}
+.av-sarrows{position:fixed;right:18px;bottom:18px;z-index:25;display:flex;flex-direction:column;gap:6px;}
+.av-sarrows button{width:40px;height:40px;border-radius:50%;border:1px solid var(--rule);background:var(--paper);color:var(--head);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.av-sarrows button:hover{filter:brightness(.95);}
+.av-s{max-width:980px;margin:0 auto;padding:60px 26px 40px;font-size:16px;scroll-margin-top:48px;}
+.av-s.av-sfull{max-width:1400px;} .av-s.av-sfull .av-map{height:82vh;}
 .av-s .av-h{font-size:34px;}
 .av-s .av-media{height:auto;} .av-s .av-media img{max-height:82vh;}
 .av-s .av-map{height:70vh;}
 .av-s .av-text{font-size:18px;max-width:720px;}
-.av-s.av-scover{max-width:none;padding:0;height:calc(100vh - 46px);position:relative;font-size:18px;}
+.av-s .av-toc{font-size:19px;max-width:720px;} .av-s .av-toc-img img{max-height:320px;}
+.av-s .av-win{font-size:14px;}
+.av-s.av-scover{max-width:none;padding:0;height:calc(100vh - 48px);position:relative;font-size:18px;}
 .av-s.av-scover .av-pg{position:absolute;}
-.av-down{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font-size:26px;opacity:.8;}
+.av-down{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font-size:26px;opacity:.85;background:none;border:none;cursor:pointer;}
 .av-s.av-sback{max-width:none;padding:0;height:200px;position:relative;font-size:16px;}
-.av-sbt{position:absolute;left:26px;top:30px;right:26px;color:#fff;font:15px -apple-system,Segoe UI,sans-serif;opacity:.9;}
+.av-sbt{position:absolute;left:26px;top:30px;right:26px;color:#fff;font:15px var(--ui);opacity:.9;}
 .av-s.av-sback .av-brand{position:absolute;left:26px;bottom:22px;color:#fff;}
-@media print{ .av-nav,.av-snav{display:none;} }
+@media (max-width:640px){ .av-sbrand{display:none;} .av-snav{padding:0 8px;} }
+@media print{ .av-nav,.av-snav,.av-sarrows{display:none;} }
 `;
 
 /* ================= ATLAS (v47) =================
@@ -9628,7 +9800,22 @@ const ATLAS_CSS=`
 let atlas=null, atSel='cover';
 const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}};
 const AT_IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
-function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, pages:[]}; }
+function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', pages:[]}; }
+const AT_THEMES=[
+  {k:'classic', n:'Classic', d:'Cream paper, serif type', paper:'#fbf8f1', ink:'#1f2f45', bg:'#3a3e46', acc:'#c9b98f'},
+  {k:'modern', n:'Modern', d:'White pages, clean sans-serif', paper:'#ffffff', ink:'#12665f', bg:'#dfe4ea', acc:'#12837a'},
+  {k:'notebook', n:'Field notebook', d:'Graph paper, handwritten headings', paper:'#f3ead3', ink:'#3b3226', bg:'#6b4f33', acc:'#a3452c'},
+  {k:'noir', n:'Atlas noir', d:'Dark pages, gold accents', paper:'#1d2026', ink:'#e2c078', bg:'#0b0c0f', acc:'#e2c078'},
+  {k:'retro', n:'Map-O-Matic retro', d:'Terminal windows, monospace, scanlines', paper:'#f4f1e6', ink:'#1b2a4a', bg:'#1b2a4a', acc:'#2f7d78'}];
+const AT_SPREAD={map:1, layout:1, image:1};
+/* page numbers as the book reader will show them (spreads start on a left page) */
+function atNumbers(){
+  const m={}; if(!atlas) return m;
+  let n=(atlas.contents&&atlas.pages.length)?1:0; const book=atlas.mode!=='scroll';
+  atlas.pages.forEach(p=>{ const sp=book && p.spread && AT_SPREAD[p.kind]; if(sp && (n+1)%2===0) n++; n++; m[p.id]=sp?[n,n+1]:[n]; if(sp) n++; });
+  return m;
+}
+function atPageLabel(p){ const n=atNumbers()[p.id]; return n ? (n.length>1?'pages '+n[0]+'–'+n[1]:'page '+n[0]) : ''; }
 /* rich text: keep a small set of tags and safe links only */
 function sanitizeRich(html){
   const ok={P:1,H2:1,H3:1,B:1,STRONG:1,I:1,EM:1,U:1,UL:1,OL:1,LI:1,A:1,BR:1,BLOCKQUOTE:1,DIV:1};
@@ -9656,11 +9843,13 @@ function atSanitize(a){
   out.coverColor=/^#[0-9a-f]{6}$/i.test(a.coverColor||'')?a.coverColor:'#1f3b57';
   out.coverImage=AT_IMG.test(a.coverImage||'')?a.coverImage:'';
   out.mode=a.mode==='scroll'?'scroll':'book'; out.contents=a.contents!==false;
+  out.theme=AT_THEMES.some(t=>t.k===a.theme)?a.theme:'classic';
+  out.contentsTitle=s(a.contentsTitle,120)||'Contents'; out.contentsText=sanitizeRich(a.contentsText); out.contentsImage=AT_IMG.test(a.contentsImage||'')?a.contentsImage:'';
   out.pages=(Array.isArray(a.pages)?a.pages:[]).slice(0,200).map(p=>{
     if(!p || !AT_KINDS[p.kind]) return null;
     return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
       src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'',
-      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
+      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
   }).filter(Boolean);
   return out;
 }
@@ -9716,10 +9905,10 @@ function renderAtlas(){
 }
 function renderAtList(){
   const box=document.getElementById('atList');
-  let pn=atlas.contents&&atlas.pages.length?2:1;
+  const nums=atNumbers();
   box.innerHTML='<button class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></button>'+
-    (atlas.contents&&atlas.pages.length?'<div class="at-item at-auto"><div class="at-th"><span>☰</span></div><div class="at-meta"><b>Contents</b><span>page 1 · made automatically</span></div></div>':'')+
-    atlas.pages.map((p,i)=>'<button class="at-item'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" draggable="true" data-i="'+i+'"><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>page '+(pn+i)+' · '+AT_KINDS[p.kind].label+'</span></div></button>').join('')+
+    (atlas.contents&&atlas.pages.length?'<button class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div></button>':'')+
+    atlas.pages.map((p,i)=>'<button class="at-item'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" draggable="true" data-i="'+i+'"><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+(nums[p.id]?(nums[p.id].length>1?'pages '+nums[p.id].join('–')+' · spread':'page '+nums[p.id][0]):'')+' · '+AT_KINDS[p.kind].label+'</span></div></button>').join('')+
     (atlas.pages.length?'':'<p class="kv">No pages yet. Add one below.</p>');
   let from=null;
   box.querySelectorAll('.at-item[data-id]').forEach(b=>{
@@ -9755,6 +9944,7 @@ function renderAtBody(){
     body.innerHTML='<div class="at-cvprev" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"><div><div class="t">'+esc(atlas.title)+'</div>'+(atlas.subtitle?'<div class="s">'+esc(atlas.subtitle)+'</div>':'')+(atlas.author?'<div class="a">'+esc(atlas.author)+'</div>':'')+'</div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right.</p>';
     return;
   }
+  if(atSel==='contents'){ renderAtContents(body); return; }
   const p=atCur(); if(!p){ atSel='cover'; renderAtBody(); return; }
   const i=atlas.pages.indexOf(p);
   let media='';
@@ -9767,13 +9957,14 @@ function renderAtBody(){
   const act = p.kind==='map' ? '<div class="at-mapopts">'+(p.snap&&p.snap.proj?'':'<label class="fc-lbl" style="margin:0">Basemap<select id="atBm">'+bmOpts+'</select></label>')+
       '<label class="fc-chk2" style="margin:0 0 6px"><input type="checkbox" id="atLg"'+(p.legend?' checked':'')+'> Legend button<span class="kv" style="margin:0 0 0 4px">(readers open and close it)</span></label></div>'+
       '<div class="at-acts"><button class="btn small" id="atRecap" title="Replace this page\'s map with the layers and view in Map Maker now">↻ Update from Map Maker</button><button class="btn small light" id="atShowMk" title="Open Map Maker at this page\'s view with its layers switched on">🧭 Show in Map Maker</button>'+
-      '<span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString()+' · ':'')+vKind+swTxt+nL+' layer'+(nL===1?'':'s')+'. Tip: in Map Maker, <b>Send to ▾ → Atlas</b> adds each new view as a page.</span></div>'
+      '<span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString()+' · ':'')+vKind+swTxt+nL+' layer'+(nL===1?'':'s')+'. Tip: in Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds each new view as a page.</span></div>'
     : p.kind==='layout' ? '<div class="at-acts"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. Readers can click it to enlarge.</span></div>'
     : p.kind==='image' ? '<div class="at-acts"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div>' : '';
   body.innerHTML='<div class="at-ed">'+
     '<div class="at-row"><label class="fc-lbl" style="flex:1">Page title<input type="text" id="atPTitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+'"></label>'+
     '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light" id="atDel">Delete page</button></div></div>'+
     media+act+
+    (AT_SPREAD[p.kind]?'<label class="fc-chk2 at-spchk"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'> <b>Full spread</b><span class="kv" style="margin:0 0 0 6px">fills both facing pages in Book style (starts on a left page; a blank page is added if needed)</span></label>':'')+
     (p.kind!=='text'?'<label class="fc-lbl">Caption (optional)<input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>':'')+
     '<div class="fc-lbl">'+(p.kind==='text'?'Text':'Text on this page (optional)')+'</div><div id="atRich"></div></div>';
   const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
@@ -9784,6 +9975,7 @@ function renderAtBody(){
   const smk=document.getElementById('atShowMk'); if(smk) smk.onclick=()=>atShowInMaker(p);
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
   const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
+  const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); };
   atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
   document.getElementById('atUp').onclick=()=>{ atlas.pages.splice(i-1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
@@ -9794,6 +9986,21 @@ function renderAtBody(){
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
   if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
 }
+function renderAtContents(body){
+  body.innerHTML='<div class="at-ed">'+
+    '<label class="fc-lbl">Page title<input type="text" id="atCtT" maxlength="120" value="'+esc(atlas.contentsTitle||'Contents')+'"></label>'+
+    '<div class="fc-lbl">Image (optional)</div><div class="at-acts">'+(atlas.contentsImage?'<img class="at-ctimg" src="'+atlas.contentsImage+'" alt="">':'')+
+      '<button class="btn small light" id="atCtImg">'+(atlas.contentsImage?'⬆ Replace image':'⬆ Add image')+'</button>'+(atlas.contentsImage?'<button class="btn small light" id="atCtX">Remove</button>':'')+'<input type="file" id="atCtIn" accept="image/*" hidden></div>'+
+    '<div class="fc-lbl">Introduction (optional)</div><div id="atRich"></div>'+
+    '<div class="at-ctprev"><div class="fc-lbl">The list of pages</div>'+atlas.pages.map(q=>'<div class="at-ctrow"><span>'+esc(q.title||AT_KINDS[q.kind].label)+'</span><i></i><b>'+(atNumbers()[q.id]||[]).join('–')+'</b></div>').join('')+
+    '<p class="kv">The list is made automatically from the page titles and numbers. Each entry jumps to its page.</p></div></div>';
+  document.getElementById('atCtT').oninput=e=>{ atlas.contentsTitle=e.target.value; atDirty(); renderAtList(); };
+  const fi=document.getElementById('atCtIn');
+  document.getElementById('atCtImg').onclick=()=>fi.click();
+  fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.contentsImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
+  const x=document.getElementById('atCtX'); if(x) x.onclick=()=>{ atlas.contentsImage=''; atDirty(); renderAtlas(); };
+  atRichEditor(document.getElementById('atRich'), atlas.contentsText, v=>{ atlas.contentsText=v; atDirty(); });
+}
 function renderAtSettings(){
   const box=document.getElementById('atSettings');
   box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Atlas</h3>'+
@@ -9803,6 +10010,7 @@ function renderAtSettings(){
     '<h3 class="fc-h">Cover</h3><div class="at-cvrow"><label class="fc-lbl">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"></label>'+
     '<div class="fc-lbl">Image<div class="at-cvbtns"><button class="btn small light" id="atCvImg">'+(atlas.coverImage?'Replace':'Add image')+'</button>'+(atlas.coverImage?'<button class="btn small light" id="atCvX">Remove</button>':'')+'<input type="file" id="atCvIn" accept="image/*" hidden></div></div></div>'+
     '<label class="fc-lbl">Back cover text (optional)<input type="text" id="atBk" maxlength="400" value="'+esc(atlas.backText)+'"></label>'+
+    '<h3 class="fc-h">Design</h3><div class="at-themes">'+AT_THEMES.map(t=>'<button type="button" class="at-theme'+(atlas.theme===t.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.d)+'"><span class="at-tsw" style="background:'+t.bg+'"><i style="background:'+t.paper+';border-color:'+t.acc+'"><b style="background:'+t.ink+'"></b><u style="background:'+t.acc+'"></u></i></span><span class="at-tn">'+esc(t.n)+'<small>'+esc(t.d)+'</small></span></button>').join('')+'</div>'+
     '<h3 class="fc-h">Reading</h3><div class="at-modes">'+
       '<label><input type="radio" name="atMode" value="book"'+(atlas.mode==='book'?' checked':'')+'> 📖 Book<span>Turn pages in two-page spreads, like a printed atlas</span></label>'+
       '<label><input type="radio" name="atMode" value="scroll"'+(atlas.mode==='scroll'?' checked':'')+'> ↕ Scrolling<span>One long page, section after section</span></label></div>'+
@@ -9817,7 +10025,8 @@ function renderAtSettings(){
   document.getElementById('atCvImg').onclick=()=>ci.click();
   ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
   const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
-  document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); });
+  document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); renderAtList(); });
+  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
   document.getElementById('atToc').onchange=e=>{ atlas.contents=e.target.checked; atDirty(); renderAtList(); };
   document.getElementById('atPrev').onclick=atPreview;
   document.getElementById('atExport').onclick=atExport;
@@ -9885,14 +10094,14 @@ function atShowInMaker(p){
     if(projActive){ const sel=document.getElementById('mkProjection'); sel.value='mercator-edit'; setProjectionMode('mercator-edit'); }
     setTimeout(()=>{ mkMap.invalidateSize(); const v=p.snap.view; if(v.b) mkMap.fitBounds(v.b,{animate:false}); else mkMap.setView(v.c,v.z,{animate:false}); reSwipe(); }, 90);
   }
-  toast('Map Maker is showing “'+(p.title||'this page')+'”. Change it, then Send to ▾ → Atlas → Update this page.', 5000);
+  toast('Map Maker is showing “'+(p.title||'this page')+'”. Change it, then Send / Export ▾ → Update an atlas map page.', 5000);
 }
 /* Map Maker's Send to ▾ → Atlas: add the current view as a new page, or replace a page's map */
 async function atSendFromMaker(targetId){
   if(!atlas){ atlas=atDefault(); const rec=projectsCache.find(r=>r.id===currentProjectId); if(rec&&rec.name) atlas.title=rec.name; mlog('compose','Started the atlas "'+atlas.title+'".'); }
   if(targetId){
     const p=atlas.pages.find(q=>q.id===targetId); if(!p) return;
-    if(await atCaptureMap(p, null, true)){ atSel=p.id; toast('Updated atlas page '+(atlas.pages.indexOf(p)+(atlas.contents?2:1))+', “'+(p.title||'Map')+'”, with this view.', 4000); }
+    if(await atCaptureMap(p, null, true)){ atSel=p.id; toast('Updated atlas '+atPageLabel(p)+', “'+(p.title||'Map')+'”, with this view.', 4000); }
     return;
   }
   const l0=mkLayers.find(l=>l.visible);
@@ -9901,8 +10110,7 @@ async function atSendFromMaker(targetId){
   const p={id:uid(), kind:'map', title:same?base+' ('+(same+1)+')':base, caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null};
   if(!(await atCaptureMap(p, null, true))) return;
   atlas.pages.push(p); atSel=p.id; atDirty();
-  const n=atlas.pages.length+(atlas.contents?1:0);
-  toast('Added to the atlas as page '+n+', “'+p.title+'”. Pan, zoom or restyle and send again for the next page.', 5000);
+  toast('Added to the atlas as '+atPageLabel(p)+', “'+p.title+'”. Pan, zoom or restyle and send again for the next page.', 5000);
 }
 async function atCaptureLayout(p){
   if(!canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ toast('The Composer page is empty. Lay out a map there first.', 3500); return false; }
@@ -9936,6 +10144,7 @@ function buildAtlasHtml(a0){
   const fav=document.querySelector('link[rel="icon"]');
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
     '<title>'+esc(a.title||'Atlas')+'</title>'+(fav?'<link rel="icon" type="image/svg+xml" href="'+esc(fav.getAttribute('href'))+'">':'')+
+    (a.theme==='retro'?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap">':'')+
     '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
     '<script>\n'+atlasViewer.toString()+'\natlasViewer(document.getElementById("atlas"), '+data+');\n<\/script></body></html>';
 }
@@ -10003,6 +10212,8 @@ function projViewer(D){
     ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
     var p=build(), path=d3.geoPath(p, ctx);
+    ctx.save();
+    if(P.inter){ ctx.beginPath(); path({type:'Sphere'}); ctx.clip(); }   /* keep everything inside the lobes */
     if(P.sphere){
       ctx.beginPath(); path({type:'Sphere'}); ctx.fillStyle='#f2f6fa'; ctx.fill();
       if(land){ ctx.beginPath(); path(P.inter?stitch(land):land); ctx.fillStyle='#e4e7dd'; ctx.fill(); ctx.strokeStyle='#cdd2c4'; ctx.lineWidth=0.5; ctx.stroke(); }
@@ -10065,6 +10276,8 @@ function projViewer(D){
       }
       ctx.restore();
     });
+    ctx.restore();
+    if(P.inter && P.sphere){ ctx.beginPath(); path({type:'Sphere'}); ctx.strokeStyle='#5a6e8c'; ctx.lineWidth=1.2; ctx.stroke(); }
     if(SW && bar) bar.style.left=Math.round(sx)+'px';
   }
   var raf=0; function redraw(){ if(!raf) raf=requestAnimationFrame(function(){ raf=0; draw(); }); }
@@ -10786,55 +10999,55 @@ async function atSendLayout(targetId){
   atSel=p.id;
   toast('Added the layout to the atlas as page '+pn(p)+', “'+p.title+'”.', 4500);
 }
-(function(){
-  const btn=document.getElementById('btnLoAtlas'), m=document.getElementById('loAtlasMenu'); if(!btn) return;
-  const close=()=>m.classList.add('hidden');
-  btn.onclick=e=>{
-    e.stopPropagation(); if(!m.classList.contains('hidden')){ close(); return; }
-    const lays=atlas?atlas.pages.filter(p=>p.kind==='layout'):[];
-    const pn=p=>atlas.pages.indexOf(p)+(atlas.contents?2:1);
-    m.innerHTML='<button data-go="new" role="menuitem">📖 New atlas page<small>Add this layout as the next page</small></button>'+
-      (lays.length?'<div class="tg">Update a layout page</div>'+lays.map(p=>'<button data-upd="'+p.id+'" role="menuitem">↻ '+esc(p.title||'Map layout')+'<small>page '+pn(p)+'</small></button>').join(''):'')+
-      (atlas?'<button data-go="open" role="menuitem">Open the Atlas ›</button>':'');
-    m.classList.remove('hidden');
+
+
+/* Send / Export ▾ — one menu in the top bar for every module. What can be
+   sent depends on the module; updating an existing atlas page is tucked into
+   a fold-out list so the menu stays short. */
+function renderTopMenu(){
+  const m=document.getElementById('exportMenuList'), mod=window.curModule||'home';
+  const it=(go,label,sub,extra)=>'<button data-go="'+go+'" role="menuitem"'+(extra||'')+'>'+label+(sub?'<small>'+sub+'</small>':'')+'</button>';
+  let h='';
+  const fold=(kind,label)=>{
+    const ps=atlas?atlas.pages.filter(p=>p.kind===kind):[]; if(!ps.length) return '';
+    return '<button class="sm-exp" data-exp="1" aria-expanded="false" role="menuitem">↻ '+label+' <span class="sm-n">'+ps.length+'</span><span class="sm-car">▸</span></button>'+
+      '<div class="sm-pages hidden">'+ps.map(p=>'<div class="sm-page"><span class="sm-th">'+(AT_IMG.test((kind==='map'?p.thumb:p.src)||'')?'<img src="'+(kind==='map'?p.thumb:p.src)+'" alt="">':(kind==='map'?'🧭':'▣'))+'</span><span class="sm-pt"><b>'+esc(p.title||'Map')+'</b><small>'+atPageLabel(p)+'</small></span>'+
+        (kind==='map'?'<button class="btn small light" data-show="'+p.id+'" title="Go back to this page\'s view and layers">View</button>':'')+'<button class="btn small" data-upd="'+p.id+'" data-k="'+kind+'" title="Replace this page with what is on screen now">Update</button></div>').join('')+
+      '<button class="sm-foot" data-go="atlas-open">Open the Atlas ›</button></div>';
   };
-  document.addEventListener('click', e=>{ if(!m.contains(e.target)) close(); });
-  m.addEventListener('click', async e=>{ const t=e.target.closest('[data-go],[data-upd]'); if(!t) return; e.stopPropagation(); close();
-    if(t.dataset.go==='new') await atSendLayout(null); else if(t.dataset.go==='open') switchModule('atlas'); else await atSendLayout(t.dataset.upd); });
-})();
-(function(){
-  const btn=document.getElementById('btnExportMenu'), m=document.getElementById('exportMenuList'); if(!btn) return;
-  btn.onclick=e=>{ e.stopPropagation(); m.classList.toggle('hidden'); };
-  document.addEventListener('click', e=>{ if(!m.contains(e.target)) m.classList.add('hidden'); });
-  m.addEventListener('click', e=>{ const t=e.target.closest('[data-x]'); if(!t) return; m.classList.add('hidden');
-    document.getElementById(t.dataset.x==='share'?'btnShareOpen':'btnExportOpen').click(); });
-})();
-/* Send to ▾ — Map Composer, or the atlas (new page, or update an existing map page) */
-function renderSendMenu(){
-  const m=document.getElementById('mkSendMenu');
-  const maps=atlas?atlas.pages.filter(p=>p.kind==='map'):[];
-  const pn=p=>atlas.pages.indexOf(p)+(atlas.contents?2:1);
-  m.innerHTML='<button class="sm-item" data-go="composer" role="menuitem"><b>▣ Map Composer…</b><small>Place this map on the layout page with a legend and scale bar</small></button>'+
-    '<button class="sm-item" data-go="atlas-new" role="menuitem"><b>📖 Atlas: new page</b><small>Add this view, its layers and styling as an interactive map page</small></button>'+
-    (maps.length?'<div class="sm-h">Update an atlas map page with this view</div><div class="sm-pages">'+maps.map(p=>
-      '<div class="sm-page"><span class="sm-th">'+(AT_IMG.test(p.thumb||'')?'<img src="'+p.thumb+'" alt="">':'🧭')+'</span><span class="sm-pt"><b>'+esc(p.title||'Map')+'</b><small>page '+pn(p)+'</small></span>'+
-      '<button class="btn small light" data-show="'+p.id+'" title="Go back to this page\'s view and layers">View</button><button class="btn small" data-upd="'+p.id+'" title="Replace this page\'s map with the current view">Update</button></div>').join('')+'</div>':'')+
-    (atlas?'<button class="sm-foot" data-go="atlas-open">Open the Atlas ›</button>':'');
+  if(mod==='maker'){
+    h+='<div class="tg">Send this map to</div>'+it('composer','▣ Map Composer…','Place it on the layout page with a legend and scale bar')+
+      it('atlas-new','📖 Atlas: new page','Add this view as an interactive map page')+fold('map','Update an atlas map page');
+  } else if(mod==='layout'){
+    h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page');
+  } else if(mod==='atlas' && atlas){
+    h+='<div class="tg">This atlas</div>'+it('atlas-preview','👁 Preview atlas','Full screen, as readers will see it')+it('atlas-export','⬇ Export atlas as web page','One HTML file to host and share');
+  }
+  h+='<div class="tg">Share &amp; export</div>'+it('share','🔗 Share link or embed…','A live link to the map, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
+  m.innerHTML=h;
 }
 (function(){
-  const btn=document.getElementById('mkSendMenuBtn'), m=document.getElementById('mkSendMenu');
+  const btn=document.getElementById('btnExportMenu'), m=document.getElementById('exportMenuList'); if(!btn) return;
   const close=()=>{ m.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); };
-  btn.onclick=e=>{ e.stopPropagation(); if(!m.classList.contains('hidden')){ close(); return; } renderSendMenu(); m.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); };
+  btn.onclick=e=>{ e.stopPropagation(); if(!m.classList.contains('hidden')){ close(); return; } renderTopMenu(); m.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); };
   document.addEventListener('click', e=>{ if(!m.contains(e.target)) close(); });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
   m.addEventListener('click', async e=>{
+    const ex=e.target.closest('[data-exp]');
+    if(ex){ e.stopPropagation(); const list=ex.nextElementSibling; const open=list.classList.toggle('hidden')===false; ex.setAttribute('aria-expanded', String(open)); ex.classList.toggle('open', open); return; }
     const t=e.target.closest('[data-go],[data-show],[data-upd]'); if(!t) return;
     e.stopPropagation(); close();
-    if(t.dataset.go==='composer') document.getElementById('mkSendBtn').click();
-    else if(t.dataset.go==='atlas-new') await atSendFromMaker(null);
-    else if(t.dataset.go==='atlas-open') switchModule('atlas');
+    const g=t.dataset.go;
+    if(g==='share') document.getElementById('btnShareOpen').click();
+    else if(g==='files') document.getElementById('btnExportOpen').click();
+    else if(g==='composer') requireProject(()=>document.getElementById('mkSendBtn').click());
+    else if(g==='atlas-new') await atSendFromMaker(null);
+    else if(g==='atlas-layout') await atSendLayout(null);
+    else if(g==='atlas-open') switchModule('atlas');
+    else if(g==='atlas-preview') atPreview();
+    else if(g==='atlas-export') atExport();
     else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
-    else if(t.dataset.upd) await atSendFromMaker(t.dataset.upd);
+    else if(t.dataset.upd){ if(t.dataset.k==='layout') await atSendLayout(t.dataset.upd); else await atSendFromMaker(t.dataset.upd); }
   });
 })();
 function applySendNames(){
@@ -11099,6 +11312,11 @@ function renderProjection(){
   path.pointRadius=r=>{ path0.pointRadius(r); return path; };
   const showSphere=document.getElementById('projSphere').checked;
   const showGrat=document.getElementById('projGraticule').checked;
+  /* Interrupted projections (Goode): anything that crosses a gap between lobes is
+     drawn as a straight run across the gap, which smears continents, Antarctica
+     and the graticule across the splices. Clipping every draw to the lobes (the
+     projected Sphere) removes those runs. */
+  if(def.interrupted){ ctx.save(); ctx.beginPath(); path({type:'Sphere'}); ctx.clip(); }
 
   if(showSphere){
     ctx.beginPath(); path({type:'Sphere'});
@@ -11237,6 +11455,7 @@ function renderProjection(){
     }
   }catch(_){}
 
+  if(def.interrupted){ ctx.restore(); if(showSphere){ ctx.beginPath(); path({type:'Sphere'}); ctx.strokeStyle='#5a6e8c'; ctx.lineWidth=1.2; ctx.stroke(); } }
   const zoomPct=Math.round(projView.k*100);
   document.getElementById('projMsg').textContent=def.label+' · '+zoomPct+'% · scroll or double-click to zoom, drag to '+(def.kind==='rotate'?'rotate':'pan');
 }
@@ -11300,7 +11519,11 @@ function setProjectionMode(key){
   renderProjection();
   resume();
 }
-document.getElementById('mkProjection').addEventListener('change', e=>setProjectionMode(e.target.value));
+document.getElementById('mkProjection').addEventListener('change', e=>{
+  const v=e.target.value;
+  if(typeof mkGlobe!=='undefined' && mkGlobe){ globeClose(); if(v==='mercator-edit') return; setTimeout(()=>setProjectionMode(v), 90); return; }
+  setProjectionMode(v);
+});
 ['projLon','projLat','projP1','projP2'].forEach(id=>{
   document.getElementById(id).addEventListener('change', scheduleProjRender);
 });
@@ -11961,7 +12184,7 @@ function fillPlaceholder(ph){
   } else {
     /* map frame slot */
     pendingPlaceholderId=ph.data.id;
-    toast('Choose a map image to fill this slot — or use Send to Composer in Map Maker.', 3800);
+    toast('Choose a map image to fill this slot — or use Send / Export ▾ → Map Composer in Map Maker.', 3800);
     document.getElementById('fileMapImage').click();
   }
 }
@@ -13661,6 +13884,7 @@ function loadProjectData(data){
 
 /* ---------- module switching ---------- */
 function switchModule(which){
+  window.curModule=which;
   ['home','maker','layout','collect','atlas'].forEach(m=>{
     document.getElementById('module-'+m).classList.toggle('hidden', m!==which);
   });
@@ -16411,14 +16635,14 @@ async function openShareDialog(){
   const SOFT=120000;   /* above this, some embed hosts may balk — warn but still allow */
   if(url.length>HARD){
     linkEl.value=''; embEl.value=''; if(openEl) openEl.style.display='none';
-    noteEl.innerHTML='This map is too big to fit in a link ('+Math.round(url.length/1024)+' KB). Use <b>Export ▸ Interactive web map</b> to save an HTML file and publish it to a free host instead — that works at any size.';
+    noteEl.innerHTML='This map is too big to fit in a link ('+Math.round(url.length/1024)+' KB). Use <b>Send / Export ▾ → Export files… → Interactive web map</b> to save an HTML file and publish it to a free host instead — that works at any size.';
     openModal('modal-share'); return;
   }
   linkEl.value=url;
   embEl.value='<iframe src="'+esc(url)+'" width="100%" height="500" style="border:0;" loading="lazy" allowfullscreen title="Interactive map"></iframe>';
   if(openEl){ openEl.style.display=''; openEl.href=url; }
   let note='The whole map rides inside the link, so it opens anywhere you paste it. For others to open it, Map-O-Matic must be online at a stable address (your published copy) — a link made from a file on your own computer only works on your computer.';
-  if(url.length>SOFT) note='This is a large map, so the link is long ('+Math.round(url.length/1024)+' KB). It works in a browser, but a few embed platforms may reject very long links — if one does, use <b>Export ▸ Interactive web map</b> instead. '+note;
+  if(url.length>SOFT) note='This is a large map, so the link is long ('+Math.round(url.length/1024)+' KB). It works in a browser, but a few embed platforms may reject very long links — if one does, use <b>Send / Export ▾ → Export files… → Interactive web map</b> instead. '+note;
   noteEl.innerHTML=note;
   openModal('modal-share');
 }

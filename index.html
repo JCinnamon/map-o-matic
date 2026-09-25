@@ -396,13 +396,26 @@
   .sn-h{font-size:12px;font-weight:700;color:var(--navy);} .sn-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
   .sn-row input{padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;}
-  .at-themes{display:flex;flex-direction:column;gap:5px;}
-  .at-theme{display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:7px;padding:5px 7px;background:#fff;cursor:pointer;color:var(--text);}
+  .at-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .at-shrow{display:flex;gap:6px;align-items:center;} .at-shrow input{flex:1;min-width:0;font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:5px;}
+  .at-shpub{display:flex;gap:12px;align-items:flex-start;margin-top:8px;border-top:1px solid var(--line);padding-top:10px;} #atShQr canvas{width:120px;height:120px;display:block;}
+  #atShEmb{width:100%;box-sizing:border-box;font:11.5px ui-monospace,monospace;border:1px solid var(--line);border-radius:5px;padding:5px;}
+  .at-in-t{width:100%;box-sizing:border-box;font-size:14px !important;font-weight:600;margin-bottom:5px;}
+  .at-in2{display:grid;grid-template-columns:1fr 1fr;gap:5px;} .at-in2 input{min-width:0;}
+  .at-seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;} .at-seg button{flex:1;border:none;background:#fff;padding:6px 4px;font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer;} .at-seg button+button{border-left:1px solid var(--line);} .at-seg button.on{background:#e8f3f1;color:var(--teal);box-shadow:inset 0 -2px 0 var(--teal);}
+  .at-custom{border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:6px;background:#fafbfc;display:flex;flex-direction:column;gap:6px;}
+  .at-cg{display:grid;grid-template-columns:1fr 1fr;gap:6px;} .at-cg label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);gap:2px;} .at-cg select{font-size:12px;padding:3px 4px;border:1px solid var(--line);border-radius:5px;min-width:0;}
+  .at-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;} .at-cols label{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--muted);gap:1px;} .at-cols input{width:100%;height:24px;padding:0;border:1px solid var(--line);border-radius:4px;}
+  .at-cvlay{display:flex;gap:22px;align-items:flex-start;justify-content:center;flex-wrap:wrap;} .at-cvlay .at-cvwrap{margin:0;width:min(400px,100%);} .at-cvopts{width:240px;display:flex;flex-direction:column;gap:6px;}
+  .at-cvopts textarea{font:13px inherit;padding:6px 8px;border:1px solid var(--line);border-radius:5px;resize:vertical;} .at-cvopts input[type=color]{width:60px;height:30px;padding:0;border:1px solid var(--line);border-radius:5px;}
+  .at-sprow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;} .at-sptxt{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;} .at-sptxt select{font-size:12.5px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;}
+  .at-themes-old{display:flex;flex-direction:column;gap:5px;}
+  .at-theme{display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;border:1px solid var(--line);border-radius:7px;padding:5px 3px;background:#fff;cursor:pointer;color:var(--text);min-width:0;}
   .at-theme.on{border-color:var(--teal);background:#e8f3f1;box-shadow:inset 0 0 0 1px var(--teal);}
   .at-tsw{width:44px;height:32px;border-radius:4px;flex:none;display:flex;align-items:center;justify-content:center;}
   .at-tsw i{width:22px;height:26px;border-radius:2px;border-left:3px solid;display:flex;flex-direction:column;gap:3px;padding:4px 3px;box-sizing:border-box;}
   .at-tsw b{height:3px;width:80%;display:block;} .at-tsw u{height:6px;width:100%;display:block;opacity:.7;}
-  .at-tn{font-size:12.5px;font-weight:600;display:flex;flex-direction:column;} .at-tn small{font-weight:400;color:var(--muted);font-size:11px;}
+  .at-tn{font-size:10.5px;font-weight:600;line-height:1.15;display:block;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .at-spchk{margin:2px 0 0;}
   .at-ctimg{max-height:70px;max-width:120px;border-radius:4px;border:1px solid var(--line);}
   .at-ctprev{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;background:#fbfcfd;}
@@ -945,6 +958,7 @@
         <button data-k="layout">▣ Map layout<small>the finished Map Composer page</small></button>
         <button data-k="image">🖼 Image<small>a photo, scan or figure</small></button>
         <button data-k="text">¶ Text<small>an introduction, essay or notes</small></button>
+        <button data-k="contents" id="atAddToc">☰ Contents page<small>a list of the pages, made automatically</small></button>
       </div></div>
     <div id="atList"></div>
   </aside>
@@ -9510,9 +9524,26 @@ function atlasViewer(root, D){
   var E=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
   var COL=/^#[0-9a-f]{6}$/i;
-  var THEMES={classic:1, modern:1, notebook:1, noir:1, retro:1, historic:1};
+  var THEMES={classic:1, modern:1, notebook:1, noir:1, retro:1, historic:1, custom:1};
   var theme=THEMES[D.theme]?D.theme:'classic';
   var pages=D.pages||[], mode=D.mode==='scroll'?'scroll':'book';
+  /* the Custom design: a handful of checked choices become classes and colour variables */
+  var CU=D.custom||{}, cuCls='', cuVars='';
+  if(theme==='custom'){
+    var one=function(v, ok, d){ return ok.indexOf(v)>=0 ? v : d; };
+    var FONTS={georgia:"Georgia,'Times New Roman',serif", playfair:"'Playfair Display',Georgia,serif", lora:"Lora,Georgia,serif", merri:"Merriweather,Georgia,serif", baskerville:"'Libre Baskerville',Georgia,serif",
+      garamond:"'EB Garamond',Georgia,serif", sourceserif:"'Source Serif 4',Georgia,serif", inter:"Inter,-apple-system,'Segoe UI',sans-serif", montserrat:"Montserrat,-apple-system,sans-serif",
+      worksans:"'Work Sans',-apple-system,sans-serif", oswald:"Oswald,'Arial Narrow',sans-serif", josefin:"'Josefin Sans',-apple-system,sans-serif", plexmono:"'IBM Plex Mono','Courier New',monospace", helvetica:"-apple-system,'Segoe UI',Helvetica,Arial,sans-serif"};
+    var col=function(v, d){ return COL.test(v||'') ? v : d; };
+    cuCls=' av-cf-'+one(CU.frame,['none','hair','double','thick','corners'],'hair')+' av-chs-'+one(CU.hstyle,['plain','underline','centred','caps'],'underline')+
+      ' av-cm-'+one(CU.mapframe,['none','line','double','shadow','rounded'],'line')+' av-cc-'+one(CU.capstyle,['italic','plain','centred'],'italic')+
+      ' av-cp-'+one(CU.pnum,['plain','dashes','circle','p'],'plain')+(CU.dropcap?' av-cdc':'');
+    cuVars='--paper:'+col(CU.paper,'#fbf8f1')+';--ink:'+col(CU.ink,'#22293a')+';--head:'+col(CU.head,'#1f2f45')+';--accent:'+col(CU.accent,'#2f6f6b')+';--quote:'+col(CU.accent,'#2f6f6b')+
+      ';--rule:'+col(CU.accent,'#2f6f6b')+'55;--dots:'+col(CU.accent,'#2f6f6b')+'88;--mapb:'+col(CU.accent,'#2f6f6b')+';--backdrop:'+col(CU.backdrop,'#2c2f36')+
+      ';--font:'+(FONTS[CU.bfont]||FONTS.georgia)+';--hfont:'+(FONTS[CU.hfont]||FONTS.georgia)+';--hweight:'+(CU.hbold?700:400)+';';
+  }
+  var themeCls=' av-th-'+theme+cuCls;
+  var dressRoot=function(el){ if(cuVars) el.setAttribute('style', (el.getAttribute('style')||'').replace(/--[a-z]+:[^;]*;?/g,'')+cuVars); };
   var coverCol=COL.test(D.coverColor||'')?D.coverColor:'#1f3b57';
   var SPREADABLE={map:1, layout:1, image:1};
   var isSpread=function(p){ return !!(p && p.spread && SPREADABLE[p.kind]); };
@@ -9578,7 +9609,7 @@ function atlasViewer(root, D){
   }
   /* full: render the whole two-page spread; otherwise one page */
   function pageHtml(i, live, full){
-    var p=seq[i]; if(!p) return '<div class="av-pg av-empty"></div>';
+    var p=seq[i]; if(!p && i===seq.length) p={kind:'back'}; if(!p) return '<div class="av-pg av-empty"></div>';
     if(p.kind==='cover' && theme==='retro'){
       var rbg=IMG.test(D.coverImage||'')?'background-image:linear-gradient(rgba(6,11,24,.82),rgba(6,11,24,.82)),url('+D.coverImage+');':'';
       var n=pages.length;
@@ -9635,8 +9666,13 @@ function atlasViewer(root, D){
     var media=mediaHtml(p, live);
     if(full){
       foot='<div class="av-foot av-foot2"><span class="av-pno">'+pnum(i)+'</span><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i+1)+'</span></div>';
-      return '<div class="av-pg av-inner av-spreadpg av-k-'+p.kind+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+
-        ((cap||text)?'<div class="av-sp-below">'+cap+text+'</div>':'')+foot+'</div>';
+      var h2=p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'';
+      var how=(cap||text)?({column:1,box:1,split:1}[p.spreadText]?p.spreadText:'column'):'none';
+      /* text never runs across the gutter: a column on the right-hand page, a box over the map, or one column per page */
+      if(how==='column') return '<div class="av-pg av-inner av-spreadpg av-sp-col av-k-'+p.kind+'">'+winBar(p,i)+'<div class="av-spc-main">'+media+'</div><div class="av-spc-side">'+h2+cap+text+'</div>'+foot+'</div>';
+      if(how==='box') return '<div class="av-pg av-inner av-spreadpg av-sp-box av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-spb-box">'+cap+text+'</div>'+foot+'</div>';
+      if(how==='split') return '<div class="av-pg av-inner av-spreadpg av-sp-split av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-sps-cols">'+cap+text+'</div>'+foot+'</div>';
+      return '<div class="av-pg av-inner av-spreadpg av-k-'+p.kind+'">'+winBar(p,i)+h2+media+foot+'</div>';
     }
     return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
   }
@@ -9676,7 +9712,7 @@ function atlasViewer(root, D){
     return Promise.all(need).then(function(){ return (doc.fonts && doc.fonts.ready) ? doc.fonts.ready : null; }).then(function(){
       seq=bookSeq(baseSeq); pdfMode=true;
       var list=[]; seq.forEach(function(q,i){ if(q.kind==='blank'||q.kind==='spreadR') return; list.push(i); });
-      host=doc.createElement('div'); host.className='av-root av-mode-book av-th-'+theme+' av-pdfhost'; doc.body.appendChild(host);
+      host=doc.createElement('div'); host.className='av-root av-mode-book'+themeCls+' av-pdfhost'; dressRoot(host); doc.body.appendChild(host);
       var PW=540, PH=712.8, W=900, H=Math.round(900*1.32), pdf=null, links=[];
       var step=function(n){
         if(n>=list.length) return Promise.resolve();
@@ -9689,9 +9725,9 @@ function atlasViewer(root, D){
           var er=el.getBoundingClientRect();
           links=[].slice.call(el.querySelectorAll('a[href],[data-go]')).map(function(a){ var r=a.getBoundingClientRect();
             return {x:r.left-er.left, y:r.top-er.top, w:r.width, h:r.height, url:a.getAttribute('href'), go:a.getAttribute('data-go')}; }).filter(function(l){ return l.w>0 && l.h>0; });
-          return win.html2canvas(el, {scale:2.5, useCORS:true, logging:false, backgroundColor:null, width:w, height:H, windowWidth:Math.max(w, 1200)});
+          return win.html2canvas(el, {scale:3, useCORS:true, logging:false, backgroundColor:null, width:w, height:H, windowWidth:Math.max(w, 1200)});
         }).then(function(cv){
-          var fw=full?PW*2:PW, img=cv.toDataURL('image/jpeg', 0.92), kx=fw/w, ky=PH/H;
+          var fw=full?PW*2:PW, img=cv.toDataURL('image/jpeg', 0.95), kx=fw/w, ky=PH/H;
           if(!pdf) pdf=new win.jspdf.jsPDF({unit:'pt', format:[fw,PH], orientation:fw>PH?'landscape':'portrait', compress:true});
           else pdf.addPage([fw,PH], fw>PH?'landscape':'portrait');
           pdf.addImage(img, 'JPEG', 0, 0, fw, PH, undefined, 'FAST');
@@ -9715,14 +9751,16 @@ function atlasViewer(root, D){
       .then(function(r){ seq=saved; pdfMode=false; if(host) host.remove(); busyEl.remove(); return r; }, function(e){ seq=saved; pdfMode=false; if(host) host.remove(); throw e; });
   }
   if(D.__pdfOnly) return {pdf:makePdf};
-  if(D.__cover){ root.className=(root.className||'').replace(/\b(av-root|av-mode-\w+|av-th-\w+|av-cvhost)\b/g,'').trim()+' av-root av-mode-book av-th-'+theme+' av-cvhost'; root.innerHTML=pageHtml(0,false); return {}; }
+  if(D.__cover){ root.className=(root.className||'').replace(/\b(av-root|av-mode-\w+|av-th-\w+|av-c[a-z]+-\w+|av-cdc|av-cvhost)\b/g,'').trim()+' av-root av-mode-book'+themeCls+' av-cvhost'; dressRoot(root);
+    if(D.__cover==='back'){ root.innerHTML=pageHtml(seq.length,false); return {}; }
+    root.innerHTML=pageHtml(0,false); return {}; }
   var go=function(){};
   /* a live map says when its basemap has drawn; only then does it replace the still */
   win.addEventListener('message', function(e){ if(!e.data||!e.data.momMapReady) return;
     frames=frames.filter(function(f){ return f.isConnected; });
     frames.forEach(function(f){ if(f.contentWindow===e.source) f._show(); }); });
   root.innerHTML='';
-  root.className='av-root av-mode-'+mode+' av-th-'+theme;
+  root.className='av-root av-mode-'+mode+themeCls; dressRoot(root);
 
   /* ================= scrolling ================= */
   if(mode==='scroll'){
@@ -9988,14 +10026,14 @@ const ATLAS_CSS=`
   background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 38%,rgba(0,0,0,.28) 49.5%,rgba(0,0,0,.28) 50.5%,rgba(0,0,0,.12) 62%,rgba(0,0,0,0) 100%);}
 .av-has-spread .av-gutter{display:block;}
 .av-half{position:absolute;top:0;bottom:0;width:200%;} .av-half-l{left:0;} .av-half-r{left:-100%;}
-.av-spreadpg{padding:3.4em 3.6em 4.6em;} .av-half .av-still span{display:none;}
+.av-spreadpg{padding:2.8em 3em 4em;} .av-half .av-still span{display:none;}
 .av-spreadpg .av-map,.av-spreadpg .av-media{flex:1 1 auto;}
 .av-sp-below{display:flex;gap:4%;align-items:flex-start;max-height:22%;overflow:auto;}
 .av-sp-below .av-cap{flex:0 0 40%;margin-top:.8em;} .av-sp-below .av-text{flex:1;}
 .av-foot2 span:nth-child(2){flex:1;text-align:center;}
 .av-single .av-spreadpg{padding:7% 8% 9%;}
 .av-pg{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
-.av-inner{padding:7% 8% 9%;}
+.av-inner{padding:6% 6.5% 8%;}
 .av-h{font-family:var(--hfont);font-size:2.3em;font-weight:var(--hweight);margin:0 0 .6em;letter-spacing:.01em;color:var(--head);border-bottom:1px solid var(--rule);padding-bottom:.35em;}
 .av-media{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;}
 .av-media img{max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:zoom-in;}
@@ -10010,7 +10048,7 @@ const ATLAS_CSS=`
 .av-still span{position:relative;background:rgba(255,255,255,.85);padding:.3em .8em;border-radius:1em;}
 .av-cap{font-size:1.15em;font-style:italic;color:var(--cap);margin:.5em 0 0;}
 .av-text{font-size:1.35em;line-height:1.55;margin-top:.8em;overflow:auto;}
-.av-split .av-media{flex:1 1 58%;} .av-split .av-text{flex:0 1 auto;max-height:38%;}
+.av-split .av-media{flex:1 1 64%;} .av-split .av-text{flex:0 1 auto;max-height:32%;}
 .av-k-text .av-text{margin-top:0;flex:1;}
 .av-text h2{font-family:var(--hfont);font-size:1.5em;font-weight:var(--hweight);margin:.6em 0 .3em;color:var(--head);} .av-text h3{font-size:1.2em;margin:.6em 0 .3em;}
 .av-text p{margin:0 0 .7em;} .av-text blockquote{margin:.6em 0;padding-left:1em;border-left:3px solid var(--quote);color:var(--cap);font-style:italic;}
@@ -10178,6 +10216,45 @@ const ATLAS_CSS=`
 .av-th-retro .av-toc-r:first-child,.av-th-retro .av-toc-r:first-child span{background:#2f7d78;color:#0b1326;} .av-th-retro .av-toc-r:first-child{padding:0 .3em;margin:0 -.3em;} .av-th-retro .av-toc-r:first-child b{color:#0b1326;} .av-th-retro .av-toc-r:first-child i{border-bottom-color:rgba(11,19,38,.4);}
 .av-th-retro .av-toc-r:first-child span::before{content:"► ";}
 .av-th-retro .av-inner{padding-bottom:12%;}
+/* ---- spreads: where the text goes ---- */
+.av-sp-col{flex-direction:row;gap:0;}
+.av-sp-col .av-spc-main{flex:0 0 68%;display:flex;flex-direction:column;min-height:0;margin-right:3%;}
+.av-sp-col .av-spc-main .av-media{flex:1 1 auto;}
+.av-sp-col .av-spc-side{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow:auto;padding-left:1em;}
+.av-sp-col .av-spc-side .av-h{font-size:2em;}
+.av-sp-col .av-spc-side .av-cap{margin:0 0 .6em;}
+.av-sp-col .av-spc-side .av-text{margin-top:.2em;}
+.av-sp-box>.av-h,.av-sp-split>.av-h{width:46%;}
+.av-sp-box .av-spb-box{position:absolute;right:calc(3em + 1.2em);bottom:calc(4em + 1.4em);width:28%;max-height:48%;overflow:auto;z-index:4;background:var(--paper);border:1px solid var(--rule);box-shadow:0 .3em 1.2em rgba(0,0,0,.18);padding:1em 1.2em;}
+.av-sp-box .av-spb-box .av-text{margin-top:.2em;font-size:1.2em;}
+.av-sp-split .av-sps-cols{column-count:2;column-gap:12%;max-height:24%;overflow:hidden;margin-top:.4em;}
+.av-sp-split .av-sps-cols .av-cap{margin-top:.4em;} .av-sp-split .av-sps-cols .av-text{margin-top:.4em;font-size:1.25em;}
+/* ---- Custom design ---- */
+.av-th-custom{--muted:color-mix(in srgb,var(--ink) 55%,transparent);--cap:color-mix(in srgb,var(--ink) 75%,transparent);--navink:#eef0f4;--navbtn:rgba(255,255,255,.12);--navbord:rgba(255,255,255,.3);}
+.av-th-custom .av-h{color:var(--head);}
+.av-th-custom.av-cf-hair .av-inner::before{content:"";position:absolute;inset:3.4% 4%;border:1px solid var(--rule);pointer-events:none;}
+.av-th-custom.av-cf-double .av-inner::before{content:"";position:absolute;inset:3.2% 3.6%;border:3px double var(--accent);pointer-events:none;}
+.av-th-custom.av-cf-thick .av-inner::before{content:"";position:absolute;inset:3%;border:.45em solid var(--accent);pointer-events:none;}
+.av-th-custom.av-cf-corners .av-inner::before{content:"";position:absolute;inset:3.2% 3.6%;pointer-events:none;
+  background:linear-gradient(var(--accent),var(--accent)) left top/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left top/2px 2.4em no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2px 2.4em no-repeat,
+  linear-gradient(var(--accent),var(--accent)) left bottom/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/2px 2.4em no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2px 2.4em no-repeat;}
+.av-th-custom:not(.av-cf-none) .av-inner{padding:7.5% 8% 9.5%;}
+.av-th-custom.av-chs-plain .av-h{border-bottom:none;padding-bottom:0;}
+.av-th-custom.av-chs-underline .av-h{border-bottom:2px solid var(--accent);}
+.av-th-custom.av-chs-centred .av-h{border-bottom:none;padding-bottom:0;text-align:center;}
+.av-th-custom.av-chs-centred .av-h::after{content:"◆";display:block;font-size:.35em;color:var(--accent);margin-top:.8em;background:linear-gradient(var(--accent),var(--accent)) left 50%/42% 1px no-repeat,linear-gradient(var(--accent),var(--accent)) right 50%/42% 1px no-repeat;}
+.av-th-custom.av-chs-caps .av-h{text-transform:uppercase;letter-spacing:.12em;font-size:1.9em;border-bottom:1px solid var(--rule);}
+.av-th-custom.av-cdc .av-text>p:first-of-type::first-letter{float:left;font-size:3.3em;line-height:.85;margin:.06em .1em 0 0;color:var(--accent);font-family:var(--hfont);}
+.av-th-custom.av-cm-none .av-map{border:none;} .av-th-custom.av-cm-none .av-media img{box-shadow:none;}
+.av-th-custom.av-cm-line .av-map,.av-th-custom.av-cm-line .av-media img{border:1px solid var(--mapb);box-shadow:none;}
+.av-th-custom.av-cm-double .av-map,.av-th-custom.av-cm-double .av-media img{border:3px double var(--mapb);box-shadow:none;}
+.av-th-custom.av-cm-shadow .av-map,.av-th-custom.av-cm-shadow .av-media img{border:none;box-shadow:0 .5em 1.4em rgba(0,0,0,.22);}
+.av-th-custom.av-cm-rounded .av-map,.av-th-custom.av-cm-rounded .av-media img{border:none;border-radius:.8em;overflow:hidden;box-shadow:0 .3em .9em rgba(0,0,0,.15);}
+.av-th-custom.av-cc-plain .av-cap{font-style:normal;} .av-th-custom.av-cc-centred .av-cap{text-align:center;}
+.av-th-custom.av-cp-dashes .av-pno::before{content:"— ";} .av-th-custom.av-cp-dashes .av-pno::after{content:" —";}
+.av-th-custom.av-cp-circle .av-pno{display:inline-block;min-width:2em;height:2em;line-height:2em;border-radius:50%;background:var(--accent);color:var(--paper);text-align:center;}
+.av-th-custom.av-cp-p .av-pno::before{content:"p. ";}
+.av-th-custom .av-toc-r b{color:var(--accent);}
 @media print{ .av-nav,.av-snav,.av-sarrows{display:none;} }
 `;
 
@@ -10188,14 +10265,35 @@ const ATLAS_CSS=`
 let atlas=null, atSel='cover';
 const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}};
 const AT_IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
-function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', pages:[]}; }
+function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', custom:atCustomDefault(), pages:[]}; }
+function atCustomDefault(){ return {hfont:'playfair', bfont:'georgia', hbold:false, paper:'#fbf8f1', ink:'#22293a', head:'#1f2f45', accent:'#2f6f6b', backdrop:'#2c2f36',
+  frame:'hair', hstyle:'underline', dropcap:true, mapframe:'line', capstyle:'italic', pnum:'plain'}; }
+const AT_CU_FONTS=[['georgia','Georgia',null],['playfair','Playfair Display','Playfair+Display:wght@400;700'],['lora','Lora','Lora:ital,wght@0,400;0,700;1,400'],['merri','Merriweather','Merriweather:ital,wght@0,400;0,700;1,400'],
+  ['baskerville','Libre Baskerville','Libre+Baskerville:ital,wght@0,400;0,700;1,400'],['garamond','EB Garamond','EB+Garamond:ital,wght@0,400;0,700;1,400'],['sourceserif','Source Serif 4','Source+Serif+4:ital,wght@0,400;0,700;1,400'],
+  ['inter','Inter','Inter:wght@400;700'],['montserrat','Montserrat','Montserrat:wght@400;700'],['worksans','Work Sans','Work+Sans:wght@400;700'],['oswald','Oswald','Oswald:wght@400;700'],
+  ['josefin','Josefin Sans','Josefin+Sans:wght@400;700'],['plexmono','IBM Plex Mono','IBM+Plex+Mono:wght@400;600'],['helvetica','Helvetica / system',null]];
+function atCustomClean(c){
+  const d=atCustomDefault(); c=c&&typeof c==='object'?c:{};
+  const col=(v,x)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:x, one=(v,ok,x)=>ok.includes(v)?v:x, fk=AT_CU_FONTS.map(f=>f[0]);
+  return {hfont:one(c.hfont,fk,d.hfont), bfont:one(c.bfont,fk,d.bfont), hbold:!!c.hbold, paper:col(c.paper,d.paper), ink:col(c.ink,d.ink), head:col(c.head,d.head), accent:col(c.accent,d.accent), backdrop:col(c.backdrop,d.backdrop),
+    frame:one(c.frame,['none','hair','double','thick','corners'],d.frame), hstyle:one(c.hstyle,['plain','underline','centred','caps'],d.hstyle), dropcap:c.dropcap!==false,
+    mapframe:one(c.mapframe,['none','line','double','shadow','rounded'],d.mapframe), capstyle:one(c.capstyle,['italic','plain','centred'],d.capstyle), pnum:one(c.pnum,['plain','dashes','circle','p'],d.pnum)};
+}
+/* web fonts an atlas needs (its design's, or the ones picked for Custom) */
+function atFontUrl(a){
+  if(!a) return '';
+  if(a.theme==='custom'){ const c=atCustomClean(a.custom), fams=[...new Set([c.hfont,c.bfont])].map(k=>(AT_CU_FONTS.find(f=>f[0]===k)||[])[2]).filter(Boolean);
+    return fams.length ? 'https://fonts.googleapis.com/css2?'+fams.map(f=>'family='+f).join('&')+'&display=swap' : ''; }
+  return AT_FONTS[a.theme]||'';
+}
 const AT_THEMES=[
   {k:'classic', n:'Classic', d:'Cream paper, serif type', paper:'#fbf8f1', ink:'#1f2f45', bg:'#3a3e46', acc:'#c9b98f'},
   {k:'modern', n:'Modern', d:'White pages, clean sans-serif', paper:'#ffffff', ink:'#12665f', bg:'#dfe4ea', acc:'#12837a'},
   {k:'notebook', n:'Field notebook', d:'Graph paper, handwritten headings', paper:'#f3ead3', ink:'#3b3226', bg:'#6b4f33', acc:'#a3452c'},
   {k:'noir', n:'Atlas noir', d:'Dark pages, gold accents', paper:'#1d2026', ink:'#e2c078', bg:'#0b0c0f', acc:'#e2c078'},
   {k:'retro', n:'Map-O-Matic retro', d:'DOS screen, command-line headings, boot-up cover', paper:'#101a33', ink:'#f2b84b', bg:'#070c18', acc:'#2f7d78'},
-  {k:'historic', n:'19th-century atlas', d:'Aged paper, engraved type, ornate frames', paper:'#eee0bf', ink:'#4a2f1a', bg:'#3a2616', acc:'#8a3b1c'}];
+  {k:'historic', n:'19th-century atlas', d:'Aged paper, engraved type, ornate frames', paper:'#eee0bf', ink:'#4a2f1a', bg:'#3a2616', acc:'#8a3b1c'},
+  {k:'custom', n:'Custom', d:'Your own fonts, colours, frames and details', paper:'#ffffff', ink:'#555', bg:'linear-gradient(135deg,#e05a47,#f2b84b,#2f7d78,#3a5ba0)', acc:'#888'}];
 const AT_SPREAD={map:1, layout:1, image:1};
 const AT_FONTS={retro:'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap',
   historic:'https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap'};
@@ -10235,13 +10333,14 @@ function atSanitize(a){
   out.coverImage=AT_IMG.test(a.coverImage||'')?a.coverImage:'';
   out.mode=a.mode==='scroll'?'scroll':'book'; out.contents=a.contents!==false;
   out.theme=AT_THEMES.some(t=>t.k===a.theme)?a.theme:'classic';
+  out.custom=atCustomClean(a.custom);
   out.url=/^https?:\/\/[^\s<>"]{3,300}$/i.test((a.url||'').trim())?(a.url||'').trim():'';
   out.contentsTitle=s(a.contentsTitle,120)||'Contents'; out.contentsText=sanitizeRich(a.contentsText); out.contentsImage=AT_IMG.test(a.contentsImage||'')?a.contentsImage:'';
   out.pages=(Array.isArray(a.pages)?a.pages:[]).slice(0,200).map(p=>{
     if(!p || !AT_KINDS[p.kind]) return null;
     return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
       src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'', still:AT_IMG.test(p.still||'')?p.still:'',
-      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
+      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], spreadText:['column','box','split'].includes(p.spreadText)?p.spreadText:'column', basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
   }).filter(Boolean);
   return out;
 }
@@ -10299,9 +10398,10 @@ function renderAtList(){
   const box=document.getElementById('atList');
   const nums=atNumbers();
   box.innerHTML='<div class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></div>'+
-    (atlas.contents&&atlas.pages.length?'<div class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents" role="button" tabindex="0"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div></div>':'')+
+    (atlas.contents&&atlas.pages.length?'<div class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents" role="button" tabindex="0"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div><button class="at-x at-xc" data-delc="1" title="Remove the contents page" aria-label="Remove contents page">×</button></div>':'')+
     atlas.pages.map((p,i)=>'<div class="at-item at-pg'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" data-i="'+i+'" role="button" tabindex="0" title="Drag to move this page"><span class="at-grip" aria-hidden="true">⠿</span><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+(nums[p.id]?(nums[p.id].length>1?'pages '+nums[p.id].join('–')+' · spread':'page '+nums[p.id][0]):'')+' · '+AT_KINDS[p.kind].label+'</span></div><button class="at-x" data-del="'+esc(p.id)+'" title="Remove this page" aria-label="Remove page">×</button></div>').join('')+
-    (atlas.pages.length?'':'<p class="kv">No pages yet. Use + Add page above, or Send / Export ▾ in Map Maker or Map Composer.</p>');
+    (atlas.pages.length?'':'<p class="kv">No pages yet. Use + Add page above, or Send / Export ▾ in Map Maker or Map Composer.</p>')+
+    '<div class="at-item'+(atSel==='back'?' active':'')+'" data-id="back" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+'"></div><div class="at-meta"><b>Back cover</b><span>'+esc((atlas.backText||'').slice(0,40)||'no text yet')+'</span></div></div>';
   const pick=id=>{ atSel=id; renderAtList(); renderAtBody(); };
   box.querySelectorAll('.at-item[data-id]').forEach(it=>{
     it.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(it.dataset.id); } };
@@ -10331,7 +10431,9 @@ function renderAtList(){
       window.addEventListener('pointermove', move, {passive:false}); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
     });
   });
-  box.querySelectorAll('.at-x').forEach(x=>{
+  box.querySelectorAll('.at-xc').forEach(x=>{ x.onpointerdown=e=>e.stopPropagation(); x.onclick=e=>{ e.stopPropagation(); atlas.contents=false; if(atSel==='contents') atSel='cover'; atDirty(); renderAtlas();
+    toast('Contents page removed. Add it back from + Add page.', 3500); }; });
+  box.querySelectorAll('.at-x:not(.at-xc)').forEach(x=>{
     x.onpointerdown=e=>e.stopPropagation();
     x.onclick=e=>{
       e.stopPropagation();
@@ -10366,12 +10468,20 @@ function atRichEditor(host, html, onChange){
 }
 function renderAtBody(){
   const body=document.getElementById('atBody');
+  if(atSel==='back'){ renderAtBack(body); return; }
   if(atSel==='cover'){
     atEnsureCss();
-    body.innerHTML='<div class="at-cvwrap"><div class="at-cvbox"></div></div><p class="kv" style="text-align:center;">The cover is set up in the panel on the right, in the '+esc((AT_THEMES.find(t=>t.k===atlas.theme)||AT_THEMES[0]).n)+' design.</p>';
+    body.innerHTML='<div class="at-cvlay"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cvopts"><h3 class="fc-h" style="margin-top:0">Cover</h3>'+
+      '<label class="fc-lbl">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"></label>'+
+      '<div class="fc-lbl">Image</div><div class="at-cvbtns">'+(atlas.coverImage?'<img class="at-ctimg" src="'+atlas.coverImage+'" alt="">':'')+'<button class="btn small light" id="atCvImg">'+(atlas.coverImage?'⬆ Replace':'⬆ Add image')+'</button>'+(atlas.coverImage?'<button class="btn small light" id="atCvX">Remove</button>':'')+'<input type="file" id="atCvIn" accept="image/*" hidden></div>'+
+      '<p class="kv">Title, subtitle and author are in the panel on the right. The design decides how an image sits on the cover.</p></div></div>';
+    const ci=document.getElementById('atCvIn');
+    document.getElementById('atCvImg').onclick=()=>ci.click();
+    ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 2400); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
+    const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
+    document.getElementById('atCol').oninput=e=>{ atlas.coverColor=e.target.value; atDirty(); renderAtList(); atRefreshCover(); };
     const bx=body.querySelector('.at-cvbox');
-    atlasViewer(bx, Object.assign({}, atlas, {pages:atlas.pages.map(p=>({id:p.id, kind:p.kind, title:p.title})), __cover:true}));
-    bx.style.fontSize=(bx.clientHeight/60)+'px';
+    atRefreshCover();
     return;
   }
   if(atSel==='contents'){ renderAtContents(body); return; }
@@ -10394,7 +10504,8 @@ function renderAtBody(){
     '<div class="at-row"><label class="fc-lbl" style="flex:1">Page title<input type="text" id="atPTitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+'"></label>'+
     '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light" id="atDel">Delete page</button></div></div>'+
     media+act+
-    (AT_SPREAD[p.kind]?'<label class="fc-chk2 at-spchk"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'> <b>Full spread</b><span class="kv" style="margin:0 0 0 6px">fills both facing pages in Book style (starts on a left page; a blank page is added if needed)</span></label>':'')+
+    (AT_SPREAD[p.kind]?'<div class="at-sprow"><label class="fc-chk2 at-spchk"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'> <b>Full spread</b><span class="kv" style="margin:0 0 0 6px">across both facing pages in Book style</span></label>'+
+      (p.spread?'<label class="at-sptxt">Text on the spread <select id="atSpText"><option value="column"'+(p.spreadText==='column'||!p.spreadText?' selected':'')+'>Column on the right-hand page</option><option value="box"'+(p.spreadText==='box'?' selected':'')+'>Box over the map</option><option value="split"'+(p.spreadText==='split'?' selected':'')+'>One column on each page, below</option></select></label>':'')+'</div>':'')+
     (p.kind!=='text'?'<label class="fc-lbl">Caption (optional)<input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>':'')+
     '<div class="fc-lbl">'+(p.kind==='text'?'Text':'Text on this page (optional)')+'</div><div id="atRich"></div></div>';
   const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
@@ -10405,7 +10516,8 @@ function renderAtBody(){
   const smk=document.getElementById('atShowMk'); if(smk) smk.onclick=()=>atShowInMaker(p);
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
   const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
-  const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); };
+  const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); renderAtBody(); };
+  const spt=document.getElementById('atSpText'); if(spt) spt.onchange=()=>{ p.spreadText=spt.value; atDirty(); };
   atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
   document.getElementById('atUp').onclick=()=>{ atlas.pages.splice(i-1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
@@ -10415,6 +10527,21 @@ function renderAtBody(){
   const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
   if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
+}
+/* draw the cover (or back cover) preview in the chosen design */
+function atRefreshCover(){
+  const bx=document.querySelector('#atBody .at-cvbox'); if(!bx) return;
+  atlasViewer(bx, Object.assign({}, atlas, {pages:atlas.pages.map(p=>({id:p.id, kind:p.kind, title:p.title})), __cover: atSel==='back' ? 'back' : true}));
+  bx.style.fontSize=(bx.clientHeight/60)+'px';
+}
+function renderAtBack(body){
+  atEnsureCss();
+  body.innerHTML='<div class="at-cvlay"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cvopts"><h3 class="fc-h" style="margin-top:0">Back cover</h3>'+
+    '<label class="fc-lbl">Text (optional)<textarea id="atBk" rows="5" maxlength="400" placeholder="A note, acknowledgements, a source line…">'+esc(atlas.backText||'')+'</textarea></label>'+
+    '<label class="fc-lbl">Colour<input type="color" id="atBkCol" value="'+atlas.coverColor+'"></label><p class="kv">The back cover shares the front cover\'s colour.</p></div></div>';
+  atRefreshCover();
+  document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value.slice(0,400); atDirty(); atRefreshCover(); };
+  document.getElementById('atBkCol').oninput=e=>{ atlas.coverColor=e.target.value; atDirty(); renderAtList(); atRefreshCover(); };
 }
 function renderAtContents(body){
   body.innerHTML='<div class="at-ed">'+
@@ -10433,35 +10560,40 @@ function renderAtContents(body){
 }
 function renderAtSettings(){
   const box=document.getElementById('atSettings');
+  const cu=atlas.custom=atCustomClean(atlas.custom);
+  const sel=(id,opts,v)=>'<select id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
   box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Atlas</h3>'+
-    '<label class="fc-lbl">Title<input type="text" id="atT" maxlength="120" value="'+esc(atlas.title)+'"></label>'+
-    '<label class="fc-lbl">Subtitle<input type="text" id="atS" maxlength="200" value="'+esc(atlas.subtitle)+'"></label>'+
-    '<label class="fc-lbl">Author(s)<input type="text" id="atA" maxlength="160" value="'+esc(atlas.author)+'"></label>'+
-    '<h3 class="fc-h">Cover</h3><div class="at-cvrow"><label class="fc-lbl">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"></label>'+
-    '<div class="fc-lbl">Image<div class="at-cvbtns"><button class="btn small light" id="atCvImg">'+(atlas.coverImage?'Replace':'Add image')+'</button>'+(atlas.coverImage?'<button class="btn small light" id="atCvX">Remove</button>':'')+'<input type="file" id="atCvIn" accept="image/*" hidden></div></div></div>'+
-    '<label class="fc-lbl">Back cover text (optional)<input type="text" id="atBk" maxlength="400" value="'+esc(atlas.backText)+'"></label>'+
-    '<h3 class="fc-h">Design</h3><div class="at-themes">'+AT_THEMES.map(t=>'<button type="button" class="at-theme'+(atlas.theme===t.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.d)+'"><span class="at-tsw" style="background:'+t.bg+'"><i style="background:'+t.paper+';border-color:'+t.acc+'"><b style="background:'+t.ink+'"></b><u style="background:'+t.acc+'"></u></i></span><span class="at-tn">'+esc(t.n)+'<small>'+esc(t.d)+'</small></span></button>').join('')+'</div>'+
-    '<h3 class="fc-h">Reading</h3><div class="at-modes">'+
-      '<label><input type="radio" name="atMode" value="book"'+(atlas.mode==='book'?' checked':'')+'> 📖 Book<span>Turn pages in two-page spreads, like a printed atlas</span></label>'+
-      '<label><input type="radio" name="atMode" value="scroll"'+(atlas.mode==='scroll'?' checked':'')+'> ↕ Scrolling<span>One long page, section after section</span></label></div>'+
-    '<label class="fc-chk2"><input type="checkbox" id="atToc"'+(atlas.contents?' checked':'')+'> Contents page</label>'+
-    '<label class="fc-lbl">Web address (optional)<input type="text" id="atUrl" maxlength="300" placeholder="https://… where the atlas will be online" value="'+esc(atlas.url||'')+'"></label>'+
-    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button><button class="btn secondary" id="atExport">⬇ Export as web page</button><button class="btn secondary" id="atPdf">⬇ Download PDF</button></div>';
-  const up=(k,rerender)=>e=>{ atlas[k]=e.target.value; atDirty(); if(rerender) renderAtlas(); else { renderAtList(); if(atSel==='cover') renderAtBody(); } };
+    '<input type="text" id="atT" class="at-in-t" maxlength="120" value="'+esc(atlas.title)+'" placeholder="Title" aria-label="Title">'+
+    '<div class="at-in2"><input type="text" id="atS" maxlength="200" value="'+esc(atlas.subtitle)+'" placeholder="Subtitle" aria-label="Subtitle"><input type="text" id="atA" maxlength="160" value="'+esc(atlas.author)+'" placeholder="Author(s)" aria-label="Author(s)"></div>'+
+    '<h3 class="fc-h">Design</h3><div class="at-themes">'+AT_THEMES.map(t=>'<button type="button" class="at-theme'+(atlas.theme===t.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.n+': '+t.d)+'"><span class="at-tsw" style="background:'+t.bg+'"><i style="background:'+t.paper+';border-color:'+t.acc+'"><b style="background:'+t.ink+'"></b><u style="background:'+t.acc+'"></u></i></span><span class="at-tn">'+esc(t.n)+'</span></button>').join('')+'</div>'+
+    (atlas.theme==='custom'?'<div class="at-custom">'+
+      '<div class="at-cg"><label>Headings'+sel('cuH',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.hfont)+'</label><label>Text'+sel('cuB',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.bfont)+'</label></div>'+
+      '<label class="fc-chk2" style="margin:2px 0"><input type="checkbox" id="cuHb"'+(cu.hbold?' checked':'')+'> Bold headings</label>'+
+      '<div class="at-cols">'+[['paper','Paper'],['ink','Text'],['head','Headings'],['accent','Accent'],['backdrop','Backdrop']].map(c=>'<label title="'+c[1]+'"><input type="color" data-cu="'+c[0]+'" value="'+cu[c[0]]+'"><span>'+c[1]+'</span></label>').join('')+'</div>'+
+      '<div class="at-cg"><label>Page frame'+sel('cuF',[['none','None'],['hair','Hairline'],['double','Double rule'],['thick','Thick border'],['corners','Corner marks']],cu.frame)+'</label>'+
+      '<label>Headings'+sel('cuHs',[['plain','Plain'],['underline','Underlined'],['centred','Centred with ornament'],['caps','Spaced capitals']],cu.hstyle)+'</label></div>'+
+      '<div class="at-cg"><label>Maps'+sel('cuM',[['none','No frame'],['line','Thin line'],['double','Double line'],['shadow','Shadow card'],['rounded','Rounded card']],cu.mapframe)+'</label>'+
+      '<label>Captions'+sel('cuC',[['italic','Italic'],['plain','Plain'],['centred','Centred']],cu.capstyle)+'</label></div>'+
+      '<div class="at-cg"><label>Page numbers'+sel('cuP',[['plain','3'],['dashes','— 3 —'],['circle','● 3'],['p','p. 3']],cu.pnum)+'</label>'+
+      '<label class="fc-chk2" style="align-self:flex-end;margin:0 0 6px"><input type="checkbox" id="cuDc"'+(cu.dropcap?' checked':'')+'> Drop capitals</label></div></div>':'')+
+    '<h3 class="fc-h">Reading</h3><div class="at-seg" role="radiogroup"><button type="button" data-m="book"'+(atlas.mode==='book'?' class="on"':'')+' title="Turn pages in two-page spreads">📖 Book</button><button type="button" data-m="scroll"'+(atlas.mode==='scroll'?' class="on"':'')+' title="One long page, section after section">↕ Scrolling</button></div>'+
+    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button></div>'+
+    '<p class="kv" style="margin-top:6px">Share, export as a web page or download a PDF from <b>Send / Export ▾</b> at the top.</p>';
+  const up=k=>e=>{ atlas[k]=e.target.value; atDirty(); renderAtList(); if(atSel==='cover') atRefreshCover(); };
   document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
-  document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value; atDirty(); };
-  document.getElementById('atCol').oninput=up('coverColor');
-  const ci=document.getElementById('atCvIn');
-  document.getElementById('atCvImg').onclick=()=>ci.click();
-  ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
-  const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
-  document.querySelectorAll('input[name="atMode"]').forEach(r=>r.onchange=()=>{ atlas.mode=r.value; atDirty(); renderAtList(); });
-  document.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ atlas.theme=b.dataset.t; atDirty(); document.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b)); if(atSel!=='cover'){ atSel='cover'; renderAtList(); } renderAtBody(); if(AT_FONTS[atlas.theme]) setTimeout(()=>{ if(atSel==='cover') renderAtBody(); }, 700); mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
-  document.getElementById('atToc').onchange=e=>{ atlas.contents=e.target.checked; atDirty(); renderAtList(); };
+  box.querySelectorAll('.at-seg button').forEach(b=>b.onclick=()=>{ atlas.mode=b.dataset.m; atDirty(); box.querySelectorAll('.at-seg button').forEach(x=>x.classList.toggle('on', x===b)); renderAtList(); });
+  box.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ const was=atlas.theme; atlas.theme=b.dataset.t; atDirty();
+    if((was==='custom')!==(atlas.theme==='custom')) renderAtSettings(); else box.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b));
+    if(atSel!=='cover'&&atSel!=='back'){ atSel='cover'; renderAtList(); } renderAtBody(); if(atFontUrl(atlas)) setTimeout(()=>{ if(atSel==='cover'||atSel==='back') renderAtBody(); }, 700);
+    mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
+  if(atlas.theme==='custom'){
+    const cuUp=(k,v)=>{ atlas.custom[k]=v; atDirty(); if(atSel!=='cover'&&atSel!=='back'){ atSel='cover'; renderAtList(); } renderAtBody(); if(/font/.test(k)) setTimeout(renderAtBody, 700); };
+    [['cuH','hfont'],['cuB','bfont'],['cuF','frame'],['cuHs','hstyle'],['cuM','mapframe'],['cuC','capstyle'],['cuP','pnum']].forEach(([id,k])=>document.getElementById(id).onchange=e=>cuUp(k,e.target.value));
+    document.getElementById('cuHb').onchange=e=>cuUp('hbold',e.target.checked);
+    document.getElementById('cuDc').onchange=e=>cuUp('dropcap',e.target.checked);
+    box.querySelectorAll('[data-cu]').forEach(inp=>inp.oninput=e=>cuUp(inp.dataset.cu,e.target.value));
+  }
   document.getElementById('atPrev').onclick=atPreview;
-  document.getElementById('atExport').onclick=atExport;
-  document.getElementById('atPdf').onclick=()=>atPdf();
-  document.getElementById('atUrl').oninput=e=>{ const v=e.target.value.trim(); atlas.url=/^https?:\/\/\S{3,}$/i.test(v)?v:''; atDirty(); };
 }
 function atReadImage(file, max){
   return new Promise((res,rej)=>{
@@ -10487,9 +10619,9 @@ async function atCaptureMap(p, basemap, quiet){
   /* a still for page thumbnails and the page-turn animation */
   try{
     if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
-    const url= await withHiRes(2, async ()=> projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement((typeof mkGlobe!=='undefined' && mkGlobe) ? document.getElementById('mk-globe') : document.getElementById('mk-map'), 2, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint'))));
+    const url= await withHiRes(3, async ()=> projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement((typeof mkGlobe!=='undefined' && mkGlobe) ? document.getElementById('mk-globe') : document.getElementById('mk-map'), 3, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint'))));
     p.thumb=await atToJpeg(url, 900, 0.8);
-    p.still=await atToJpeg(url, 2000, 0.86);   /* sharper copy for the PDF */
+    p.still=await atToJpeg(url, 2800, 0.9);   /* sharper copy for the PDF */
   }catch(_){ p.thumb=''; }
   finally{ if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
   atDirty(); if(!document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas();
@@ -10549,8 +10681,8 @@ async function atCaptureLayout(p){
   if(!canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ toast('The Composer page is empty. Lay out a map there first.', 3500); return false; }
   toast('Capturing the Composer page…');
   let url='';
-  try{ url=layoutDataURL(150); }catch(e){ toast('Could not capture the page: '+e.message, 4000); return false; }
-  p.src=await atToJpeg(url, 2400, 0.88); p.captured=Date.now();
+  try{ url=layoutDataURL(220); }catch(e){ toast('Could not capture the page: '+e.message, 4000); return false; }
+  p.src=await atToJpeg(url, 3200, 0.9); p.captured=Date.now();
   atDirty(); renderAtlas();
   mlog('compose','Added the Composer layout to the atlas as "'+(p.title||'Map layout')+'".');
   return true;
@@ -10577,7 +10709,7 @@ function buildAtlasHtml(a0){
   const fav=document.querySelector('link[rel="icon"]');
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
     '<title>'+esc(a.title||'Atlas')+'</title>'+(fav?'<link rel="icon" type="image/svg+xml" href="'+esc(fav.getAttribute('href'))+'">':'')+
-    (AT_FONTS[a.theme]?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="'+AT_FONTS[a.theme]+'">':'')+
+    (atFontUrl(a)?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="'+esc(atFontUrl(a))+'">':'')+
     '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
     '<script>\n'+atlasViewer.toString()+'\natlasViewer(document.getElementById("atlas"), '+data+');\n<\/script></body></html>';
 }
@@ -10585,7 +10717,8 @@ function buildAtlasHtml(a0){
    exported atlas uses, with the app's own jsPDF and html2canvas) */
 function atEnsureCss(){
   if(!document.getElementById('atlasAppCss')){ const st=document.createElement('style'); st.id='atlasAppCss'; st.textContent=ATLAS_CSS; document.head.appendChild(st); }
-  if(atlas && AT_FONTS[atlas.theme] && !document.getElementById('atlasFonts-'+atlas.theme)){ const l=document.createElement('link'); l.id='atlasFonts-'+atlas.theme; l.rel='stylesheet'; l.href=AT_FONTS[atlas.theme]; document.head.appendChild(l); return true; }
+  const fu=atFontUrl(atlas);
+  if(fu && ![...document.querySelectorAll('link[data-atfont]')].some(l=>l.href===fu)){ const l=document.createElement('link'); l.rel='stylesheet'; l.href=fu; l.dataset.atfont='1'; document.head.appendChild(l); return true; }
   return false;
 }
 async function atPdf(){
@@ -10597,6 +10730,64 @@ async function atPdf(){
     await api.pdf();
     mlog('export','Downloaded the atlas "'+atlas.title+'" as a PDF ('+atlas.pages.length+' pages, '+((AT_THEMES.find(t=>t.k===atlas.theme)||{}).n||'Classic')+' design).');
   }catch(err){ toast('The PDF could not be made: '+(err&&err.message||err), 6000); }
+}
+/* Share: the atlas packed into a link (like a Map Maker share), when it fits;
+   otherwise publish the exported page and share its address. */
+function atSharePayload(){
+  const a=JSON.parse(JSON.stringify(atlas));
+  a.pages.forEach(p=>{ delete p.thumb; delete p.still; delete p.mapHtml; delete p.captured; });
+  return {v:1, atlas:a};
+}
+async function atShareDialog(){
+  if(!atlas || !atlas.pages.length){ toast('Add some pages to the atlas first.'); return; }
+  let m=document.getElementById('modal-atshare');
+  if(!m){ m=document.createElement('div'); m.className='modal-overlay hidden'; m.id='modal-atshare';
+    m.innerHTML='<div class="modal" style="max-width:560px"><h2>Share this atlas</h2><div id="atShBody"></div>'+
+      '<div class="modal-close-row"><button class="btn" onclick="closeModal(\'modal-atshare\')">Done</button></div></div>';
+    document.body.appendChild(m); }
+  const body=document.getElementById('atShBody');
+  body.innerHTML='<p class="kv">Packing the atlas…</p>'; openModal('modal-atshare');
+  let enc=''; try{ enc=await encodeShare(atSharePayload()); }catch(e){ body.innerHTML='<p class="kv">Could not build the link: '+esc(e.message)+'</p>'; return; }
+  const url=shareBaseURL()+'#a='+enc, HARD=600000, fits=url.length<=HARD;
+  const kb=Math.round(url.length/1024);
+  const pub=atlas.url||'';
+  body.innerHTML=(fits?
+      '<label class="fc-lbl">Link to the atlas<div class="at-shrow"><input type="text" id="atShLink" readonly value="'+esc(url)+'"><button class="btn small" id="atShCopy">Copy</button><a class="btn small light" id="atShOpen" href="'+esc(url)+'" target="_blank" rel="noopener">Open</a></div></label>'+
+      '<p class="kv">The whole atlas rides inside the link ('+kb+' KB), so nothing is uploaded. For other people to open it, Map-O-Matic must be online at a stable address (your published copy); a link made from a file on your own computer only opens on that computer.'+(url.length>120000?' Long links like this one work in browsers, but some email and chat apps cut them short.':'')+'</p>'
+    : '<p class="kv"><b>This atlas is too big for a link</b> ('+kb+' KB, mostly its pictures). Publish it instead: choose <b>Send / Export ▾ → Export as web page</b>, drop the file on <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> (or any web host), then paste the address it gives you below.</p>')+
+    '<label class="fc-lbl" style="margin-top:8px">Published address (optional)<input type="text" id="atShPub" placeholder="https://… where you put the exported atlas" value="'+esc(pub)+'"></label>'+
+    '<p class="kv" style="margin-top:2px">Used for a short link and QR code, and for the “View the interactive map” links in the PDF.</p>'+
+    '<div id="atShPubOut"></div>';
+  const cp=document.getElementById('atShCopy'); if(cp) cp.onclick=()=>copyToClipboard(url, cp);
+  const out=document.getElementById('atShPubOut');
+  const showPub=async ()=>{
+    const v=(document.getElementById('atShPub').value||'').trim();
+    if(!/^https?:\/\/\S{3,}$/i.test(v)){ out.innerHTML=''; if(!v && atlas.url){ atlas.url=''; atDirty(); } return; }
+    if(atlas.url!==v){ atlas.url=v; atDirty(); }
+    out.innerHTML='<div class="at-shpub"><div id="atShQr"></div><div style="flex:1;min-width:0"><div class="at-shrow"><input type="text" readonly value="'+esc(v)+'"><button class="btn small" id="atShCopy2">Copy</button></div>'+
+      '<label class="fc-lbl" style="margin-top:6px">Embed code<textarea readonly rows="3" id="atShEmb">'+esc('<iframe src="'+v+'" width="100%" height="640" style="border:0;" loading="lazy" allowfullscreen title="'+(atlas.title||'Atlas')+'"></iframe>')+'</textarea></label></div></div>';
+    document.getElementById('atShCopy2').onclick=e=>copyToClipboard(v, e.target);
+    try{ await loadLib('qrcode'); const cv=qrToCanvas(v, 150); document.getElementById('atShQr').appendChild(cv); }catch(_){}
+  };
+  let tmr=null; document.getElementById('atShPub').oninput=()=>{ clearTimeout(tmr); tmr=setTimeout(showPub, 400); };
+  showPub();
+  mlog('export','Opened the share options for the atlas "'+atlas.title+'" ('+(fits?'link '+kb+' KB':'too big for a link')+').');
+}
+/* opening a shared atlas link: the atlas, read-only, full screen */
+function isAtlasShareMode(){ return /[#&]a=[^&]+/.test(location.hash); }
+async function enterAtlasShare(){
+  let payload=null;
+  try{ payload=await decodeShare(location.hash.match(/[#&]a=([^&]+)/)[1]); }catch(_){}
+  const a=payload && atSanitize(payload.atlas);
+  if(!a){ document.body.innerHTML='<div style="font-family:sans-serif;padding:40px;color:#22293a;">This atlas link could not be read — it may be incomplete. Ask for the link again.</div>'; return; }
+  document.getElementById('topbar').classList.add('hidden');
+  document.querySelectorAll('.module').forEach(m=>m.classList.add('hidden'));
+  atlas=a; atEnsureCss();
+  const data=Object.assign({}, a, {pages:a.pages.map(p=>{ const q=Object.assign({}, p); if(p.kind==='map') q.mapHtml=atMapHtml(p); delete q.snap; return q; })});
+  const host=document.createElement('div'); host.id='atShareRoot'; host.style.cssText='position:fixed;inset:0;z-index:5000;';
+  document.body.appendChild(host);
+  document.title=(a.title||'Atlas')+' — Map-O-Matic';
+  atlasViewer(host, data);
 }
 function atPreview(){
   if(!atlas) return;
@@ -10620,7 +10811,10 @@ function atExport(){
   const menu=document.getElementById('atAddMenu');
   document.getElementById('atAddBtn').onclick=e=>{ e.stopPropagation(); menu.classList.toggle('hidden'); };
   document.addEventListener('click', ()=>menu.classList.add('hidden'));
-  menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{ menu.classList.add('hidden'); atAddPage(b.dataset.k); });
+  menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{ menu.classList.add('hidden');
+    if(b.dataset.k==='contents'){ atlas.contents=true; atSel='contents'; atDirty(); renderAtlas(); return; }
+    atAddPage(b.dataset.k); });
+  document.getElementById('atAddBtn').addEventListener('click', ()=>{ const t=document.getElementById('atAddToc'); if(t) t.hidden=!!(atlas&&atlas.contents); }, true);
 })();
 window.__atlas=()=>atlas;
 
@@ -11471,9 +11665,9 @@ function renderTopMenu(){
   } else if(mod==='layout'){
     h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page');
   } else if(mod==='atlas' && atlas){
-    h+='<div class="tg">This atlas</div>'+it('atlas-preview','👁 Preview atlas','Full screen, as readers will see it')+it('atlas-export','⬇ Export atlas as web page','One HTML file to host and share')+it('atlas-pdf','⬇ Download atlas as PDF','One page per atlas page, ready to print');
+    h+='<div class="tg">This atlas</div>'+it('atlas-share','🔗 Share atlas link…','A link that opens the atlas in a browser')+it('atlas-export','⬇ Export as web page','One HTML file to host anywhere')+it('atlas-pdf','⬇ Download PDF','One page per atlas page, ready to print')+it('atlas-preview','👁 Preview','Full screen, as readers will see it');
   }
-  h+='<div class="tg">Share &amp; export</div>'+it('share','🔗 Share link or embed…','A live link to the map, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
+  h+='<div class="tg">'+(mod==='atlas'?'Map &amp; project':'Share &amp; export')+'</div>'+it('share','🔗 Share map link or embed…','A live link to the Map Maker view, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
   m.innerHTML=h;
 }
 (function(){
@@ -11497,6 +11691,7 @@ function renderTopMenu(){
     else if(g==='atlas-preview') atPreview();
     else if(g==='atlas-export') atExport();
     else if(g==='atlas-pdf') atPdf();
+    else if(g==='atlas-share') atShareDialog();
     else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
     else if(t.dataset.upd){ if(t.dataset.k==='layout') await atSendLayout(t.dataset.upd); else await atSendFromMaker(t.dataset.upd); }
   });
@@ -11565,7 +11760,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
     /* globe view: the basemap and data are already baked into the WebGL canvas.
        Read it inside a render callback or it comes back blank/black. */
     status.textContent='Capturing globe…';
-    withHiRes(3, ()=>glFreshDataURL(mkGlobe)).then(dataURL=>{
+    withHiRes(4, ()=>glFreshDataURL(mkGlobe)).then(dataURL=>{
       if(!dataURL){ status.textContent='Could not capture the globe.'; return; }
       closeModal('modal-send');
       window.__layout.receiveFromMaker(dataURL, null, specs, false, []);
@@ -11576,7 +11771,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
   if(projActive){
     /* projected view: capture the projection canvas directly, redrawn at 3× */
     status.textContent='Capturing map…';
-    withHiRes(3, async ()=>document.getElementById('projCanvas').toDataURL('image/png')).then(dataURL=>{
+    withHiRes(4, async ()=>document.getElementById('projCanvas').toDataURL('image/png')).then(dataURL=>{
     closeModal('modal-send');
     window.__layout.receiveFromMaker(dataURL, null, specs, false, labels);
     if(wantScale) toast('No scale bar added — scale varies across a projected map.', 4200);
@@ -11587,7 +11782,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
   const mapEl=document.getElementById('mk-map');
   mapEl.classList.add('capturing');
   mkMap.closePopup();
-  const CAPSCALE=3;   /* print quality: the map is redrawn at 3× before capture */
+  const CAPSCALE=4;   /* print quality: the map is redrawn at 4× before capture */
   if(wantLabels) hideLabelsForCapture(true);      /* they arrive as text instead */
   const center=mkMap.getCenter(), zoom=mkMap.getZoom();
   const metersPerScreenPx = 156543.03392 * Math.cos(center.lat*Math.PI/180) / Math.pow(2, zoom);
@@ -17384,6 +17579,7 @@ window.__ghPublish=ghPublish; window.__renderGhPublishBox=renderGhPublishBox;
 if(isOAuthCallback()){ handleOAuthPopup(); }
 else if(isCollectMode()){ enterCollector(); }
 else if(isShareMode()){ enterShareViewer(); }
+else if(isAtlasShareMode()){ enterAtlasShare(); }
 else {
 initCanvas();
 initMakerMap();

@@ -418,7 +418,43 @@
   .at-tn{font-size:10.5px;font-weight:600;line-height:1.15;display:block;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .at-spchk{margin:2px 0 0;}
   .at-ctimg{max-height:70px;max-width:120px;border-radius:4px;border:1px solid var(--line);}
-  .at-ctprev{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;background:#fbfcfd;}
+  .at-ctprev{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;background:#fbfcfd;max-height:220px;overflow:auto;}
+  /* v58: one editor layout — page on top, option cards below */
+  .at-ed{max-width:1000px;margin:0 auto;gap:12px;}
+  .at-edhead{display:flex;gap:10px;align-items:center;}
+  .at-ed input.at-ptitle{flex:1;min-width:0;font-size:18px;font-weight:600;padding:8px 11px;border-radius:7px;}
+  .at-delbtn.armed{background:#fbe9e7 !important;color:#b3261e !important;border-color:#e6b0aa !important;}
+  .at-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;}
+  .at-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px 13px;display:flex;flex-direction:column;gap:9px;box-shadow:0 1px 3px rgba(16,24,40,.05);min-width:0;}
+  .at-card>h4{margin:0 0 1px;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .at-card-wide{grid-column:1/-1;}
+  .at-f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--text);margin:0;}
+  .at-f .kv{font-weight:400;display:inline;margin:0 0 0 3px;font-size:11.5px;} .at-fl{display:block;}
+  .at-f input[type=text],.at-f select{width:100%;box-sizing:border-box;font-weight:400;}
+  .at-ed .at-f input.at-in-t{font-weight:600;font-size:14px;}
+  .at-fcol{flex-direction:row;align-items:center;gap:10px;} .at-card .at-fcol .cs-sw{width:46px;flex:0 0 46px;height:30px;border-radius:6px;} .at-card .at-fcol input[type=color]{width:46px;flex:0 0 46px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;cursor:pointer;}
+  .at-chk{display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;flex-wrap:wrap;margin:0;} .at-chk .kv{margin:0;font-size:11.5px;}
+  .at-btnrow{display:flex;gap:6px;flex-wrap:wrap;}
+  .at-meta2{margin:0;font-size:11.5px;line-height:1.4;}
+  .at-imgctl{display:flex;gap:10px;align-items:center;margin-top:2px;font-weight:400;}
+  .at-imgctl .at-ctimg{max-height:56px;max-width:90px;object-fit:cover;flex:0 0 auto;}
+  .at-imgph{width:72px;height:52px;border:1px dashed var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aab4c0;font-size:18px;flex:0 0 auto;background:#fafbfc;}
+  .at-imgbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;} .at-imgbtns .kv{flex-basis:100%;margin:0;font-size:11.5px;}
+  .at-dis{opacity:.45;}
+  .at-seg3 button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;font-weight:600;padding:6px 4px;line-height:1.2;} .at-seg3 button span{font-size:13px;letter-spacing:-1px;color:var(--muted);} .at-seg3 button.on span{color:var(--teal);} .at-seg button:disabled{cursor:default;}
+  .at-sw{position:relative;} .at-sw input{position:absolute;opacity:0;width:0;height:0;margin:0;}
+  .at-sw i{width:32px;height:18px;border-radius:10px;background:#cfd6de;position:relative;flex:0 0 auto;transition:background .15s;}
+  .at-sw i::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s;}
+  .at-sw input:checked+i{background:var(--teal);} .at-sw input:checked+i::after{left:16px;} .at-sw input:focus-visible+i{outline:2px solid var(--teal);outline-offset:2px;}
+  .at-ed-cv .at-cvwrap{width:min(330px,72%);margin:2px auto 6px;}
+  .at-card .at-rt{min-height:150px;}
+  .at-custom{padding:2px 10px;gap:0;}
+  .at-cgrp+.at-cgrp{border-top:1px solid var(--line);}
+  .at-cgrp>summary{cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 1px;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--text);}
+  .at-cgrp>summary::-webkit-details-marker{display:none;} .at-cgrp>summary::after{content:"▸";color:var(--muted);font-size:11px;} .at-cgrp[open]>summary::after{content:"▾";}
+  .at-cgrp[open]>summary{color:var(--teal);}
+  .at-cgin{display:flex;flex-direction:column;gap:8px;padding:0 1px 10px;}
+  .at-cg label.at-chk{flex-direction:row;align-items:center;font-size:12px;color:var(--text);gap:5px;}
   .at-ctrow{display:flex;gap:6px;align-items:baseline;font:14px Georgia,serif;margin:3px 0;} .at-ctrow i{flex:1;border-bottom:1px dotted #bbb;} .at-ctrow b{font-weight:400;color:var(--muted);}
   .at-th img{width:100%;height:100%;object-fit:cover;}
   .help-disc{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:6px;margin-top:8px;}
@@ -9653,7 +9689,7 @@ function atlasViewer(root, D){
         '<div class="av-cv-t">'+E(D.title||'Atlas')+'</div>'+(D.subtitle?'<div class="av-cv-s">'+E(D.subtitle)+'</div>':'')+
         (D.author?'<div class="av-cv-a">'+E(D.author)+'</div>':'')+'</div></div>';
     }
-    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+(D.backText?'<p>'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div>';
+    if(p.kind==='back') return '<div class="av-pg av-back" style="background-color:'+coverCol+'"><div class="av-bk-in">'+backInner()+'<div class="av-bk-foot">'+(D.backCredit?'<div class="av-bk-cr">'+E(D.backCredit)+'</div>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div></div>';
     if(p.kind==='blank') return '<div class="av-pg av-blank"></div>';
     if(p.kind==='spreadR') return '<div class="av-pg av-blank"></div>';
     var foot= theme==='retro' ? '<div class="av-foot av-dosbar"><span>'+E((D.title||'ATLAS').toUpperCase())+'</span><span>F1 Help · ←/→ Page</span><span class="av-pno">'+pnum(i)+'</span></div>'
@@ -9670,14 +9706,29 @@ function atlasViewer(root, D){
       var how=(cap||text)?({column:1,box:1,split:1}[p.spreadText]?p.spreadText:'column'):'none';
       /* text never runs across the gutter: a column on the right-hand page, a box over the map, or one column per page */
       if(how==='column') return '<div class="av-pg av-inner av-spreadpg av-sp-col av-k-'+p.kind+'">'+winBar(p,i)+'<div class="av-spc-main">'+media+'</div><div class="av-spc-side">'+h2+cap+text+'</div>'+foot+'</div>';
-      if(how==='box') return '<div class="av-pg av-inner av-spreadpg av-sp-box av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-spb-box">'+cap+text+'</div>'+foot+'</div>';
+      if(how==='box') return '<div class="av-pg av-inner av-spreadpg av-sp-box av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-spb-wrap"><div class="av-spb-box" data-i="'+i+'"><div class="av-spb-in">'+cap+text+'</div><button type="button" class="av-spb-more">Read more ▾</button></div></div>'+foot+'</div>';
       if(how==='split') return '<div class="av-pg av-inner av-spreadpg av-sp-split av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-sps-cols">'+cap+text+'</div>'+foot+'</div>';
       return '<div class="av-pg av-inner av-spreadpg av-k-'+p.kind+'">'+winBar(p,i)+h2+media+foot+'</div>';
     }
     return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
   }
   var frames=[];
+  function backInner(){
+    return (IMG.test(D.backImage||'')?'<img class="av-bk-img" src="'+D.backImage+'" alt="">':'')+
+      (D.backHtml?'<div class="av-text av-bk-txt">'+D.backHtml+'</div>':(D.backText?'<p class="av-bk-txt">'+E(D.backText)+'</p>':''));
+  }
+  function fitBoxes(el){
+    el.querySelectorAll('.av-spb-box').forEach(function(b){
+      var c=b.querySelector('.av-spb-in'), m=b.querySelector('.av-spb-more'); if(!c||!m) return;
+      var chk=function(){ if(!b.classList.contains('av-open')) b.classList.toggle('av-more', c.scrollHeight>c.clientHeight+3); };
+      chk(); setTimeout(chk, 120); setTimeout(chk, 900);
+      m.onclick=function(e){ e.stopPropagation(); e.preventDefault(); var o=!b.classList.contains('av-open');
+        /* a spread is drawn as two halves: open or close both copies of the box together */
+        root.querySelectorAll('.av-spb-box[data-i="'+b.getAttribute('data-i')+'"]').forEach(function(x){ x.classList.toggle('av-open', o); var mm=x.querySelector('.av-spb-more'); if(mm) mm.textContent=o?'Show less ▴':'Read more ▾'; }); };
+    });
+  }
   function mountMaps(el){
+    fitBoxes(el);
     el.querySelectorAll('.av-map[data-map]').forEach(function(m){
       if(m.querySelector('iframe')) return;
       var p=pages.filter(function(q){ return q.id===m.getAttribute('data-map'); })[0]; if(!p) return;
@@ -9774,7 +9825,7 @@ function atlasViewer(root, D){
       var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
       html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
     });
-    html+='<section class="av-s av-sback" style="background:'+coverCol+'">'+(D.backText?'<p class="av-sbt">'+E(D.backText)+'</p>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></section>';
+    html+='<section class="av-s av-sback" style="background:'+coverCol+'"><div class="av-sbk">'+backInner()+'<div class="av-bk-foot">'+(D.backCredit?'<div class="av-bk-cr">'+E(D.backCredit)+'</div>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
     root.innerHTML=html;
     root.querySelector('.av-spdf').onclick=function(){ makePdf().catch(function(){}); };
@@ -10064,7 +10115,11 @@ const ATLAS_CSS=`
 .av-cv-a{font:600 1.3em var(--ui);margin-top:2.2em;letter-spacing:.08em;text-transform:uppercase;opacity:.85;}
 .av-cover::after{content:"";position:absolute;left:4%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.18);}
 .av-back{color:#fff;justify-content:flex-end;}
-.av-bk-in{padding:10% 9%;font:1.2em var(--ui);opacity:.9;}
+.av-bk-in{padding:10% 9%;font:1.2em var(--ui);opacity:.95;display:flex;flex-direction:column;gap:1em;height:100%;box-sizing:border-box;justify-content:flex-end;}
+.av-bk-img{display:block;max-width:62%;max-height:38%;object-fit:contain;border-radius:.3em;box-shadow:0 .4em 1.2em rgba(0,0,0,.3);margin-bottom:auto;align-self:flex-start;}
+.av-bk-txt,.av-bk-txt *{color:inherit !important;} .av-bk-txt{font-size:1em;line-height:1.5;margin:0;} .av-bk-txt a{text-decoration:underline;} .av-bk-txt h2,.av-bk-txt h3{margin:.2em 0 .4em;font-family:var(--hfont,inherit);}
+.av-bk-foot{display:flex;flex-direction:column;gap:.6em;border-top:1px solid rgba(255,255,255,.3);padding-top:.8em;}
+.av-bk-cr{font-size:.82em;letter-spacing:.04em;opacity:.85;}
 .av-brand{display:flex;align-items:center;gap:.5em;font:600 1em var(--ui);opacity:.85;color:inherit;text-decoration:none;}
 .av-brand span{display:flex;flex-direction:column;line-height:1.25;} .av-brand small{font-weight:400;opacity:.8;font-size:.85em;} a.av-brand:hover span{text-decoration:underline;}
 .av-toc-img{flex:0 1 auto;max-height:28%;margin:0 0 .8em;display:flex;} .av-toc-img img{max-width:100%;max-height:100%;object-fit:cover;border-radius:2px;}
@@ -10114,9 +10169,10 @@ const ATLAS_CSS=`
 .av-s.av-scover{max-width:none;padding:0;height:calc(100vh - 48px);position:relative;font-size:18px;}
 .av-s.av-scover .av-pg{position:absolute;}
 .av-down{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font-size:26px;opacity:.85;background:none;border:none;cursor:pointer;}
-.av-s.av-sback{max-width:none;padding:0;height:200px;position:relative;font-size:16px;}
-.av-sbt{position:absolute;left:26px;top:30px;right:26px;color:#fff;font:15px var(--ui);opacity:.9;}
-.av-s.av-sback .av-brand{position:absolute;left:26px;bottom:22px;color:#fff;}
+.av-s.av-sback{max-width:none;padding:0;min-height:200px;position:relative;font-size:16px;color:#fff;}
+.av-sbk{max-width:760px;margin:0 auto;padding:30px 26px 22px;display:flex;flex-direction:column;gap:14px;font:15px var(--ui);}
+.av-sbk .av-bk-img{max-width:min(320px,70%);max-height:240px;margin:0;}
+.av-s.av-sback .av-brand{color:#fff;}
 @media (max-width:640px){ .av-sbrand{display:none;} .av-snav{padding:0 8px;} }
 .av-pdfb{font-size:12.5px !important;padding:0 12px;font-family:var(--ui);}
 .av-spdf{flex:none;background:none;border:1px solid var(--rule);color:var(--head);border-radius:14px;padding:4px 11px;font:600 12px var(--ui);cursor:pointer;}
@@ -10225,8 +10281,17 @@ const ATLAS_CSS=`
 .av-sp-col .av-spc-side .av-cap{margin:0 0 .6em;}
 .av-sp-col .av-spc-side .av-text{margin-top:.2em;}
 .av-sp-box>.av-h,.av-sp-split>.av-h{width:46%;}
-.av-sp-box .av-spb-box{position:absolute;right:calc(3em + 1.2em);bottom:calc(4em + 1.4em);width:28%;max-height:48%;overflow:auto;z-index:4;background:var(--paper);border:1px solid var(--rule);box-shadow:0 .3em 1.2em rgba(0,0,0,.18);padding:1em 1.2em;}
-.av-sp-box .av-spb-box .av-text{margin-top:.2em;font-size:1.2em;}
+.av-sp-box .av-spb-wrap{position:relative;flex:0 0 3.2em;z-index:4;}
+.av-sp-box .av-spb-box{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:64%;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid color-mix(in srgb,var(--rule) 55%,transparent);border-radius:1.6em;padding:.85em 2.2em .9em;font-size:1.12em;line-height:1.45;
+  box-shadow:0 1.1em 2.4em -.6em rgba(0,0,0,.38),0 .35em .8em -.2em rgba(0,0,0,.18),0 0 0 .25em color-mix(in srgb,var(--paper) 60%,transparent);}
+.av-sp-box .av-spb-in{max-height:4.9em;overflow:hidden;}
+.av-sp-box .av-spb-box.av-open .av-spb-in{max-height:none;overflow:auto;max-height:22em;}
+.av-sp-box .av-spb-box.av-more:not(.av-open) .av-spb-in{-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent);}
+.av-sp-box .av-spb-box .av-text{margin:0;font-size:1em;} .av-sp-box .av-spb-box .av-cap{margin:0 0 .2em;text-align:center;} .av-sp-box .av-spb-box .av-text p{margin:0 0 .4em;}
+.av-spb-more{display:none;margin:.3em auto 0;background:none;border:none;color:var(--accent,#2f6f73);font:600 .82em var(--ui,system-ui);cursor:pointer;padding:0;letter-spacing:.02em;}
+.av-spb-box.av-more .av-spb-more,.av-spb-box.av-open .av-spb-more{display:block;}
+.av-pdfhost .av-spb-more{display:none !important;}
+.av-root .av-spb-box .av-text>p:first-of-type::first-letter,.av-root .av-bk-txt>p:first-of-type::first-letter{float:none !important;font-size:inherit !important;line-height:inherit !important;margin:0 !important;color:inherit !important;font-family:inherit !important;}
 .av-sp-split .av-sps-cols{column-count:2;column-gap:12%;max-height:24%;overflow:hidden;margin-top:.4em;}
 .av-sp-split .av-sps-cols .av-cap{margin-top:.4em;} .av-sp-split .av-sps-cols .av-text{margin-top:.4em;font-size:1.25em;}
 /* ---- Custom design ---- */
@@ -10265,7 +10330,7 @@ const ATLAS_CSS=`
 let atlas=null, atSel='cover';
 const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}};
 const AT_IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
-function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', custom:atCustomDefault(), pages:[]}; }
+function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', backHtml:'', backImage:'', backCredit:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', custom:atCustomDefault(), pages:[]}; }
 function atCustomDefault(){ return {hfont:'playfair', bfont:'georgia', hbold:false, paper:'#fbf8f1', ink:'#22293a', head:'#1f2f45', accent:'#2f6f6b', backdrop:'#2c2f36',
   frame:'hair', hstyle:'underline', dropcap:true, mapframe:'line', capstyle:'italic', pnum:'plain'}; }
 const AT_CU_FONTS=[['georgia','Georgia',null],['playfair','Playfair Display','Playfair+Display:wght@400;700'],['lora','Lora','Lora:ital,wght@0,400;0,700;1,400'],['merri','Merriweather','Merriweather:ital,wght@0,400;0,700;1,400'],
@@ -10328,7 +10393,7 @@ function atSanitize(a){
   if(!a || typeof a!=='object') return null;
   const s=(v,n)=>String(v==null?'':v).slice(0,n);
   const out=atDefault();
-  out.title=s(a.title,120)||'My Atlas'; out.subtitle=s(a.subtitle,200); out.author=s(a.author,160); out.backText=s(a.backText,400);
+  out.title=s(a.title,120)||'My Atlas'; out.subtitle=s(a.subtitle,200); out.author=s(a.author,160); out.backText=s(a.backText,400); out.backHtml=sanitizeRich(a.backHtml).slice(0,6000); out.backImage=AT_IMG.test(a.backImage||'')?a.backImage:''; out.backCredit=s(a.backCredit,200);
   out.coverColor=/^#[0-9a-f]{6}$/i.test(a.coverColor||'')?a.coverColor:'#1f3b57';
   out.coverImage=AT_IMG.test(a.coverImage||'')?a.coverImage:'';
   out.mode=a.mode==='scroll'?'scroll':'book'; out.contents=a.contents!==false;
@@ -10401,7 +10466,7 @@ function renderAtList(){
     (atlas.contents&&atlas.pages.length?'<div class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents" role="button" tabindex="0"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div><button class="at-x at-xc" data-delc="1" title="Remove the contents page" aria-label="Remove contents page">×</button></div>':'')+
     atlas.pages.map((p,i)=>'<div class="at-item at-pg'+(atSel===p.id?' active':'')+'" data-id="'+esc(p.id)+'" data-i="'+i+'" role="button" tabindex="0" title="Drag to move this page"><span class="at-grip" aria-hidden="true">⠿</span><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+(nums[p.id]?(nums[p.id].length>1?'pages '+nums[p.id].join('–')+' · spread':'page '+nums[p.id][0]):'')+' · '+AT_KINDS[p.kind].label+'</span></div><button class="at-x" data-del="'+esc(p.id)+'" title="Remove this page" aria-label="Remove page">×</button></div>').join('')+
     (atlas.pages.length?'':'<p class="kv">No pages yet. Use + Add page above, or Send / Export ▾ in Map Maker or Map Composer.</p>')+
-    '<div class="at-item'+(atSel==='back'?' active':'')+'" data-id="back" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+'"></div><div class="at-meta"><b>Back cover</b><span>'+esc((atlas.backText||'').slice(0,40)||'no text yet')+'</span></div></div>';
+    '<div class="at-item'+(atSel==='back'?' active':'')+'" data-id="back" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+'"></div><div class="at-meta"><b>Back cover</b><span>'+esc(((atlas.backHtml||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()||atlas.backText||'').slice(0,40)||'no text yet')+'</span></div></div>';
   const pick=id=>{ atSel=id; renderAtList(); renderAtBody(); };
   box.querySelectorAll('.at-item[data-id]').forEach(it=>{
     it.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(it.dataset.id); } };
@@ -10466,48 +10531,73 @@ function atRichEditor(host, html, onChange){
     fire();
   });
 }
+/* ---- Atlas editor: one layout for every page — the page on top, tidy option cards below ---- */
+const atCard=(t,inner,cls)=>'<section class="at-card'+(cls?' '+cls:'')+'"><h4>'+t+'</h4>'+inner+'</section>';
+function atImgCtl(id, src, hint){
+  return '<div class="at-imgctl">'+(src?'<img class="at-ctimg" src="'+src+'" alt="">':'<span class="at-imgph">🖼</span>')+
+    '<div class="at-imgbtns"><button class="btn small light" id="'+id+'Btn">'+(src?'⬆ Replace':'⬆ Add image')+'</button>'+(src?'<button class="btn small light" id="'+id+'X">Remove</button>':'')+
+    (hint?'<span class="kv">'+hint+'</span>':'')+'</div><input type="file" id="'+id+'In" accept="image/*" hidden></div>';
+}
+function atBindImg(id, max, set){
+  const fi=document.getElementById(id+'In'), b=document.getElementById(id+'Btn'); if(!fi||!b) return;
+  b.onclick=()=>fi.click();
+  fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ set(await atReadImage(f, max)); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
+  const x=document.getElementById(id+'X'); if(x) x.onclick=()=>{ set(''); atDirty(); renderAtlas(); };
+}
 function renderAtBody(){
   const body=document.getElementById('atBody');
   if(atSel==='back'){ renderAtBack(body); return; }
+  if(atSel==='contents'){ renderAtContents(body); return; }
   if(atSel==='cover'){
     atEnsureCss();
-    body.innerHTML='<div class="at-cvlay"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cvopts"><h3 class="fc-h" style="margin-top:0">Cover</h3>'+
-      '<label class="fc-lbl">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"></label>'+
-      '<div class="fc-lbl">Image</div><div class="at-cvbtns">'+(atlas.coverImage?'<img class="at-ctimg" src="'+atlas.coverImage+'" alt="">':'')+'<button class="btn small light" id="atCvImg">'+(atlas.coverImage?'⬆ Replace':'⬆ Add image')+'</button>'+(atlas.coverImage?'<button class="btn small light" id="atCvX">Remove</button>':'')+'<input type="file" id="atCvIn" accept="image/*" hidden></div>'+
-      '<p class="kv">Title, subtitle and author are in the panel on the right. The design decides how an image sits on the cover.</p></div></div>';
-    const ci=document.getElementById('atCvIn');
-    document.getElementById('atCvImg').onclick=()=>ci.click();
-    ci.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.coverImage=await atReadImage(f, 2400); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
-    const cx=document.getElementById('atCvX'); if(cx) cx.onclick=()=>{ atlas.coverImage=''; atDirty(); renderAtlas(); };
+    body.innerHTML='<div class="at-ed at-ed-cv"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cards">'+
+      atCard('Title &amp; author', '<label class="at-f">Title<input type="text" id="atT" class="at-in-t" maxlength="120" value="'+esc(atlas.title)+'" placeholder="Title"></label>'+
+        '<label class="at-f">Subtitle<input type="text" id="atS" maxlength="200" value="'+esc(atlas.subtitle)+'" placeholder="Optional"></label>'+
+        '<label class="at-f">Author(s)<input type="text" id="atA" maxlength="160" value="'+esc(atlas.author)+'" placeholder="Optional"></label>')+
+      atCard('Cover', '<label class="at-f at-fcol">Colour<input type="color" id="atCol" value="'+atlas.coverColor+'"><span class="kv">also used for the back cover</span></label>'+
+        '<div class="at-f">Image'+atImgCtl('atCv', atlas.coverImage, 'The design decides how the image sits on the cover.')+'</div>')+
+      '</div></div>';
+    const up=k=>e=>{ atlas[k]=e.target.value; atDirty(); renderAtList(); atRefreshCover(); };
+    document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
+    atBindImg('atCv', 2400, v=>{ atlas.coverImage=v; });
     document.getElementById('atCol').oninput=e=>{ atlas.coverColor=e.target.value; atDirty(); renderAtList(); atRefreshCover(); };
-    const bx=body.querySelector('.at-cvbox');
     atRefreshCover();
     return;
   }
-  if(atSel==='contents'){ renderAtContents(body); return; }
   const p=atCur(); if(!p){ atSel='cover'; renderAtBody(); return; }
   const i=atlas.pages.indexOf(p);
   let media='';
   if(p.kind==='map') media=p.snap?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>';
   else if(p.kind==='layout'||p.kind==='image') media=p.src?'<div class="at-media"><img src="'+p.src+'" alt=""></div>':'<div class="at-media at-missing">No image yet.</div>';
-  const bmOpts=AT_BMS.map(b=>'<option value="'+b[0]+'">'+b[1]+'</option>').join('');
   const nL=p.snap?(p.snap.globe?p.snap.gLayers.length:p.snap.proj?p.snap.pLayers.length:p.snap.layers.length):0;
   const vKind=!p.snap?'':p.snap.globe?'globe view · ':p.snap.proj?(p.snap.proj.label||'projected')+' projection · ':'';
   const swTxt=p.snap&&p.snap.swipe?'swipe comparison · ':'';
-  const act = p.kind==='map' ? '<div class="at-mapopts">'+(p.snap&&p.snap.proj?'':'<label class="fc-lbl" style="margin:0">Basemap<select id="atBm">'+bmOpts+'</select></label>')+
-      '<label class="fc-chk2" style="margin:0 0 6px"><input type="checkbox" id="atLg"'+(p.legend?' checked':'')+'> Legend button<span class="kv" style="margin:0 0 0 4px">(readers open and close it)</span></label></div>'+
-      '<div class="at-acts"><button class="btn small" id="atRecap" title="Replace this page\'s map with the layers and view in Map Maker now">↻ Update from Map Maker</button><button class="btn small light" id="atShowMk" title="Open Map Maker at this page\'s view with its layers switched on">🧭 Show in Map Maker</button>'+
-      '<span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString()+' · ':'')+vKind+swTxt+nL+' layer'+(nL===1?'':'s')+'. Tip: in Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds each new view as a page.</span></div>'
-    : p.kind==='layout' ? '<div class="at-acts"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button><span class="kv" style="margin:0">'+(p.captured?'Captured '+new Date(p.captured).toLocaleString():'')+'. Readers can click it to enlarge.</span></div>'
-    : p.kind==='image' ? '<div class="at-acts"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div>' : '';
+  const when=p.captured?'Captured '+new Date(p.captured).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}):'';
+  let srcCard='';
+  if(p.kind==='map') srcCard=atCard('Map',
+      (p.snap&&p.snap.proj?'':'<label class="at-f">Basemap<select id="atBm">'+AT_BMS.map(b=>'<option value="'+b[0]+'">'+b[1]+'</option>').join('')+'</select></label>')+
+      '<label class="at-chk"><input type="checkbox" id="atLg"'+(p.legend?' checked':'')+'> Legend button <span class="kv">readers open and close it</span></label>'+
+      '<div class="at-btnrow"><button class="btn small" id="atRecap" title="Replace this page\'s map with the layers and view in Map Maker now">↻ Update from Map Maker</button><button class="btn small light" id="atShowMk" title="Open Map Maker at this page\'s view with its layers switched on">🧭 Show in Map Maker</button></div>'+
+      '<p class="kv at-meta2">'+(when?when+' · ':'')+vKind+swTxt+nL+' layer'+(nL===1?'':'s')+'</p>');
+  else if(p.kind==='layout') srcCard=atCard('Layout',
+      '<div class="at-btnrow"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button></div><p class="kv at-meta2">'+(when?when+'. ':'')+'Readers can click the layout to enlarge it.</p>');
+  else if(p.kind==='image') srcCard=atCard('Image',
+      '<div class="at-btnrow"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div><p class="kv at-meta2">Readers can click the image to enlarge it.</p>');
+  const st=p.spreadText||'column';
+  const layCard=AT_SPREAD[p.kind]?atCard('Page layout',
+      '<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b> <span class="kv">across both facing pages (Book style)</span></label>'+
+      '<div class="at-f'+(p.spread?'':' at-dis')+'">Text on the spread<div class="at-seg at-seg3" id="atSpText">'+
+        [['column','▮▯','Column on right page'],['box','▭','Box below the map'],['split','▯▯','Column on each page']].map(o=>'<button type="button" data-v="'+o[0]+'"'+(st===o[0]?' class="on"':'')+(p.spread?'':' disabled')+' title="'+o[2]+'"><span>'+o[1]+'</span>'+o[2]+'</button>').join('')+
+      '</div></div>'):'';
   body.innerHTML='<div class="at-ed">'+
-    '<div class="at-row"><label class="fc-lbl" style="flex:1">Page title<input type="text" id="atPTitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+'"></label>'+
-    '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light" id="atDel">Delete page</button></div></div>'+
-    media+act+
-    (AT_SPREAD[p.kind]?'<div class="at-sprow"><label class="fc-chk2 at-spchk"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'> <b>Full spread</b><span class="kv" style="margin:0 0 0 6px">across both facing pages in Book style</span></label>'+
-      (p.spread?'<label class="at-sptxt">Text on the spread <select id="atSpText"><option value="column"'+(p.spreadText==='column'||!p.spreadText?' selected':'')+'>Column on the right-hand page</option><option value="box"'+(p.spreadText==='box'?' selected':'')+'>Box over the map</option><option value="split"'+(p.spreadText==='split'?' selected':'')+'>One column on each page, below</option></select></label>':'')+'</div>':'')+
-    (p.kind!=='text'?'<label class="fc-lbl">Caption (optional)<input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>':'')+
-    '<div class="fc-lbl">'+(p.kind==='text'?'Text':'Text on this page (optional)')+'</div><div id="atRich"></div></div>';
+    '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+' title" aria-label="Page title">'+
+      '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light at-delbtn" id="atDel" title="Delete this page">🗑 Delete</button></div></div>'+
+    media+
+    ((srcCard||layCard)?'<div class="at-cards">'+srcCard+layCard+'</div>':'')+
+    atCard(p.kind==='text'?'Text':'Caption & text',
+      (p.kind!=='text'?'<label class="at-f"><span class="at-fl">Caption <span class="kv">optional, shown under the '+(p.kind==='map'?'map':p.kind)+'</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label><div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div>':'')+
+      '<div id="atRich"></div>', 'at-card-wide')+
+    '</div>';
   const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
   if(p.kind==='map' && p.snap) loadMap();
   const bm=document.getElementById('atBm');
@@ -10517,12 +10607,12 @@ function renderAtBody(){
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
   const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
   const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); renderAtBody(); };
-  const spt=document.getElementById('atSpText'); if(spt) spt.onchange=()=>{ p.spreadText=spt.value; atDirty(); };
+  body.querySelectorAll('#atSpText button').forEach(b=>b.onclick=()=>{ p.spreadText=b.dataset.v; atDirty(); body.querySelectorAll('#atSpText button').forEach(x=>x.classList.toggle('on', x===b)); });
   atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
   document.getElementById('atUp').onclick=()=>{ atlas.pages.splice(i-1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   const del=document.getElementById('atDel');
-  del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.textContent='Delete page'; } },3500); return; }
+  del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; del.classList.add('armed'); setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.classList.remove('armed'); del.textContent='🗑 Delete'; } },3500); return; }
     atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
   const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
@@ -10536,56 +10626,63 @@ function atRefreshCover(){
 }
 function renderAtBack(body){
   atEnsureCss();
-  body.innerHTML='<div class="at-cvlay"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cvopts"><h3 class="fc-h" style="margin-top:0">Back cover</h3>'+
-    '<label class="fc-lbl">Text (optional)<textarea id="atBk" rows="5" maxlength="400" placeholder="A note, acknowledgements, a source line…">'+esc(atlas.backText||'')+'</textarea></label>'+
-    '<label class="fc-lbl">Colour<input type="color" id="atBkCol" value="'+atlas.coverColor+'"></label><p class="kv">The back cover shares the front cover\'s colour.</p></div></div>';
+  if(!atlas.backHtml && atlas.backText){ atlas.backHtml='<p>'+esc(atlas.backText)+'</p>'; atlas.backText=''; }
+  body.innerHTML='<div class="at-ed at-ed-cv"><div class="at-cvwrap"><div class="at-cvbox"></div></div><div class="at-cards">'+
+    atCard('Image', atImgCtl('atBi', atlas.backImage, 'A logo, a photo or a small map.'))+
+    atCard('Credits line &amp; colour', '<label class="at-f"><span class="at-fl">Credits line <span class="kv">set apart at the foot</span></span><input type="text" id="atBkCr" maxlength="200" value="'+esc(atlas.backCredit||'')+'" placeholder="e.g. GEOG 270 · UBC · 2026 · CC BY 4.0"></label>'+
+      '<label class="at-f at-fcol">Colour<input type="color" id="atBkCol" value="'+atlas.coverColor+'"><span class="kv">shared with the front cover</span></label>')+
+    atCard('Text', '<div id="atRich"></div>', 'at-card-wide')+
+    '</div></div>';
   atRefreshCover();
-  document.getElementById('atBk').oninput=e=>{ atlas.backText=e.target.value.slice(0,400); atDirty(); atRefreshCover(); };
+  atBindImg('atBi', 1600, v=>{ atlas.backImage=v; });
+  atRichEditor(document.getElementById('atRich'), atlas.backHtml, v=>{ atlas.backHtml=v; atlas.backText=''; atDirty(); atRefreshCover(); renderAtList(); });
+  document.getElementById('atBkCr').oninput=e=>{ atlas.backCredit=e.target.value.slice(0,200); atDirty(); atRefreshCover(); };
   document.getElementById('atBkCol').oninput=e=>{ atlas.coverColor=e.target.value; atDirty(); renderAtList(); atRefreshCover(); };
 }
 function renderAtContents(body){
+  const nums=atNumbers();
   body.innerHTML='<div class="at-ed">'+
-    '<label class="fc-lbl">Page title<input type="text" id="atCtT" maxlength="120" value="'+esc(atlas.contentsTitle||'Contents')+'"></label>'+
-    '<div class="fc-lbl">Image (optional)</div><div class="at-acts">'+(atlas.contentsImage?'<img class="at-ctimg" src="'+atlas.contentsImage+'" alt="">':'')+
-      '<button class="btn small light" id="atCtImg">'+(atlas.contentsImage?'⬆ Replace image':'⬆ Add image')+'</button>'+(atlas.contentsImage?'<button class="btn small light" id="atCtX">Remove</button>':'')+'<input type="file" id="atCtIn" accept="image/*" hidden></div>'+
-    '<div class="fc-lbl">Introduction (optional)</div><div id="atRich"></div>'+
-    '<div class="at-ctprev"><div class="fc-lbl">The list of pages</div>'+atlas.pages.map(q=>'<div class="at-ctrow"><span>'+esc(q.title||AT_KINDS[q.kind].label)+'</span><i></i><b>'+(atNumbers()[q.id]||[]).join('–')+'</b></div>').join('')+
-    '<p class="kv">The list is made automatically from the page titles and numbers. Each entry jumps to its page.</p></div></div>';
+    '<div class="at-edhead"><input type="text" id="atCtT" class="at-ptitle" maxlength="120" value="'+esc(atlas.contentsTitle||'Contents')+'" aria-label="Contents page title"></div>'+
+    '<div class="at-cards">'+
+      atCard('Image', atImgCtl('atCt', atlas.contentsImage, 'Shown above the list.'))+
+      atCard('The list of pages', '<div class="at-ctprev">'+(atlas.pages.map(q=>'<div class="at-ctrow"><span>'+esc(q.title||AT_KINDS[q.kind].label)+'</span><i></i><b>'+(nums[q.id]||[]).join('–')+'</b></div>').join('')||'<p class="kv">No pages yet.</p>')+'</div><p class="kv at-meta2">Made automatically from the page titles; each entry jumps to its page.</p>')+
+    '</div>'+
+    atCard('Introduction', '<div id="atRich"></div>', 'at-card-wide')+
+    '</div>';
   document.getElementById('atCtT').oninput=e=>{ atlas.contentsTitle=e.target.value; atDirty(); renderAtList(); };
-  const fi=document.getElementById('atCtIn');
-  document.getElementById('atCtImg').onclick=()=>fi.click();
-  fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ atlas.contentsImage=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
-  const x=document.getElementById('atCtX'); if(x) x.onclick=()=>{ atlas.contentsImage=''; atDirty(); renderAtlas(); };
+  atBindImg('atCt', 1800, v=>{ atlas.contentsImage=v; });
   atRichEditor(document.getElementById('atRich'), atlas.contentsText, v=>{ atlas.contentsText=v; atDirty(); });
 }
+let atCuOpen='pg';
 function renderAtSettings(){
   const box=document.getElementById('atSettings');
   const cu=atlas.custom=atCustomClean(atlas.custom);
   const sel=(id,opts,v)=>'<select id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
-  box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Atlas</h3>'+
-    '<input type="text" id="atT" class="at-in-t" maxlength="120" value="'+esc(atlas.title)+'" placeholder="Title" aria-label="Title">'+
-    '<div class="at-in2"><input type="text" id="atS" maxlength="200" value="'+esc(atlas.subtitle)+'" placeholder="Subtitle" aria-label="Subtitle"><input type="text" id="atA" maxlength="160" value="'+esc(atlas.author)+'" placeholder="Author(s)" aria-label="Author(s)"></div>'+
+  const grp=(k,t,inner)=>'<details class="at-cgrp" data-k="'+k+'"'+(atCuOpen===k?' open':'')+'><summary>'+t+'</summary><div class="at-cgin">'+inner+'</div></details>';
+  box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Reading</h3>'+
+    '<div class="at-seg" role="radiogroup"><button type="button" data-m="book"'+(atlas.mode==='book'?' class="on"':'')+' title="Turn pages in two-page spreads">📖 Book</button><button type="button" data-m="scroll"'+(atlas.mode==='scroll'?' class="on"':'')+' title="One long page, section after section">↕ Scrolling</button></div>'+
+    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button></div>'+
     '<h3 class="fc-h">Design</h3><div class="at-themes">'+AT_THEMES.map(t=>'<button type="button" class="at-theme'+(atlas.theme===t.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.n+': '+t.d)+'"><span class="at-tsw" style="background:'+t.bg+'"><i style="background:'+t.paper+';border-color:'+t.acc+'"><b style="background:'+t.ink+'"></b><u style="background:'+t.acc+'"></u></i></span><span class="at-tn">'+esc(t.n)+'</span></button>').join('')+'</div>'+
     (atlas.theme==='custom'?'<div class="at-custom">'+
-      '<div class="at-cg"><label>Headings'+sel('cuH',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.hfont)+'</label><label>Text'+sel('cuB',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.bfont)+'</label></div>'+
-      '<label class="fc-chk2" style="margin:2px 0"><input type="checkbox" id="cuHb"'+(cu.hbold?' checked':'')+'> Bold headings</label>'+
-      '<div class="at-cols">'+[['paper','Paper'],['ink','Text'],['head','Headings'],['accent','Accent'],['backdrop','Backdrop']].map(c=>'<label title="'+c[1]+'"><input type="color" data-cu="'+c[0]+'" value="'+cu[c[0]]+'"><span>'+c[1]+'</span></label>').join('')+'</div>'+
-      '<div class="at-cg"><label>Page frame'+sel('cuF',[['none','None'],['hair','Hairline'],['double','Double rule'],['thick','Thick border'],['corners','Corner marks']],cu.frame)+'</label>'+
-      '<label>Headings'+sel('cuHs',[['plain','Plain'],['underline','Underlined'],['centred','Centred with ornament'],['caps','Spaced capitals']],cu.hstyle)+'</label></div>'+
-      '<div class="at-cg"><label>Maps'+sel('cuM',[['none','No frame'],['line','Thin line'],['double','Double line'],['shadow','Shadow card'],['rounded','Rounded card']],cu.mapframe)+'</label>'+
-      '<label>Captions'+sel('cuC',[['italic','Italic'],['plain','Plain'],['centred','Centred']],cu.capstyle)+'</label></div>'+
-      '<div class="at-cg"><label>Page numbers'+sel('cuP',[['plain','3'],['dashes','— 3 —'],['circle','● 3'],['p','p. 3']],cu.pnum)+'</label>'+
-      '<label class="fc-chk2" style="align-self:flex-end;margin:0 0 6px"><input type="checkbox" id="cuDc"'+(cu.dropcap?' checked':'')+'> Drop capitals</label></div></div>':'')+
-    '<h3 class="fc-h">Reading</h3><div class="at-seg" role="radiogroup"><button type="button" data-m="book"'+(atlas.mode==='book'?' class="on"':'')+' title="Turn pages in two-page spreads">📖 Book</button><button type="button" data-m="scroll"'+(atlas.mode==='scroll'?' class="on"':'')+' title="One long page, section after section">↕ Scrolling</button></div>'+
-    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button></div>'+
-    '<p class="kv" style="margin-top:6px">Share, export as a web page or download a PDF from <b>Send / Export ▾</b> at the top.</p>';
-  const up=k=>e=>{ atlas[k]=e.target.value; atDirty(); renderAtList(); if(atSel==='cover') atRefreshCover(); };
-  document.getElementById('atT').oninput=up('title'); document.getElementById('atS').oninput=up('subtitle'); document.getElementById('atA').oninput=up('author');
+      grp('pg','Page &amp; headings',
+        '<div class="at-cg"><label>Page frame'+sel('cuF',[['none','None'],['hair','Hairline'],['double','Double rule'],['thick','Thick border'],['corners','Corner marks']],cu.frame)+'</label>'+
+        '<label>Headings'+sel('cuHs',[['plain','Plain'],['underline','Underlined'],['centred','Centred, ornament'],['caps','Spaced capitals']],cu.hstyle)+'</label></div>'+
+        '<div class="at-cg"><label class="at-chk"><input type="checkbox" id="cuHb"'+(cu.hbold?' checked':'')+'> Bold headings</label><label class="at-chk"><input type="checkbox" id="cuDc"'+(cu.dropcap?' checked':'')+'> Drop capitals</label></div>')+
+      grp('fc','Fonts &amp; colours',
+        '<div class="at-cg"><label>Heading font'+sel('cuH',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.hfont)+'</label><label>Text font'+sel('cuB',AT_CU_FONTS.map(f=>[f[0],f[1]]),cu.bfont)+'</label></div>'+
+        '<div class="at-cols">'+[['paper','Paper'],['ink','Text'],['head','Headings'],['accent','Accent'],['backdrop','Backdrop']].map(c=>'<label title="'+c[1]+'"><input type="color" data-cu="'+c[0]+'" value="'+cu[c[0]]+'"><span>'+c[1]+'</span></label>').join('')+'</div>')+
+      grp('mp','Maps &amp; page numbers',
+        '<div class="at-cg"><label>Map frame'+sel('cuM',[['none','No frame'],['line','Thin line'],['double','Double line'],['shadow','Shadow card'],['rounded','Rounded card']],cu.mapframe)+'</label>'+
+        '<label>Captions'+sel('cuC',[['italic','Italic'],['plain','Plain'],['centred','Centred']],cu.capstyle)+'</label></div>'+
+        '<div class="at-cg"><label>Page numbers'+sel('cuP',[['plain','3'],['dashes','— 3 —'],['circle','● 3'],['p','p. 3']],cu.pnum)+'</label></div>')+
+      '</div>':'')+
+    '<p class="kv" style="margin-top:10px">Title, subtitle and author: click <b>Cover</b> in the page list. Share, export or PDF: <b>Send / Export ▾</b> at the top.</p>';
   box.querySelectorAll('.at-seg button').forEach(b=>b.onclick=()=>{ atlas.mode=b.dataset.m; atDirty(); box.querySelectorAll('.at-seg button').forEach(x=>x.classList.toggle('on', x===b)); renderAtList(); });
   box.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ const was=atlas.theme; atlas.theme=b.dataset.t; atDirty();
     if((was==='custom')!==(atlas.theme==='custom')) renderAtSettings(); else box.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b));
     if(atSel!=='cover'&&atSel!=='back'){ atSel='cover'; renderAtList(); } renderAtBody(); if(atFontUrl(atlas)) setTimeout(()=>{ if(atSel==='cover'||atSel==='back') renderAtBody(); }, 700);
     mlog('compose','Chose the “'+(AT_THEMES.find(t=>t.k===atlas.theme)||{}).n+'” design for the atlas.'); });
+  box.querySelectorAll('.at-cgrp').forEach(d=>d.addEventListener('toggle', ()=>{ if(d.open){ atCuOpen=d.dataset.k; box.querySelectorAll('.at-cgrp').forEach(o=>{ if(o!==d) o.open=false; }); } else if(atCuOpen===d.dataset.k) atCuOpen=''; }));
   if(atlas.theme==='custom'){
     const cuUp=(k,v)=>{ atlas.custom[k]=v; atDirty(); if(atSel!=='cover'&&atSel!=='back'){ atSel='cover'; renderAtList(); } renderAtBody(); if(/font/.test(k)) setTimeout(renderAtBody, 700); };
     [['cuH','hfont'],['cuB','bfont'],['cuF','frame'],['cuHs','hstyle'],['cuM','mapframe'],['cuC','capstyle'],['cuP','pnum']].forEach(([id,k])=>document.getElementById(id).onchange=e=>cuUp(k,e.target.value));

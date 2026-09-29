@@ -251,6 +251,23 @@
   /* on-map tool controls (globe / measure / basemap-layers), stacked under zoom */
   .mk-mapctl a{font-size:15px;line-height:28px;text-align:center;text-decoration:none;background:#fff;}
   .mk-mapctl a.on{background:var(--teal);}
+  .mk-mapctl a{display:flex !important;align-items:center;justify-content:center;} .mk-mapctl a.on{color:#fff;}
+  .leaflet-bar a.mk-zall{font-size:17px;line-height:30px;font-weight:400;}
+  .mk-gctl{position:absolute;left:10px;top:10px;z-index:6;display:flex;flex-direction:column;gap:10px;}
+  .mk-gbar{display:flex;flex-direction:column;background:#fff;border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.45);}
+  .mk-gbar button{width:30px;height:30px;border:none;border-bottom:1px solid #ccc;background:#fff;font:700 18px/1 "Helvetica Neue",Arial,sans-serif;color:#222;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;}
+  .mk-gbar button:first-child{border-radius:4px 4px 0 0;} .mk-gbar button:last-child{border-bottom:none;border-radius:0 0 4px 4px;}
+  .mk-gbar button:hover{background:#f4f4f4;} .mk-gbar button.on{background:var(--teal);color:#fff;}
+  #mkGlobeWorld{font-size:17px;font-weight:400;} #mkGlobeFlat{font-size:15px;}
+  #mkGlobeNorth i{font-style:normal;font-size:12px;color:#c0392b;display:inline-block;transition:transform .1s;}
+  .mk-selfly{position:absolute;z-index:1001;display:flex;align-items:center;gap:2px;background:#fff;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.35);padding:3px;white-space:nowrap;}
+  .mk-selfly button{display:flex;align-items:center;gap:4px;border:none;background:#fff;border-radius:4px;padding:4px 8px;font:600 12px var(--ui,system-ui);color:#222;cursor:pointer;height:26px;}
+  .mk-selfly button:hover{background:#f1f4f7;} .mk-selfly button.on{background:#e8f3f1;color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal);}
+  .mk-selhint{font-size:11px;color:#6b7686;padding:0 6px 0 4px;}
+  #mk-center.selecting #mk-map, #mk-center.selecting #mk-map .leaflet-interactive, #mk-center.selecting .maplibregl-canvas-container{cursor:crosshair !important;}
+  .mk-seldraw{position:absolute;inset:0;width:100%;height:100%;z-index:870;pointer-events:none;}
+  .mk-seldraw path{fill:rgba(255,210,77,.18);stroke:#e09a00;stroke-width:1.6;stroke-dasharray:5 3;}
+  #projZoomCtl button.pz-gap{margin-top:8px;border-top:none;}
   #grViewer{position:absolute;left:58px;top:10px;width:40%;height:62%;z-index:960;background:#fff;border:2px solid #1b2a4a;border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;}
   #grViewer .gr-head{font-size:12px;padding:6px 8px;background:#1b2a4a;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px;}
   #grViewer .gr-stage{position:relative;flex:1;overflow:hidden;background:#e9edf3;cursor:crosshair;touch-action:none;}
@@ -505,6 +522,7 @@
   /* ---- share viewer (a read-only map opened from a share link) ---- */
   #shareViewer{position:fixed;inset:0;z-index:3000;background:#fff;}
   #shareViewer .sv-map{position:absolute;inset:0;}
+  .sv-globe{position:absolute;inset:0;z-index:750;background:#0b1e3a;} .sv-gmap{position:absolute;inset:0;}
   .sv-legend{background:rgba(255,255,255,.93);padding:8px 10px;border-radius:6px;
     box-shadow:0 1px 6px rgba(0,0,0,.25);font-size:12px;max-height:46%;overflow:auto;line-height:1.5;}
   .sv-legend .lg-title{font-weight:700;margin:4px 0 3px;} .sv-legend .lg-title:first-child{margin-top:0;}
@@ -926,7 +944,7 @@
   <section class="home-hero">
     <div class="home-hero-in">
       <h1><svg class="mom-logo mom-logo-hero" width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>Map-O-Matic</h1>
-      <p>A free cartography studio that runs in your browser. Style your data as a map, compose a print-ready layout, collect field data on phones, and gather your maps into an interactive atlas. Nothing is installed or uploaded.</p>
+      <p>A free cartography studio in your browser: style maps, compose layouts, collect field data and build atlases. Nothing is installed or uploaded.</p>
       
     </div>
   </section>
@@ -946,7 +964,7 @@
     <div id="home-projects" class="home-grid"></div>
     <div id="home-sync"></div>
     <div id="home-library" class="hidden"></div>
-    <p class="kv home-note"><b>Where your work lives:</b> projects and datasets are saved in this browser, on this computer — nothing is uploaded to a server. To carry your work between machines, use <b>☁ Sync to cloud</b> in the top bar: point Map-O-Matic at a folder you already sync (OneDrive, Google&nbsp;Drive or Dropbox) and every project is written there as a file whenever it saves, so you can pick up on another computer. Sync needs Chrome or Edge. Either way, on a shared computer it's wise to also download a project file (card menu → Export) or a full project archive as a portable backup, and take it with you.</p>
+    <p class="kv home-note"><b>Where your work lives:</b> in this browser, on this computer. To work across computers, use <b>☁ Sync to cloud</b> with a folder you already sync (OneDrive, Google&nbsp;Drive, Dropbox; Chrome or Edge). On a shared computer, also export a backup.</p>
   </div>
   <!-- credits ribbon (Vis-O-Matic style footer) -->
   <footer class="home-foot">
@@ -1084,7 +1102,7 @@
           <div class="field"><button class="btn small secondary" id="projFitBtn" style="width:100%;justify-content:center;">Fit to data</button></div>
           <div class="field"><button class="btn small light" id="projFitWorldBtn" style="width:100%;justify-content:center;">Fit to world</button></div>
         </div>
-        <div class="kv" style="margin-top:2px;">Scroll to zoom, drag to pan. On globe and azimuthal projections, dragging rotates the globe. Raster basemaps can't be reprojected in the browser, so they hide while a projection is active.</div>
+        <div class="kv" style="margin-top:2px;">Raster basemaps hide while a projection is on.</div>
       </div>
     </div>
     <div class="sec" style="border-bottom:none;padding-bottom:4px;"><h3>Layers</h3></div>
@@ -1112,8 +1130,8 @@
       <div id="projZoomCtl">
         <button id="projZoomIn" title="Zoom in">+</button>
         <button id="projZoomOut" title="Zoom out">−</button>
-        <button id="projCompare" title="Compare two layers with a swipe divider" style="font-size:15px">⇆</button>
-        <button id="projZoomAll" title="Zoom to all layers" style="font-size:15px">⤢</button>
+        <button id="projZoomAll" title="Zoom to full extent (all layers)" style="font-size:15px">✥</button>
+        <button id="projCompare" class="pz-gap" title="Compare two layers with a swipe divider" style="font-size:15px">⇆</button>
       </div>
     </div>
   </div>
@@ -1203,9 +1221,9 @@
 <div class="modal-overlay hidden" id="modal-help">
   <div class="modal">
     <h2>Quick start</h2>
-    <p class="kv" style="margin-top:-4px;">Map-O-Matic has four modules, in the buttons at the top. Work is saved in this browser as you go, one project at a time (click the Map-O-Matic name for the project list).</p>
+    <p class="kv" style="margin-top:-4px;">Four modules, in the buttons at the top. Work saves in this browser as you go.</p>
     <div class="help-step"><b>🧭 Map Maker: build the map.</b>
-      <p><b>+ Add data</b> takes GeoJSON, CSV or Excel with coordinates, zipped shapefiles, your data library, or online sources. Select a layer to style it (categories, graduated colour or size, dot density, heatmaps, hexbins, cartograms), filter it and label it. The ⋯ menu and Tools tab hold the attribute table, field calculator and spatial tools. The map can switch to a globe or one of 13 projections, and ⇆ compares two layers with a swipe divider.</p>
+      <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, online sources), then style, filter and label each layer. The Tools tab has the table, calculator and spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more.</p>
     </div>
     <div class="help-step"><b>▣ Map Composer: lay out the page.</b>
       <p>Arrange the map with a title, legend, north arrow, scale bar, text and images, or start from a template. Maps arrive from Map Maker ready to use; a map image from other software can be added with <b>Map Frame</b> and its scale calibrated. <b>View as</b> checks colours for colour blindness and greyscale print.</p>
@@ -1223,8 +1241,8 @@
       <p>Projects live only in this browser. <b>☁ Sync to cloud</b> also saves them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>📝 Process Log</b> lists every step you took, ready for a report.</p>
     </div>
     <div class="help-step"><b>About.</b>
-      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs entirely in your browser: your data stay on your computer, and the only network requests are for basemaps and the online data sources you choose. The full user guide covers every tool.</p>
-      <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. It is a teaching and research tool: check your results before relying on them, respect the terms of the data sources and basemaps you use, and remember that you are responsible for the data you load and the maps you publish.</p>
+      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs in your browser; your data stay on your computer.</p>
+      <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. Check your results, respect data and basemap terms, and take responsibility for what you publish.</p>
     </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
   </div>
@@ -1233,7 +1251,7 @@
 <div class="modal-overlay hidden" id="modal-templates">
   <div class="modal wide">
     <h2>Layout templates</h2>
-    <p class="kv">Templates give you a conventional starting arrangement — everything stays editable, and <b>double-clicking a placeholder</b> fills it with the real element in that spot. Applying a template replaces the current page contents.</p>
+    <p class="kv">Replaces the current page. Double-click a placeholder to fill it.</p>
     <div class="tmpl-cards">
       <div class="tmpl-card" data-tmpl="classic">
         <div class="thumb"></div>
@@ -1347,7 +1365,7 @@
         <option value="geojson">GeoJSON — opens in any GIS software</option>
         <option value="csv">CSV — attributes (plus lat/long for points)</option>
       </select></div>
-    <p class="kv">GeoJSON exports are valid FeatureCollections and include any calculated fields. Note: <b>Save project</b> files are for reloading work in this tool and are not GeoJSON — use this export for other GIS software.</p>
+    <p class="kv">GeoJSON for other GIS software, with any calculated fields.</p>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-exportlayer')">Cancel</button>
       <button class="btn" id="expLayerGo">Export</button>
@@ -1400,7 +1418,7 @@
 <div class="modal-overlay hidden" id="modal-send">
   <div class="modal">
     <h2>Send map to Layout</h2>
-    <p class="kv">The current map view will be captured as a high-resolution image and placed on the layout page, with the scale calibrated automatically from the map. Pan/zoom the map to the exact extent you want first.</p>
+    <p class="kv">Captures the current map view at high resolution, with a calibrated scale.</p>
     <div class="checkline"><input type="checkbox" id="sendLegend" checked><label for="sendLegend" style="margin:0;font-size:12.5px;color:var(--text);">Add legend built from my symbology</label></div>
     <div class="checkline"><input type="checkbox" id="sendScale" checked><label for="sendScale" style="margin:0;font-size:12.5px;color:var(--text);">Add a calibrated scale bar</label></div>
     <div class="checkline"><input type="checkbox" id="sendLabels"><label for="sendLabels" style="margin:0;font-size:12.5px;color:var(--text);">Bring labels as editable text (so they can be moved on the page)</label></div>
@@ -1456,7 +1474,7 @@
           <option value="layerszip">All data layers — GeoJSON files (zip)</option>
         </optgroup>
         <optgroup label="Embed / share">
-          <option value="embed">Interactive web map — HTML file + embed code (for StoryMaps, websites)</option>
+          <option value="embed">Interactive web map — HTML file + embed code</option>
         </optgroup>
         <optgroup label="Everything">
           <option value="archive">Project archive — layout PDF/PNG + all layers + project file (zip)</option>
@@ -1503,7 +1521,7 @@
 <div class="modal-overlay hidden" id="modal-share">
   <div class="modal">
     <h2>Share this map</h2>
-    <p class="kv" id="shareIntro">Your styled, interactive map is packed into a link — no upload, no account, nothing sent to a server. Anyone who opens the link sees the live map: pan, zoom and click. Paste the embed code into ArcGIS StoryMaps (an <b>Embed</b> block) or any web page.</p>
+    <p class="kv" id="shareIntro">The live map travels inside the link — nothing is uploaded. The embed code works in any web page.</p>
     <div class="field"><label>Share link</label>
       <div style="display:flex;gap:6px;align-items:center;">
         <input type="text" id="shareLink" readonly style="flex:1;min-width:0;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:11.5px;">
@@ -1527,11 +1545,11 @@
 <div class="modal-overlay hidden" id="modal-embedcode">
   <div class="modal">
     <h2>Your interactive map is ready</h2>
-    <p class="kv">The HTML file just downloaded is a complete, self-contained interactive map. Put it online, then embed it anywhere.</p>
+    <p class="kv">The downloaded HTML file is a complete interactive map. Put it online, then embed it.</p>
     <div class="field"><label>1 · Publish the file (free, no account needed for a basic deploy)</label>
       <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
         <button class="btn small" id="btnNetlifyDrop">Open Netlify Drop ↗</button>
-        <span class="kv" style="margin:0;">Drag the file you just downloaded onto the page; it goes live in under a minute.</span>
+        <span class="kv" style="margin:0;">Drag the downloaded file onto the page.</span>
       </div>
     </div>
     <div class="field"><label>2 · Paste the address Netlify gives you (the link to your file)</label>
@@ -1543,7 +1561,7 @@
     <div class="field"><label>3 · Embed code (iframe)</label>
       <textarea id="embedSnippet" readonly style="width:100%;height:80px;padding:8px;border:1px solid var(--line);border-radius:6px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;"></textarea>
     </div>
-    <p class="kv" id="embedCodeNote">Until you paste a published address, the code points at the file name — replace it with your real URL, or use step 2 to fill it in. Paste this into an ArcGIS StoryMaps <b>Embed</b> block or any web page.</p>
+    <p class="kv" id="embedCodeNote">Until you add the published address in step 2, the code points at the file name.</p>
     <div class="divider"></div>
     <div class="field"><label>Or publish in one step</label>
       <div id="ghPublishBox"></div>
@@ -1595,7 +1613,7 @@
     </div>
 
     <div id="online-osm" class="hidden">
-      <p class="kv">Fetches live OpenStreetMap features inside the <b>current Map Maker view</b> — zoom to your study area first. Community-contributed data: coverage and quality vary.</p>
+      <p class="kv">Loads OpenStreetMap features in the <b>current map view</b>. Coverage varies.</p>
       <div class="field"><label>Feature type</label>
         <select id="osmPreset">
           <option value="schools">Schools</option>
@@ -1614,21 +1632,21 @@
     </div>
 
     <div id="online-bc" class="hidden">
-      <p class="kv">Search open-data portals for map layers. Opendatasoft portals, ArcGIS Hub sites (the open-data sites of many cities, regions and agencies) and public ArcGIS Online layers load straight into the map. Catalogues whose map services don't allow loading from a web page show download links instead.</p>
+      <p class="kv">Search open-data portals for map layers. Where a portal blocks direct loading, you get download links instead.</p>
       <div class="row2">
         <div class="field"><label for="bcSource">Source</label>
           <select id="bcSource">
             <optgroup label="Search any portal">
               <option value="ods:data.opendatasoft.com">Opendatasoft network (many cities and agencies)</option>
               <option value="ods:__custom">An Opendatasoft portal…</option>
-              <option value="hub:__custom">An ArcGIS Hub open-data site…</option>
-              <option value="agol">ArcGIS Online public layers</option>
+              <option value="hub:__custom">Another city or agency open-data hub…</option>
+              <option value="agol">Public online map layers</option>
             </optgroup>
             <optgroup label="Presets">
-              <option value="ods:opendata.vancouver.ca">City of Vancouver (Opendatasoft)</option>
-              <option value="hub:opendata.kelowna.ca">City of Kelowna (ArcGIS Hub)</option>
-              <option value="hub:opendata.victoria.ca">City of Victoria (ArcGIS Hub)</option>
-              <option value="hub:opendata-saanich.hub.arcgis.com">District of Saanich (ArcGIS Hub)</option>
+              <option value="ods:opendata.vancouver.ca">City of Vancouver open data</option>
+              <option value="hub:opendata.kelowna.ca">City of Kelowna open data</option>
+              <option value="hub:opendata.victoria.ca">City of Victoria open data</option>
+              <option value="hub:opendata-saanich.hub.arcgis.com">District of Saanich open data</option>
               <option value="bccat">BC Data Catalogue (download links)</option>
             </optgroup>
           </select></div>
@@ -1643,10 +1661,10 @@
     </div>
 
     <div id="online-url" class="hidden">
-      <div class="field"><label>URL — GeoJSON, CSV (with lat/long), or Esri feature service layer</label>
+      <div class="field"><label>URL — GeoJSON, CSV (with lat/long) or feature-service layer</label>
         <input type="text" id="urlInput" placeholder="https://…"></div>
       <button class="btn" id="urlAddBtn">Fetch &amp; add</button>
-      <p class="kv">Examples: a .geojson export link from any open data portal, or an Esri REST endpoint ending in /FeatureServer/0. The source must allow cross-origin access (most public portals do).</p>
+      <p class="kv">e.g. a .geojson link, or a service layer ending in /FeatureServer/0. The site must allow loading from other pages.</p>
     </div>
 
     <div class="kv" id="onlineStatus" style="margin-top:12px;"></div>
@@ -1665,7 +1683,7 @@
 <div class="modal-overlay hidden" id="modal-libpick">
   <div class="modal">
     <h2>Add from data library</h2>
-    <p class="kv">Datasets from all your projects. Tick every one you want, then <b>Add selected</b> — each becomes a new layer in the current project that references the shared dataset.</p>
+    <p class="kv">Datasets from all your projects. Tick the ones you want, then <b>Add selected</b>.</p>
     <div id="libpickBar" class="libpick-bar hidden">
       <label><input type="checkbox" id="libpickAll"> Select all</label>
       <span id="libpickCount" class="kv"></span>
@@ -1681,7 +1699,7 @@
 <div class="modal-overlay hidden" id="modal-embed">
   <div class="modal">
     <h2>Add live embed (on-screen preview)</h2>
-    <p class="kv">Paste an embed URL from a publicly shared web map (e.g. a map viewer's “Embed map” option). It displays live and interactive on screen, but exports as a placeholder — use an image map frame for the final version.</p>
+    <p class="kv">Paste the embed URL of a public web map. It is live on screen but exports as a placeholder.</p>
     <div class="field"><label>Embed URL</label><input type="text" id="embedUrl" placeholder="https://…(embed URL from your web map)"></div>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-embed')">Cancel</button>
@@ -1703,7 +1721,7 @@
     <div class="field hidden" id="crdCustomRow"><label for="crdCustom">EPSG code or proj4 string</label>
       <input type="text" id="crdCustom" placeholder="e.g. EPSG:32633 or +proj=utm +zone=33 +datum=WGS84"></div>
     <div class="kv" id="crdPreview" style="background:#f4f6f9;border-radius:6px;padding:8px 10px;"></div>
-    <p class="kv" style="margin-top:8px;">UTM zones are 6° of longitude wide, numbered eastward from 180°W: zone = (longitude + 180) ÷ 6, rounded up. North or South marks the hemisphere. Check that the preview names the right area before loading.</p>
+    <p class="kv" style="margin-top:8px;">Check that the preview names the right area before loading.</p>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-coords')">Cancel</button>
       <button class="btn secondary hidden" id="crdJoinBtn">Join it to a layer instead…</button>
@@ -1715,7 +1733,7 @@
 <div class="modal-overlay hidden" id="modal-mlog">
   <div class="modal wide">
     <h2>Process log</h2>
-    <p class="kv">Every data step recorded in this project, plus the current design settings. Copy it into your report and edit it into prose: it is a record of what you did, not a finished methods section.</p>
+    <p class="kv">Every data step in this project and the current design settings — a record to edit into your methods.</p>
     <textarea id="mlogText" rows="18" style="width:100%;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:6px;padding:8px;" readonly></textarea>
     <div class="modal-close-row">
       <button class="btn light" id="mlogClear">Clear recorded steps</button>
@@ -2497,12 +2515,11 @@ function addMapToolControls(){
   const Ctl=L.Control.extend({options:{position:'topleft'}, onAdd(){
     const c=L.DomUtil.create('div','leaflet-bar mk-mapctl');
     c.innerHTML=
-      '<a href="#" id="mkGlobeBtn" title="Globe view (orthographic)">🌐</a>'+
+      '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
+      '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
       '<a href="#" id="mkBasemapBtn" title="Basemap layers — turn parts on/off"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:-3px\"><path d=\"M12 3 2 8l10 5 10-5z\" fill=\"#2f7d78\"/><path d=\"m2 12 10 5 10-5M2 16l10 5 10-5\" fill=\"none\" stroke=\"#2f7d78\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg></a>'+
-      '<a href="#" id="mkFindBtn" title="Go to place — search for somewhere">🔍</a>'+
-      '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>'+
-      '<a href="#" id="mkZoomAllBtn" title="Zoom to all layers">⤢</a>';
+      '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
   }});
@@ -2512,7 +2529,11 @@ function addMapToolControls(){
     const m=document.getElementById('mkMeasureBtn'); if(m) m.onclick=e=>{ e.preventDefault(); toggleMeasure(); };
     const b=document.getElementById('mkBasemapBtn'); if(b) b.onclick=e=>{ e.preventDefault(); toggleBasemapPanel(); };
     const cp=document.getElementById('mkCompareBtn'); if(cp) cp.onclick=e=>{ e.preventDefault(); if(swipe||document.getElementById('swipePanel')) closeCompare(); else openCompare(); };
-    const za=document.getElementById('mkZoomAllBtn'); if(za) za.onclick=e=>{ e.preventDefault(); mkZoomAll(); };
+    const sb=document.getElementById('mkSelBtn'); if(sb) sb.onclick=e=>{ e.preventDefault(); selToolSet(!selTool); };
+    /* full extent sits with the zoom buttons */
+    const zc=mkMap.zoomControl && mkMap.zoomControl.getContainer();
+    if(zc && !document.getElementById('mkZoomAllBtn')){ const a=L.DomUtil.create('a','mk-zall',zc); a.href='#'; a.id='mkZoomAllBtn'; a.title='Zoom to full extent (all layers)'; a.setAttribute('role','button'); a.textContent='✥';
+      L.DomEvent.on(a,'click',ev=>{ L.DomEvent.preventDefault(ev); L.DomEvent.stopPropagation(ev); mkZoomAll(); }); }
     /* the search box lives in the left panel now; this jumps focus to it */
     const fb=document.getElementById('mkFindBtn'); if(fb) fb.onclick=e=>{
       e.preventDefault();
@@ -2617,6 +2638,229 @@ function closeCompare(){
   mkLayers.forEach(l=>{ if(l.visible) renderLayer(l); });
   restackMakerLayers();
 }
+/* ---- v59: the globe draws exactly what the flat map draws ----
+   Rather than re-deriving styles, walk the Leaflet layers Map Maker (or the share
+   viewer) has already built and carry each one's geometry and paint across:
+   polygons, lines, circles, symbol markers (rasterised to icons), hexbins, dot
+   density, cartograms and heat maps all match the flat map. */
+const GLB_IMG=new Map(), GLB_IMGKEY=new Map();
+function glbIconId(html, size){
+  const k=Math.round(size)+'|'+html; let id=GLB_IMGKEY.get(k);
+  if(!id){ id='momi'+GLB_IMGKEY.size; GLB_IMGKEY.set(k,id); GLB_IMG.set(id,{html, size:Math.round(size)}); }
+  return id;
+}
+/* draw a marker's inline SVG onto a canvas synchronously (MapLibre wants the image now) */
+function glbDrawIcon(spec, pr){
+  pr=pr||2;
+  const size=Math.max(2, spec.size), pad=Math.ceil(size*0.12)+1, W=Math.ceil((size+pad*2)*pr);
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=W; const g=cv.getContext('2d');
+  try{
+    const doc=new DOMParser().parseFromString('<div xmlns="http://www.w3.org/1999/xhtml">'+spec.html+'</div>','text/html');
+    const svg=doc.querySelector('svg');
+    if(svg){
+      const vb=(svg.getAttribute('viewBox')||'0 0 100 100').split(/[\s,]+/).map(Number);
+      const sx=size/(vb[2]||100), sy=size/(vb[3]||100);
+      g.scale(pr,pr); g.translate(pad,pad); g.scale(sx,sy); g.translate(-(vb[0]||0),-(vb[1]||0));
+      svg.querySelectorAll('path,circle,ellipse,rect,polygon,polyline,line').forEach(el=>{
+        const A=n=>el.getAttribute(n); let p;
+        const t=el.tagName.toLowerCase();
+        if(t==='path') p=new Path2D(A('d')||'');
+        else { p=new Path2D();
+          if(t==='circle') p.arc(+A('cx')||0, +A('cy')||0, +A('r')||0, 0, Math.PI*2);
+          else if(t==='ellipse') p.ellipse(+A('cx')||0, +A('cy')||0, +A('rx')||0, +A('ry')||0, 0, 0, Math.PI*2);
+          else if(t==='rect') p.rect(+A('x')||0, +A('y')||0, +A('width')||0, +A('height')||0);
+          else if(t==='line'){ p.moveTo(+A('x1')||0,+A('y1')||0); p.lineTo(+A('x2')||0,+A('y2')||0); }
+          else { const n=(A('points')||'').trim().split(/[\s,]+/).map(Number); for(let i=0;i+1<n.length;i+=2) (i?p.lineTo:p.moveTo).call(p,n[i],n[i+1]); if(t==='polygon') p.closePath(); }
+        }
+        const fill=A('fill'), stroke=A('stroke'), sw=+A('stroke-width')||0;
+        if(fill!=='none' && t!=='line' && t!=='polyline'){ g.fillStyle=fill||'#000'; g.fill(p, A('fill-rule')==='evenodd'?'evenodd':'nonzero'); }
+        if(stroke && stroke!=='none' && sw>0){ g.strokeStyle=stroke; g.lineWidth=sw; g.lineJoin=A('stroke-linejoin')||'round'; g.lineCap=A('stroke-linecap')||'round'; g.stroke(p); }
+      });
+    }
+  }catch(_){}
+  const d=g.getImageData(0,0,W,W);
+  return {width:W, height:W, data:new Uint8Array(d.data.buffer)};
+}
+function glbAttachImages(map){
+  if(map.__momImg) return; map.__momImg=1;
+  map.on('styleimagemissing', e=>{ const s=GLB_IMG.get(e.id); if(!s) return; try{ if(!map.hasImage(e.id)) map.addImage(e.id, glbDrawIcon(s,2), {pixelRatio:2}); }catch(_){} });
+}
+function glbColor(c, d){ c=(c==null?'':String(c)).trim(); if(!c||/^url\(/i.test(c)) return d||'#000000'; return c; }
+/* walk Leaflet layer groups into one styled FeatureCollection (and any heat layers) */
+function glbCollect(groups, meta){
+  meta=meta||{}; const feats=[], heats=[];
+  const num=(v,d)=>{ v=+v; return isFinite(v)?v:d; };
+  const walk=l=>{
+    if(!l) return;
+    if(l._latlngs && l.options && l.options.gradient && !(l instanceof L.Path)){ heats.push(l); return; }   /* Leaflet.heat */
+    if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
+    if(!(l instanceof L.Path) && !(l instanceof L.Marker)) return;
+    let gj; try{ gj=l.toGeoJSON(7); }catch(_){ return; }
+    const g=gj&&gj.geometry; if(!g) return;
+    const o=l.options||{}, f=l.feature;
+    const P=Object.assign({}, meta.props?meta.props(f):{}, {_li:meta.id||''});
+    if(meta.fid && f){ const i=meta.fid(f); if(i!=null) P._fi=i; }
+    if(meta.lbl && f && f.properties && f.properties[meta.lbl]!=null && f.properties[meta.lbl]!=='') P._lbl=String(f.properties[meta.lbl]);
+    if(l instanceof L.Marker){
+      const ic=o.icon&&o.icon.options; if(!ic||!ic.html||!/<svg/i.test(ic.html)) return;
+      const sz=(ic.iconSize&&ic.iconSize[0])||14;
+      const op=/opacity:\s*([\d.]+)/.exec(ic.html);
+      P._k='s'; P._img=glbIconId(ic.html.replace(/^<div[^>]*>|<\/div>$/g,''), sz); P._io=op?Math.max(0,Math.min(1,+op[1])):1; P._r=sz/2;
+    } else {
+      const circle=l instanceof L.CircleMarker, poly=l instanceof L.Polygon;
+      const fillOn = o.fill!=null ? !!o.fill : (circle||poly);
+      P._k= circle?'c' : poly?'p' : 'l';
+      P._fill=glbColor(o.fillColor||o.color,'#3388ff'); P._fo=fillOn?num(o.fillOpacity,0.2):0;
+      P._stroke=glbColor(o.color,'#3388ff'); P._sw=o.stroke===false?0:num(o.weight,3); P._so=o.stroke===false?0:num(o.opacity,1);
+      if(circle) P._r=num(o.radius,10);
+      if(o.dashArray && !meta.dash) meta.dash=String(o.dashArray);
+      if(o.interactive===false) P._ni=1;
+    }
+    feats.push({type:'Feature', geometry:g, properties:P});
+  };
+  groups.forEach(walk);
+  return {fc:{type:'FeatureCollection', features:feats}, heats:heats.map(h=>({
+    pts:(h._latlngs||[]).map(p=>Array.isArray(p)?[+p[1],+p[0],p[2]==null?1:+p[2]]:[p.lng,p.lat,p.alt==null?1:p.alt]),
+    radius:(+h.options.radius||25)+(+h.options.blur||15)/2, grad:h.options.gradient||{0.4:'blue',0.65:'lime',1:'red'}, minOp:+h.options.minOpacity||0.25 })),
+    dash:meta.dash||null};
+}
+/* add one collected layer to a MapLibre map; returns the ids of its clickable layers */
+function glbAddLayer(map, id, col, lbl){
+  const src='u_'+id, ids=[];
+  col.heats.forEach((h,k)=>{
+    const hs=src+'_h'+k;
+    map.addSource(hs,{type:'geojson', data:{type:'FeatureCollection', features:h.pts.filter(p=>isFinite(p[0])&&isFinite(p[1])).map(p=>({type:'Feature', properties:{w:p[2]}, geometry:{type:'Point', coordinates:[p[0],p[1]]}}))}});
+    const stops=Object.keys(h.grad).map(Number).sort((a,b)=>a-b);
+    const ramp=['interpolate',['linear'],['heatmap-density'], 0,'rgba(0,0,0,0)']; stops.forEach(s=>{ if(s>0) ramp.push(s, glbColor(h.grad[s],'red')); });
+    map.addLayer({id:hs, type:'heatmap', source:hs, paint:{'heatmap-weight':['coalesce',['get','w'],1], 'heatmap-radius':h.radius, 'heatmap-color':ramp, 'heatmap-opacity':0.85}});
+  });
+  if(!col.fc.features.length) return ids;
+  map.addSource(src, {type:'geojson', data:col.fc});
+  const K=k=>['==',['get','_k'],k];
+  let dash=null; if(col.dash){ const d=col.dash.split(/[\s,]+/).map(Number).filter(x=>isFinite(x)&&x>=0); if(d.length>=2) dash=d; }
+  map.addLayer({id:src+'_f', type:'fill', source:src, filter:K('p'), paint:{'fill-color':['get','_fill'], 'fill-opacity':['get','_fo']}});
+  map.addLayer({id:src+'_l', type:'line', source:src, filter:['any',K('p'),K('l')], layout:{'line-join':'round','line-cap':'round'},
+    paint:Object.assign({'line-color':['get','_stroke'], 'line-width':['get','_sw'], 'line-opacity':['get','_so']}, dash?{'line-dasharray':dash.map(x=>x/2)}:{})});
+  map.addLayer({id:src+'_c', type:'circle', source:src, filter:K('c'), paint:{'circle-radius':['get','_r'], 'circle-color':['get','_fill'], 'circle-opacity':['get','_fo'],
+    'circle-stroke-color':['get','_stroke'], 'circle-stroke-width':['get','_sw'], 'circle-stroke-opacity':['get','_so'], 'circle-pitch-alignment':'map'}});
+  map.addLayer({id:src+'_s', type:'symbol', source:src, filter:K('s'), layout:{'icon-image':['get','_img'], 'icon-allow-overlap':true, 'icon-ignore-placement':true}, paint:{'icon-opacity':['get','_io']}});
+  ids.push(src+'_f', src+'_l', src+'_c', src+'_s');
+  if(lbl && lbl.f){
+    const sz=Math.max(6, Math.min(48, +lbl.s||11));
+    map.addLayer({id:src+'_t', type:'symbol', source:src, filter:['has','_lbl'],
+      layout:{'text-field':['get','_lbl'], 'text-font':[lbl.b?'Noto Sans Bold':'Noto Sans Regular'], 'text-size':sz,
+        'text-variable-anchor':['top','bottom','left','right'], 'text-radial-offset':0.9, 'text-optional':true},
+      paint:{'text-color':glbColor(lbl.c,'#22293a'), 'text-halo-color':'#ffffff', 'text-halo-width':lbl.h?1.4:0}});
+  }
+  return ids;
+}
+/* ---- v59: drag to select (box or lasso) on the flat map and the globe ---- */
+let selTool=false, selShape='rect', selDrag=null;
+const SEL_ICONS={rect:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/></svg>',
+  lasso:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5c3.3 0 5.5 1.6 5.5 3.7S11.3 10 8 10 2.5 8.3 2.5 6.2 4.7 2.5 8 2.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><path d="M5 9.4c-.8 1.3-.6 3 1 4.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'};
+function selTarget(){ return (typeof mkGlobe!=='undefined' && mkGlobe) ? mkGlobe.getCanvasContainer() : document.getElementById('mk-map'); }
+function selButtons(){ return [document.getElementById('mkSelBtn'), document.getElementById('mkGlobeSel')].filter(Boolean); }
+function selFlyout(){
+  document.querySelectorAll('.mk-selfly').forEach(x=>x.remove());
+  if(!selTool) return;
+  const b=selButtons().find(x=>x.offsetParent); if(!b) return;
+  const fly=document.createElement('div'); fly.className='mk-selfly';
+  fly.innerHTML=['rect','lasso'].map(k=>'<button type="button" data-s="'+k+'" class="'+(selShape===k?'on':'')+'" title="'+(k==='rect'?'Box':'Lasso (freehand)')+'">'+SEL_ICONS[k]+'<span>'+(k==='rect'?'Box':'Lasso')+'</span></button>').join('')+
+    '<span class="mk-selhint">Shift adds · Alt removes · Esc</span>';
+  const host=b.offsetParent; host.appendChild(fly);
+  fly.style.top=(b.offsetTop)+'px'; fly.style.left=(b.offsetLeft+b.offsetWidth+6)+'px';
+  ['pointerdown','mousedown','click','dblclick','wheel'].forEach(ev=>fly.addEventListener(ev, e=>e.stopPropagation()));
+  fly.querySelectorAll('button').forEach(x=>x.onclick=e=>{ e.preventDefault(); selShape=x.dataset.s; fly.querySelectorAll('button').forEach(y=>y.classList.toggle('on', y===x)); selButtons().forEach(y=>y.innerHTML=SEL_ICONS[selShape]); });
+}
+function selToolSet(on){
+  on=!!on; if(on===selTool && !on) return;
+  const el=selTarget();
+  if(selTool){   /* tidy up the old target first */
+    const old=selTool.el; if(old) old.removeEventListener('pointerdown', selDown, true);
+    try{ mkMap.dragging.enable(); mkMap.boxZoom.enable(); }catch(_){}
+    if(typeof mkGlobe!=='undefined' && mkGlobe){ try{ mkGlobe.dragPan.enable(); mkGlobe.dragRotate.enable(); mkGlobe.boxZoom.enable(); }catch(_){} }
+  }
+  selTool = on ? {el} : false;
+  document.getElementById('mk-center').classList.toggle('selecting', on);
+  selButtons().forEach(b=>b.classList.toggle('on', on));
+  if(on){
+    if(typeof measureActive!=='undefined' && measureActive) toggleMeasure();
+    el.addEventListener('pointerdown', selDown, true);
+    if(typeof mkGlobe!=='undefined' && mkGlobe){ try{ mkGlobe.dragPan.disable(); mkGlobe.dragRotate.disable(); mkGlobe.boxZoom.disable(); }catch(_){} }
+    else { try{ mkMap.dragging.disable(); mkMap.boxZoom.disable(); }catch(_){} }
+    const lyr=selectedLayer();
+    toast(lyr ? 'Drag on the map to select features in “'+(lyr.style.legendTitle||prettyName(lyr.name))+'”.' : 'Make a layer active in the Layers list, then drag to select.', 3200);
+  }
+  selFlyout();
+}
+function selDown(e){
+  if(e.button!==0 || selDrag) return;
+  if(e.target.closest && e.target.closest('.leaflet-control,.mk-gctl,.mk-globe-hint,.mk-selfly,.leaflet-popup,.maplibregl-popup,.maplibregl-ctrl,#swipePanel,.swipe-bar')) return;
+  e.preventDefault(); e.stopPropagation();
+  const el=selTool.el, r=el.getBoundingClientRect();
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.setAttribute('class','mk-seldraw');
+  svg.innerHTML='<path d=""/>'; (el.id==='mk-map'?el:el.parentNode).appendChild(svg);
+  selDrag={r, svg, path:svg.firstChild, pts:[[e.clientX-r.left, e.clientY-r.top]], shape:selShape, pid:e.pointerId};
+  const move=ev=>{ if(!selDrag) return; ev.preventDefault();
+    const p=[ev.clientX-r.left, ev.clientY-r.top];
+    if(selDrag.shape==='rect'){ selDrag.pts[1]=p; }
+    else { const q=selDrag.pts[selDrag.pts.length-1]; if(Math.hypot(p[0]-q[0],p[1]-q[1])>3) selDrag.pts.push(p); }
+    selDrag.path.setAttribute('d', 'M'+selRing(selDrag).map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join('L')+'Z');
+  };
+  const up=ev=>{
+    window.removeEventListener('pointermove', move, true); window.removeEventListener('pointerup', up, true); window.removeEventListener('pointercancel', up, true);
+    const d=selDrag; selDrag=null; if(!d) return; d.svg.remove();
+    /* the browser follows a drag with a click on whatever is under the pointer; swallow it */
+    const eat=ce=>{ ce.stopPropagation(); ce.preventDefault(); }; window.addEventListener('click', eat, true); setTimeout(()=>window.removeEventListener('click', eat, true), 350);
+    const ring=selRing(d); if(ring.length<3) return;
+    const xs=ring.map(q=>q[0]), ys=ring.map(q=>q[1]);
+    if(Math.max(...xs)-Math.min(...xs)<4 && Math.max(...ys)-Math.min(...ys)<4) return;
+    selApply(ring, ev.altKey?'remove':(ev.shiftKey||ev.ctrlKey||ev.metaKey)?'add':'set');
+  };
+  window.addEventListener('pointermove', move, true); window.addEventListener('pointerup', up, true); window.addEventListener('pointercancel', up, true);
+}
+function selRing(d){
+  if(d.shape==='rect'){ const a=d.pts[0], b=d.pts[1]||a; return [[a[0],a[1]],[b[0],a[1]],[b[0],b[1]],[a[0],b[1]]]; }
+  return d.pts.slice();
+}
+/* which features of the active layer fall inside a screen-space ring */
+function selApply(ring, mode){
+  const lyr=selectedLayer();
+  if(!lyr || !lyr.visible){ toast('Make a visible layer active in the Layers list first.'); return; }
+  const globe=(typeof mkGlobe!=='undefined' && mkGlobe);
+  const R=ring.concat([ring[0]]).map(p=>[p[0],-p[1]]);
+  let selPoly; try{ selPoly=turf.polygon([R]); }catch(_){ return; }
+  const bx=[Math.min(...ring.map(p=>p[0])), Math.min(...ring.map(p=>p[1])), Math.max(...ring.map(p=>p[0])), Math.max(...ring.map(p=>p[1]))];
+  let c0=null; if(globe){ const c=mkGlobe.getCenter(); c0=[c.lng*Math.PI/180, c.lat*Math.PI/180]; }
+  const hidden=(lng,lat)=>{ if(!c0) return false; const l=lng*Math.PI/180, f=lat*Math.PI/180;
+    return Math.sin(c0[1])*Math.sin(f)+Math.cos(c0[1])*Math.cos(f)*Math.cos(l-c0[0]) < 0.02; };   /* far side of the globe */
+  const proj=globe ? (c=>{ const p=mkGlobe.project([c[0],c[1]]); return [p.x,p.y]; }) : (c=>{ const p=mkMap.latLngToContainerPoint([c[1],c[0]]); return [p.x,p.y]; });
+  const cand=[];
+  const walk=l=>{ if(!l) return; if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
+    if(!l.feature || !l.toGeoJSON) return; const i=fidOf(lyr, l.feature); if(i==null) return;
+    try{ cand.push({i, g:l.toGeoJSON().geometry}); }catch(_){} };
+  walk(lyr.leaflet);
+  if(!cand.length) visibleFeatures(lyr).forEach(f=>{ const i=fidOf(lyr,f); if(i!=null && f.geometry) cand.push({i, g:f.geometry}); });
+  const hit=new Set();
+  cand.forEach(({i,g})=>{
+    if(!g) return;
+    let anyVis=false, minx=1e9, miny=1e9, maxx=-1e9, maxy=-1e9;
+    const mapC=cs=>typeof cs[0]==='number' ? (()=>{ if(!hidden(cs[0],cs[1])) anyVis=true; const p=proj(cs); if(p[0]<minx)minx=p[0]; if(p[0]>maxx)maxx=p[0]; if(p[1]<miny)miny=p[1]; if(p[1]>maxy)maxy=p[1]; return [p[0],-p[1]]; })() : cs.map(mapC);
+    let sg; try{ sg=g.type==='GeometryCollection' ? null : {type:g.type, coordinates:mapC(g.coordinates)}; }catch(_){ return; }
+    if(!sg || !anyVis) return;
+    if(maxx<bx[0]||minx>bx[2]||maxy<bx[1]||miny>bx[3]) return;
+    try{ if(turf.booleanIntersects(turf.feature(sg), selPoly)) hit.add(i); }catch(_){
+      if(sg.type==='Point'){ try{ if(turf.booleanPointInPolygon(sg.coordinates, selPoly)) hit.add(i); }catch(__){} } }
+  });
+  const idx=[...hit];
+  mkSelectedId=lyr.id;
+  if(mode==='remove'){ const s=new Set(selection.layerId===lyr.id?selection.set:[]); idx.forEach(i=>s.delete(i)); setSelection(lyr,[...s],'set'); }
+  else setSelection(lyr, idx, mode==='add'?'add':'set');
+  if(typeof mkMap!=='undefined' && mkMap) mkMap.closePopup();
+  if(!idx.length) toast('Nothing in “'+(lyr.style.legendTitle||prettyName(lyr.name))+'” there.', 2200);
+  mlog('select', (mode==='remove'?'Removed ':'Selected ')+idx.length+' feature'+(idx.length===1?'':'s')+' of "'+lyr.name+'" with a '+(selShape==='rect'?'box':'lasso')+'.');
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && selTool && !selDrag){ const t=e.target; if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName)) return; selToolSet(false); } });
 /* --- globe view (MapLibre GL v5 native globe) ---
    Rather than reprojecting to a flat orthographic canvas, this wraps the actual
    vector/raster basemap onto a true 3-D globe (like geolibre.app), keeping the
@@ -2634,12 +2878,13 @@ function globeRasterStyle(key){
       sources:{}, layers:[{id:'bg', type:'background', paint:{'background-color':'#0f2748'}}]};
   }
   const sources={}, layers=[{id:'bg', type:'background', paint:{'background-color':'#0b1e3a'}}];
+  const glyphs='https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf';
   (bm.urls||[]).forEach((u,i)=>{
     sources['r'+i]={type:'raster', tiles:[u.replace('{z}/{y}/{x}','{z}/{y}/{x}')], tileSize:256,
       maxzoom:bm.max||19, attribution:bm.attr||''};
     layers.push({id:'r'+i, type:'raster', source:'r'+i});
   });
-  return {version:8, sources, layers};
+  return {version:8, glyphs, sources, layers};
 }
 /* per-feature GeoJSON carrying baked style properties the globe can data-drive */
 function globeFeatureCollection(lyr){
@@ -2672,25 +2917,34 @@ function globeClearUserLayers(map){
 function globeAddUserLayers(map){
   if(!map || !map.isStyleLoaded || !map.isStyleLoaded()) return;
   globeClearUserLayers(map);
+  glbAttachImages(map);
   /* draw bottom layer first so the list's top layer stays on top, matching Leaflet */
+  const ids=[];
   mkLayers.slice().reverse().forEach(lyr=>{
     if(!lyr.visible) return;
-    const src='u_'+lyr.id;
-    try{ map.addSource(src, {type:'geojson', data:globeFeatureCollection(lyr)}); }catch(_){ return; }
-    if(lyr.geom==='polygon'){
-      map.addLayer({id:src+'_f', type:'fill', source:src,
-        paint:{'fill-color':['get','_fill'], 'fill-opacity':['get','_fo']}});
-      map.addLayer({id:src+'_l', type:'line', source:src,
-        paint:{'line-color':['get','_stroke'], 'line-width':['get','_sw'], 'line-opacity':['get','_so']}});
-    } else if(lyr.geom==='line'){
-      map.addLayer({id:src+'_l', type:'line', source:src,
-        paint:{'line-color':['get','_stroke'], 'line-width':['coalesce',['get','_sw'],2], 'line-opacity':['get','_so']}});
-    } else {
-      map.addLayer({id:src+'_c', type:'circle', source:src,
-        paint:{'circle-radius':['get','_r'], 'circle-color':['get','_fill'], 'circle-opacity':['get','_fo'],
-          'circle-stroke-color':['get','_stroke'], 'circle-stroke-width':['get','_sw'], 'circle-stroke-opacity':['get','_so']}});
-    }
+    const col=glbCollect([lyr.densityLayer, lyr.leaflet, lyr.dotLayer], {id:lyr.id, fid:f=>fidOf(lyr,f), lbl:(lyr.labels&&lyr.labels.enabled)?lyr.labels.field:null});
+    try{ ids.push(...glbAddLayer(map, lyr.id, col, labelSpecFor(lyr))); }catch(_){}
   });
+  map.__clickIds=ids;
+  globeSyncSelection();
+}
+/* the selection highlight, drawn over the globe's layers */
+function globeSyncSelection(){
+  const map=mkGlobe; if(!map || !map.isStyleLoaded || !map.isStyleLoaded()) return;
+  const lyr=selectionLayer();
+  let feats=selectedFeatureList();
+  if(lyr && lyr.style.mode==='carto' && lyr._cartoByIdx) feats=feats.map(f=>lyr._cartoByIdx.get(fidOf(lyr,f))).filter(Boolean);
+  const fc={type:'FeatureCollection', features:feats.filter(f=>f&&f.geometry).map(f=>({type:'Feature', properties:{}, geometry:f.geometry}))};
+  const r=(lyr&&lyr.style.radius||6)+5;
+  try{
+    if(map.getSource('u_sel')) map.getSource('u_sel').setData(fc);
+    else {
+      map.addSource('u_sel',{type:'geojson', data:fc});
+      map.addLayer({id:'u_sel_f', type:'fill', source:'u_sel', filter:['in',['geometry-type'],['literal',['Polygon','MultiPolygon']]], paint:{'fill-color':'#ffd24d','fill-opacity':.35}});
+      map.addLayer({id:'u_sel_l', type:'line', source:'u_sel', filter:['!',['in',['geometry-type'],['literal',['Point','MultiPoint']]]], paint:{'line-color':'#ffb000','line-width':4}});
+      map.addLayer({id:'u_sel_c', type:'circle', source:'u_sel', filter:['in',['geometry-type'],['literal',['Point','MultiPoint']]], paint:{'circle-radius':r,'circle-color':'#ffd24d','circle-opacity':.55,'circle-stroke-color':'#ffb000','circle-stroke-width':3,'circle-pitch-alignment':'map'}});
+    }
+  }catch(_){}
 }
 function globeApplyParts(map){
   try{
@@ -2810,20 +3064,26 @@ function globeOpen(){
   if(mkGlobe) return;
   if(typeof maplibregl==='undefined'){ toast('The globe needs MapLibre, which failed to load.'); return; }
   if(measureActive) measureClear();
+  selToolSet(false);
   let host=document.getElementById('mk-globe');
   if(!host){
     host=document.createElement('div'); host.id='mk-globe';
     host.innerHTML='<div id="mk-globe-map"></div>'+
-      '<div class="mk-globe-hint">🌐 Globe view — drag to spin, scroll to zoom.'+
-      '<button id="mkGlobeFit" title="Zoom the globe to your data">Fit data</button>'+
-      '<button id="mkGlobeAll" title="Zoom out to the whole globe">Whole globe</button>'+
-      '<button id="mkGlobeClose">Back to flat map</button></div>';
+      '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
+        '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" id="mkGlobeNorth" title="Reset to north-up (right-drag to tilt and turn)"><i>▲</i></button></div>'+
+        '<div class="mk-gbar"><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button></div></div>'+
+      '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
     /* mount inside the map area only, so the toolbar row (Layers, Send to
        Composer, Menu) and a docked attribute table stay visible in globe view */
     document.getElementById('mk-map').appendChild(host);
     host.querySelector('#mkGlobeClose').onclick=()=>toggleGlobeView();
     host.querySelector('#mkGlobeFit').onclick=()=>globeFitData();
-    host.querySelector('#mkGlobeAll').onclick=()=>globeFullExtent();
+    host.querySelector('#mkGlobeWorld').onclick=()=>globeFullExtent();
+    host.querySelector('#mkGlobeFlat').onclick=()=>toggleGlobeView();
+    host.querySelector('#mkGlobeZin').onclick=()=>{ if(mkGlobe) mkGlobe.zoomIn({duration:300}); };
+    host.querySelector('#mkGlobeZout').onclick=()=>{ if(mkGlobe) mkGlobe.zoomOut({duration:300}); };
+    host.querySelector('#mkGlobeNorth').onclick=()=>globeResetNorth();
+    host.querySelector('#mkGlobeSel').onclick=()=>selToolSet(!selTool);
   }
   host.style.display='block';
   document.getElementById('mk-center').classList.add('globe-open');
@@ -2847,26 +3107,22 @@ function globeOpen(){
     toast('The globe needs WebGL, which this browser/tab could not start.');
     globeClose(); return;
   }
-  /* zoom +/- and a compass that resets bearing (and pitch) back to north */
-  mkGlobe.addControl(new maplibregl.NavigationControl({
-    showZoom:true, showCompass:true, visualizePitch:true
-  }), 'top-left');
-  /* a "whole globe" button sitting with the zoom controls */
-  const FullExtent=function(){};
-  FullExtent.prototype.onAdd=function(map){
-    const c=document.createElement('div');
-    c.className='maplibregl-ctrl maplibregl-ctrl-group';
-    c.innerHTML='<button type="button" id="mkGlobeWorld" title="Zoom to the whole globe">🌍</button>';
-    c.querySelector('button').onclick=()=>globeFullExtent();
-    this._c=c; return c;
-  };
-  FullExtent.prototype.onRemove=function(){ if(this._c&&this._c.parentNode) this._c.parentNode.removeChild(this._c); };
-  mkGlobe.addControl(new FullExtent(), 'top-left');
-  /* belt and braces: the compass should always return the globe to north-up */
-  setTimeout(()=>{
-    const cmp=document.querySelector('#mk-globe-map .maplibregl-ctrl-compass');
-    if(cmp) cmp.addEventListener('click', ()=>globeResetNorth());
-  }, 300);
+  /* the compass needle follows the globe's bearing */
+  const needle=()=>{ const n=document.querySelector('#mkGlobeNorth i'); if(n&&mkGlobe) n.style.transform='rotate('+(-mkGlobe.getBearing())+'deg)'; };
+  mkGlobe.on('rotate', needle);
+  /* click a feature: select it (Ctrl/Cmd/Shift adds) and show its attributes, as on the flat map */
+  const hitAt=pt=>{ const ids=(mkGlobe.__clickIds||[]).filter(id=>mkGlobe.getLayer(id)); if(!ids.length) return null;
+    try{ return mkGlobe.queryRenderedFeatures(pt,{layers:ids}).find(h=>h.properties && h.properties._fi!=null && !h.properties._ni)||null; }catch(_){ return null; } };
+  mkGlobe.on('click', e=>{
+    if(selTool) return;
+    const h=hitAt(e.point); if(!h) return;
+    const lyr=mkLayers.find(l=>l.id===h.properties._li), i=+h.properties._fi; if(!lyr) return;
+    const f=lyr.geojson.features[i]; if(!f) return;
+    const oe=e.originalEvent||{};
+    mkSelectedId=lyr.id; setSelection(lyr, [i], (oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i);
+    new maplibregl.Popup({maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
+  });
+  mkGlobe.on('mousemove', e=>{ if(selTool) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
   /* apply the projection, parts and user layers once ready. 'style.load' alone is
      unreliable in v5, so also poll — that's what makes the data render on the
      FIRST open (previously it only appeared after a basemap switch). */
@@ -2886,13 +3142,33 @@ function globeOpen(){
     g.on('render', chk); g.once('idle', done); setTimeout(done, 5000); }   /* tile errors shouldn't spam the console */
 }
 function globeClose(){
+  selToolSet(false);
+  let gv=null; try{ if(mkGlobe){ const c=mkGlobe.getCenter(); gv={lat:c.lat, lng:c.lng, z:mkGlobe.getZoom()}; } }catch(_){}
   const btn=document.getElementById('mkGlobeBtn'); if(btn) btn.classList.remove('on');
   document.getElementById('mk-center').classList.remove('globe-open');
   const proj=document.getElementById('mkProjection'); if(proj) proj.disabled=false;
   if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   if(mkGlobe){ try{ mkGlobe.remove(); }catch(_){} mkGlobe=null; }
   const host=document.getElementById('mk-globe'); if(host) host.style.display='none';
-  setTimeout(()=>{ if(mkMap) mkMap.invalidateSize(); }, 60);
+  setTimeout(()=>flatMapRefresh(gv), 60);
+}
+/* Coming back from the globe (or anything that covered the flat map): make sure the
+   basemap is really drawn — its WebGL context can be lost while another map is
+   using the GPU — and redraw the data layers at the globe's view. */
+function flatMapRefresh(gv){
+  if(!mkMap) return;
+  try{ mkMap.invalidateSize({pan:false}); }catch(_){}
+  if(gv && isFinite(gv.lat) && isFinite(gv.lng)){
+    try{ mkMap.setView([Math.max(-80,Math.min(80,gv.lat)), gv.lng], Math.max(1.5, Math.min(18, Math.round(gv.z+0.3))), {animate:false}); }catch(_){}
+  }
+  let rebuild=false;
+  mkBasemapLayers.forEach(l=>{
+    const m=l.getMaplibreMap && l.getMaplibreMap(); if(!m) return;
+    try{ const gl=m.painter&&m.painter.context&&m.painter.context.gl; if(!gl || (gl.isContextLost&&gl.isContextLost())) rebuild=true; else { m.resize(); l._update&&l._update(); m.triggerRepaint(); } }catch(_){ rebuild=true; }
+  });
+  if(rebuild || !mkBasemapLayers.length || mkBasemapLayers.some(l=>!mkMap.hasLayer(l))) setBasemap(mkBasemapKey);
+  mkLayers.forEach(l=>{ if(l.visible){ try{ renderLayer(l); }catch(_){} } });
+  try{ restackMakerLayers(); renderSelection(); }catch(_){}
 }
 function toggleGlobeView(){
   if(typeof swipe!=='undefined' && (swipe||document.getElementById('swipePanel'))) closeCompare();
@@ -5552,6 +5828,7 @@ function renderSelection(){
   updateSelBar();
   markSelectedRows();
   if(projActive) scheduleProjRender();
+  if(typeof mkGlobe!=='undefined' && mkGlobe) globeSyncSelection();
 }
 function updateSelBar(){
   const bar=document.getElementById('mkSelBar');
@@ -5950,7 +6227,7 @@ function renderStyleTab(){
       html+=`<div class="checkline"><input type="checkbox" id="stCartoAuto" ${st.cartoAuto?'checked':''}><label for="stCartoAuto">Keep refining until the areas are within 5% of their values</label></div>
         <div class="field"${st.cartoAuto?' style="opacity:.45"':''}><label for="stCartoIter">Passes: <span id="stCartoIterLbl">${st.cartoIterations||12}</span></label>
         <input type="range" id="stCartoIter" min="1" max="60" step="1" value="${st.cartoIterations||12}" ${st.cartoAuto?'disabled':''}></div>
-        <div class="kv">Each pass nudges every unit closer to the area its value asks for, at the cost of a shape further from its real outline. Twelve suits most data; a field with a very wide range needs more.</div>`;
+        <div class="kv">More passes: truer areas, more distorted shapes. Twelve suits most data.</div>`;
     } else {
       html+=`<div class="row2">
         <div class="field"><label>Size: <span id="stCartoSizeLbl">${(st.cartoSize||1).toFixed(2)}×</span></label>
@@ -6016,7 +6293,7 @@ function renderStyleTab(){
       html+=`<button class="btn small light" id="stCartoBasemap">Bring the basemap back</button>`;
     }
     html+=`</div>
-      <p class="kv">Area now stands for the value rather than for ground area, so the units sit at invented coordinates. The basemap is switched off, and only equal-area projections (Equal Earth, Mollweide, Albers, Gall–Peters, Goode, Bonne) can be chosen: the cartogram is rebuilt in that projection so areas still match values. Scale bars and distance measurements mean nothing on one.</p>`;
+      <p class="kv">Area stands for the value, so the basemap is off and only equal-area projections apply. Scale bars and distances don’t apply.</p>`;
   }
   if(st.mode==='bivariate'){
     html+=`<div class="field"><label>Size field (numeric)</label>
@@ -6040,7 +6317,7 @@ function renderStyleTab(){
         <div class="field"><label>Largest symbol (radius px)</label><input type="number" id="stMaxR" value="${st.maxR}" min="4"></div>
         <div class="field"><label>Symbol colour</label><input type="color" id="stColor" value="${st.color}"></div>
       </div>
-      <div class="kv">Symbol <b>area</b> is proportional to the value, so the radius follows the square root — the standard construction for proportional symbols. No classes are used.</div>`;
+      <div class="kv">Symbol <b>area</b> is proportional to the value (unclassed).</div>`;
   }
   if(st.mode==='grad'||st.mode==='gradSize'){
     html+=`<div class="field"><label>Value field (numeric)</label>
@@ -6060,7 +6337,7 @@ function renderStyleTab(){
       <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.classes}"></div>
     </div>`;
     if(st.method==='manual'){
-      html+=`<div class="kv" style="margin:0 0 6px;">Set the breaks on the chart below the class list: drag a dashed line to move it, click the chart to add one, drag a line off the chart (or select it and press Delete) to remove it, and double-click a line to type an exact value.</div>
+      html+=`<div class="kv" style="margin:0 0 6px;">On the chart: drag a line to move a break, click to add, drag off to remove, double-click to type a value.</div>
         <div class="legend-add-row"><button class="btn small light" id="stManualEven">Space evenly</button></div>`;
     }
     html+=`<div class="field"><label>Colour ramp</label><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'grad')}</select>
@@ -6748,7 +7025,7 @@ function openRampImport(lyr){
   body.innerHTML=`
     <p class="kv">Paste a ramp, or choose a file. Understood: <b>QGIS</b> colour-ramp XML,
       a plain list of hex codes (one per line or comma-separated), a CSS
-      <code>linear-gradient(...)</code>, and ArcGIS <b>.clr</b> files.</p>
+      <code>linear-gradient(...)</code>, and <b>.clr</b> colour-map files.</p>
     <div class="field"><textarea id="rampText" rows="6" placeholder="#fee5d9, #fcae91, #fb6a4a, #de2d26, #a50f15"></textarea></div>
     <div class="legend-add-row">
       <button class="btn small light" id="rampFileBtn">Choose a file…</button>
@@ -8211,7 +8488,7 @@ function warpImage(img, natW, natH, T){
 function renderGeorefPanel(){
   const host=document.getElementById('mk-georef-panel'); if(!host) return;
   if(!geoRef){
-    host.innerHTML='<p class="kv" style="margin-top:0;">Place a scanned, photographed or hand-drawn map on the real map by matching points you can find on both (road junctions, building corners, shorelines). Then trace over it with Edit features.</p>'+
+    host.innerHTML='<p class="kv" style="margin-top:0;">Place a scanned or hand-drawn map by matching points found on both, then trace it with Edit features.</p>'+
       '<button class="btn small secondary" id="grPick">Choose an image…</button><input type="file" id="grFile" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">';
     host.querySelector('#grPick').onclick=()=>host.querySelector('#grFile').click();
     host.querySelector('#grFile').onchange=e=>{ const f=e.target.files[0]; e.target.value=''; if(f) startGeoref(f); };
@@ -8470,7 +8747,7 @@ function renderFcForms(){
 function renderFcDesign(){
   const body=document.getElementById('fcBody'), f=fcCur();
   if(!f){
-    body.innerHTML='<div class="fc-empty"><h3>Map in the field with phones</h3><p>Design a form here, open it on phones with a link or QR code, and map points, lines and areas with GPS or by tapping the map, with answers, photos and audio. The data come back to this computer and go to Map Maker as layers.</p><button class="btn" id="fcFirst">+ New form</button></div>';
+    body.innerHTML='<div class="fc-empty"><h3>Map in the field with phones</h3><p>Design a form, open it on phones with a link or QR code, and collect points, lines and areas with photos and audio. Results come back as Map Maker layers.</p><button class="btn" id="fcFirst">+ New form</button></div>';
     document.getElementById('fcFirst').onclick=fcNewForm; return;
   }
   const typeOpts=t=>Object.keys(COLLECT_TYPES).map(k=>'<option value="'+k+'"'+(k===t?' selected':'')+'>'+COLLECT_TYPES[k]+'</option>').join('');
@@ -8504,7 +8781,7 @@ function renderFcDesign(){
       '<label class="fc-lbl">Longest audio recording<select id="fcAudioMax">'+AUDIO_MAX.map(n=>'<option value="'+n+'">'+(n<60?n+' seconds':(n/60)+' minute'+(n>60?'s':''))+'</option>').join('')+'</select></label>'+
       '<label class="fc-lbl">Photo size (longest side)<select id="fcPhotoSize">'+PHOTO_SIZES.map(n=>'<option value="'+n+'">'+n+' px</option>').join('')+'</select></label>'+
       '<label class="fc-lbl fc-wide">Web address of Map-O-Matic that phones open<input type="text" id="fcBase" value="'+esc(collectBase())+'"></label>'+
-      '<p class="kv fc-wide">GPS only works on an https address. Photos are resized on the phone and lose their camera metadata (including the location stored in the file). Audio is recorded at speech quality, about 250 KB a minute.</p></div>';
+      '<p class="kv fc-wide">GPS needs an https address. Photos are resized and lose their metadata.</p></div>';
   document.getElementById('fcPlacement').value=f.placement;
   document.getElementById('fcPhotoSize').value=String(f.photoSize);
   document.getElementById('fcAudioMax').value=String(f.audioMax||60);
@@ -8842,7 +9119,7 @@ async function openQrReceiver(){
       '<div class="rx-grid"><div class="rx-col"><div class="rx-step"><span>1</span><div>On the phone, tap <b>Send to laptop</b>, then <b>Scan the laptop\'s code</b>, and point it at this code.</div></div><div id="rxOffer" class="rx-qr">Preparing…</div></div>'+
       '<div class="rx-col"><div class="rx-step"><span>2</span><div>Then hold the phone\'s screen up to this computer\'s camera, 20–40 cm away. The transfer starts on its own.</div></div><div class="qr-cam"><video id="qrVideo" playsinline muted></video></div></div></div>'+
       '<div class="qr-prog"><div id="qrBar"></div></div><p class="kv" id="qrStatus">Starting…</p>'+
-      '<p class="kv">This link sends everything, photos and audio included. If it will not connect (some networks block it), save the GeoJSON on the phone and use <b>Upload a phone file</b>. Text-only QR codes played by the phone are read here too.</p>'+
+      '<p class="kv">If the link won’t connect, save the GeoJSON on the phone and use <b>Upload a phone file</b>.</p>'+
       '<div class="modal-close-row"><button class="btn ghost" id="qrCancel">Close</button></div></div>';
     document.body.appendChild(ov);
     document.getElementById('qrCancel').onclick=()=>{ stopQrReceiver(); closeModal('modal-qrrecv'); };
@@ -9113,7 +9390,7 @@ async function enterCollector(){
     '<div class="cl-foot"><button class="pri" id="clSendBtn" style="grid-column:1/3;">📤 Send to laptop</button>'+
     '<button id="clGeo">⬇ Save GeoJSON</button><button id="clCsv">⬇ Save CSV</button>'+
     '<button id="clShareBtn">Share file…</button><button id="clWipe">Delete all</button></div>'+
-    '<p class="cl-note">Everything is kept in this browser until you delete it. Keep this tab open, or open the same link again to come back to it. Open the link once while you have a signal; GPS needs the https address. The GeoJSON file includes photos and audio.</p>'+
+    '<p class="cl-note">Saved on this phone until you delete it. Open the link once with a signal; GPS needs https.</p>'+
     '<div id="clSheet" class="cl-sheet hidden"><div class="sh" role="dialog" aria-modal="true" aria-label="Details"></div></div>';
   const C={form, points:[], fix:null, db:null, markers:null, me:null, meAcc:null, first:true, geom:form.geoms[0], cap:null, pointTap:false};
   window.__collector=C;             /* testing hook */
@@ -10452,7 +10729,7 @@ function renderAtlas(){
   const host=document.getElementById('module-atlas'); if(!host) return;
   if(!atlas){
     document.getElementById('atList').innerHTML='';
-    document.getElementById('atBody').innerHTML='<div class="fc-empty"><h3>Make an atlas</h3><p>An atlas is a book of maps: a cover, then pages holding live interactive maps from Map Maker, finished layouts from Map Composer, images and text. It reads like a real atlas with turning pages, or as one scrolling page, and exports as a single web page to share.</p><button class="btn" id="atStart">Start an atlas</button></div>';
+    document.getElementById('atBody').innerHTML='<div class="fc-empty"><h3>Make an atlas</h3><p>A book of maps: live maps from Map Maker, layouts from Map Composer, images and text — read with turning pages or as one scrolling page.</p><button class="btn" id="atStart">Start an atlas</button></div>';
     document.getElementById('atSettings').innerHTML='';
     document.getElementById('atStart').onclick=()=>{ atlas=atDefault(); const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec && rec.name) atlas.title=rec.name; atDirty(); renderAtlas(); mlog('compose','Started the atlas "'+atlas.title+'".'); };
     return;
@@ -10850,10 +11127,10 @@ async function atShareDialog(){
   const pub=atlas.url||'';
   body.innerHTML=(fits?
       '<label class="fc-lbl">Link to the atlas<div class="at-shrow"><input type="text" id="atShLink" readonly value="'+esc(url)+'"><button class="btn small" id="atShCopy">Copy</button><a class="btn small light" id="atShOpen" href="'+esc(url)+'" target="_blank" rel="noopener">Open</a></div></label>'+
-      '<p class="kv">The whole atlas rides inside the link ('+kb+' KB), so nothing is uploaded. For other people to open it, Map-O-Matic must be online at a stable address (your published copy); a link made from a file on your own computer only opens on that computer.'+(url.length>120000?' Long links like this one work in browsers, but some email and chat apps cut them short.':'')+'</p>'
-    : '<p class="kv"><b>This atlas is too big for a link</b> ('+kb+' KB, mostly its pictures). Publish it instead: choose <b>Send / Export ▾ → Export as web page</b>, drop the file on <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> (or any web host), then paste the address it gives you below.</p>')+
+      '<p class="kv">The atlas travels inside the link ('+kb+' KB). Others can open it only from an online copy of Map-O-Matic.'+(url.length>120000?' Some email and chat apps cut long links short.':'')+'</p>'
+    : '<p class="kv"><b>Too big for a link</b> ('+kb+' KB). Export it as a web page, put it online (e.g. <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a>) and paste the address below.</p>')+
     '<label class="fc-lbl" style="margin-top:8px">Published address (optional)<input type="text" id="atShPub" placeholder="https://… where you put the exported atlas" value="'+esc(pub)+'"></label>'+
-    '<p class="kv" style="margin-top:2px">Used for a short link and QR code, and for the “View the interactive map” links in the PDF.</p>'+
+    '<p class="kv" style="margin-top:2px">Gives a short link, a QR code and the map links in the PDF.</p>'+
     '<div id="atShPubOut"></div>';
   const cp=document.getElementById('atShCopy'); if(cp) cp.onclick=()=>copyToClipboard(url, cp);
   const out=document.getElementById('atShPubOut');
@@ -11146,7 +11423,7 @@ function renderGeocodePanel(){
         '</div>'
       : '')+
     '<div class="gc-note">Uses OpenStreetMap\'s free Nominatim service, one row per second, up to '+GEOCODE_MAX+
-      ' rows at a time. Please don\'t run large jobs repeatedly — it\'s a shared volunteer service. Results are approximate; check them on the map.</div>';
+      ' rows at a time. A shared volunteer service: results are approximate.</div>';
   host.querySelector('#gcPick').onclick=()=>host.querySelector('#gcFile').click();
   host.querySelector('#gcFile').onchange=e=>{
     const f=e.target.files[0]; e.target.value='';
@@ -15375,7 +15652,7 @@ function bcRow(title, meta, btnLabel, extra){
 async function esriLayersOf(url){
   const base=url.replace(/\?.*$/,'').replace(/\/$/,'');
   if(/\/(FeatureServer|MapServer)\/\d+$/.test(base)) return [{url:base, name:null}];
-  if(!/\/(FeatureServer|MapServer)$/.test(base)) throw new Error('not an ArcGIS layer or service address');
+  if(!/\/(FeatureServer|MapServer)$/.test(base)) throw new Error('not a feature-service layer address');
   const r=await fetch(base+'?f=json'); if(!r.ok) throw new Error('HTTP '+r.status);
   const j=await r.json(); if(j.error) throw new Error(j.error.message||'service error');
   return (j.layers||[]).filter(l=>!l.subLayerIds || !l.subLayerIds.length).map(l=>({url:base+'/'+l.id, name:l.name, geom:l.geometryType}));
@@ -15437,7 +15714,7 @@ async function runBcSearch(){
       if(!items.length){ out.innerHTML='<div class="empty-hint">No public layers found for that search.</div>'; onlineStatus(''); return; }
       out.innerHTML=items.map(r=>bcRow(r.title, esc(r.type+' · '+(r.owner||'')+(r.snippet?' · '+String(r.snippet).slice(0,120):'')), 'Add')).join('');
       out.querySelectorAll('.libpick-row').forEach((row,i)=>{ row.querySelector('button').onclick=()=>bcAddEsri(items[i].url, items[i].title, row); });
-      onlineStatus(items.length+' public layer'+(items.length===1?'':'s')+' found. Check the owner: anyone can publish to ArcGIS Online.');
+      onlineStatus(items.length+' public layer'+(items.length===1?'':'s')+' found. Check the owner: anyone can publish these.');
     } else {
       const j=await fetchJson('https://catalogue.data.gov.bc.ca/api/3/action/package_search?rows=25&q='+encodeURIComponent(q));
       const pk=(j.result&&j.result.results)||[];
@@ -16803,10 +17080,10 @@ function updateExportUI(){
   document.getElementById('exportDPIWrap').style.display=(fmt==='pdf'||fmt==='png'||fmt==='archive')?'block':'none';
   const emb=document.getElementById('embedOpts');
   if(emb) emb.classList.toggle('hidden', fmt!=='embed');
-  const notes2={embed:'Downloads a self-contained interactive map (HTML) — pan, zoom and click. Host it anywhere (GitHub Pages, your sync folder, a web host) and embed it in ArcGIS StoryMaps or a website with the code shown next. Uses only the visible layers.'};
+  const notes2={embed:'A self-contained interactive map (HTML) of the visible layers, to host anywhere and embed in a web page.'};
   const notesExtra=notes2;
   const notes={
-    svg:'Vector SVG — text stays editable text and shapes stay vector paths, ready to refine in Illustrator, Inkscape, or Affinity Designer. Map frames and inset maps embed as raster images inside the file.',
+    svg:'Editable vectors and text for Illustrator, Inkscape or Affinity. Map frames stay images.',
     pdf:'Margin guides and live-embed previews are excluded automatically. Live embeds print as placeholders.',
     png:'Margin guides and live-embed previews are excluded automatically. Live embeds print as placeholders.',
     mapimg:'Captures the current Map Maker view at high resolution. In Web Mercator view it includes a world file (.pgw, EPSG:3857) so the PNG opens georeferenced in GIS software; in a projected view it exports as a plain image.',
@@ -16844,7 +17121,7 @@ function setEmbedSnippet(src){
     if(/^https?:\/\/[^\/]+\/?$/i.test(u)) u=u.replace(/\/?$/,'/')+embedFileName;
     setEmbedSnippet(u);
     const a=document.getElementById('embedCodeNote');
-    if(a) a.innerHTML='Ready — the code below points at <b>'+esc(u)+'</b>. Paste it into an ArcGIS StoryMaps <b>Embed</b> block or any web page.';
+    if(a) a.innerHTML='Ready — the code below points at <b>'+esc(u)+'</b>.';
     toast('Embed code updated with your published address.');
   };
 })();
@@ -16995,8 +17272,10 @@ function embedSnapshot(){
   if(mkGlobe){
     /* globe view: keep the camera and the layers with the globe's own baked styling */
     const c=mkGlobe.getCenter();
-    const gLayers=mkLayers.slice().reverse().filter(l=>l.visible).map(l=>({geom:l.geom, fc:globeFeatureCollection(l)})).filter(d=>d.fc.features.length);
-    return {globe:{c:[c.lng,c.lat], z:mkGlobe.getZoom(), br:mkGlobe.getBearing(), pt:mkGlobe.getPitch()}, gLayers, layers:[], view:{c:[c.lat,c.lng], z:mkGlobe.getZoom(), b:null},
+    const gLayers=mkLayers.slice().reverse().filter(l=>l.visible).map(l=>({id:l.id, lbl:labelSpecFor(l),
+      col:glbCollect([l.densityLayer, l.leaflet, l.dotLayer], {id:l.id, props:f=>Object.assign({}, (f&&f.properties)||{}), lbl:(l.labels&&l.labels.enabled)?l.labels.field:null})}))
+      .filter(d=>d.col.fc.features.length||d.col.heats.length);
+    return {globe:{c:[c.lng,c.lat], z:mkGlobe.getZoom(), br:mkGlobe.getBearing(), pt:mkGlobe.getPitch()}, gLayers, gIcons:glbIconUrls(gLayers), layers:[], view:{c:[c.lat,c.lng], z:mkGlobe.getZoom(), b:null},
       legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id)};
   }
   if(projActive) return projSnapshot();
@@ -17091,6 +17370,14 @@ const SWIPE_EMBED_CSS=`.cs-swbar{position:absolute;top:0;bottom:0;width:0;z-inde
 .cs-swtag{position:absolute;top:10px;z-index:901;background:rgba(27,42,74,.85);color:#fff;font:600 11.5px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;padding:3px 9px;border-radius:10px;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;}
 .cs-swtag.l{left:50px;} .cs-swtag.r{right:10px;}`;
 /* an interactive globe (MapLibre GL globe projection) for atlas pages captured in globe view */
+/* PNGs of the symbol markers a set of globe layers uses, for pages that can't draw them */
+function glbIconUrls(gLayers){
+  const out={};
+  gLayers.forEach(d=>((d.col&&d.col.fc.features)||[]).forEach(f=>{ const id=f.properties._img; if(id && !out[id] && GLB_IMG.has(id)){
+    const im=glbDrawIcon(GLB_IMG.get(id),2), cv=document.createElement('canvas'); cv.width=im.width; cv.height=im.height;
+    cv.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(im.data.buffer), im.width, im.height),0,0); out[id]=cv.toDataURL('image/png'); } }));
+  return out;
+}
 function buildGlobeEmbedHtml(opts, snap){
   const bmKey=opts.basemap||'ofm-positron';
   const styleUrl=globeVectorStyleUrl(bmKey);
@@ -17113,7 +17400,9 @@ function buildGlobeEmbedHtml(opts, snap){
 ${lgHtml?'<div class="cs-lgwrap"><div class="cs-legend" hidden></div><button type="button" class="cs-lgbtn" aria-expanded="false">Legend</button></div>':''}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.1/maplibre-gl.min.js" integrity="sha384-Bf0u7y3B8VQ+pO0vwItSnb1fZsVZP6kqxIykY2Ay4nqTq35i85MGy5PB978dEDBD" crossorigin="anonymous"><\/script>
 <script>
-var LAYERS=${data};
+var LAYERS=${data}, ICONS=${JSON.stringify(snap.gIcons||{}).replace(/<\//g,'<\\/')};
+${glbColor.toString()}
+${glbAddLayer.toString()}
 function ready(){document.body.classList.remove('ld');if(window.__rd)return;window.__rd=1;try{parent.postMessage({momMapReady:1},'*');}catch(e){}}
 setTimeout(ready,3000);
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -17123,7 +17412,11 @@ var added=false;
 function add(){ if(added||!map.isStyleLoaded())return; added=true;
   try{map.setProjection({type:'globe'});}catch(e){} try{map.setSky&&map.setSky({});}catch(e){}
   var ids=[];
-  LAYERS.forEach(function(L2,i){var src='u'+i; map.addSource(src,{type:'geojson',data:L2.fc});
+  var keys=Object.keys(ICONS), left=keys.length;
+  var build=function(){
+  LAYERS.forEach(function(L2,i){var src='u'+i;
+    if(L2.col){ try{ ids=ids.concat(glbAddLayer(map, String(i), L2.col, L2.lbl)); }catch(e){} return; }
+    map.addSource(src,{type:'geojson',data:L2.fc});
     if(L2.geom==='polygon'){map.addLayer({id:src+'f',type:'fill',source:src,paint:{'fill-color':['get','_fill'],'fill-opacity':['get','_fo']}});map.addLayer({id:src+'l',type:'line',source:src,paint:{'line-color':['get','_stroke'],'line-width':['get','_sw'],'line-opacity':['get','_so']}});ids.push(src+'f');}
     else if(L2.geom==='line'){map.addLayer({id:src+'l',type:'line',source:src,paint:{'line-color':['get','_stroke'],'line-width':['coalesce',['get','_sw'],2],'line-opacity':['get','_so']}});ids.push(src+'l');}
     else {map.addLayer({id:src+'c',type:'circle',source:src,paint:{'circle-radius':['get','_r'],'circle-color':['get','_fill'],'circle-opacity':['get','_fo'],'circle-stroke-color':['get','_stroke'],'circle-stroke-width':['get','_sw'],'circle-stroke-opacity':['get','_so']}});ids.push(src+'c');}
@@ -17134,6 +17427,8 @@ function add(){ if(added||!map.isStyleLoaded())return; added=true;
   ids.forEach(function(id){map.on('mouseenter',id,function(){map.getCanvas().style.cursor='pointer';});map.on('mouseleave',id,function(){map.getCanvas().style.cursor='';});});
   map.once('idle',ready);
   var rchk=function(){ try{ if(map.isStyleLoaded()&&map.areTilesLoaded()){ map.off('render',rchk); setTimeout(ready,80); } }catch(e){} }; map.on('render',rchk);
+  };
+  if(!left) build(); else keys.forEach(function(k){var im=new Image();im.onload=function(){try{map.addImage(k,im,{pixelRatio:2});}catch(e){} if(--left===0)build();};im.onerror=function(){if(--left===0)build();};im.src=ICONS[k];});
 }
 map.on('load',add); map.on('styledata',add); var poll=setInterval(function(){ if(added){clearInterval(poll);return;} add(); },200);
 ${lgHtml?`(function(){var p=document.querySelector('.cs-legend'),bt=document.querySelector('.cs-lgbtn');p.innerHTML=${JSON.stringify(lgHtml)};bt.onclick=function(){var o=p.hidden;p.hidden=!o;bt.setAttribute('aria-expanded',String(o));bt.textContent=o?'Hide legend':'Legend';};})();`:''}
@@ -17374,7 +17669,9 @@ function buildSharePayload(){
   const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l, true); d.lbl=labelSpecFor(l); return d; }).filter(d=>d.fc.features.length);
   const view = mkMap ? {c:[+mkMap.getCenter().lat.toFixed(5), +mkMap.getCenter().lng.toFixed(5)], z:mkMap.getZoom()} : {c:[20,0], z:2};
   const rec=projectsCache.find(p=>p.id===currentProjectId);
-  return {v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers};
+  const out={v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers};
+  if(typeof mkGlobe!=='undefined' && mkGlobe){ const c=mkGlobe.getCenter(); out.globe={c:[+c.lng.toFixed(5), +c.lat.toFixed(5)], z:+mkGlobe.getZoom().toFixed(2), br:+mkGlobe.getBearing().toFixed(1), pt:+mkGlobe.getPitch().toFixed(1)}; }
+  return out;
 }
 function shareBaseURL(){
   return (location.protocol==='file:' || location.origin==='null')
@@ -17408,14 +17705,14 @@ async function openShareDialog(){
   const SOFT=120000;   /* above this, some embed hosts may balk — warn but still allow */
   if(url.length>HARD){
     linkEl.value=''; embEl.value=''; if(openEl) openEl.style.display='none';
-    noteEl.innerHTML='This map is too big to fit in a link ('+Math.round(url.length/1024)+' KB). Use <b>Send / Export ▾ → Export files… → Interactive web map</b> to save an HTML file and publish it to a free host instead — that works at any size.';
+    noteEl.innerHTML='Too big for a link ('+Math.round(url.length/1024)+' KB). Export an interactive web map instead.';
     openModal('modal-share'); return;
   }
   linkEl.value=url;
   embEl.value='<iframe src="'+esc(url)+'" width="100%" height="500" style="border:0;" loading="lazy" allowfullscreen title="Interactive map"></iframe>';
   if(openEl){ openEl.style.display=''; openEl.href=url; }
-  let note='The whole map rides inside the link, so it opens anywhere you paste it. For others to open it, Map-O-Matic must be online at a stable address (your published copy) — a link made from a file on your own computer only works on your computer.';
-  if(url.length>SOFT) note='This is a large map, so the link is long ('+Math.round(url.length/1024)+' KB). It works in a browser, but a few embed platforms may reject very long links — if one does, use <b>Send / Export ▾ → Export files… → Interactive web map</b> instead. '+note;
+  let note='Others can open the link only from an online copy of Map-O-Matic.';
+  if(url.length>SOFT) note='This is a large map, so the link is long ('+Math.round(url.length/1024)+' KB). If a site rejects it, export an interactive web map instead. '+note;
   noteEl.innerHTML=note;
   openModal('modal-share');
 }
@@ -17521,6 +17818,37 @@ function svSetBasemap(key){
     bm.urls.forEach((u,i)=>{ const t=L.tileLayer(u,{maxZoom:bm.max,maxNativeZoom:bm.maxNative||bm.max,attribution:i===0?bm.attr:''}); t.addTo(svMap); svBmLayers.push(t); });
   }
 }
+/* a shared globe view: the same layers, drawn on a MapLibre globe over the flat viewer */
+function svOpenGlobe(mapDiv, payload, groups){
+  const g=payload.globe||{};
+  const host=document.createElement('div'); host.className='sv-globe'; mapDiv.appendChild(host);
+  host.innerHTML='<div class="sv-gmap"></div><div class="mk-gctl"><div class="mk-gbar"><button type="button" data-a="in" title="Zoom in">+</button><button type="button" data-a="out" title="Zoom out">−</button><button type="button" data-a="all" title="Whole globe">✥</button></div>'+
+    '<div class="mk-gbar"><button type="button" data-a="flat" title="Show as a flat map">🗺</button></div></div>';
+  ['pointerdown','mousedown','click','dblclick','wheel','touchstart'].forEach(ev=>host.addEventListener(ev, e=>e.stopPropagation()));
+  const styleFor=k=>globeVectorStyleUrl(k) || globeRasterStyle(BASEMAPS[k]?k:'none');
+  const bk=BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron';
+  let map;
+  try{ map=new maplibregl.Map({container:host.firstChild, style:styleFor(bk), projection:{type:'globe'},
+    center:[svNum((g.c||[])[0],0,-180,180), svNum((g.c||[])[1],20,-85,85)], zoom:svNum(g.z,1.5,0,20), bearing:svNum(g.br,0,-360,360), pitch:svNum(g.pt,0,0,85), attributionControl:{compact:true}}); }
+  catch(_){ host.remove(); return; }
+  glbAttachImages(map);
+  const cols=groups.map((d,i)=>({i, col:glbCollect([d.g], {id:'s'+i, props:f=>Object.assign({}, (f&&f.properties)||{}), lbl:d.lbl&&d.lbl.f}),
+    lbl:d.lbl?{f:d.lbl.f, s:svNum(d.lbl.s,11,4,72), c:safeColor(d.lbl.c,'#22293a'), b:d.lbl.b?1:0, h:d.lbl.h?1:0}:null}));
+  let ids=[];
+  const addAll=()=>{ try{ map.setProjection({type:'globe'}); }catch(_){}
+    ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); };
+  let done=false; const tryAdd=()=>{ if(done||!map.isStyleLoaded()) return; done=true; addAll(); };
+  map.on('load', tryAdd); map.on('styledata', tryAdd); const poll=setInterval(()=>{ if(done) clearInterval(poll); else tryAdd(); }, 200);
+  map.on('click', e=>{ const f=(ids.length? map.queryRenderedFeatures(e.point,{layers:ids.filter(id=>map.getLayer(id))}) : [])[0]; if(!f) return;
+    const fake={bindPopup(h){ this.h=h; }}; svPopup({properties:f.properties||{}}, fake); if(fake.h) new maplibregl.Popup({maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(fake.h).addTo(map); });
+  map.on('mousemove', e=>{ let h=false; try{ h=ids.length && map.queryRenderedFeatures(e.point,{layers:ids.filter(id=>map.getLayer(id))}).length>0; }catch(_){} map.getCanvas().style.cursor=h?'pointer':''; });
+  const flatBtn=L.control({position:'topleft'}); flatBtn.onAdd=()=>{ const d=L.DomUtil.create('div','leaflet-bar'); d.innerHTML='<a href="#" title="Show as a globe" style="font-size:15px">🌐</a>';
+    L.DomEvent.disableClickPropagation(d); d.firstChild.onclick=ev=>{ ev.preventDefault(); host.style.display=''; map.resize(); flatBtn.remove(); }; return d; };
+  host.querySelector('.mk-gctl').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const a=b.dataset.a;
+    if(a==='in') map.zoomIn(); else if(a==='out') map.zoomOut(); else if(a==='all') map.easeTo({zoom:1.2, bearing:0, pitch:0});
+    else if(a==='flat'){ host.style.display='none'; flatBtn.addTo(svMap); setTimeout(()=>svMap.invalidateSize(),50); } };
+  window.__svGlobe={map, basemap:k=>{ if(!BASEMAPS.hasOwnProperty(k)&&k!=='none') return; done=false; try{ map.setStyle(styleFor(k), {diff:false}); }catch(_){} const t=setInterval(()=>{ if(map.isStyleLoaded()){ clearInterval(t); done=true; addAll(); } },150); setTimeout(()=>clearInterval(t),8000); }};
+}
 async function enterShareViewer(){
   let payload;
   try{ payload=await decodeShare(shareHashPayload()); }
@@ -17533,19 +17861,21 @@ async function enterShareViewer(){
   svMap=L.map(mapDiv,{preferCanvas:true});
   const view=payload.view||{c:[20,0],z:2}; svMap.setView(view.c, view.z);
   svSetBasemap(BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron');
-  const group=L.featureGroup().addTo(svMap);
+  const group=L.featureGroup().addTo(svMap), svGroups=[];
   (payload.layers||[]).forEach((L2,li)=>{
     if(L2.lbl) svInjectLabelCss(li, L2.lbl);
-    L.geoJSON(L2.fc,{style:svStyleFn, pointToLayer:svPtLayer,
+    const g=L.geoJSON(L2.fc,{style:svStyleFn, pointToLayer:svPtLayer,
       onEachFeature:(f,layer)=>{ svPopup(f,layer); svBindLabel(f,layer,L2.lbl,li); }}).addTo(group);
+    svGroups.push({g, lbl:L2.lbl});
   });
   try{ const b=group.getBounds(); if(b.isValid()) svMap.fitBounds(b,{padding:[24,24]}); }catch(_){}
+  if(payload.globe && typeof maplibregl!=='undefined') svOpenGlobe(mapDiv, payload, svGroups);
   if(payload.legend){ const lg=L.control({position:'bottomright'}); lg.onAdd=()=>{ const d=L.DomUtil.create('div','sv-legend'); d.appendChild(sanitizeLegendHtml(payload.legend)); L.DomEvent.disableScrollPropagation(d); return d; }; lg.addTo(svMap); }
   const bmCtl=L.control({position:'topright'}); bmCtl.onAdd=()=>{
     const d=L.DomUtil.create('div','sv-basemap');
     d.innerHTML='<select title="Basemap">'+Object.keys(BASEMAPS).map(k=>'<option value="'+k+'"'+(k===payload.basemap?' selected':'')+'>'+(SV_BM_LABELS[k]||k)+'</option>').join('')+'</select>';
     L.DomEvent.disableClickPropagation(d);
-    d.querySelector('select').onchange=e=>svSetBasemap(e.target.value);
+    d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); };
     return d;
   }; bmCtl.addTo(svMap);
   const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg><a href="'+esc(location.href.split('#')[0])+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Made with Map-O-Matic</a>'; return d; }; brand.addTo(svMap);
@@ -17652,7 +17982,7 @@ function renderGhPublishBox(){
   const box=document.getElementById('ghPublishBox'); if(!box) return;
   const c=cfgPublish();
   if(!c.clientId || !c.gatekeeper){
-    box.innerHTML='<div class="kv">One-click GitHub publishing isn’t enabled on this copy — use the Netlify Drop steps above. Whoever hosts this copy can switch it on (see the publishing setup guide).</div>';
+    box.innerHTML='<div class="kv">One-click publishing isn’t set up on this copy — use Netlify Drop above.</div>';
     return;
   }
   if(!ghToken()){

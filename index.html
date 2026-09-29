@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -259,7 +260,17 @@
   .mk-gbar button:first-child{border-radius:4px 4px 0 0;} .mk-gbar button:last-child{border-bottom:none;border-radius:0 0 4px 4px;}
   .mk-gbar button:hover{background:#f4f4f4;} .mk-gbar button.on{background:var(--teal);color:#fff;}
   #mkGlobeWorld{font-size:17px;font-weight:400;} #mkGlobeFlat{font-size:15px;}
-  #mkGlobeNorth i{font-style:normal;font-size:12px;color:#c0392b;display:inline-block;transition:transform .1s;}
+  #mkGlobeNorth i,.mk-gbar i.svn{font-style:normal;display:inline-flex;transition:transform .1s;}
+  .mk-orient{position:absolute;z-index:1001;width:210px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.35);padding:10px 12px;display:flex;flex-direction:column;gap:8px;font:12px var(--ui,system-ui);color:#222;}
+  .mk-orient .mo-row label{display:flex;justify-content:space-between;font-weight:600;margin-bottom:2px;} .mk-orient .mo-row label b{font-weight:400;color:#5b6677;}
+  .mk-orient input[type=range]{width:100%;accent-color:var(--teal,#2f7d78);}
+  .mk-orient .mo-reset{border:1px solid #d5dbe3;background:#f6f8fa;border-radius:5px;padding:5px 8px;font:600 12px var(--ui,system-ui);cursor:pointer;color:#22293a;}
+  .mk-orient .mo-reset:hover{background:#eef2f5;}
+  .mk-selfly{transition:opacity .16s,transform .16s;} .mk-selfly.gone{opacity:0;transform:translateX(-8px);pointer-events:none;}
+  .mk-gmeas{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:7;background:rgba(255,255,255,.96);color:#22293a;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.3);padding:6px 12px;font:12.5px var(--ui,system-ui);white-space:nowrap;}
+  .mk-gmeas button{margin-left:8px;border:1px solid #d5dbe3;background:#fff;border-radius:4px;padding:2px 8px;font:600 11.5px var(--ui,system-ui);cursor:pointer;}
+  .mk-gbar button svg{display:block;}
+  #mk-globe .mk-basemap-panel{z-index:1000;}
   .mk-selfly{position:absolute;z-index:1001;display:flex;align-items:center;gap:2px;background:#fff;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.35);padding:3px;white-space:nowrap;}
   .mk-selfly button{display:flex;align-items:center;gap:4px;border:none;background:#fff;border-radius:4px;padding:4px 8px;font:600 12px var(--ui,system-ui);color:#222;cursor:pointer;height:26px;}
   .mk-selfly button:hover{background:#f1f4f7;} .mk-selfly button.on{background:#e8f3f1;color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal);}
@@ -523,6 +534,9 @@
   #shareViewer{position:fixed;inset:0;z-index:3000;background:#fff;}
   #shareViewer .sv-map{position:absolute;inset:0;}
   .sv-globe{position:absolute;inset:0;z-index:750;background:#0b1e3a;} .sv-gmap{position:absolute;inset:0;}
+  .sv-parts{text-align:right;} .sv-parts>button{font:600 12px var(--ui,system-ui);background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}
+  .sv-parts .svp-list{margin-top:6px;background:rgba(255,255,255,.97);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;font-size:12px;}
+  .sv-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}
   .sv-legend{background:rgba(255,255,255,.93);padding:8px 10px;border-radius:6px;
     box-shadow:0 1px 6px rgba(0,0,0,.25);font-size:12px;max-height:46%;overflow:auto;line-height:1.5;}
   .sv-legend .lg-title{font-weight:700;margin:4px 0 3px;} .sv-legend .lg-title:first-child{margin-top:0;}
@@ -2505,7 +2519,8 @@ function mkZoomAll(){
   if(typeof mkGlobe!=='undefined' && mkGlobe){ globeFitData(); return; }
   if(projActive){ projFitToData(); return; }
   let b=null;
-  mkLayers.filter(l=>l.visible).forEach(l=>{
+  const act=selectedLayer(), use=(act && act.visible) ? [act] : mkLayers.filter(l=>l.visible);
+  use.forEach(l=>{
     [l.leaflet, l.densityLayer, l.dotLayer].forEach(x=>{ try{ if(x && x.getBounds){ const bb=x.getBounds(); if(bb && bb.isValid()) b = b ? b.extend(bb) : L.latLngBounds(bb.getSouthWest(), bb.getNorthEast()); } }catch(_){} });
   });
   if(!b){ toast('Turn on a layer to zoom to it.'); return; }
@@ -2515,10 +2530,10 @@ function addMapToolControls(){
   const Ctl=L.Control.extend({options:{position:'topleft'}, onAdd(){
     const c=L.DomUtil.create('div','leaflet-bar mk-mapctl');
     c.innerHTML=
-      '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
+      '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
-      '<a href="#" id="mkBasemapBtn" title="Basemap layers — turn parts on/off"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:-3px\"><path d=\"M12 3 2 8l10 5 10-5z\" fill=\"#2f7d78\"/><path d=\"m2 12 10 5 10-5M2 16l10 5 10-5\" fill=\"none\" stroke=\"#2f7d78\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg></a>'+
+      '<a href="#" id="mkBasemapBtn" title="Basemap parts — turn labels, roads, borders… on or off">'+BM_PARTS_ICON+'</a>'+
       '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
@@ -2532,7 +2547,7 @@ function addMapToolControls(){
     const sb=document.getElementById('mkSelBtn'); if(sb) sb.onclick=e=>{ e.preventDefault(); selToolSet(!selTool); };
     /* full extent sits with the zoom buttons */
     const zc=mkMap.zoomControl && mkMap.zoomControl.getContainer();
-    if(zc && !document.getElementById('mkZoomAllBtn')){ const a=L.DomUtil.create('a','mk-zall',zc); a.href='#'; a.id='mkZoomAllBtn'; a.title='Zoom to full extent (all layers)'; a.setAttribute('role','button'); a.textContent='✥';
+    if(zc && !document.getElementById('mkZoomAllBtn')){ const a=L.DomUtil.create('a','mk-zall',zc); a.href='#'; a.id='mkZoomAllBtn'; a.title='Zoom to full extent of the active layer'; a.setAttribute('role','button'); a.textContent='✥';
       L.DomEvent.on(a,'click',ev=>{ L.DomEvent.preventDefault(ev); L.DomEvent.stopPropagation(ev); mkZoomAll(); }); }
     /* the search box lives in the left panel now; this jumps focus to it */
     const fb=document.getElementById('mkFindBtn'); if(fb) fb.onclick=e=>{
@@ -2770,7 +2785,8 @@ function selFlyout(){
   const host=b.offsetParent; host.appendChild(fly);
   fly.style.top=(b.offsetTop)+'px'; fly.style.left=(b.offsetLeft+b.offsetWidth+6)+'px';
   ['pointerdown','mousedown','click','dblclick','wheel'].forEach(ev=>fly.addEventListener(ev, e=>e.stopPropagation()));
-  fly.querySelectorAll('button').forEach(x=>x.onclick=e=>{ e.preventDefault(); selShape=x.dataset.s; fly.querySelectorAll('button').forEach(y=>y.classList.toggle('on', y===x)); selButtons().forEach(y=>y.innerHTML=SEL_ICONS[selShape]); });
+  fly.querySelectorAll('button').forEach(x=>x.onclick=e=>{ e.preventDefault(); selShape=x.dataset.s; selButtons().forEach(y=>y.innerHTML=SEL_ICONS[selShape]);
+    fly.classList.add('gone'); setTimeout(()=>fly.remove(), 180); });
 }
 function selToolSet(on){
   on=!!on; if(on===selTool && !on) return;
@@ -2785,6 +2801,7 @@ function selToolSet(on){
   selButtons().forEach(b=>b.classList.toggle('on', on));
   if(on){
     if(typeof measureActive!=='undefined' && measureActive) toggleMeasure();
+    if(typeof gMeas!=='undefined' && gMeas) globeMeasureToggle(false);
     el.addEventListener('pointerdown', selDown, true);
     if(typeof mkGlobe!=='undefined' && mkGlobe){ try{ mkGlobe.dragPan.disable(); mkGlobe.dragRotate.disable(); mkGlobe.boxZoom.disable(); }catch(_){} }
     else { try{ mkMap.dragging.disable(); mkMap.boxZoom.disable(); }catch(_){} }
@@ -2861,6 +2878,100 @@ function selApply(ring, mode){
   mlog('select', (mode==='remove'?'Removed ':'Selected ')+idx.length+' feature'+(idx.length===1?'':'s')+' of "'+lyr.name+'" with a '+(selShape==='rect'?'box':'lasso')+'.');
 }
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && selTool && !selDrag){ const t=e.target; if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName)) return; selToolSet(false); } });
+/* ---- v60: globe orientation panel (tilt + rotation sliders, reset) ---- */
+function glbOrientPanel(map, btn){
+  const old=document.querySelector('.mk-orient'); if(old){ old.remove(); btn.classList.remove('on'); return; }
+  const p=document.createElement('div'); p.className='mk-orient';
+  p.innerHTML='<div class="mo-row"><label>Tilt <b data-v="t"></b></label><input type="range" min="0" max="60" step="1" data-s="t"></div>'+
+    '<div class="mo-row"><label>Rotation <b data-v="r"></b></label><input type="range" min="-180" max="180" step="1" data-s="r"></div>'+
+    '<button type="button" class="mo-reset">↻ Reset to north, no tilt</button>';
+  const host=btn.offsetParent||btn.parentNode; host.appendChild(p);
+  p.style.top=btn.offsetTop+'px'; p.style.left=(btn.offsetLeft+btn.offsetWidth+6)+'px';
+  ['pointerdown','mousedown','click','dblclick','wheel','touchstart'].forEach(ev=>p.addEventListener(ev, e=>e.stopPropagation()));
+  btn.classList.add('on');
+  const t=p.querySelector('[data-s="t"]'), r=p.querySelector('[data-s="r"]');
+  const sync=()=>{ if(!p.isConnected) return; const pt=Math.round(map.getPitch()), br=Math.round(map.getBearing());
+    if(document.activeElement!==t) t.value=pt; if(document.activeElement!==r) r.value=br;
+    p.querySelector('[data-v="t"]').textContent=pt+'°'; p.querySelector('[data-v="r"]').textContent=(br>0?br+'° E':br<0?(-br)+'° W':'north up'); };
+  t.oninput=()=>{ map.jumpTo({pitch:+t.value}); sync(); };
+  r.oninput=()=>{ map.jumpTo({bearing:+r.value}); sync(); };
+  p.querySelector('.mo-reset').onclick=()=>{ map.easeTo({bearing:0, pitch:0, duration:500}); setTimeout(sync, 520); };
+  map.on('rotate', sync); map.on('pitch', sync); sync();
+  const off=ev=>{ if(!p.isConnected){ document.removeEventListener('pointerdown', off, true); return; }
+    if(!p.contains(ev.target) && ev.target!==btn && !btn.contains(ev.target)){ p.remove(); btn.classList.remove('on'); map.off('rotate', sync); map.off('pitch', sync); document.removeEventListener('pointerdown', off, true); } };
+  setTimeout(()=>document.addEventListener('pointerdown', off, true), 0);
+}
+/* ---- v60: measure distance on the globe (great-circle) ---- */
+let gMeas=null;
+function gmFmtTotal(){ if(!gMeas) return 0; let km=0; for(let i=1;i<gMeas.pts.length;i++) km+=turf.distance(gMeas.pts[i-1], gMeas.pts[i], {units:'kilometers'}); return km; }
+function gmGeo(extra){
+  const pts=gMeas?gMeas.pts.slice():[]; if(extra) pts.push(extra);
+  const feats=pts.map(c=>({type:'Feature', properties:{}, geometry:{type:'Point', coordinates:c}}));
+  for(let i=1;i<pts.length;i++){
+    const a=pts[i-1], b=pts[i];
+    try{ const gc=turf.greatCircle(a, b, {npoints:Math.max(8, Math.min(180, Math.round(turf.distance(a,b)/20)))}); feats.push({type:'Feature', properties:{}, geometry:gc.geometry}); }
+    catch(_){ feats.push({type:'Feature', properties:{}, geometry:{type:'LineString', coordinates:[a,b]}}); }
+  }
+  return {type:'FeatureCollection', features:feats};
+}
+function glbStyleReady(m){ try{ return !!(m && m.style && m.style._loaded); }catch(_){ return false; } }
+function gmDraw(extra){
+  const m=mkGlobe; if(!m || !gMeas) return;
+  const data=gmGeo(extra);
+  if(glbStyleReady(m)) try{
+    if(m.getSource('m_meas')) m.getSource('m_meas').setData(data);
+    else { m.addSource('m_meas',{type:'geojson', data});
+      m.addLayer({id:'m_meas_l', type:'line', source:'m_meas', filter:['!',['in',['geometry-type'],['literal',['Point','MultiPoint']]]], layout:{'line-cap':'round','line-join':'round'}, paint:{'line-color':'#e0467c','line-width':3,'line-dasharray':[2,1.2]}});
+      m.addLayer({id:'m_meas_p', type:'circle', source:'m_meas', filter:['==',['geometry-type'],'Point'], paint:{'circle-radius':4.5,'circle-color':'#fff','circle-stroke-color':'#e0467c','circle-stroke-width':2.5,'circle-pitch-alignment':'map'}}); }
+  }catch(_){}
+  let km=gmFmtTotal(); if(extra && gMeas.pts.length) km+=turf.distance(gMeas.pts[gMeas.pts.length-1], extra, {units:'kilometers'});
+  const box=document.getElementById('mkGMeasBox');
+  if(box) box.innerHTML=gMeas.pts.length ? '<b>'+measureFmt(km)+'</b> great-circle distance'+(gMeas.done?'':' · double-click to finish')+' <button type="button" id="mkGMeasClr">Clear</button>' : 'Click points on the globe to measure.';
+  const c=document.getElementById('mkGMeasClr'); if(c) c.onclick=()=>{ gMeas.pts=[]; gMeas.done=false; gmDraw(); };
+}
+function gmClick(e){ if(!gMeas) return; if(gMeas.done){ gMeas.pts=[]; gMeas.done=false; } const q=gMeas.pts[gMeas.pts.length-1]; if(q && Math.abs(q[0]-e.lngLat.lng)<1e-9 && Math.abs(q[1]-e.lngLat.lat)<1e-9) return; gMeas.pts.push([e.lngLat.lng, e.lngLat.lat]); gmDraw(); }
+function gmMove(e){ if(!gMeas || gMeas.done || !gMeas.pts.length) return; gmDraw([e.lngLat.lng, e.lngLat.lat]); }
+function gmDbl(e){ if(!gMeas) return; e.preventDefault(); gMeas.done=true; gmDraw(); }
+function globeMeasureToggle(force){
+  const m=mkGlobe; if(!m) return;
+  const on = force==null ? !gMeas : !!force;
+  const btn=document.getElementById('mkGlobeMeasure');
+  if(on && !gMeas){
+    if(selTool) selToolSet(false);
+    gMeas={pts:[], done:false};
+    m.on('click', gmClick); m.on('mousemove', gmMove); m.on('dblclick', gmDbl); m.doubleClickZoom.disable();
+    m.getCanvas().style.cursor='crosshair';
+    const box=document.createElement('div'); box.id='mkGMeasBox'; box.className='mk-gmeas'; document.getElementById('mk-globe').appendChild(box);
+    if(btn) btn.classList.add('on'); gmDraw();
+  } else if(!on && gMeas){
+    m.off('click', gmClick); m.off('mousemove', gmMove); m.off('dblclick', gmDbl); try{ m.doubleClickZoom.enable(); }catch(_){}
+    m.getCanvas().style.cursor='';
+    ['m_meas_l','m_meas_p'].forEach(id=>{ try{ if(m.getLayer(id)) m.removeLayer(id); }catch(_){} }); try{ if(m.getSource('m_meas')) m.removeSource('m_meas'); }catch(_){}
+    const box=document.getElementById('mkGMeasBox'); if(box) box.remove();
+    gMeas=null; if(btn) btn.classList.remove('on');
+  }
+}
+/* ---- v60: basemap parts travel with shared and exported maps ---- */
+function partsOff(){ return Object.keys(BM_PART_GROUPS).filter(k=>basemapParts[k]===false); }
+function partsGroupsLite(){ const o={}; Object.keys(BM_PART_GROUPS).forEach(k=>o[k]={label:BM_PART_GROUPS[k].label, src:BM_PART_GROUPS[k].src.slice()}); return o; }
+function applyPartsTo(gl, on){
+  if(!gl) return;
+  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=ly['source-layer']; if(!sl) return;
+    for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl)){ try{ gl.setLayoutProperty(ly.id,'visibility', on[k]===false?'none':'visible'); }catch(_){} } }); };
+  if(gl.isStyleLoaded && gl.isStyleLoaded()) run(); else { let n=0; const t=setInterval(()=>{ if(gl.isStyleLoaded&&gl.isStyleLoaded()){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
+}
+/* the reader-facing parts toggle used by exported web maps (flat and globe) */
+function partsEmbedJs(off, getter, ui){
+  const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
+  return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
+function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=ly['source-layer'];if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
+var n=0,t=setInterval(function(){var g=getGL();if(g&&g.isStyleLoaded&&g.isStyleLoaded()){ap(g);clearInterval(t);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
+var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
+var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
+document.body.appendChild(box);['mousedown','pointerdown','click','dblclick','wheel','touchstart'].forEach(function(ev){box.addEventListener(ev,function(e){e.stopPropagation();});});
+var b=box.firstChild,l=box.lastChild;b.onclick=function(){l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));};
+box.querySelectorAll('input').forEach(function(c){c.onchange=function(){ON[c.getAttribute('data-k')]=c.checked;ap(getGL());};});})();`;
+}
 /* --- globe view (MapLibre GL v5 native globe) ---
    Rather than reprojecting to a flat orthographic canvas, this wraps the actual
    vector/raster basemap onto a true 3-D globe (like geolibre.app), keeping the
@@ -2930,7 +3041,7 @@ function globeAddUserLayers(map){
 }
 /* the selection highlight, drawn over the globe's layers */
 function globeSyncSelection(){
-  const map=mkGlobe; if(!map || !map.isStyleLoaded || !map.isStyleLoaded()) return;
+  const map=mkGlobe; if(!map || !glbStyleReady(map)) return;
   const lyr=selectionLayer();
   let feats=selectedFeatureList();
   if(lyr && lyr.style.mode==='carto' && lyr._cartoByIdx) feats=feats.map(f=>lyr._cartoByIdx.get(fidOf(lyr,f))).filter(Boolean);
@@ -2969,6 +3080,7 @@ function globeOnStyle(){
   try{ mkGlobe.setSky && mkGlobe.setSky({}); }catch(_){}
   globeApplyParts(mkGlobe);
   globeAddUserLayers(mkGlobe);
+  if(gMeas) gmDraw();
 }
 /* run cb once the globe's style is fully loaded — MapLibre v5's 'style.load'
    event is unreliable (both on first open and after setStyle), so poll. */
@@ -3070,8 +3182,9 @@ function globeOpen(){
     host=document.createElement('div'); host.id='mk-globe';
     host.innerHTML='<div id="mk-globe-map"></div>'+
       '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
-        '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" id="mkGlobeNorth" title="Reset to north-up (right-drag to tilt and turn)"><i>▲</i></button></div>'+
-        '<div class="mk-gbar"><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button></div></div>'+
+        '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
+        '<div class="mk-gbar"><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
+        '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button><button type="button" id="mkGlobeParts" title="Basemap parts — turn labels, roads, borders… on or off">'+BM_PARTS_ICON+'</button></div></div>'+
       '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
     /* mount inside the map area only, so the toolbar row (Layers, Send to
        Composer, Menu) and a docked attribute table stay visible in globe view */
@@ -3082,12 +3195,15 @@ function globeOpen(){
     host.querySelector('#mkGlobeFlat').onclick=()=>toggleGlobeView();
     host.querySelector('#mkGlobeZin').onclick=()=>{ if(mkGlobe) mkGlobe.zoomIn({duration:300}); };
     host.querySelector('#mkGlobeZout').onclick=()=>{ if(mkGlobe) mkGlobe.zoomOut({duration:300}); };
-    host.querySelector('#mkGlobeNorth').onclick=()=>globeResetNorth();
+    host.querySelector('#mkGlobeNorth').onclick=e=>{ if(mkGlobe) glbOrientPanel(mkGlobe, e.currentTarget); };
+    host.querySelector('#mkGlobeMeasure').onclick=()=>globeMeasureToggle();
+    host.querySelector('#mkGlobeParts').onclick=()=>toggleBasemapPanel();
     host.querySelector('#mkGlobeSel').onclick=()=>selToolSet(!selTool);
   }
   host.style.display='block';
   document.getElementById('mk-center').classList.add('globe-open');
   const btn=document.getElementById('mkGlobeBtn'); if(btn) btn.classList.add('on');
+  const bp0=document.getElementById('mkBasemapPanel'); if(bp0) bp0.remove();
   /* the flat-map projection picker doesn't apply while the globe is up */
   /* the projection list stays usable: choosing a projection closes the globe */
   const c=mkMap.getCenter(), z=mkMap.getZoom();
@@ -3109,12 +3225,12 @@ function globeOpen(){
   }
   /* the compass needle follows the globe's bearing */
   const needle=()=>{ const n=document.querySelector('#mkGlobeNorth i'); if(n&&mkGlobe) n.style.transform='rotate('+(-mkGlobe.getBearing())+'deg)'; };
-  mkGlobe.on('rotate', needle);
+  mkGlobe.on('rotate', needle); setTimeout(needle, 50);
   /* click a feature: select it (Ctrl/Cmd/Shift adds) and show its attributes, as on the flat map */
   const hitAt=pt=>{ const ids=(mkGlobe.__clickIds||[]).filter(id=>mkGlobe.getLayer(id)); if(!ids.length) return null;
     try{ return mkGlobe.queryRenderedFeatures(pt,{layers:ids}).find(h=>h.properties && h.properties._fi!=null && !h.properties._ni)||null; }catch(_){ return null; } };
   mkGlobe.on('click', e=>{
-    if(selTool) return;
+    if(selTool || gMeas) return;
     const h=hitAt(e.point); if(!h) return;
     const lyr=mkLayers.find(l=>l.id===h.properties._li), i=+h.properties._fi; if(!lyr) return;
     const f=lyr.geojson.features[i]; if(!f) return;
@@ -3122,7 +3238,8 @@ function globeOpen(){
     mkSelectedId=lyr.id; setSelection(lyr, [i], (oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i);
     new maplibregl.Popup({maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
   });
-  mkGlobe.on('mousemove', e=>{ if(selTool) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
+  mkGlobe.on('mousemove', e=>{ if(selTool || gMeas) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
+  if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   /* apply the projection, parts and user layers once ready. 'style.load' alone is
      unreliable in v5, so also poll — that's what makes the data render on the
      FIRST open (previously it only appeared after a basemap switch). */
@@ -3142,13 +3259,15 @@ function globeOpen(){
     g.on('render', chk); g.once('idle', done); setTimeout(done, 5000); }   /* tile errors shouldn't spam the console */
 }
 function globeClose(){
-  selToolSet(false);
+  selToolSet(false); if(gMeas) globeMeasureToggle(false);
+  document.querySelectorAll('.mk-orient').forEach(x=>x.remove());
+  const bp=document.getElementById('mkBasemapPanel'); if(bp) bp.remove();
   let gv=null; try{ if(mkGlobe){ const c=mkGlobe.getCenter(); gv={lat:c.lat, lng:c.lng, z:mkGlobe.getZoom()}; } }catch(_){}
   const btn=document.getElementById('mkGlobeBtn'); if(btn) btn.classList.remove('on');
   document.getElementById('mk-center').classList.remove('globe-open');
   const proj=document.getElementById('mkProjection'); if(proj) proj.disabled=false;
-  if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   if(mkGlobe){ try{ mkGlobe.remove(); }catch(_){} mkGlobe=null; }
+  if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   const host=document.getElementById('mk-globe'); if(host) host.style.display='none';
   setTimeout(()=>flatMapRefresh(gv), 60);
 }
@@ -3232,6 +3351,7 @@ function measureRedraw(hoverLatLng){
 }
 function measureFinish(){ /* keep the finished line; stop adding */ mkMap.off('mousemove', measureMove); if(measurePts.length) measureRedraw(null); }
 /* --- basemap layer toggles --- */
+const BM_PARTS_ICON='<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3 2 8l10 5 10-5z" fill="#2f7d78"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5" fill="none" stroke="#2f7d78" stroke-width="2" stroke-linejoin="round"/></svg>';
 const BM_PART_GROUPS={
   boundary:{label:'Country & admin borders', src:['boundary']},
   place:{label:'Place labels (cities, towns)', src:['place']},
@@ -3274,10 +3394,12 @@ function toggleBasemapPanel(){
       Object.keys(BM_PART_GROUPS).map(k=>
         '<label class="mbp-row"><input type="checkbox" data-part="'+k+'" '+(basemapParts[k]?'checked':'')+'> '+esc(BM_PART_GROUPS[k].label)+'</label>').join('');
   }
-  document.getElementById('mk-map').appendChild(panel);
+  const onGlobe=(typeof mkGlobe!=='undefined' && mkGlobe);
+  (onGlobe ? document.getElementById('mk-globe') : document.getElementById('mk-map')).appendChild(panel);
+  if(onGlobe){ const b=document.getElementById('mkGlobeParts'); if(b){ panel.style.left=(b.getBoundingClientRect().right-panel.parentNode.getBoundingClientRect().left+8)+'px'; panel.style.top=(b.getBoundingClientRect().top-panel.parentNode.getBoundingClientRect().top)+'px'; } }
   L.DomEvent.disableClickPropagation(panel); L.DomEvent.disableScrollPropagation(panel);
   panel.querySelectorAll('input[data-part]').forEach(cb=>{
-    cb.onchange=()=>{ basemapParts[cb.getAttribute('data-part')]=cb.checked; applyBasemapParts(); };
+    cb.onchange=()=>{ basemapParts[cb.getAttribute('data-part')]=cb.checked; applyBasemapParts(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty&&markProjectDirty(); };
   });
 }
 /* v56: canvas-drawn layers can be redrawn at a higher pixel density for print-quality
@@ -3985,7 +4107,7 @@ const MK_SNAP_CAP=20000;
 function mkSnapshot(){
   let total=0; mkLayers.forEach(l=>total+=(l.geojson&&l.geojson.features?l.geojson.features.length:0));
   const withData=total<=MK_SNAP_CAP;
-  return {sel:mkSelectedId, basemap:mkBasemapKey, withData,
+  return {sel:mkSelectedId, basemap:mkBasemapKey, partsOff:partsOff(), withData,
     layers:mkLayers.map(l=>({id:l.id, datasetId:l.datasetId, name:l.name, geom:l.geom,
       visible:l.visible, opacity:l.opacity, style:clone(l.style), labels:clone(l.labels), filter:clone(l.filter),
       geojson: withData? clone(l.geojson) : null}))};
@@ -4040,6 +4162,7 @@ function restoreMkSnapshot(s){
   });
   mkSelectedId = (s.sel && mkLayers.some(l=>l.id===s.sel)) ? s.sel : (mkLayers[0]?mkLayers[0].id:null);
   if(s.basemap && s.basemap!==mkBasemapKey) setBasemap(s.basemap);
+  { const off=Array.isArray(s.partsOff)?s.partsOff:[]; Object.keys(BM_PART_GROUPS).forEach(k=>basemapParts[k]=!off.includes(k)); applyBasemapParts(); if(mkGlobe) globeApplyParts(mkGlobe); const bp=document.getElementById('mkBasemapPanel'); if(bp) bp.remove(); }
   renderAllMakerLayers();
   renderMakerLayerList();
   renderMakerPanels();
@@ -5351,14 +5474,16 @@ function cartoUpdateProjectionLock(){
   const sel=document.getElementById('mkProjection');
   if(!sel) return;
   const lock=cartoLocksProjection();
-  sel.disabled=false;
+  const onGlobe=(typeof mkGlobe!=='undefined' && !!mkGlobe);
+  sel.disabled=onGlobe;
+  const pb=document.getElementById('mkProjection'); if(pb && pb.parentNode) pb.parentNode.classList.toggle('proj-locked', onGlobe);
   [...sel.options].forEach(o=>{
     const off= lock && o.value!=='mercator-edit' && !CARTO_EQUAL_AREA[o.value];
     o.disabled=off;
     if(!o.dataset.lbl) o.dataset.lbl=o.textContent;
     o.textContent= off ? o.dataset.lbl+' — not equal-area' : o.dataset.lbl;
   });
-  sel.title=lock ? 'While a cartogram is on the map, only equal-area projections are available, so each unit\'s area still matches its value.' : '';
+  sel.title=onGlobe ? 'Close the globe (🌐) to choose a projection.' : lock ? 'While a cartogram is on the map, only equal-area projections are available, so each unit\'s area still matches its value.' : '';
   if(lock && typeof projActive!=='undefined' && projActive && !CARTO_EQUAL_AREA[projKey]){
     sel.value='mercator-edit';
     setProjectionMode('mercator-edit');
@@ -10695,7 +10820,13 @@ function atBmKey(k){ if(BASEMAP_LEGACY[k]) k=BASEMAP_LEGACY[k]; return AT_BMS.so
 function atSnapFrom(p){
   const ok=sn=>sn && Array.isArray(sn.layers) && sn.view && Array.isArray(sn.view.c);
   const clean=sn=>({globe:(sn.globe&&Array.isArray(sn.globe.c))?{c:[+sn.globe.c[0]||0,+sn.globe.c[1]||0], z:+sn.globe.z||1.5, br:+sn.globe.br||0, pt:+sn.globe.pt||0}:null,
-    gLayers:Array.isArray(sn.gLayers)?sn.gLayers.slice(0,50).filter(d=>d&&d.fc&&Array.isArray(d.fc.features)).map(d=>({geom:['polygon','line','point'].includes(d.geom)?d.geom:'point', fc:d.fc})):[],
+    gLayers:Array.isArray(sn.gLayers)?sn.gLayers.slice(0,50).map(d=>{
+        if(d && d.col && d.col.fc && Array.isArray(d.col.fc.features)) return {id:String(d.id||'').slice(0,40), lbl:(d.lbl&&typeof d.lbl==='object')?d.lbl:null,
+          col:{fc:d.col.fc, heats:Array.isArray(d.col.heats)?d.col.heats.slice(0,20):[], dash:typeof d.col.dash==='string'?d.col.dash.slice(0,40):null}};
+        if(d && d.fc && Array.isArray(d.fc.features)) return {geom:['polygon','line','point'].includes(d.geom)?d.geom:'point', fc:d.fc};
+        return null; }).filter(Boolean):[],
+    gIcons:(sn.gIcons&&typeof sn.gIcons==='object')?Object.fromEntries(Object.entries(sn.gIcons).filter(([k,v])=>/^momi\d+$/.test(k)&&/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(v)).slice(0,500)):{},
+    partsOff:Array.isArray(sn.partsOff)?sn.partsOff.filter(k=>BM_PART_GROUPS.hasOwnProperty(k)):[],
     proj:(sn.proj&&typeof sn.proj.key==='string'&&Array.isArray(sn.proj.translate))?sn.proj:null,
     pLayers:Array.isArray(sn.pLayers)?sn.pLayers.slice(0,50):[],
     swipe:(sn.swipe&&sn.swipe.left)?{left:String(sn.swipe.left).slice(0,40), right:sn.swipe.right?String(sn.swipe.right).slice(0,40):null, x:Math.max(0.02,Math.min(0.98,+sn.swipe.x||0.5)), ln:String(sn.swipe.ln||'').slice(0,120), rn:String(sn.swipe.rn||'').slice(0,120)}:null,
@@ -16798,13 +16929,14 @@ function renderBackupBanner(){
   const list=syncing||backupBannerHidden ? [] : projectsNeedingBackup();
   if(!list.length){ el.classList.add('hidden'); el.innerHTML=''; return; }
   const why = storagePersisted===false
-    ? 'This browser may clear stored projects on its own (Safari does after 7 days without a visit).'
-    : 'Projects live only in this browser on this computer.';
+    ? 'This browser may clear stored projects on its own.'
+    : 'Projects are stored only in this browser.';
   el.className='home-backup';
-  el.innerHTML='<b>Back up your work.</b> '+esc(why)+' These projects have '+BACKUP_DAYS+'+ days of edits since their last export:'+
+  el.innerHTML='<b>Back up your work.</b> '+esc(why)+' Not backed up for '+BACKUP_DAYS+'+ days:'+
     '<div class="hb-list">'+list.map(p=>'<span class="hb-item">'+esc(p.name)+' <button class="btn small" data-exp="'+esc(p.id)+'">Export</button></span>').join('')+'</div>'+
-    '<div class="hb-foot">'+(typeof syncSupported==='function'&&syncSupported()?'Or turn on ☁ Sync to save projects to your OneDrive/Google Drive folder automatically. ':'')+
+    '<div class="hb-foot">'+(typeof syncSupported==='function'&&syncSupported()?'<button class="btn small" id="hbSync">☁ Sync to cloud</button> <span>saves every project to your synced folder automatically.</span> ':'')+
     '<button class="btn small light" id="hbLater">Remind me later</button></div>';
+  const hs=document.getElementById('hbSync'); if(hs) hs.onclick=()=>openSyncDialog();
   el.querySelectorAll('button[data-exp]').forEach(b=>b.onclick=()=>exportProjectFile(b.getAttribute('data-exp')));
   const later=document.getElementById('hbLater'); if(later) later.onclick=()=>{ backupBannerHidden=true; renderBackupBanner(); };
 }
@@ -17275,14 +17407,14 @@ function embedSnapshot(){
     const gLayers=mkLayers.slice().reverse().filter(l=>l.visible).map(l=>({id:l.id, lbl:labelSpecFor(l),
       col:glbCollect([l.densityLayer, l.leaflet, l.dotLayer], {id:l.id, props:f=>Object.assign({}, (f&&f.properties)||{}), lbl:(l.labels&&l.labels.enabled)?l.labels.field:null})}))
       .filter(d=>d.col.fc.features.length||d.col.heats.length);
-    return {globe:{c:[c.lng,c.lat], z:mkGlobe.getZoom(), br:mkGlobe.getBearing(), pt:mkGlobe.getPitch()}, gLayers, gIcons:glbIconUrls(gLayers), layers:[], view:{c:[c.lat,c.lng], z:mkGlobe.getZoom(), b:null},
+    return {globe:{c:[c.lng,c.lat], z:mkGlobe.getZoom(), br:mkGlobe.getBearing(), pt:mkGlobe.getPitch()}, gLayers, gIcons:glbIconUrls(gLayers), partsOff:partsOff(), layers:[], view:{c:[c.lat,c.lng], z:mkGlobe.getZoom(), b:null},
       legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id)};
   }
   if(projActive) return projSnapshot();
   const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l); d.lbl=labelSpecFor(l); d.id=l.id; return d; }).filter(d=>d.fc.features.length);
   let view={c:[20,0], z:2, b:null};
   if(mkMap){ const c=mkMap.getCenter(), b=mkMap.getBounds(); view={c:[c.lat,c.lng], z:mkMap.getZoom(), b:[[b.getSouth(),b.getWest()],[b.getNorth(),b.getEast()]]}; }
-  return {layers, view, legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), swipe:swipeSnap()};
+  return {layers, view, legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), swipe:swipeSnap(), partsOff:partsOff()};
 }
 function swipeSnap(){
   if(typeof swipe==='undefined' || !swipe || !swipe.left) return null;
@@ -17408,6 +17540,7 @@ setTimeout(ready,3000);
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 var map=new maplibregl.Map({container:'map',style:${JSON.stringify(style)},projection:{type:'globe'},center:${JSON.stringify(g.c)},zoom:${+g.z||1.5},bearing:${+g.br||0},pitch:${+g.pt||0},attributionControl:{compact:true}});
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-left');
+${styleUrl ? partsEmbedJs(snap.partsOff||[], 'function(){return map;}', !!opts.partsUi) : ''}
 var added=false;
 function add(){ if(added||!map.isStyleLoaded())return; added=true;
   try{map.setProjection({type:'globe'});}catch(e){} try{map.setSky&&map.setSky({});}catch(e){}
@@ -17486,6 +17619,7 @@ setTimeout(ready,2500);`
   : `var map=L.map('map',{preferCanvas:true}).setView([${view.c[0]},${view.c[1]}], ${view.z});
 function ready(){}`}
 ${vecDef ? `try{var BM=L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},interactive:false}).addTo(map);var GM=BM.getMaplibreMap&&BM.getMaplibreMap();if(GM)GM.once('idle',ready);else ready();}catch(e){ready();}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}})${i===0?".on('load',ready)":''}.addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');setTimeout(ready,50);`}
+${vecDef ? partsEmbedJs(snap.partsOff||[], "function(){return (typeof GM!=='undefined')?GM:null;}", !!opts.partsUi) : ''}
 function styleFn(f){var s=f.properties._cs||{};return{color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};}
 function ptLayer(f,ll,o){o=o||{};var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]}),pane:o.pane||'markerPane'});}return L.circleMarker(ll,Object.assign({radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo},o));}
 var SW=${JSON.stringify(SW)},PO={};
@@ -17595,7 +17729,7 @@ function runExport(fmt, name, dpi){
     if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer to embed.'); return; }
     const basemap=document.getElementById('embedBasemap').value;
     const height=parseInt(document.getElementById('embedHeight').value,10)||500;
-    const html=buildEmbedHtml({name, basemap,
+    const html=buildEmbedHtml({name, basemap, partsUi:true,
       popups:document.getElementById('embedPopups').checked,
       legend:document.getElementById('embedLegend').checked});
     window.__lastEmbedHtml=html;               /* automated-testing hook */
@@ -17669,7 +17803,7 @@ function buildSharePayload(){
   const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l, true); d.lbl=labelSpecFor(l); return d; }).filter(d=>d.fc.features.length);
   const view = mkMap ? {c:[+mkMap.getCenter().lat.toFixed(5), +mkMap.getCenter().lng.toFixed(5)], z:mkMap.getZoom()} : {c:[20,0], z:2};
   const rec=projectsCache.find(p=>p.id===currentProjectId);
-  const out={v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers};
+  const out={v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers, partsOff:partsOff()};
   if(typeof mkGlobe!=='undefined' && mkGlobe){ const c=mkGlobe.getCenter(); out.globe={c:[+c.lng.toFixed(5), +c.lat.toFixed(5)], z:+mkGlobe.getZoom().toFixed(2), br:+mkGlobe.getBearing().toFixed(1), pt:+mkGlobe.getPitch().toFixed(1)}; }
   return out;
 }
@@ -17817,12 +17951,19 @@ function svSetBasemap(key){
   } else if(bm && bm.kind==='raster'){
     bm.urls.forEach((u,i)=>{ const t=L.tileLayer(u,{maxZoom:bm.max,maxNativeZoom:bm.maxNative||bm.max,attribution:i===0?bm.attr:''}); t.addTo(svMap); svBmLayers.push(t); });
   }
+  svApplyParts();
+}
+let svParts=null;
+function svApplyParts(){
+  if(!svParts) return;
+  svBmLayers.forEach(l=>{ const m=l.getMaplibreMap && l.getMaplibreMap(); if(m) applyPartsTo(m, svParts); });
+  if(window.__svGlobe && window.__svGlobe.map) applyPartsTo(window.__svGlobe.map, svParts);
 }
 /* a shared globe view: the same layers, drawn on a MapLibre globe over the flat viewer */
 function svOpenGlobe(mapDiv, payload, groups){
   const g=payload.globe||{};
   const host=document.createElement('div'); host.className='sv-globe'; mapDiv.appendChild(host);
-  host.innerHTML='<div class="sv-gmap"></div><div class="mk-gctl"><div class="mk-gbar"><button type="button" data-a="in" title="Zoom in">+</button><button type="button" data-a="out" title="Zoom out">−</button><button type="button" data-a="all" title="Whole globe">✥</button></div>'+
+  host.innerHTML='<div class="sv-gmap"></div><div class="mk-gctl"><div class="mk-gbar"><button type="button" data-a="in" title="Zoom in">+</button><button type="button" data-a="out" title="Zoom out">−</button><button type="button" data-a="all" title="Whole globe">✥</button><button type="button" data-a="orient" title="Tilt and rotate"><i class="svn"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
     '<div class="mk-gbar"><button type="button" data-a="flat" title="Show as a flat map">🗺</button></div></div>';
   ['pointerdown','mousedown','click','dblclick','wheel','touchstart'].forEach(ev=>host.addEventListener(ev, e=>e.stopPropagation()));
   const styleFor=k=>globeVectorStyleUrl(k) || globeRasterStyle(BASEMAPS[k]?k:'none');
@@ -17836,9 +17977,10 @@ function svOpenGlobe(mapDiv, payload, groups){
     lbl:d.lbl?{f:d.lbl.f, s:svNum(d.lbl.s,11,4,72), c:safeColor(d.lbl.c,'#22293a'), b:d.lbl.b?1:0, h:d.lbl.h?1:0}:null}));
   let ids=[];
   const addAll=()=>{ try{ map.setProjection({type:'globe'}); }catch(_){}
-    ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); };
+    ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); if(svParts) applyPartsTo(map, svParts); };
   let done=false; const tryAdd=()=>{ if(done||!map.isStyleLoaded()) return; done=true; addAll(); };
   map.on('load', tryAdd); map.on('styledata', tryAdd); const poll=setInterval(()=>{ if(done) clearInterval(poll); else tryAdd(); }, 200);
+  map.on('rotate', ()=>{ const n=host.querySelector('.svn'); if(n) n.style.transform='rotate('+(-map.getBearing())+'deg)'; });
   map.on('click', e=>{ const f=(ids.length? map.queryRenderedFeatures(e.point,{layers:ids.filter(id=>map.getLayer(id))}) : [])[0]; if(!f) return;
     const fake={bindPopup(h){ this.h=h; }}; svPopup({properties:f.properties||{}}, fake); if(fake.h) new maplibregl.Popup({maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(fake.h).addTo(map); });
   map.on('mousemove', e=>{ let h=false; try{ h=ids.length && map.queryRenderedFeatures(e.point,{layers:ids.filter(id=>map.getLayer(id))}).length>0; }catch(_){} map.getCanvas().style.cursor=h?'pointer':''; });
@@ -17846,6 +17988,7 @@ function svOpenGlobe(mapDiv, payload, groups){
     L.DomEvent.disableClickPropagation(d); d.firstChild.onclick=ev=>{ ev.preventDefault(); host.style.display=''; map.resize(); flatBtn.remove(); }; return d; };
   host.querySelector('.mk-gctl').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const a=b.dataset.a;
     if(a==='in') map.zoomIn(); else if(a==='out') map.zoomOut(); else if(a==='all') map.easeTo({zoom:1.2, bearing:0, pitch:0});
+    else if(a==='orient') glbOrientPanel(map, b);
     else if(a==='flat'){ host.style.display='none'; flatBtn.addTo(svMap); setTimeout(()=>svMap.invalidateSize(),50); } };
   window.__svGlobe={map, basemap:k=>{ if(!BASEMAPS.hasOwnProperty(k)&&k!=='none') return; done=false; try{ map.setStyle(styleFor(k), {diff:false}); }catch(_){} const t=setInterval(()=>{ if(map.isStyleLoaded()){ clearInterval(t); done=true; addAll(); } },150); setTimeout(()=>clearInterval(t),8000); }};
 }
@@ -17859,6 +18002,7 @@ async function enterShareViewer(){
   const mapDiv=document.createElement('div'); mapDiv.className='sv-map'; host.appendChild(mapDiv);
   document.title=String(payload.title||'Map').slice(0,120)+' — Map-O-Matic';
   svMap=L.map(mapDiv,{preferCanvas:true});
+  svParts={}; { const off=Array.isArray(payload.partsOff)?payload.partsOff:[]; Object.keys(BM_PART_GROUPS).forEach(k=>svParts[k]=!off.includes(k)); }
   const view=payload.view||{c:[20,0],z:2}; svMap.setView(view.c, view.z);
   svSetBasemap(BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron');
   const group=L.featureGroup().addTo(svMap), svGroups=[];
@@ -17878,6 +18022,13 @@ async function enterShareViewer(){
     d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); };
     return d;
   }; bmCtl.addTo(svMap);
+  const ptCtl=L.control({position:'topright'}); ptCtl.onAdd=()=>{
+    const d=L.DomUtil.create('div','sv-parts');
+    d.innerHTML='<button type="button" aria-expanded="false">Basemap parts ▾</button><div class="svp-list" hidden>'+Object.keys(BM_PART_GROUPS).map(k=>'<label><input type="checkbox" data-k="'+k+'"'+(svParts[k]?' checked':'')+'> '+esc(BM_PART_GROUPS[k].label)+'</label>').join('')+'</div>';
+    L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+    const b=d.firstChild, list=d.lastChild; b.onclick=()=>{ list.hidden=!list.hidden; b.setAttribute('aria-expanded', String(!list.hidden)); };
+    d.querySelectorAll('input').forEach(c=>c.onchange=()=>{ svParts[c.dataset.k]=c.checked; svApplyParts(); });
+    return d; }; ptCtl.addTo(svMap);
   const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg><a href="'+esc(location.href.split('#')[0])+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Made with Map-O-Matic</a>'; return d; }; brand.addTo(svMap);
   window.__svMap=svMap;            /* testing hook */
   setTimeout(()=>svMap.invalidateSize(), 150);

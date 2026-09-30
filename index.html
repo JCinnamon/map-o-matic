@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -476,6 +475,23 @@
   .at-sw input:checked+i{background:var(--teal);} .at-sw input:checked+i::after{left:16px;} .at-sw input:focus-visible+i{outline:2px solid var(--teal);outline-offset:2px;}
   .at-ed-cv .at-cvwrap{width:min(330px,72%);margin:2px auto 6px;}
   .at-card .at-rt{min-height:150px;}
+  .at-lt{display:grid;grid-template-columns:minmax(240px,1fr) minmax(280px,1.35fr);gap:16px;align-items:start;}
+  @media (max-width:1100px){ .at-lt{grid-template-columns:1fr;} }
+  .at-ltc{display:flex;flex-direction:column;gap:10px;min-width:0;}
+  .at-swrow{display:flex;gap:18px;flex-wrap:wrap;}
+  .at-sub{margin-top:-4px;padding-left:10px;border-left:2px solid #e3e8ee;}
+  .at-2col{display:flex;gap:8px;align-items:center;} .at-2col .at-seg{flex:1;} .at-2col select{width:auto !important;flex:0 0 auto;}
+  .at-segs button{font-size:12px;padding:6px 6px;}
+  .at-ltp{min-width:0;}
+  .at-lpwrap{width:min(100%,300px);margin:0 auto;} .at-lpwrap.sp{width:100%;max-width:560px;}
+  .at-lpbox{position:relative;width:100%;aspect-ratio:1/1.32;border-radius:3px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.22);}
+  .at-lpwrap.sp .at-lpbox{aspect-ratio:2/1.32;}
+  .at-lpbox.av-root{position:relative;inset:auto;}
+  .at-lpbox .av-still span{display:none;} .at-lpbox .av-media img{cursor:default;}
+  .at-lpwrap.sp .at-lpbox::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(0,0,0,.18);box-shadow:0 0 12px 4px rgba(0,0,0,.08);pointer-events:none;z-index:9;}
+  .at-lpbox .av-tbox.at-drag{cursor:move;outline:2px dashed var(--teal,#2f7d78);outline-offset:2px;overflow:hidden;user-select:none;}
+  .at-lpbox .av-tbox.dragging{opacity:.92;}
+  .at-lpbox .at-rsz{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 45%,var(--teal,#2f7d78) 46%,var(--teal,#2f7d78) 58%,transparent 59%,transparent 70%,var(--teal,#2f7d78) 71%,var(--teal,#2f7d78) 83%,transparent 84%);z-index:3;}
   .at-custom{padding:2px 10px;gap:0;}
   .at-cgrp+.at-cgrp{border-top:1px solid var(--line);}
   .at-cgrp>summary{cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 1px;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--text);}
@@ -9973,11 +9989,13 @@ function atlasViewer(root, D){
       garamond:"'EB Garamond',Georgia,serif", sourceserif:"'Source Serif 4',Georgia,serif", inter:"Inter,-apple-system,'Segoe UI',sans-serif", montserrat:"Montserrat,-apple-system,sans-serif",
       worksans:"'Work Sans',-apple-system,sans-serif", oswald:"Oswald,'Arial Narrow',sans-serif", josefin:"'Josefin Sans',-apple-system,sans-serif", plexmono:"'IBM Plex Mono','Courier New',monospace", helvetica:"-apple-system,'Segoe UI',Helvetica,Arial,sans-serif"};
     var col=function(v, d){ return COL.test(v||'') ? v : d; };
+    var hexA=function(h,a){ var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(h)||[0,'22','29','3a']; return 'rgba('+parseInt(m[1],16)+','+parseInt(m[2],16)+','+parseInt(m[3],16)+','+a+')'; };
     cuCls=' av-cf-'+one(CU.frame,['none','hair','double','thick','corners'],'hair')+' av-chs-'+one(CU.hstyle,['plain','underline','centred','caps'],'underline')+
       ' av-cm-'+one(CU.mapframe,['none','line','double','shadow','rounded'],'line')+' av-cc-'+one(CU.capstyle,['italic','plain','centred'],'italic')+
       ' av-cp-'+one(CU.pnum,['plain','dashes','circle','p'],'plain')+(CU.dropcap?' av-cdc':'');
     cuVars='--paper:'+col(CU.paper,'#fbf8f1')+';--ink:'+col(CU.ink,'#22293a')+';--head:'+col(CU.head,'#1f2f45')+';--accent:'+col(CU.accent,'#2f6f6b')+';--quote:'+col(CU.accent,'#2f6f6b')+
       ';--rule:'+col(CU.accent,'#2f6f6b')+'55;--dots:'+col(CU.accent,'#2f6f6b')+'88;--mapb:'+col(CU.accent,'#2f6f6b')+';--backdrop:'+col(CU.backdrop,'#2c2f36')+
+      ';--muted:'+hexA(col(CU.ink,'#22293a'),.55)+';--cap:'+hexA(col(CU.ink,'#22293a'),.75)+
       ';--font:'+(FONTS[CU.bfont]||FONTS.georgia)+';--hfont:'+(FONTS[CU.hfont]||FONTS.georgia)+';--hweight:'+(CU.hbold?700:400)+';';
   }
   var themeCls=' av-th-'+theme+cuCls;
@@ -10102,17 +10120,38 @@ function atlasViewer(root, D){
     var text=p.text?'<div class="av-text">'+p.text+'</div>':'';
     var cap=p.caption?'<div class="av-cap">'+E(p.caption)+'</div>':'';
     var media=mediaHtml(p, live);
+    var ov=overlayBits(p);
+    var h2=(p.title&&!ov.tov)?'<h2 class="av-h">'+E(p.title)+'</h2>':'';
+    var fillC=(p.fill&&media)?' av-fill':'';
     if(full){
       foot='<div class="av-foot av-foot2"><span class="av-pno">'+pnum(i)+'</span><span>'+E(D.title||'')+'</span><span class="av-pno">'+pnum(i+1)+'</span></div>';
-      var h2=p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'';
       var how=(cap||text)?({column:1,box:1,split:1}[p.spreadText]?p.spreadText:'column'):'none';
-      /* text never runs across the gutter: a column on the right-hand page, a box over the map, or one column per page */
-      if(how==='column') return '<div class="av-pg av-inner av-spreadpg av-sp-col av-k-'+p.kind+'">'+winBar(p,i)+'<div class="av-spc-main">'+media+'</div><div class="av-spc-side">'+h2+cap+text+'</div>'+foot+'</div>';
-      if(how==='box') return '<div class="av-pg av-inner av-spreadpg av-sp-box av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-spb-wrap"><div class="av-spb-box" data-i="'+i+'"><div class="av-spb-in">'+cap+text+'</div><button type="button" class="av-spb-more">Read more ▾</button></div></div>'+foot+'</div>';
-      if(how==='split') return '<div class="av-pg av-inner av-spreadpg av-sp-split av-k-'+p.kind+'">'+winBar(p,i)+h2+media+'<div class="av-sps-cols">'+cap+text+'</div>'+foot+'</div>';
-      return '<div class="av-pg av-inner av-spreadpg av-k-'+p.kind+'">'+winBar(p,i)+h2+media+foot+'</div>';
+      /* text never runs across the gutter unless the author places a box there */
+      if(how==='column') return '<div class="av-pg av-inner av-spreadpg av-sp-col'+fillC+' av-k-'+p.kind+'">'+winBar(p,i)+'<div class="av-spc-main">'+(ov.tov?'':h2)+stage(media, ov.tov, '')+'</div><div class="av-spc-side">'+(ov.tov?h2:'')+cap+text+'</div>'+foot+'</div>';
+      if(how==='box') return '<div class="av-pg av-inner av-spreadpg av-sp-box'+fillC+' av-k-'+p.kind+'">'+winBar(p,i)+h2+stage(media, ov.tov, tbox(p, cap+text))+foot+'</div>';
+      if(how==='split') return '<div class="av-pg av-inner av-spreadpg av-sp-split'+fillC+' av-k-'+p.kind+'">'+winBar(p,i)+h2+stage(media, ov.tov, '')+'<div class="av-sps-cols">'+cap+text+'</div>'+foot+'</div>';
+      return '<div class="av-pg av-inner av-spreadpg'+fillC+' av-k-'+p.kind+'">'+winBar(p,i)+h2+stage(media, ov.tov, '')+foot+'</div>';
     }
-    return '<div class="av-pg av-inner av-k-'+p.kind+(media&&text?' av-split':'')+'">'+winBar(p,i)+(p.title?'<h2 class="av-h">'+E(p.title)+'</h2>':'')+media+cap+text+foot+'</div>';
+    if(media && p.pageText==='box' && (cap||text)) return '<div class="av-pg av-inner'+fillC+' av-k-'+p.kind+'">'+winBar(p,i)+h2+stage(media, ov.tov, tbox(p, cap+text))+foot+'</div>';
+    return '<div class="av-pg av-inner'+fillC+' av-k-'+p.kind+(media&&text?' av-split':'')+'">'+winBar(p,i)+h2+(media?stage(media, ov.tov, ''):'')+cap+text+foot+'</div>';
+  }
+  /* v61: titles laid over the map or image, and a text box the author placed */
+  function overlayBits(p){
+    var o={tov:''};
+    if(p.tOver && p.title && SPREADABLE[p.kind]){
+      var st={card:1,banner:1,halo:1}[p.tOver]?p.tOver:'card', ps={tl:1,tc:1,bl:1}[p.tPos]?p.tPos:'tl';
+      o.tov='<div class="av-tov av-tov-'+st+' av-tp-'+ps+'"><span>'+E(p.title)+'</span></div>';
+    }
+    return o;
+  }
+  function stage(media, tov, box){ return (tov||box) ? '<div class="av-mstage">'+media+tov+box+'</div>' : media; }
+  function tbox(p, inner){
+    if(!inner) return '';
+    var b=p.box||{}, n=function(v,d,lo,hi){ v=+v; return isFinite(v)?Math.max(lo,Math.min(hi,v)):d; };
+    var x=n(b.x,.2,0,.95), y=n(b.y,.66,0,.95), w=n(b.w,.6,.08,1), h=n(b.h,.28,.06,1);
+    if(x+w>1) w=1-x; if(y+h>1) h=1-y;
+    var bs={design:1,glass:1,dark:1}[p.boxStyle]?p.boxStyle:'design';
+    return '<div class="av-tbox av-tb-'+bs+'" style="left:'+(x*100).toFixed(2)+'%;top:'+(y*100).toFixed(2)+'%;width:'+(w*100).toFixed(2)+'%;height:'+(h*100).toFixed(2)+'%"><div class="av-tbin">'+inner+'</div></div>';
   }
   var frames=[];
   function backInner(){
@@ -10206,6 +10245,8 @@ function atlasViewer(root, D){
   if(D.__pdfOnly) return {pdf:makePdf};
   if(D.__cover){ root.className=(root.className||'').replace(/\b(av-root|av-mode-\w+|av-th-\w+|av-c[a-z]+-\w+|av-cdc|av-cvhost)\b/g,'').trim()+' av-root av-mode-book'+themeCls+' av-cvhost'; dressRoot(root);
     if(D.__cover==='back'){ root.innerHTML=pageHtml(seq.length,false); return {}; }
+    if(D.__cover==='page'){ var pj=-1; seq.forEach(function(q,j){ if(pj<0 && q.id===D.__pageId && q.kind!=='spreadR') pj=j; });
+      root.innerHTML= pj<0 ? '' : pageHtml(pj, false, isSpread(seq[pj])); return {}; }
     root.innerHTML=pageHtml(0,false); return {}; }
   var go=function(){};
   /* a live map says when its basemap has drawn; only then does it replace the still */
@@ -10225,7 +10266,7 @@ function atlasViewer(root, D){
       if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<button class="av-down" data-go="1" aria-label="Start reading">↓</button></section>'; return; }
       if(q.kind==='contents'){ html+='<section class="av-s av-k-contents" id="av-s'+j+'">'+winBar(q,j)+'<h2 class="av-h">'+E(D.contentsTitle||'Contents')+'</h2>'+contentsIntro()+'<div class="av-toc">'+contentsRows()+'</div></section>'; return; }
       var text=q.text?'<div class="av-text">'+q.text+'</div>':'', cap=q.caption?'<div class="av-cap">'+E(q.caption)+'</div>':'';
-      html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+mediaHtml(q,true)+cap+text+'</section>';
+      html+='<section class="av-s av-k-'+q.kind+(isSpread(q)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(function(){ var ov=overlayBits(q), m=mediaHtml(q,true); return ((q.title&&!ov.tov)?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+(m?stage(m, ov.tov, ''):''); })()+cap+text+'</section>';
     });
     html+='<section class="av-s av-sback" style="background:'+coverCol+'"><div class="av-sbk">'+backInner()+'<div class="av-bk-foot">'+(D.backCredit?'<div class="av-bk-cr">'+E(D.backCredit)+'</div>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
@@ -10502,6 +10543,35 @@ const ATLAS_CSS=`
 .av-cap{font-size:1.15em;font-style:italic;color:var(--cap);margin:.5em 0 0;}
 .av-text{font-size:1.35em;line-height:1.55;margin-top:.8em;overflow:auto;}
 .av-split .av-media{flex:1 1 64%;} .av-split .av-text{flex:0 1 auto;max-height:32%;}
+.av-mstage{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+.av-mstage>.av-media{flex:1 1 auto;}
+.av-split .av-mstage{flex:1 1 64%;}
+.av-fill .av-mstage,.av-fill>.av-media{flex:1 1 100%;}
+.av-fill.av-split .av-text{max-height:24%;}
+.av-fill.av-k-image .av-media img{width:100%;height:100%;object-fit:cover;}
+.av-tov{position:absolute;z-index:5;pointer-events:none;max-width:78%;}
+.av-tov span{display:block;font-family:var(--hfont);font-weight:var(--hweight,600);line-height:1.12;color:var(--head);}
+.av-tp-tl{top:4%;left:4%;} .av-tp-tc{top:4%;left:50%;transform:translateX(-50%);text-align:center;} .av-tp-bl{bottom:5%;left:4%;}
+.av-spreadpg .av-tp-tc{left:25%;}
+.av-tov-card{background:var(--paper,#fff);padding:.55em 1em .6em;border-radius:.35em;box-shadow:0 .35em 1.2em rgba(0,0,0,.25),0 0 0 1px var(--rule,#999);}
+.av-tov-card span{font-size:2.1em;}
+.av-tov-banner{left:0 !important;right:0;max-width:none;transform:none !important;isolation:isolate;padding:.5em 4% .55em;border-top:1px solid var(--rule,#999);border-bottom:1px solid var(--rule,#999);}
+.av-tov-banner::before{content:"";position:absolute;inset:0;background:var(--paper,#fff);opacity:.86;z-index:-1;}
+.av-tov-banner.av-tp-tl,.av-tov-banner.av-tp-tc{top:0;} .av-tov-banner.av-tp-bl{bottom:0;} .av-tov-banner.av-tp-tc span{text-align:center;}
+.av-tov-banner span{font-size:2em;}
+.av-tov-halo span{font-size:2.7em;color:#15202e;text-shadow:0 0 .12em #fff,0 0 .25em #fff,0 0 .5em rgba(255,255,255,.9),0 0 .9em rgba(255,255,255,.7);}
+.av-th-noir .av-tov-halo span,.av-th-retro .av-tov-halo span{color:#fff;text-shadow:0 0 .15em #000,0 0 .35em rgba(0,0,0,.9),0 0 .8em rgba(0,0,0,.7);}
+.av-tbox{position:absolute;z-index:5;box-sizing:border-box;overflow:auto;border-radius:.9em;padding:.9em 1.2em;font-size:1em;line-height:1.45;}
+.av-tbox .av-cap{margin:0 0 .35em;} .av-tbox .av-text{margin:0;font-size:1.15em;overflow:visible;} .av-tbox .av-text p{margin:0 0 .45em;} .av-tbox .av-text>p:last-child{margin-bottom:0;}
+.av-root .av-tbox .av-text>p:first-of-type::first-letter{float:none !important;font-size:inherit !important;line-height:inherit !important;margin:0 !important;color:inherit !important;font-family:inherit !important;}
+.av-tb-design{background:var(--paper,#fff);color:var(--ink,#222);border:1px solid var(--rule,#999);box-shadow:0 1em 2.2em -.5em rgba(0,0,0,.4),0 .3em .7em -.2em rgba(0,0,0,.2);}
+.av-tb-glass{background:rgba(255,255,255,.66);-webkit-backdrop-filter:blur(8px) saturate(1.2);backdrop-filter:blur(8px) saturate(1.2);color:#18202c;border:1px solid rgba(255,255,255,.7);box-shadow:0 .8em 2em -.6em rgba(0,0,0,.35);}
+.av-tb-glass .av-cap{color:#3b4656;}
+.av-pdfhost .av-tb-glass{background:rgba(255,255,255,.86);}
+.av-pdfhost .av-tov-banner{background:var(--paper,#fff);} .av-pdfhost .av-tov-banner::before{display:none;}
+.av-tb-dark{background:rgba(14,20,30,.8);color:#eef2f7;border:1px solid rgba(255,255,255,.12);box-shadow:0 .8em 2em -.6em rgba(0,0,0,.5);}
+.av-tb-dark .av-cap{color:#b9c4d4;} .av-tb-dark a{color:#9fe0d8;}
+.av-s .av-mstage{flex:0 0 auto;display:block;} .av-s .av-tov{font-size:15px;}
 .av-k-text .av-text{margin-top:0;flex:1;}
 .av-text h2{font-family:var(--hfont);font-size:1.5em;font-weight:var(--hweight);margin:.6em 0 .3em;color:var(--head);} .av-text h3{font-size:1.2em;margin:.6em 0 .3em;}
 .av-text p{margin:0 0 .7em;} .av-text blockquote{margin:.6em 0;padding-left:1em;border-left:3px solid var(--quote);color:var(--cap);font-style:italic;}
@@ -10684,8 +10754,8 @@ const ATLAS_CSS=`
 .av-sp-col .av-spc-side .av-text{margin-top:.2em;}
 .av-sp-box>.av-h,.av-sp-split>.av-h{width:46%;}
 .av-sp-box .av-spb-wrap{position:relative;flex:0 0 3.2em;z-index:4;}
-.av-sp-box .av-spb-box{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:64%;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid color-mix(in srgb,var(--rule) 55%,transparent);border-radius:1.6em;padding:.85em 2.2em .9em;font-size:1.12em;line-height:1.45;
-  box-shadow:0 1.1em 2.4em -.6em rgba(0,0,0,.38),0 .35em .8em -.2em rgba(0,0,0,.18),0 0 0 .25em color-mix(in srgb,var(--paper) 60%,transparent);}
+.av-sp-box .av-spb-box{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:64%;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:1.6em;padding:.85em 2.2em .9em;font-size:1.12em;line-height:1.45;
+  box-shadow:0 1.1em 2.4em -.6em rgba(0,0,0,.38),0 .35em .8em -.2em rgba(0,0,0,.18);}
 .av-sp-box .av-spb-in{max-height:4.9em;overflow:hidden;}
 .av-sp-box .av-spb-box.av-open .av-spb-in{max-height:none;overflow:auto;max-height:22em;}
 .av-sp-box .av-spb-box.av-more:not(.av-open) .av-spb-in{-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent);}
@@ -10697,7 +10767,7 @@ const ATLAS_CSS=`
 .av-sp-split .av-sps-cols{column-count:2;column-gap:12%;max-height:24%;overflow:hidden;margin-top:.4em;}
 .av-sp-split .av-sps-cols .av-cap{margin-top:.4em;} .av-sp-split .av-sps-cols .av-text{margin-top:.4em;font-size:1.25em;}
 /* ---- Custom design ---- */
-.av-th-custom{--muted:color-mix(in srgb,var(--ink) 55%,transparent);--cap:color-mix(in srgb,var(--ink) 75%,transparent);--navink:#eef0f4;--navbtn:rgba(255,255,255,.12);--navbord:rgba(255,255,255,.3);}
+.av-th-custom{--navink:#eef0f4;--navbtn:rgba(255,255,255,.12);--navbord:rgba(255,255,255,.3);}
 .av-th-custom .av-h{color:var(--head);}
 .av-th-custom.av-cf-hair .av-inner::before{content:"";position:absolute;inset:3.4% 4%;border:1px solid var(--rule);pointer-events:none;}
 .av-th-custom.av-cf-double .av-inner::before{content:"";position:absolute;inset:3.2% 3.6%;border:3px double var(--accent);pointer-events:none;}
@@ -10807,7 +10877,10 @@ function atSanitize(a){
     if(!p || !AT_KINDS[p.kind]) return null;
     return {id:s(p.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), kind:p.kind, title:s(p.title,160), caption:s(p.caption,400), text:sanitizeRich(p.text),
       src:AT_IMG.test(p.src||'')?p.src:'', thumb:AT_IMG.test(p.thumb||'')?p.thumb:'', still:AT_IMG.test(p.still||'')?p.still:'',
-      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], spreadText:['column','box','split'].includes(p.spreadText)?p.spreadText:'column', basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
+      mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], spreadText:['column','box','split'].includes(p.spreadText)?p.spreadText:'column',
+      fill:p.fill===true, tOver:['card','banner','halo'].includes(p.tOver)?p.tOver:'', tPos:['tl','tc','bl'].includes(p.tPos)?p.tPos:'tl',
+      pageText:p.pageText==='box'?'box':'below', boxStyle:['design','glass','dark'].includes(p.boxStyle)?p.boxStyle:'design',
+      box:(p.box&&typeof p.box==='object')?{x:+p.box.x||0, y:+p.box.y||0, w:+p.box.w||0.5, h:+p.box.h||0.3}:null, basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
   }).filter(Boolean);
   return out;
 }
@@ -10846,7 +10919,8 @@ function atSnapFrom(p){
 }
 function atMapHtml(p){
   if(!p || !p.snap) return '';
-  return buildEmbedHtml({name:p.title||'Map', basemap:atBmKey(p.basemap), popups:true, legend:p.legend?'toggle':false, snap:p.snap, keepView:true});
+  /* a title laid over the top of the map would cover the zoom buttons, so they move down */
+  return buildEmbedHtml({name:p.title||'Map', basemap:atBmKey(p.basemap), popups:true, legend:p.legend?'toggle':false, snap:p.snap, keepView:true, zoomPos:(p.tOver&&p.title&&p.tPos!=='bl')?'bottomleft':null});
 }
 function atDefaultBm(){ return atBmKey(mkBasemapKey); }
 function atLoad(data){ atlas=atSanitize(data && data.atlas); atSel='cover'; if(document.getElementById('module-atlas') && !document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas(); }
@@ -10991,20 +11065,32 @@ function renderAtBody(){
       '<div class="at-btnrow"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button></div><p class="kv at-meta2">'+(when?when+'. ':'')+'Readers can click the layout to enlarge it.</p>');
   else if(p.kind==='image') srcCard=atCard('Image',
       '<div class="at-btnrow"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div><p class="kv at-meta2">Readers can click the image to enlarge it.</p>');
-  const st=p.spreadText||'column';
-  const layCard=AT_SPREAD[p.kind]?atCard('Page layout',
-      '<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b> <span class="kv">across both facing pages (Book style)</span></label>'+
-      '<div class="at-f'+(p.spread?'':' at-dis')+'">Text on the spread<div class="at-seg at-seg3" id="atSpText">'+
-        [['column','▮▯','Column on right page'],['box','▭','Box below the map'],['split','▯▯','Column on each page']].map(o=>'<button type="button" data-v="'+o[0]+'"'+(st===o[0]?' class="on"':'')+(p.spread?'':' disabled')+' title="'+o[2]+'"><span>'+o[1]+'</span>'+o[2]+'</button>').join('')+
-      '</div></div>'):'';
+  const media0=AT_SPREAD[p.kind];
+  const segH=(id,opts,v,dis)=>'<div class="at-seg at-segs" id="'+id+'">'+opts.map(o=>'<button type="button" data-v="'+o[0]+'"'+(v===o[0]?' class="on"':'')+(dis?' disabled':'')+(o[2]?' title="'+o[2]+'"':'')+'>'+o[1]+'</button>').join('')+'</div>';
+  const spreadOn=!!(p.spread&&media0), boxOn=spreadOn ? (p.spreadText==='box') : (p.pageText==='box');
+  const layCard= p.kind==='text' ? atCard('Text','<div id="atRich"></div>','at-card-wide') : atCard('Page layout and text',
+    '<div class="at-lt">'+
+      '<div class="at-ltc">'+
+        '<div class="at-swrow"><label class="at-chk at-sw"><input type="checkbox" id="atFill"'+(p.fill?' checked':'')+'><i></i> <b>Fill to margins</b></label>'+
+        (media0?'<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b></label>':'')+'</div>'+
+        '<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind)]], p.tOver?'on':'')+'</div>'+
+        (p.tOver?'<div class="at-f at-sub"><div class="at-2col">'+segH('atTSt',[['card','Card'],['banner','Banner'],['halo','Large']], p.tOver)+
+          '<select id="atTPos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="bl">Bottom left</option></select></div></div>':'')+
+        '<div class="at-f">Caption and text'+(spreadOn
+          ? segH('atSpText',[['column','Column','A column on the right-hand page'],['box','Text box','A box you place over the map'],['split','Two columns','One column on each page, below']], p.spreadText||'column')
+          : segH('atPgText',[['below','Below'],['box','Text box','A box you place over the '+(p.kind==='map'?'map':p.kind)]], p.pageText==='box'?'box':'below'))+'</div>'+
+        (boxOn?'<div class="at-f at-sub">Box style'+segH('atBoxSt',[['design','Page'],['glass','Frosted'],['dark','Dark']], p.boxStyle||'design')+'</div>':'')+
+        '<label class="at-f"><span class="at-fl">Caption <span class="kv">optional</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>'+
+      '</div>'+
+      '<div class="at-ltp"><div class="at-lpwrap'+(spreadOn?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(boxOn?'Drag the text box to move it; drag its corner to resize. ':'')+'Preview of the page as printed'+(spreadOn?' (both pages)':'')+'.</p></div>'+
+    '</div>'+
+    '<div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div><div id="atRich"></div>', 'at-card-wide');
   body.innerHTML='<div class="at-ed">'+
     '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+' title" aria-label="Page title">'+
       '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light at-delbtn" id="atDel" title="Delete this page">🗑 Delete</button></div></div>'+
     media+
-    ((srcCard||layCard)?'<div class="at-cards">'+srcCard+layCard+'</div>':'')+
-    atCard(p.kind==='text'?'Text':'Caption & text',
-      (p.kind!=='text'?'<label class="at-f"><span class="at-fl">Caption <span class="kv">optional, shown under the '+(p.kind==='map'?'map':p.kind)+'</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label><div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div>':'')+
-      '<div id="atRich"></div>', 'at-card-wide')+
+    (srcCard?'<div class="at-cards">'+srcCard+'</div>':'')+
+    layCard+
     '</div>';
   const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
   if(p.kind==='map' && p.snap) loadMap();
@@ -11012,11 +11098,21 @@ function renderAtBody(){
   if(bm){ bm.value=atBmKey(p.basemap); bm.onchange=()=>{ p.basemap=bm.value; atDirty(); loadMap(); }; }
   const lgc=document.getElementById('atLg'); if(lgc) lgc.onchange=()=>{ p.legend=lgc.checked; atDirty(); loadMap(); };
   const smk=document.getElementById('atShowMk'); if(smk) smk.onclick=()=>atShowInMaker(p);
-  document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); };
-  const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); };
+  const prev=()=>atPagePreview(p);
+  let pt=null; const prevSoon=()=>{ clearTimeout(pt); pt=setTimeout(prev, 250); };
+  document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); prevSoon(); };
+  const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); prevSoon(); };
   const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); renderAtBody(); };
-  body.querySelectorAll('#atSpText button').forEach(b=>b.onclick=()=>{ p.spreadText=b.dataset.v; atDirty(); body.querySelectorAll('#atSpText button').forEach(x=>x.classList.toggle('on', x===b)); });
-  atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); });
+  const fil=document.getElementById('atFill'); if(fil) fil.onchange=()=>{ p.fill=fil.checked; atDirty(); prev(); };
+  const seg=(id,fn)=>body.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{ fn(b.dataset.v); atDirty(); });
+  seg('atTOn', v=>{ p.tOver=v?(p.tOver||'card'):''; renderAtBody(); });
+  seg('atTSt', v=>{ p.tOver=v; body.querySelectorAll('#atTSt button').forEach(x=>x.classList.toggle('on', x.dataset.v===v)); prev(); });
+  const tp=document.getElementById('atTPos'); if(tp){ tp.value=p.tPos||'tl'; tp.onchange=()=>{ p.tPos=tp.value; atDirty(); prev(); }; }
+  seg('atSpText', v=>{ p.spreadText=v; renderAtBody(); });
+  seg('atPgText', v=>{ p.pageText=v; renderAtBody(); });
+  seg('atBoxSt', v=>{ p.boxStyle=v; body.querySelectorAll('#atBoxSt button').forEach(x=>x.classList.toggle('on', x.dataset.v===v)); prev(); });
+  atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); prev(); });
+  prev();
   document.getElementById('atUp').onclick=()=>{ atlas.pages.splice(i-1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   const del=document.getElementById('atDel');
@@ -11025,6 +11121,35 @@ function renderAtBody(){
   const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
   if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
+}
+/* v61: the page (or spread) drawn in the chosen design, with a text box the author can drag and resize */
+function atPagePreview(p){
+  const bx=document.querySelector('#atBody .at-lpbox'); if(!bx) return;
+  atEnsureCss();
+  atlasViewer(bx, Object.assign({}, atlas, {pages:atlas.pages.map(q=>Object.assign({}, q, {snap:null, mapHtml:''})), __cover:'page', __pageId:p.id}));
+  bx.style.fontSize=(bx.clientHeight/60)+'px';
+  bx.querySelectorAll('a').forEach(a=>a.addEventListener('click', e=>e.preventDefault()));
+  const tb=bx.querySelector('.av-tbox'); if(!tb) return;
+  tb.classList.add('at-drag'); tb.title='Drag to move';
+  const hd=document.createElement('i'); hd.className='at-rsz'; hd.title='Drag to resize'; tb.appendChild(hd);
+  const stg=tb.offsetParent||tb.parentNode;
+  const cur=()=>{ const b=p.box||{}; return {x:isFinite(+b.x)?+b.x:.2, y:isFinite(+b.y)?+b.y:.66, w:isFinite(+b.w)&&+b.w>0?+b.w:.6, h:isFinite(+b.h)&&+b.h>0?+b.h:.28}; };
+  const apply=b=>{ tb.style.left=(b.x*100)+'%'; tb.style.top=(b.y*100)+'%'; tb.style.width=(b.w*100)+'%'; tb.style.height=(b.h*100)+'%'; tb.style.maxHeight='none'; };
+  apply(cur());
+  tb.addEventListener('pointerdown', e=>{
+    if(e.button!==0) return; e.preventDefault(); e.stopPropagation();
+    const r=stg.getBoundingClientRect(), b0=cur(), sx=e.clientX, sy=e.clientY, rs=e.target===hd;
+    try{ tb.setPointerCapture(e.pointerId); }catch(_){}
+    tb.classList.add('dragging');
+    const mv=ev=>{ const dx=(ev.clientX-sx)/r.width, dy=(ev.clientY-sy)/r.height; const b=Object.assign({}, b0);
+      if(rs){ b.w=Math.max(.1, Math.min(1-b.x, b0.w+dx)); b.h=Math.max(.08, Math.min(1-b.y, b0.h+dy)); }
+      else { b.x=Math.max(0, Math.min(1-b.w, b0.x+dx)); b.y=Math.max(0, Math.min(1-b.h, b0.y+dy)); }
+      /* snap the centre to the middle, so a box can sit squarely across a spread */
+      if(!rs && Math.abs(b.x+b.w/2-.5)<.015) b.x=.5-b.w/2;
+      p.box=b; apply(b); };
+    const up=()=>{ tb.removeEventListener('pointermove', mv); tb.removeEventListener('pointerup', up); tb.removeEventListener('pointercancel', up); tb.classList.remove('dragging'); atDirty(); };
+    tb.addEventListener('pointermove', mv); tb.addEventListener('pointerup', up); tb.addEventListener('pointercancel', up);
+  });
 }
 /* draw the cover (or back cover) preview in the chosen design */
 function atRefreshCover(){
@@ -17539,7 +17664,7 @@ function ready(){document.body.classList.remove('ld');if(window.__rd)return;wind
 setTimeout(ready,3000);
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 var map=new maplibregl.Map({container:'map',style:${JSON.stringify(style)},projection:{type:'globe'},center:${JSON.stringify(g.c)},zoom:${+g.z||1.5},bearing:${+g.br||0},pitch:${+g.pt||0},attributionControl:{compact:true}});
-map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-left');
+map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'${opts.zoomPos==='bottomleft'?'bottom-left':'top-left'}');
 ${styleUrl ? partsEmbedJs(snap.partsOff||[], 'function(){return map;}', !!opts.partsUi) : ''}
 var added=false;
 function add(){ if(added||!map.isStyleLoaded())return; added=true;
@@ -17620,6 +17745,7 @@ setTimeout(ready,2500);`
 function ready(){}`}
 ${vecDef ? `try{var BM=L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},interactive:false}).addTo(map);var GM=BM.getMaplibreMap&&BM.getMaplibreMap();if(GM)GM.once('idle',ready);else ready();}catch(e){ready();}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}})${i===0?".on('load',ready)":''}.addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');setTimeout(ready,50);`}
 ${vecDef ? partsEmbedJs(snap.partsOff||[], "function(){return (typeof GM!=='undefined')?GM:null;}", !!opts.partsUi) : ''}
+${opts.zoomPos==='bottomleft' ? "try{map.zoomControl.setPosition('bottomleft');}catch(e){}" : ''}
 function styleFn(f){var s=f.properties._cs||{};return{color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};}
 function ptLayer(f,ll,o){o=o||{};var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]}),pane:o.pane||'markerPane'});}return L.circleMarker(ll,Object.assign({radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo},o));}
 var SW=${JSON.stringify(SW)},PO={};

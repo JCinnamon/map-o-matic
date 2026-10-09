@@ -424,6 +424,13 @@
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
   .sn-row input{padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;}
   .at-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .gal-form{display:flex;flex-direction:column;gap:8px;} .gal-form input[type=text],.gal-form textarea,.gal-form select{font:13px inherit;font-family:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;color:var(--text);}
+  .gal-form textarea{resize:vertical;} .gal-form .fc-lbl>span{font-size:11px;color:var(--muted);}
+  .gal-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;} @media (max-width:560px){ .gal-2{grid-template-columns:1fr;} }
+  .gal-hint{font-size:11px;color:var(--muted);}
+  .gal-ck{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text);cursor:pointer;margin-top:2px;} .gal-ck input{margin:2px 0 0;flex:0 0 auto;}
+  .gal-status{display:flex;gap:12px;align-items:flex-start;background:#f4f8f9;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.5;}
+  .gal-ic{font-size:22px;line-height:1;} .gal-havelink{margin-right:auto;font-size:12px;align-self:center;color:var(--teal);}
   .at-shrow{display:flex;gap:6px;align-items:center;} .at-shrow input{flex:1;min-width:0;font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:5px;}
   .at-shpub{display:flex;gap:12px;align-items:flex-start;margin-top:8px;border-top:1px solid var(--line);padding-top:10px;} #atShQr canvas{width:120px;height:120px;display:block;}
   #atShEmb{width:100%;box-sizing:border-box;font:11.5px ui-monospace,monospace;border:1px solid var(--line);border-radius:5px;padding:5px;}
@@ -12291,11 +12298,12 @@ function renderTopMenu(){
   };
   if(mod==='maker'){
     h+='<div class="tg">Send this map to</div>'+it('composer','▣ Map Composer…','Place it on the layout page with a legend and scale bar')+
-      it('atlas-new','📖 Atlas: new page','Add this view as an interactive map page')+fold('map','Update an atlas map page');
+      it('atlas-new','📖 Atlas: new page','Add this view as an interactive map page')+fold('map','Update an atlas map page')+
+      '<div class="tg">Share</div>'+it('gallery-map','🎓 Submit to course gallery…','Share this interactive map on the class gallery page');
   } else if(mod==='layout'){
     h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page');
   } else if(mod==='atlas' && atlas){
-    h+='<div class="tg">This atlas</div>'+it('atlas-share','🔗 Share atlas link…','A link that opens the atlas in a browser')+it('atlas-export','⬇ Export as web page','One HTML file to host anywhere')+it('atlas-pdf','⬇ Download PDF','One page per atlas page, ready to print')+it('atlas-preview','👁 Preview','Full screen, as readers will see it');
+    h+='<div class="tg">This atlas</div>'+it('atlas-share','🔗 Share atlas link…','A link that opens the atlas in a browser')+it('atlas-export','⬇ Export as web page','One HTML file to host anywhere')+it('atlas-pdf','⬇ Download PDF','One page per atlas page, ready to print')+it('gallery-atlas','🎓 Submit to course gallery…','Share this atlas on the class gallery page')+it('atlas-preview','👁 Preview','Full screen, as readers will see it');
   }
   h+='<div class="tg">'+(mod==='atlas'?'Map &amp; project':'Share &amp; export')+'</div>'+it('share','🔗 Share map link or embed…','A live link to the Map Maker view, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
   m.innerHTML=h;
@@ -12322,6 +12330,8 @@ function renderTopMenu(){
     else if(g==='atlas-export') atExport();
     else if(g==='atlas-pdf') atPdf();
     else if(g==='atlas-share') atShareDialog();
+    else if(g==='gallery-atlas') requireProject(()=>galleryDialog('atlas'));
+    else if(g==='gallery-map') requireProject(()=>galleryDialog('map'));
     else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
     else if(t.dataset.upd){ if(t.dataset.k==='layout') await atSendLayout(t.dataset.upd); else await atSendFromMaker(t.dataset.upd); }
   });
@@ -18167,6 +18177,169 @@ async function enterShareViewer(){
    holding the OAuth client secret — the one piece a static page can't keep), then
    talk to GitHub's CORS-enabled REST API directly to commit the file and enable
    Pages. If not configured, the button explains that and the Netlify route stays. */
+/* ---------- v62: Submit to course gallery ----------
+   Sends an atlas or the current map to the course gallery relay (a small
+   Cloudflare Worker). Nothing is published until the instructor approves it.
+   Set the relay address once here (or in window.MAPOMATIC_GALLERY before this file loads). */
+function cfgGallery(){ return Object.assign({
+  relay:'',                                                  /* e.g. 'https://geog270-gallery.yourname.workers.dev' */
+  name:'GEOG 270 course gallery',
+  page:'https://www.jonathancinnamon.com/geog270/'
+}, window.MAPOMATIC_GALLERY||{}); }
+function galStore(){ try{ return JSON.parse(localStorage.getItem('mom-gallery')||'{}')||{}; }catch(_){ return {}; } }
+function galSave(o){ try{ localStorage.setItem('mom-gallery', JSON.stringify(o)); }catch(_){} }
+function galSlot(kind){ return (currentProjectId||'none')+':'+kind; }
+async function galFetch(path, body){
+  const r=await fetch(cfgGallery().relay.replace(/\/$/,'')+path, body?{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}:{});
+  let j={}; try{ j=await r.json(); }catch(_){}
+  if(!r.ok) throw new Error(j.error||('The gallery answered '+r.status+'.'));
+  return j;
+}
+/* a landscape picture for the gallery card */
+async function galThumb(kind){
+  const W=800, H=500, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  const load=src=>new Promise(res=>{ if(!src) return res(null); const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
+  const cover=(im)=>{ const s=Math.max(W/im.width, H/im.height), w=im.width*s, h=im.height*s; g.drawImage(im,(W-w)/2,(H-h)/2,w,h); };
+  try{
+    if(kind==='map'){
+      const url=projActive ? document.getElementById('projCanvas').toDataURL('image/png')
+        : await captureMapElement((typeof mkGlobe!=='undefined'&&mkGlobe)?document.getElementById('mk-globe'):document.getElementById('mk-map'), 1,
+            n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint')||n.classList.contains('mk-gctl')));
+      const im=await load(url); if(!im) return ''; g.fillStyle='#e8ecef'; g.fillRect(0,0,W,H); cover(im);
+      return cv.toDataURL('image/jpeg', .82);
+    }
+    /* atlas: the cover in its design, beside the first map or layout like an open book */
+    atEnsureCss(); await new Promise(r=>setTimeout(r,300));
+    const host=document.createElement('div'); host.style.cssText='position:fixed;left:-12000px;top:0;width:420px;height:554px;';
+    document.body.appendChild(host);
+    atlasViewer(host, Object.assign({}, atlas, {pages:atlas.pages.map(p=>({id:p.id, kind:p.kind, title:p.title})), __cover:true}));
+    host.style.fontSize=(554/60)+'px';
+    await new Promise(r=>setTimeout(r,250));
+    let cimg=null; try{ const c=await html2canvas(host,{scale:1.2, useCORS:true, backgroundColor:null, logging:false}); cimg=c; }catch(_){}
+    host.remove();
+    const first=atlas.pages.find(p=>(p.kind==='map'&&AT_IMG.test(p.thumb||''))||((p.kind==='layout'||p.kind==='image')&&AT_IMG.test(p.src||'')));
+    const pimg=first ? await load(first.kind==='map'?first.thumb:first.src) : null;
+    const bg=g.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#2f3640'); bg.addColorStop(1,'#1d232b'); g.fillStyle=bg; g.fillRect(0,0,W,H);
+    const ph=430, pw=Math.round(ph/1.32), y=(H-ph)/2;
+    const shadow=()=>{ g.shadowColor='rgba(0,0,0,.45)'; g.shadowBlur=24; g.shadowOffsetY=8; };
+    if(pimg){
+      const x0=Math.round(W/2-pw);
+      shadow(); g.fillStyle='#fbf8f1'; g.fillRect(x0+pw, y, pw, ph); g.shadowColor='transparent';
+      const s=Math.min((pw-36)/pimg.width, (ph-60)/pimg.height), w=pimg.width*s, h=pimg.height*s;
+      g.drawImage(pimg, x0+pw+(pw-w)/2, y+(ph-h)/2, w, h);
+      if(cimg){ shadow(); g.drawImage(cimg, x0, y, pw, ph); g.shadowColor='transparent'; }
+    } else if(cimg){ shadow(); g.drawImage(cimg, (W-pw)/2, y, pw, ph); g.shadowColor='transparent'; }
+    return cv.toDataURL('image/jpeg', .82);
+  }catch(_){ return ''; }
+}
+async function galleryDialog(kind){
+  const C=cfgGallery();
+  let m=document.getElementById('modal-gallery');
+  if(!m){ m=document.createElement('div'); m.className='modal-overlay hidden'; m.id='modal-gallery';
+    m.innerHTML='<div class="modal" style="max-width:560px"><h2>Submit to course gallery</h2><div id="galBody"></div></div>';
+    document.body.appendChild(m); }
+  const body=document.getElementById('galBody');
+  const close='<div class="modal-close-row"><button class="btn ghost" onclick="closeModal(\'modal-gallery\')">Close</button></div>';
+  openModal('modal-gallery');
+  if(kind==='atlas' && (!atlas || !atlas.pages.length)){ body.innerHTML='<p class="kv">Add some pages to the atlas first.</p>'+close; return; }
+  if(kind==='map' && !mkLayers.some(l=>l.visible)){ body.innerHTML='<p class="kv">Turn on at least one layer in Map Maker first.</p>'+close; return; }
+  if(!C.relay){ body.innerHTML='<p class="kv">The course gallery isn’t set up on this copy of Map-O-Matic. Use the copy your instructor links to, or export the '+kind+' as a web page and hand it in.</p>'+close; return; }
+  body.innerHTML='<p class="kv">Connecting to the gallery…</p>';
+  let cfg; try{ cfg=await galFetch('/config'); }catch(e){ body.innerHTML='<p class="kv">The course gallery can’t be reached right now ('+esc(e.message)+'). Try again later.</p>'+close; return; }
+  const store=galStore(), slot=galSlot(kind), mine=store[slot];
+  const what=kind==='atlas'?'atlas':'map';
+  const form=(prev)=>{
+    const t0=prev&&prev.title || (kind==='atlas'?atlas.title:((projectsCache.find(p=>p.id===currentProjectId)||{}).name||'My map'));
+    const pv=prev||{};
+    body.innerHTML=(prev?'<p class="kv" style="margin-top:0">Send an updated version of your '+what+'. It replaces the one in the gallery once your instructor approves it.</p>'
+        : '<p class="kv" style="margin-top:0">Share your '+what+' on the <a href="'+esc(C.page)+'" target="_blank" rel="noopener">'+esc(C.name)+'</a>. Your instructor approves each piece before it appears.</p>')+
+      '<div class="gal-form">'+
+      '<label class="fc-lbl">Title<input type="text" id="gTitle" maxlength="120" value="'+esc(t0)+'"></label>'+
+      '<label class="fc-lbl">Short description <span>(optional)</span><textarea id="gDesc" rows="2" maxlength="300">'+esc(pv.desc||'')+'</textarea></label>'+
+      '<div class="gal-2"><label class="fc-lbl">Your name<input type="text" id="gName" maxlength="80" value="'+esc(pv.name||'')+'" autocomplete="name"></label>'+
+      '<label class="fc-lbl">Show my name as<select id="gCredit"><option value="full">Full name</option><option value="initials">Initials only</option><option value="pseudonym">A pseudonym</option></select></label></div>'+
+      '<label class="fc-lbl" id="gPseuRow" style="display:none">Pseudonym<input type="text" id="gPseu" maxlength="60" value="'+esc(pv.pseudonym||'')+'"></label>'+
+      (prev?'':
+        '<div class="gal-2">'+(cfg.needsStudentNo?'<label class="fc-lbl">Student number<input type="text" id="gSn" inputmode="numeric" maxlength="12" autocomplete="off"><span class="gal-hint">Checked against the class list, never published.</span></label>':'')+
+        '<label class="fc-lbl">Class code<input type="text" id="gCode" maxlength="40" autocomplete="off"><span class="gal-hint">From your instructor.</span></label></div>')+
+      '<label class="gal-ck"><input type="checkbox" id="gC1"> <span>I agree to my '+what+' being published on the public '+esc(cfg.course||C.name)+' gallery, credited as chosen above. I can remove it at any time.</span></label>'+
+      '<label class="gal-ck"><input type="checkbox" id="gC2"> <span>This is my own work, and I have the right to share the data, images and text in it.</span></label>'+
+      '<p class="gal-hint" style="margin:2px 0 0">Taking part is voluntary and has no effect on your grade.</p>'+
+      '<p class="kv" id="gMsg" style="min-height:1.2em;margin:6px 0 0"></p></div>'+
+      '<div class="modal-close-row">'+(mine?'<button class="btn ghost" id="gBack">Back</button>':'')+'<button class="btn ghost" onclick="closeModal(\'modal-gallery\')">Cancel</button><button class="btn" id="gGo">'+(prev?'Send update':'Submit')+'</button></div>';
+    const cr=document.getElementById('gCredit'); cr.value=pv.credit||'full';
+    const sync=()=>{ document.getElementById('gPseuRow').style.display=cr.value==='pseudonym'?'':'none'; }; cr.onchange=sync; sync();
+    const bk=document.getElementById('gBack'); if(bk) bk.onclick=()=>status();
+    document.getElementById('gGo').onclick=async()=>{
+      const msg=document.getElementById('gMsg'), go=document.getElementById('gGo');
+      const v=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+      const say=t=>{ msg.textContent=t; msg.style.color='#b3261e'; };
+      if(!v('gTitle')||!v('gName')) return say('Add a title and your name.');
+      if(cr.value==='pseudonym' && !v('gPseu')) return say('Choose a pseudonym, or show your name another way.');
+      if(!prev && !v('gCode')) return say('Enter the class code.');
+      if(!prev && cfg.needsStudentNo && !v('gSn')) return say('Enter your student number.');
+      if(!document.getElementById('gC1').checked || !document.getElementById('gC2').checked) return say('Tick both boxes to submit.');
+      go.disabled=true; msg.style.color=''; msg.textContent='Packing your '+what+'…';
+      let html='';
+      try{ html = kind==='atlas' ? buildAtlasHtml(atlas) : buildEmbedHtml({name:v('gTitle'), basemap:mkBasemapKey, popups:true, legend:true, partsUi:true}); }
+      catch(e){ go.disabled=false; return say('Could not pack it: '+e.message); }
+      const mb=html.length/1048576;
+      if(mb>(cfg.maxMB||20)){ go.disabled=false; return say('This '+what+' is '+mb.toFixed(1)+' MB; the gallery takes up to '+(cfg.maxMB||20)+' MB. Remove or shrink some images and try again.'); }
+      msg.textContent='Making a preview picture…';
+      const thumb=await galThumb(kind);
+      msg.textContent='Sending ('+mb.toFixed(1)+' MB)…';
+      try{
+        const res=await galFetch('/submit', Object.assign({title:v('gTitle'), desc:v('gDesc'), name:v('gName'), credit:cr.value, pseudonym:v('gPseu'),
+          kind, html, thumb, consent:{publish:true, own:true}}, prev?{id:mine.id, key:mine.key}:{code:v('gCode'), studentNo:v('gSn')}));
+        const s=galStore(); s[slot]=Object.assign({}, s[slot]||{}, {id:res.id, key:res.key||(mine&&mine.key), title:v('gTitle'), desc:v('gDesc'), name:v('gName'), credit:cr.value, pseudonym:v('gPseu')}); galSave(s);
+        mlog('export','Submitted the '+what+' "'+v('gTitle')+'" to the '+(cfg.course||'course')+' gallery'+(prev?' (updated version)':'')+'.');
+        status(true);
+      }catch(e){ go.disabled=false; say(e.message); }
+    };
+  };
+  const status=async(justSent)=>{
+    const s=galStore()[slot]; if(!s){ form(null); return; }
+    body.innerHTML='<p class="kv">Checking your submission…</p>';
+    let st=null; try{ st=await galFetch('/status?id='+encodeURIComponent(s.id)+'&key='+encodeURIComponent(s.key)); }catch(e){ st={status:'unknown', note:e.message}; }
+    const L={pending:['⏳','Waiting for your instructor’s approval.'], 'published+pending':['⏳','Published — your update is waiting for approval.'], published:['✅','Published in the gallery.'],
+      rejected:['✋','Not accepted'+(st.note?': “'+esc(st.note)+'”':'.')+' You can send an updated version.'], removed:['🗑','Removed from the gallery'+(st.note?': “'+esc(st.note)+'”':'.')], unknown:['⚠️','Couldn’t check the status ('+esc(st.note||'')+').']}[st.status]||['•',esc(st.status)];
+    const code=s.id+'~'+s.key;
+    body.innerHTML=(justSent?'<p class="kv" style="margin-top:0"><b>Sent — thank you!</b> Your instructor will review it before it appears in the gallery.</p>':'')+
+      '<div class="gal-status"><span class="gal-ic">'+L[0]+'</span><div><b>'+esc(s.title||'Your '+what)+'</b><br>'+L[1]+
+        (/published/.test(st.status)?'<br><a href="'+esc(C.page.replace(/\/?$/,'/')+'view.html?id='+encodeURIComponent(s.id))+'" target="_blank" rel="noopener">View it in the gallery ›</a>':'')+'</div></div>'+
+      '<label class="fc-lbl" style="margin-top:12px">Your edit code — keep it to update or remove this piece from another computer<div class="at-shrow"><input type="text" readonly value="'+esc(code)+'" id="gCodeOut"><button class="btn small" id="gCopy">Copy</button></div></label>'+
+      '<div class="modal-close-row" style="flex-wrap:wrap">'+
+        (st.status!=='removed'?'<button class="btn ghost" id="gRemove" style="color:#b3261e">Remove from gallery</button>':'')+
+        '<button class="btn ghost" id="gNew">Submit a different '+what+'</button>'+
+        '<button class="btn secondary" id="gUpd">'+(st.status==='removed'?'Submit again':'Send updated version')+'</button>'+
+        '<button class="btn" onclick="closeModal(\'modal-gallery\')">Done</button></div>';
+    document.getElementById('gCopy').onclick=e=>copyToClipboard(code, e.currentTarget);
+    document.getElementById('gUpd').onclick=()=>form(s);
+    document.getElementById('gNew').onclick=()=>{ const o=galStore(); delete o[slot]; galSave(o); form(null); };
+    const rm=document.getElementById('gRemove');
+    if(rm) rm.onclick=async()=>{ if(!rm._armed){ rm._armed=true; rm.textContent='Click again to remove'; return; }
+      rm.disabled=true; try{ await galFetch('/remove',{id:s.id, key:s.key}); mlog('export','Removed the '+what+' "'+s.title+'" from the course gallery.'); status(); }catch(e){ alert(e.message); rm.disabled=false; } };
+  };
+  const enterCode=()=>{
+    body.innerHTML='<p class="kv" style="margin-top:0">Paste the edit code you were given when you submitted.</p><label class="fc-lbl">Edit code<input type="text" id="gEC" placeholder="title-abcde~…"></label><p class="kv" id="gMsg"></p>'+
+      '<div class="modal-close-row"><button class="btn ghost" id="gB2">Back</button><button class="btn" id="gOK">Continue</button></div>';
+    document.getElementById('gB2').onclick=()=>open0();
+    document.getElementById('gOK').onclick=async()=>{ const c=document.getElementById('gEC').value.trim(), i=c.indexOf('~');
+      if(i<1){ document.getElementById('gMsg').textContent='That doesn’t look like an edit code.'; return; }
+      const id=c.slice(0,i), key=c.slice(i+1);
+      try{ const st=await galFetch('/status?id='+encodeURIComponent(id)+'&key='+encodeURIComponent(key)); const o=galStore(); o[slot]={id, key, title:st.title}; galSave(o); status(); }
+      catch(e){ document.getElementById('gMsg').textContent=e.message; } };
+  };
+  const open0=()=>{
+    if(galStore()[slot]){ status(); return; }
+    if(!cfg.open){ body.innerHTML='<p class="kv">Submissions to the '+esc(cfg.course||C.name)+' gallery are closed right now.</p><p class="kv"><a href="#" id="gHave">I have an edit code for something I submitted</a></p>'+close;
+      document.getElementById('gHave').onclick=e=>{ e.preventDefault(); enterCode(); }; return; }
+    form(null);
+    const row=body.querySelector('.modal-close-row'); const a=document.createElement('a'); a.href='#'; a.textContent='I have an edit code'; a.className='gal-havelink';
+    a.onclick=e=>{ e.preventDefault(); enterCode(); }; row.insertBefore(a, row.firstChild);
+  };
+  open0();
+}
 function cfgPublish(){ return Object.assign({clientId:'', gatekeeper:'', repo:'map-o-matic-maps'}, window.CARTO_PUBLISH||{}, window.MAPOMATIC_PUBLISH||{}); }
 function ghToken(){ try{ return sessionStorage.getItem('cs_gh_token'); }catch(_){ return null; } }
 function b64EncodeUtf8(str){

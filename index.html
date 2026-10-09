@@ -2981,14 +2981,14 @@ function applyPartsTo(gl, on){
   if(!gl) return;
   const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=ly['source-layer']; if(!sl) return;
     for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl)){ try{ gl.setLayoutProperty(ly.id,'visibility', on[k]===false?'none':'visible'); }catch(_){} } }); };
-  if(gl.isStyleLoaded && gl.isStyleLoaded()) run(); else { let n=0; const t=setInterval(()=>{ if(gl.isStyleLoaded&&gl.isStyleLoaded()){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
+  if(glbStyleReady(gl)) run(); else { let n=0; const t=setInterval(()=>{ if(glbStyleReady(gl)){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
 }
 /* the reader-facing parts toggle used by exported web maps (flat and globe) */
 function partsEmbedJs(off, getter, ui){
   const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
   return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
 function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=ly['source-layer'];if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
-var n=0,t=setInterval(function(){var g=getGL();if(g&&g.isStyleLoaded&&g.isStyleLoaded()){ap(g);clearInterval(t);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
+var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
 var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
 var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
 document.body.appendChild(box);['mousedown','pointerdown','click','dblclick','wheel','touchstart'].forEach(function(ev){box.addEventListener(ev,function(e){e.stopPropagation();});});
@@ -3049,7 +3049,7 @@ function globeClearUserLayers(map){
   }catch(_){}
 }
 function globeAddUserLayers(map){
-  if(!map || !map.isStyleLoaded || !map.isStyleLoaded()) return;
+  if(!map || !glbStyleReady(map)) return;
   globeClearUserLayers(map);
   glbAttachImages(map);
   /* draw bottom layer first so the list's top layer stays on top, matching Leaflet */
@@ -3109,10 +3109,10 @@ function globeOnStyle(){
    event is unreliable (both on first open and after setStyle), so poll. */
 function globeWhenReady(cb){
   if(!mkGlobe) return;
-  if(mkGlobe.isStyleLoaded && mkGlobe.isStyleLoaded()){ cb(); return; }
+  if(glbStyleReady(mkGlobe)){ cb(); return; }
   const t=setInterval(()=>{
     if(!mkGlobe){ clearInterval(t); return; }
-    if(mkGlobe.isStyleLoaded()){ clearInterval(t); cb(); }
+    if(glbStyleReady(mkGlobe)){ clearInterval(t); cb(); }
   }, 120);
   setTimeout(()=>clearInterval(t), 6000);
 }
@@ -11344,7 +11344,7 @@ function buildAtlasHtml(a0){
   const a=Object.assign({}, a0, {pages:a0.pages.map(p=>{ const q=Object.assign({}, p); if(p.kind==='map') q.mapHtml=atMapHtml(p); delete q.snap; return q; })});
   const data=JSON.stringify(a).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   const fav=document.querySelector('link[rel="icon"]');
-  return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+  return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><script>/* shown in a sandboxed frame (e.g. a course gallery), storage throws and map workers report a different origin; smooth both over so the map library works */(function(){var sb=false;try{window.localStorage}catch(e){sb=true;}if(!sb)return;try{Object.defineProperty(window,\'caches\',{value:undefined,configurable:true})}catch(_){}try{Object.defineProperty(window,\'localStorage\',{value:undefined,configurable:true})}catch(_){}var W=window.Worker,org=location.origin;if(!W)return;window.Worker=function(u,o){var pre=\'try{Object.defineProperty(WorkerLocation.prototype,"origin",{get:function(){return \'+JSON.stringify(org)+\'},configurable:true})}catch(e){}try{self.caches}catch(e){try{Object.defineProperty(self,"caches",{value:undefined,configurable:true})}catch(_){}}importScripts(\'+JSON.stringify(String(u))+\');\';return new W(URL.createObjectURL(new Blob([pre],{type:\'text/javascript\'})),o);};window.Worker.prototype=W.prototype;})();<\/script><meta name="viewport" content="width=device-width, initial-scale=1">'+
     '<title>'+esc(a.title||'Atlas')+'</title>'+(fav?'<link rel="icon" type="image/svg+xml" href="'+esc(fav.getAttribute('href'))+'">':'')+
     (atFontUrl(a)?'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="'+esc(atFontUrl(a))+'">':'')+
     '<style>html,body{margin:0;height:100%;}\n'+ATLAS_CSS+'</style></head><body><div id="atlas"></div>'+
@@ -17606,7 +17606,7 @@ function buildProjEmbedHtml(opts, snap){
   const lgHtml=opts.legend ? snap.legendHtml : '';
   const sw=snap.swipe;
   return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(opts.name||'Map')}</title>
+<html lang="en"><head><meta charset="UTF-8"><script>/* shown in a sandboxed frame (e.g. a course gallery), storage throws and map workers report a different origin; smooth both over so the map library works */(function(){var sb=false;try{window.localStorage}catch(e){sb=true;}if(!sb)return;try{Object.defineProperty(window,'caches',{value:undefined,configurable:true})}catch(_){}try{Object.defineProperty(window,'localStorage',{value:undefined,configurable:true})}catch(_){}var W=window.Worker,org=location.origin;if(!W)return;window.Worker=function(u,o){var pre='try{Object.defineProperty(WorkerLocation.prototype,"origin",{get:function(){return '+JSON.stringify(org)+'},configurable:true})}catch(e){}try{self.caches}catch(e){try{Object.defineProperty(self,"caches",{value:undefined,configurable:true})}catch(_){}}importScripts('+JSON.stringify(String(u))+');';return new W(URL.createObjectURL(new Blob([pre],{type:'text/javascript'})),o);};window.Worker.prototype=W.prototype;})();<\/script><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(opts.name||'Map')}</title>
 <style>html,body{margin:0;height:100%;background:#fff;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;}#map{position:absolute;inset:0;overflow:hidden;}#c{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none;}
 .pv-z{position:absolute;top:10px;left:10px;z-index:3;display:flex;flex-direction:column;box-shadow:0 1px 5px rgba(0,0,0,.28);border-radius:4px;overflow:hidden;}
 .pv-z button{width:30px;height:30px;border:none;border-bottom:1px solid #ddd;background:#fff;font:700 17px sans-serif;color:#333;cursor:pointer;}.pv-z button:last-child{border-bottom:none;}
@@ -17653,7 +17653,7 @@ function buildGlobeEmbedHtml(opts, snap){
   const data=JSON.stringify(snap.gLayers).replace(/<\/(script)/gi,'<\\/$1').replace(/<!--/g,'<\\!--');
   const lgHtml=opts.legend ? snap.legendHtml : '';
   return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(opts.name||'Map')}</title>
+<html lang="en"><head><meta charset="UTF-8"><script>/* shown in a sandboxed frame (e.g. a course gallery), storage throws and map workers report a different origin; smooth both over so the map library works */(function(){var sb=false;try{window.localStorage}catch(e){sb=true;}if(!sb)return;try{Object.defineProperty(window,'caches',{value:undefined,configurable:true})}catch(_){}try{Object.defineProperty(window,'localStorage',{value:undefined,configurable:true})}catch(_){}var W=window.Worker,org=location.origin;if(!W)return;window.Worker=function(u,o){var pre='try{Object.defineProperty(WorkerLocation.prototype,"origin",{get:function(){return '+JSON.stringify(org)+'},configurable:true})}catch(e){}try{self.caches}catch(e){try{Object.defineProperty(self,"caches",{value:undefined,configurable:true})}catch(_){}}importScripts('+JSON.stringify(String(u))+');';return new W(URL.createObjectURL(new Blob([pre],{type:'text/javascript'})),o);};window.Worker.prototype=W.prototype;})();<\/script><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(opts.name||'Map')}</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.1/maplibre-gl.css" integrity="sha384-Nq6PQ+9vJPvw7U/VfDELyrWoGQMsy0gi6QShhaSrGzkpF5KkM40csg2leky+YMTd" crossorigin="anonymous">
 <style>html,body{margin:0;height:100%;background:#0b1e3a;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;}#map{position:absolute;inset:0;}
 .cs-embed-popup{font-size:12px;max-height:220px;overflow:auto;}.cs-embed-popup table{border-collapse:collapse;}.cs-embed-popup td{padding:2px 6px;border-bottom:1px solid #eee;vertical-align:top;}.cs-embed-popup td.k{color:#666;font-weight:600;}
@@ -17677,7 +17677,7 @@ var map=new maplibregl.Map({container:'map',style:${JSON.stringify(style)},proje
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'${opts.zoomPos==='bottomleft'?'bottom-left':'top-left'}');
 ${styleUrl ? partsEmbedJs(snap.partsOff||[], 'function(){return map;}', !!opts.partsUi) : ''}
 var added=false;
-function add(){ if(added||!map.isStyleLoaded())return; added=true;
+function add(){ if(added||!(map.style&&map.style._loaded))return; added=true;
   try{map.setProjection({type:'globe'});}catch(e){} try{map.setSky&&map.setSky({});}catch(e){}
   var ids=[];
   var keys=Object.keys(ICONS), left=keys.length;
@@ -17783,6 +17783,7 @@ ${legendHtml ? (lgToggle
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>/* shown in a sandboxed frame (e.g. a course gallery), storage throws and map workers report a different origin; smooth both over so the map library works */(function(){var sb=false;try{window.localStorage}catch(e){sb=true;}if(!sb)return;try{Object.defineProperty(window,'caches',{value:undefined,configurable:true})}catch(_){}try{Object.defineProperty(window,'localStorage',{value:undefined,configurable:true})}catch(_){}var W=window.Worker,org=location.origin;if(!W)return;window.Worker=function(u,o){var pre='try{Object.defineProperty(WorkerLocation.prototype,"origin",{get:function(){return '+JSON.stringify(org)+'},configurable:true})}catch(e){}try{self.caches}catch(e){try{Object.defineProperty(self,"caches",{value:undefined,configurable:true})}catch(_){}}importScripts('+JSON.stringify(String(u))+');';return new W(URL.createObjectURL(new Blob([pre],{type:'text/javascript'})),o);};window.Worker.prototype=W.prototype;})();<\/script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="anonymous">
@@ -18114,7 +18115,7 @@ function svOpenGlobe(mapDiv, payload, groups){
   let ids=[];
   const addAll=()=>{ try{ map.setProjection({type:'globe'}); }catch(_){}
     ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); if(svParts) applyPartsTo(map, svParts); };
-  let done=false; const tryAdd=()=>{ if(done||!map.isStyleLoaded()) return; done=true; addAll(); };
+  let done=false; const tryAdd=()=>{ if(done||!glbStyleReady(map)) return; done=true; addAll(); };
   map.on('load', tryAdd); map.on('styledata', tryAdd); const poll=setInterval(()=>{ if(done) clearInterval(poll); else tryAdd(); }, 200);
   map.on('rotate', ()=>{ const n=host.querySelector('.svn'); if(n) n.style.transform='rotate('+(-map.getBearing())+'deg)'; });
   map.on('click', e=>{ const f=(ids.length? map.queryRenderedFeatures(e.point,{layers:ids.filter(id=>map.getLayer(id))}) : [])[0]; if(!f) return;
@@ -18126,7 +18127,7 @@ function svOpenGlobe(mapDiv, payload, groups){
     if(a==='in') map.zoomIn(); else if(a==='out') map.zoomOut(); else if(a==='all') map.easeTo({zoom:1.2, bearing:0, pitch:0});
     else if(a==='orient') glbOrientPanel(map, b);
     else if(a==='flat'){ host.style.display='none'; flatBtn.addTo(svMap); setTimeout(()=>svMap.invalidateSize(),50); } };
-  window.__svGlobe={map, basemap:k=>{ if(!BASEMAPS.hasOwnProperty(k)&&k!=='none') return; done=false; try{ map.setStyle(styleFor(k), {diff:false}); }catch(_){} const t=setInterval(()=>{ if(map.isStyleLoaded()){ clearInterval(t); done=true; addAll(); } },150); setTimeout(()=>clearInterval(t),8000); }};
+  window.__svGlobe={map, basemap:k=>{ if(!BASEMAPS.hasOwnProperty(k)&&k!=='none') return; done=false; try{ map.setStyle(styleFor(k), {diff:false}); }catch(_){} const t=setInterval(()=>{ if(glbStyleReady(map)){ clearInterval(t); done=true; addAll(); } },150); setTimeout(()=>clearInterval(t),8000); }};
 }
 async function enterShareViewer(){
   let payload;
@@ -18182,7 +18183,7 @@ async function enterShareViewer(){
    Cloudflare Worker). Nothing is published until the instructor approves it.
    Set the relay address once here (or in window.MAPOMATIC_GALLERY before this file loads). */
 function cfgGallery(){ return Object.assign({
-  relay:'https://geog270-gallery.snowy-shadow-118c.workers.dev/',         /* e.g. 'https://geog270-gallery.yourname.workers.dev' */
+  relay:'https://geog270-gallery.snowy-shadow-118c.workers.dev/',   /* the course gallery relay (Cloudflare Worker) */
   name:'GEOG 270 course gallery',
   page:'https://www.jonathancinnamon.com/geog270/'
 }, window.MAPOMATIC_GALLERY||{}); }

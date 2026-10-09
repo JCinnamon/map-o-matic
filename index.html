@@ -12301,7 +12301,8 @@ function renderTopMenu(){
       it('atlas-new','📖 Atlas: new page','Add this view as an interactive map page')+fold('map','Update an atlas map page')+
       '<div class="tg">Share</div>'+it('gallery-map','🎓 Submit to course gallery…','Share this interactive map on the class gallery page');
   } else if(mod==='layout'){
-    h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page');
+    h+='<div class="tg">Send this layout to</div>'+it('atlas-layout','📖 Atlas: new page','Add the finished page to the atlas')+fold('layout','Update an atlas layout page')+
+      '<div class="tg">Share</div>'+it('gallery-layout','🎓 Submit to course gallery…','Share this map layout on the class gallery page');
   } else if(mod==='atlas' && atlas){
     h+='<div class="tg">This atlas</div>'+it('atlas-share','🔗 Share atlas link…','A link that opens the atlas in a browser')+it('atlas-export','⬇ Export as web page','One HTML file to host anywhere')+it('atlas-pdf','⬇ Download PDF','One page per atlas page, ready to print')+it('gallery-atlas','🎓 Submit to course gallery…','Share this atlas on the class gallery page')+it('atlas-preview','👁 Preview','Full screen, as readers will see it');
   }
@@ -12332,6 +12333,7 @@ function renderTopMenu(){
     else if(g==='atlas-share') atShareDialog();
     else if(g==='gallery-atlas') requireProject(()=>galleryDialog('atlas'));
     else if(g==='gallery-map') requireProject(()=>galleryDialog('map'));
+    else if(g==='gallery-layout') requireProject(()=>galleryDialog('layout'));
     else if(t.dataset.show) atShowInMaker(atlas.pages.find(p=>p.id===t.dataset.show));
     else if(t.dataset.upd){ if(t.dataset.k==='layout') await atSendLayout(t.dataset.upd); else await atSendFromMaker(t.dataset.upd); }
   });
@@ -18197,11 +18199,18 @@ async function galFetch(path, body){
   return j;
 }
 /* a landscape picture for the gallery card */
-async function galThumb(kind){
+async function galThumb(kind, layoutImg){
   const W=800, H=500, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
   const load=src=>new Promise(res=>{ if(!src) return res(null); const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
   const cover=(im)=>{ const s=Math.max(W/im.width, H/im.height), w=im.width*s, h=im.height*s; g.drawImage(im,(W-w)/2,(H-h)/2,w,h); };
   try{
+    if(kind==='layout'){
+      const im=await load(layoutImg); if(!im) return '';
+      g.fillStyle='#e9eef2'; g.fillRect(0,0,W,H);
+      const s=Math.min((W-60)/im.width, (H-50)/im.height), w=im.width*s, h=im.height*s;
+      g.shadowColor='rgba(0,0,0,.28)'; g.shadowBlur=18; g.shadowOffsetY=6; g.drawImage(im,(W-w)/2,(H-h)/2,w,h); g.shadowColor='transparent';
+      return cv.toDataURL('image/jpeg', .85);
+    }
     if(kind==='map'){
       const url=projActive ? document.getElementById('projCanvas').toDataURL('image/png')
         : await captureMapElement((typeof mkGlobe!=='undefined'&&mkGlobe)?document.getElementById('mk-globe'):document.getElementById('mk-map'), 1,
@@ -18233,6 +18242,20 @@ async function galThumb(kind){
     return cv.toDataURL('image/jpeg', .82);
   }catch(_){ return ''; }
 }
+/* a finished Composer layout as a small web page: the page fitted to the screen, click to see it full size, and a download */
+function buildLayoutGalleryHtml(title, img){
+  return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+esc(title||'Map layout')+'</title>'+
+  '<style>html,body{margin:0;height:100%;background:#3a4049;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;}'+
+  '#st{position:absolute;inset:0 0 44px 0;overflow:auto;display:flex;}#pg{margin:auto;display:block;max-width:calc(100% - 48px);max-height:calc(100% - 48px);box-shadow:0 10px 36px rgba(0,0,0,.45);background:#fff;cursor:zoom-in;}'+
+  '#st.full{display:block;}#st.full #pg{max-width:none;max-height:none;width:auto;height:auto;flex:0 0 auto;cursor:zoom-out;margin:24px;}'+
+  '#bar{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;justify-content:center;gap:10px;color:#d9dee5;font-size:12.5px;}'+
+  '#bar button,#bar a{font:600 12px inherit;font-family:inherit;color:#eef1f5;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:5px 12px;cursor:pointer;text-decoration:none;}'+
+  '#bar button:hover,#bar a:hover{background:rgba(255,255,255,.2);}#bar .mom{opacity:.7;margin-left:6px}</style></head><body>'+
+  '<div id="st"><img id="pg" alt="'+esc(title||'Map layout')+'" src="'+img+'"></div>'+
+  '<div id="bar"><button id="z" type="button">🔍 Full size</button><a id="dl" download="'+esc((title||'map-layout').replace(/[^\w-]+/g,'-'))+'.jpg" href="'+img+'">⬇ Download image</a><span class="mom">Made with Map-O-Matic</span></div>'+
+  '<script>(function(){var st=document.getElementById("st"),z=document.getElementById("z");function t(){var f=st.classList.toggle("full");z.textContent=f?"⤢ Fit to screen":"🔍 Full size";}'+
+  'document.getElementById("pg").onclick=t;z.onclick=t;try{parent.postMessage({momMapReady:1},"*");}catch(e){}})();<\/script></body></html>';
+}
 async function galleryDialog(kind){
   const C=cfgGallery();
   let m=document.getElementById('modal-gallery');
@@ -18244,13 +18267,15 @@ async function galleryDialog(kind){
   openModal('modal-gallery');
   if(kind==='atlas' && (!atlas || !atlas.pages.length)){ body.innerHTML='<p class="kv">Add some pages to the atlas first.</p>'+close; return; }
   if(kind==='map' && !mkLayers.some(l=>l.visible)){ body.innerHTML='<p class="kv">Turn on at least one layer in Map Maker first.</p>'+close; return; }
+  if(kind==='layout' && !canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ body.innerHTML='<p class="kv">The Composer page is empty. Lay out a map there first.</p>'+close; return; }
   if(!C.relay){ body.innerHTML='<p class="kv">The course gallery isn’t set up on this copy of Map-O-Matic. Use the copy your instructor links to, or export the '+kind+' as a web page and hand it in.</p>'+close; return; }
   body.innerHTML='<p class="kv">Connecting to the gallery…</p>';
   let cfg; try{ cfg=await galFetch('/config'); }catch(e){ body.innerHTML='<p class="kv">The course gallery can’t be reached right now ('+esc(e.message)+'). Try again later.</p>'+close; return; }
   const store=galStore(), slot=galSlot(kind), mine=store[slot];
-  const what=kind==='atlas'?'atlas':'map';
+  const what=kind==='atlas'?'atlas':kind==='layout'?'map layout':'map';
   const form=(prev)=>{
-    const t0=prev&&prev.title || (kind==='atlas'?atlas.title:((projectsCache.find(p=>p.id===currentProjectId)||{}).name||'My map'));
+    const lt=kind==='layout' ? canvas.getObjects().find(o=>o.data&&o.data.type==='title') : null;
+    const t0=prev&&prev.title || (kind==='atlas'?atlas.title : (lt&&lt.text&&lt.text!=='Map Title') ? lt.text : ((projectsCache.find(p=>p.id===currentProjectId)||{}).name||'My map'));
     const pv=prev||{};
     body.innerHTML=(prev?'<p class="kv" style="margin-top:0">Send an updated version of your '+what+'. It replaces the one in the gallery once your instructor approves it.</p>'
         : '<p class="kv" style="margin-top:0">Share your '+what+' on the <a href="'+esc(C.page)+'" target="_blank" rel="noopener">'+esc(C.name)+'</a>. Your instructor approves each piece before it appears.</p>')+
@@ -18282,12 +18307,14 @@ async function galleryDialog(kind){
       if(!document.getElementById('gC1').checked || !document.getElementById('gC2').checked) return say('Tick both boxes to submit.');
       go.disabled=true; msg.style.color=''; msg.textContent='Packing your '+what+'…';
       let html='';
-      try{ html = kind==='atlas' ? buildAtlasHtml(atlas) : buildEmbedHtml({name:v('gTitle'), basemap:mkBasemapKey, popups:true, legend:true, partsUi:true}); }
+      let layoutImg='';
+      if(kind==='layout'){ msg.textContent='Drawing the page at print quality…'; try{ layoutImg=await atToJpeg(layoutDataURL(220), 4200, 0.92); }catch(e){ go.disabled=false; return say('Could not capture the page: '+e.message); } }
+      try{ html = kind==='atlas' ? buildAtlasHtml(atlas) : kind==='layout' ? buildLayoutGalleryHtml(v('gTitle'), layoutImg) : buildEmbedHtml({name:v('gTitle'), basemap:mkBasemapKey, popups:true, legend:true, partsUi:true}); }
       catch(e){ go.disabled=false; return say('Could not pack it: '+e.message); }
       const mb=html.length/1048576;
       if(mb>(cfg.maxMB||20)){ go.disabled=false; return say('This '+what+' is '+mb.toFixed(1)+' MB; the gallery takes up to '+(cfg.maxMB||20)+' MB. Remove or shrink some images and try again.'); }
       msg.textContent='Making a preview picture…';
-      const thumb=await galThumb(kind);
+      const thumb=await galThumb(kind, layoutImg);
       msg.textContent='Sending ('+mb.toFixed(1)+' MB)…';
       try{
         const res=await galFetch('/submit', Object.assign({title:v('gTitle'), desc:v('gDesc'), name:v('gName'), credit:cr.value, pseudonym:v('gPseu'),

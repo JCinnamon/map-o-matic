@@ -72,10 +72,20 @@
   .modal .btn.ghost{color:var(--text);border-color:#9aa6bd;background:#fff;}
   #mk-map.carto-morphing .cs-maplabel{display:none;}
   .histo svg{display:block;background:#fbfcfe;border:1px solid var(--line);border-radius:4px;}
-  .home-backup{background:#fff7e0;border:1px solid #e8c56a;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:13px;color:#4a3b10;}
-  .home-backup .hb-list{display:flex;flex-wrap:wrap;gap:8px 16px;margin:8px 0;}
-  .home-backup .hb-item{display:inline-flex;align-items:center;gap:6px;}
-  .home-backup .hb-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;}
+  .home-backup{background:#fffaeb;border:1px solid #f1d58e;border-left:4px solid #e0a82e;border-radius:10px;padding:14px 16px;margin:0 0 16px;font-size:13px;color:#4a3b10;}
+  .home-backup .hb-head{display:flex;gap:10px;align-items:flex-start;}
+  .home-backup .hb-ic{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:#fbe7b5;color:#9a6a06;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+  .home-backup .hb-head b{display:block;font-size:14px;color:#3d300b;margin-bottom:1px;}
+  .home-backup .hb-head span{color:#6b5a2a;line-height:1.45;}
+  .home-backup .hb-list{list-style:none;margin:10px 0 0 36px;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .home-backup .hb-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #f0e2bd;border-radius:7px;padding:6px 8px 6px 12px;}
+  .home-backup .hb-name{flex:1;min-width:0;font-weight:600;color:#3d300b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .home-backup .hb-when{flex:0 0 auto;font-size:12px;color:#8a7642;}
+  .home-backup .hb-item .btn{flex:0 0 auto;min-width:88px;justify-content:center;}
+  .home-backup .hb-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0 36px;}
+  .home-backup .hb-tip{margin-right:auto;font-size:12px;color:#6b5a2a;}
+  .home-backup .hb-foot .btn{min-width:0;} .home-backup .hb-later{background:transparent;color:#6b5a2a;border:1px solid #e3cf98;} .home-backup .hb-later:hover{background:#fff3d6;}
+  @media (max-width:560px){ .home-backup .hb-list,.home-backup .hb-foot{margin-left:0;} .home-backup .hb-when{display:none;} }
   .modal .btn.ghost:hover{background:#eef1f6;}
   .btn.light{background:#e8ecf3;color:var(--navy);border:1px solid var(--line);}
   .btn.light:hover{background:#dde4ef;}
@@ -424,6 +434,8 @@
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
   .sn-row input{padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;}
   .at-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .bm-locked #mkBasemap{opacity:.5;cursor:not-allowed;} .bm-locked #mkBasemapAttr{opacity:.5;}
+  .hex-sz{display:flex;gap:8px;align-items:center;} .hex-sz input[type=range]{flex:1;min-width:0;} .hex-sz input[type=number]{flex:0 0 72px;width:72px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:12px;} .hex-sz select{flex:0 0 auto;width:auto;padding:3px 4px;border:1px solid var(--line);border-radius:4px;font-size:12px;}
   .gal-form{display:flex;flex-direction:column;gap:8px;} .gal-form input[type=text],.gal-form textarea,.gal-form select{font:13px inherit;font-family:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;color:var(--text);}
   .gal-form textarea{resize:vertical;} .gal-form .fc-lbl>span{font-size:11px;color:var(--muted);}
   .gal-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;} @media (max-width:560px){ .gal-2{grid-template-columns:1fr;} }
@@ -1088,6 +1100,7 @@
         </optgroup>
         <optgroup label="Open raster">
           <option value="osm">OpenStreetMap</option>
+          <option value="opentopomap">OpenTopoMap (terrain, contours)</option>
           <option value="s2cloudless">Sentinel-2 Cloudless (open, 10 m)</option>
         </optgroup>
         <optgroup label="Satellite imagery">
@@ -1529,6 +1542,7 @@
         <div class="field"><label>Basemap in the embed</label>
           <select id="embedBasemap">
             <option value="osm">OpenStreetMap</option>
+            <option value="opentopomap">OpenTopoMap (terrain, contours)</option>
             <option value="ofm-positron">Positron (light)</option>
             <option value="ofm-bright">Bright</option>
             <option value="ofm-liberty">Liberty (streets)</option>
@@ -2429,6 +2443,7 @@ const BASEMAPS = {
   'ofm-dark':     {kind:'vector', style:OFM+'dark',     label:'Dark',     attr:OSM_ATTR+' · '+OMT_ATTR+' · OpenFreeMap'},
   'ofm-fiord':    {kind:'vector', style:OFM+'fiord',    label:'Fiord',    attr:OSM_ATTR+' · '+OMT_ATTR+' · OpenFreeMap'},
   'osm':          {kind:'raster', urls:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], attr:OSM_ATTR, max:19},
+  'opentopomap':  {kind:'raster', urls:['https://tile.opentopomap.org/{z}/{x}/{y}.png'], attr:'Map data: '+OSM_ATTR+', SRTM · Map style: © OpenTopoMap (CC-BY-SA)', max:17, maxNative:17},
   's2cloudless':  {kind:'raster', urls:['https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2023_3857/default/g/{z}/{y}/{x}.jpg'],
                    attr:S2_ATTR, max:18, maxNative:15},
   /* High-resolution imagery. The imagery itself is proprietary (free to use with
@@ -4738,7 +4753,7 @@ function hexBins(lyr){
   const st=lyr.style;
   const feats=visibleFeatures(lyr).filter(f=>f.geometry);
   if(!feats.length) return {cells:[], values:[]};
-  const size=Math.max(0.2, +st.hexSize||5);            /* km, centre-to-flat */
+  const size=Math.max(0.01, Math.min(1000, +st.hexSize||5));   /* km, centre-to-flat (10 m – 1,000 km) */
   const pts=[];
   feats.forEach(f=>{
     let c; try{ c=(f.geometry.type==='Point')? f.geometry.coordinates : turf.center(f).geometry.coordinates; }catch(_){ return; }
@@ -4809,8 +4824,20 @@ function hexBreaks(values, st){
   /* inner breaks only, no repeats: fewer distinct values means fewer classes */
   return Array.from(new Set(out.filter(b=>b>v[0]&&b<v[v.length-1]))).sort((a,b)=>a-b);
 }
+/* cell size: 10 m – 1,000 km on a log slider (0–1000), shown as a round number in m or km */
+function hexSliderToSize(t){ const km=0.01*Math.pow(10, 5*t/1000); const p=Math.pow(10, Math.floor(Math.log10(km))-1); return Math.round(km/p)*p; }
+function hexSizeToSlider(km){ return Math.round(1000*Math.log10(Math.max(0.01,Math.min(1000,km))/0.01)/5); }
+function hexSizeShow(km){ km=+km||5; return km<1 ? {v:+(km*1000).toPrecision(3), u:'m'} : {v:+km.toPrecision(4), u:'km'}; }
+function hexSizeLabel(km){ const d=hexSizeShow(km); return d.v.toLocaleString()+' '+d.u; }
+function hexStyleDefaults(st){
+  /* hexbins now use the shared outline and opacity controls; start them where the old hexbin look was */
+  if(st._hexStyled) return; st._hexStyled=true;
+  st.strokeColor = st.hexStroke===false ? 'none' : '#ffffff';
+  st.strokeWeight = 0.7;
+  st.fillOpacity = st.hexOpacity==null ? 0.8 : st.hexOpacity;
+}
 function renderHexLayer(lyr){
-  const st=lyr.style;
+  const st=lyr.style; hexStyleDefaults(st);
   const {cells, values}=hexBins(lyr);
   lyr._hexCells=cells;
   const info=document.getElementById('stHexInfo');
@@ -4828,12 +4855,12 @@ function renderHexLayer(lyr){
       (c.value==null?'—':(Math.round(c.value*1000)/1000).toLocaleString())+'<br><span class="kv">'+c.n+' point'+(c.n===1?'':'s')+'</span>';
   /* F8: proportional circles at the cell centres, area ∝ value, largest drawn first */
   if(st.hexShow==='circles'){
-    const maxR=st.hexMaxR||20;
+    const maxR=Math.max(2, st.hexMaxR||20);
     cells.slice().sort((a,b)=>(b.value||0)-(a.value||0)).forEach(c=>{
       if(c.value==null||!isFinite(c.value)||c.value<=0) return;
       const cx=c.ring.reduce((a,p)=>a+p[0],0)/c.ring.length, cy=c.ring.reduce((a,p)=>a+p[1],0)/c.ring.length;
       L.circleMarker([cy,cx],{radius:maxR*Math.sqrt(c.value/Math.max(1e-9,vmax)), color:st.strokeColor||'#333',
-        weight:isNoColour(st.strokeColor)?0:(st.strokeWeight||1), fillColor:paintValue(st.color), fillOpacity:(st.hexOpacity==null?0.8:st.hexOpacity)*lyr.opacity, opacity:lyr.opacity})
+        weight:isNoColour(st.strokeColor)?0:(+st.strokeWeight||0), fillColor:paintValue(st.color), fillOpacity:(st.fillOpacity==null?0.8:st.fillOpacity)*lyr.opacity, opacity:lyr.opacity})
         .bindPopup(()=>popup(c)).addTo(group);
     });
     if(st.hexShowCells!==false) cells.forEach(c=>L.polygon(c.ring.map(p=>[p[1],p[0]]),{color:'#9aa6bd', weight:0.5, fill:false, opacity:0.6*lyr.opacity, interactive:false}).addTo(group));
@@ -4843,9 +4870,9 @@ function renderHexLayer(lyr){
       const ci=classOf(c.value);
       const fill=ci<0? '#cccccc' : cols[ci];
       L.polygon(c.ring.map(p=>[p[1],p[0]]), {
-        color: st.hexStroke!==false? '#ffffff' : fill,
-        weight: st.hexStroke!==false? 0.7 : 0,
-        fillColor: fill, fillOpacity:(st.hexOpacity==null?0.8:st.hexOpacity)*lyr.opacity, opacity:lyr.opacity
+        color: isNoColour(st.strokeColor)? fill : paintValue(st.strokeColor),
+        weight: isNoColour(st.strokeColor)? 0 : (+st.strokeWeight||0),
+        fillColor: fill, fillOpacity:(st.fillOpacity==null?0.8:st.fillOpacity)*lyr.opacity, opacity:lyr.opacity
       }).bindPopup(()=>popup(c)).addTo(group);
     });
   }
@@ -6311,10 +6338,11 @@ function renderStyleTab(){
       <p class="kv">A heatmap has no classes, so it doesn't generate a legend entry.</p>`;
   }
   if(st.mode==='hex'){
+    hexStyleDefaults(st);
     html+=`<p class="kv" style="margin-top:0;">Points aggregated into hexagonal cells and shaded by what falls in each — a classed alternative to a heatmap that can be read off a legend.</p>
+      <div class="field hex-szf"><label>Cell size</label>
+          <div class="hex-sz"><input type="range" id="stHexSize" min="0" max="1000" step="1" value="${hexSizeToSlider(st.hexSize||5)}" aria-label="Cell size"><input type="number" id="stHexNum" min="0" step="any" value="${hexSizeShow(st.hexSize||5).v}"><select id="stHexUnit"><option value="m"${hexSizeShow(st.hexSize||5).u==='m'?' selected':''}>m</option><option value="km"${hexSizeShow(st.hexSize||5).u==='km'?' selected':''}>km</option></select></div></div>
       <div class="row2">
-        <div class="field"><label>Cell size: <b id="stHexLbl">${st.hexSize||5}</b> km</label>
-          <input type="range" id="stHexSize" min="1" max="100" step="1" value="${st.hexSize||5}"></div>
         <div class="field"><label>Cell value</label>
           <select id="stHexStat">
             <option value="count" ${st.hexStat==='count'?'selected':''}>Count of points</option>
@@ -6335,7 +6363,6 @@ function renderStyleTab(){
         </select></div>`;
     if(st.hexShow==='circles'){
       html+=`<div class="row2">
-        <div class="field"><label for="stHexMaxR">Largest circle radius (px)</label><input type="number" id="stHexMaxR" min="4" max="80" value="${st.hexMaxR||20}"></div>
         <div class="field"><label>Circle colour</label><input type="color" id="stColor" value="${toHex(st.color)}"></div>
       </div>
       <div class="checkline"><input type="checkbox" id="stHexShowCells" ${st.hexShowCells!==false?'checked':''}><label for="stHexShowCells">Show the cell outlines</label></div>`;
@@ -6351,7 +6378,7 @@ function renderStyleTab(){
           <option value="equal" ${st.method==='equal'?'selected':''}>Equal interval</option>
           <option value="jenks" ${st.method==='jenks'?'selected':''}>Natural breaks (Jenks)</option>
         </select></div>
-      <div class="checkline"><input type="checkbox" id="stHexStroke" ${st.hexStroke!==false?'checked':''}><label for="stHexStroke">Outline the cells</label></div>`;
+`;
     }
     html+=`
       <div class="kv" id="stHexInfo"></div>
@@ -6509,7 +6536,9 @@ function renderStyleTab(){
     </div>
     <div class="field"><label>Symbol colour</label><input type="color" id="stColor" value="${st.color}"></div>`;
   }
-  if(lyr.geom==='point' && st.mode!=='gradSize'){
+  if(lyr.geom==='point' && st.mode==='hex'){
+    if(st.hexShow==='circles') html+=`<div class="field"><label>Symbol size — largest circle (radius px)</label><input type="number" id="stHexMaxR" value="${st.hexMaxR||20}" min="2" max="120"></div>`;
+  } else if(lyr.geom==='point' && st.mode!=='gradSize'){
     html+=`<div class="field"><label>Symbol size (radius px)</label><input type="number" id="stRadius" value="${st.radius}" min="1" max="40"></div>`;
   }
   html+=`<div class="divider"></div><h3>Stroke & transparency</h3>`;
@@ -6532,6 +6561,7 @@ function renderStyleTab(){
   g('stMode').onchange=()=>{
     const was=st.mode;
     st.mode=g('stMode').value;
+    if(st.mode==='hex') hexStyleDefaults(st);
     /* a cartogram's units aren't where the basemap says they are, so take it away */
     if(st.mode==='carto' && was!=='carto') cartoEnterBasemap();
     if(was==='carto' && st.mode!=='carto') cartoLeaveBasemap();
@@ -6564,8 +6594,9 @@ function renderStyleTab(){
   if(g('stMaxR')) g('stMaxR').onchange=()=>{ st.maxR=+g('stMaxR').value||22; rerender(); };
   if(g('stSizeScale')) g('stSizeScale').onchange=()=>{ st.sizeScale=g('stSizeScale').value; rerender(); };
   if(g('stRadius')) g('stRadius').onchange=()=>{ st.radius=+g('stRadius').value||6; rerender(); };
+  if(g('stHexMaxR')) g('stHexMaxR').onchange=()=>{ st.hexMaxR=Math.max(2,Math.min(120,+g('stHexMaxR').value||20)); rerender(); };
   bindColourField('stStrokeColor', ()=>st.strokeColor, v=>{ st.strokeColor=v; }, ()=>{ if(!fastRestyle(lyr)) throttledRender(lyr); });
-  if(g('stStrokeW')) g('stStrokeW').onchange=()=>{ st.strokeWeight=+g('stStrokeW').value||1; rerender(); };
+  if(g('stStrokeW')) g('stStrokeW').onchange=()=>{ const v=+g('stStrokeW').value; st.strokeWeight=(isFinite(v)&&v>=0)?v:1; rerender(); };
   if(g('stDash')) g('stDash').onchange=()=>{ st.dash=g('stDash').value.trim(); rerender(); };
   g('stFillOp').oninput=()=>{ st.fillOpacity=+g('stFillOp').value; g('stOpVal').textContent=Math.round(st.fillOpacity*100)+'%'; if(!fastRestyle(lyr)) throttledRender(lyr); };
   g('stLayerOp').oninput=()=>{ lyr.opacity=+g('stLayerOp').value; g('stLOpVal').textContent=Math.round(lyr.opacity*100)+'%'; if(!fastRestyle(lyr)) throttledRender(lyr); };
@@ -6613,19 +6644,17 @@ function renderStyleTab(){
   }
   /* ---- hexbin ---- */
   if(g('stHexSize')){
-    const applyHex=()=>{
-      st.hexSize=+g('stHexSize').value||5;
-      const l=g('stHexLbl'); if(l) l.textContent=st.hexSize;
-      if(g('stHexStroke')) st.hexStroke=g('stHexStroke').checked;
-      rerender();
-    };
-    g('stHexSize').oninput=applyHex;
-    if(g('stHexStroke')) g('stHexStroke').onchange=applyHex;
+    const showNum=()=>{ const d=hexSizeShow(st.hexSize); g('stHexNum').value=d.v; g('stHexUnit').value=d.u; };
+    const sl=g('stHexSize');
+    sl.oninput=()=>{ st.hexSize=hexSliderToSize(+sl.value); showNum(); throttledRender(lyr); };
+    const typed=()=>{ let v=+g('stHexNum').value; if(!(v>0)) return; if(g('stHexUnit').value==='m') v/=1000;
+      st.hexSize=Math.max(0.01, Math.min(1000, v)); sl.value=hexSizeToSlider(st.hexSize); rerender(); };
+    g('stHexNum').onchange=typed; g('stHexUnit').onchange=typed;
     if(g('stHexStat')) g('stHexStat').onchange=()=>{ st.hexStat=g('stHexStat').value; renderStyleTab(); rerender(); };
     if(g('stHexField')) g('stHexField').onchange=()=>{ st.hexField=g('stHexField').value||null; rerender(); };
     if(g('stHexToLayer')) g('stHexToLayer').onclick=()=>hexCellsToLayer(lyr);
     if(g('stHexShow')) g('stHexShow').onchange=()=>{ st.hexShow=g('stHexShow').value; renderStyleTab(); rerender(); };
-    if(g('stHexMaxR')) g('stHexMaxR').onchange=()=>{ st.hexMaxR=Math.max(4,Math.min(80,+g('stHexMaxR').value||20)); rerender(); };
+
     if(g('stHexShowCells')) g('stHexShowCells').onchange=()=>{ st.hexShowCells=g('stHexShowCells').checked; rerender(); };
   }
   /* ---- cartogram ---- */
@@ -10895,7 +10924,7 @@ function atSanitize(a){
    OpenStreetMap tiles: those servers refuse maps that run inside a sandboxed
    frame (no referrer), which is how every atlas map runs. */
 const AT_BMS=[['ofm-positron','Positron (light)'],['ofm-bright','Bright'],['ofm-liberty','Liberty (streets)'],['ofm-dark','Dark'],['ofm-fiord','Fiord (muted)'],
-  ['s2cloudless','Sentinel-2 Cloudless (open)'],['satellite','Satellite'],['satellite-hybrid','Satellite Hybrid'],['none','None (data only)']];
+  ['opentopomap','OpenTopoMap (terrain)'],['s2cloudless','Sentinel-2 Cloudless (open)'],['satellite','Satellite'],['satellite-hybrid','Satellite Hybrid'],['none','None (data only)']];
 function atBmKey(k){ if(BASEMAP_LEGACY[k]) k=BASEMAP_LEGACY[k]; return AT_BMS.some(b=>b[0]===k)?k:'ofm-positron'; }
 function atSnapFrom(p){
   const ok=sn=>sn && Array.isArray(sn.layers) && sn.view && Array.isArray(sn.view.c);
@@ -12802,6 +12831,8 @@ function setProjectionMode(key){
   document.getElementById('mk-map').style.display=editing?'block':'none';
   document.getElementById('mk-proj').classList.toggle('hidden', editing);
   document.getElementById('projOptions').classList.toggle('hidden', editing);
+  { const bs=document.getElementById('mkBasemap'); bs.disabled=!editing; bs.title=editing?'':'Projected views draw their own world outline; switch back to Web Mercator to change the basemap.';
+    bs.closest('.sec').classList.toggle('bm-locked', !editing); }
   if(editing){
     setTimeout(()=>{ mkMap.invalidateSize(); resume(); }, 60);
     return;
@@ -16697,7 +16728,7 @@ function describeLayerDesign(l){
   else if(st.mode==='gradSize'||st.mode==='prop'){ s+=' of '+(st.field||'?')+(st.normField?' / '+st.normField:'')+', radius '+st.minR+'–'+st.maxR+' px'+(st.mode==='gradSize'?(st.sizeScale==='sqrt'?' (area-proportional)':' (linear)'):''); }
   else if(st.mode==='bivariate'){ s+=': size from '+(st.field||'?')+', colour from '+(st.colorField||st.field||'?'); }
   else if(st.mode==='heat'){ s+=', radius '+(st.heatRadius||25)+' px, blur '+(st.heatBlur==null?15:st.heatBlur)+' px'+(st.heatField?', weighted by '+st.heatField:''); }
-  else if(st.mode==='hex'){ s+=', '+(st.hexSize||5)+' km cells, '+(st.hexStat==='count'||!st.hexField?'point count':st.hexStat+' of '+st.hexField)+(st.hexShow==='circles'?', proportional circles':', '+(METHOD_NAMES[st.method]||st.method)+' classes'); }
+  else if(st.mode==='hex'){ s+=', '+hexSizeLabel(st.hexSize||5)+' cells, '+(st.hexStat==='count'||!st.hexField?'point count':st.hexStat+' of '+st.hexField)+(st.hexShow==='circles'?', proportional circles':', '+(METHOD_NAMES[st.method]||st.method)+' classes'); }
   else if(st.mode==='dot'){ s+=', 1 dot = '+fmtNum(st.dotValue)+' '+(st.field||''); }
   else if(st.mode==='carto'){ s+=' ('+(CARTO_LABELS[st.cartoKind||'noncontig'])+') sized by '+(st.cartoField||'?')+(st.cartoNormField?' / '+st.cartoNormField:'')+(st.cartoColorMode==='grad'?', coloured by '+st.field:st.cartoColorMode==='cat'?', categories of '+st.field:''); }
   if(st.mode==='single'||st.mode==='prop'||st.mode==='gradSize') s+=', colour '+st.color;
@@ -17069,10 +17100,12 @@ function renderBackupBanner(){
     ? 'This browser may clear stored projects on its own.'
     : 'Projects are stored only in this browser.';
   el.className='home-backup';
-  el.innerHTML='<b>Back up your work.</b> '+esc(why)+' Not backed up for '+BACKUP_DAYS+'+ days:'+
-    '<div class="hb-list">'+list.map(p=>'<span class="hb-item">'+esc(p.name)+' <button class="btn small" data-exp="'+esc(p.id)+'">Export</button></span>').join('')+'</div>'+
-    '<div class="hb-foot">'+(typeof syncSupported==='function'&&syncSupported()?'<button class="btn small" id="hbSync">☁ Sync to cloud</button> <span>saves every project to your synced folder automatically.</span> ':'')+
-    '<button class="btn small light" id="hbLater">Remind me later</button></div>';
+  const ago=t=>{ const d=Math.floor((Date.now()-(t||0))/86400000); return d<1?'edited today':d===1?'edited yesterday':'edited '+d+' days ago'; };
+  const canSync=typeof syncSupported==='function'&&syncSupported();
+  el.innerHTML='<div class="hb-head"><span class="hb-ic" aria-hidden="true">!</span><div><b>Back up your work</b><span>'+esc(why)+' '+(list.length===1?'This project hasn’t':'These projects haven’t')+' been backed up for '+BACKUP_DAYS+'+ days.</span></div></div>'+
+    '<ul class="hb-list">'+list.map(p=>'<li class="hb-item"><span class="hb-name">'+esc(p.name)+'</span><span class="hb-when">'+ago(p.modified)+'</span><button class="btn small light" data-exp="'+esc(p.id)+'">⬇ Export</button></li>').join('')+'</ul>'+
+    '<div class="hb-foot">'+(canSync?'<span class="hb-tip">Or save every project to your synced folder automatically.</span><button class="btn small" id="hbSync">☁ Sync to cloud</button>':'<span class="hb-tip"></span>')+
+    '<button class="btn small hb-later" id="hbLater">Remind me later</button></div>';
   const hs=document.getElementById('hbSync'); if(hs) hs.onclick=()=>openSyncDialog();
   el.querySelectorAll('button[data-exp]').forEach(b=>b.onclick=()=>exportProjectFile(b.getAttribute('data-exp')));
   const later=document.getElementById('hbLater'); if(later) later.onclick=()=>{ backupBannerHidden=true; renderBackupBanner(); };
@@ -18000,7 +18033,7 @@ async function openShareDialog(){
 function isShareMode(){ return /[#&]s=[^&]+/.test(location.hash); }
 function shareHashPayload(){ const m=location.hash.match(/[#&]s=([^&]+)/); return m? m[1] : null; }
 const SV_BM_LABELS={'ofm-positron':'Positron (light)','ofm-bright':'Bright','ofm-liberty':'Liberty (streets)',
-  'ofm-dark':'Dark','ofm-fiord':'Fiord','osm':'OpenStreetMap','s2cloudless':'Sentinel-2 Cloudless',
+  'ofm-dark':'Dark','ofm-fiord':'Fiord','osm':'OpenStreetMap','opentopomap':'OpenTopoMap','s2cloudless':'Sentinel-2 Cloudless',
   'satellite':'Satellite','satellite-hybrid':'Satellite Hybrid','none':'None'};
 /* Everything in a share link is untrusted: anyone can write one. Colours, sizes,
    symbols, label styles and the legend are rebuilt from checked values only. */

@@ -436,6 +436,9 @@
   .at-themes{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
   .bm-locked #mkBasemap{opacity:.5;cursor:not-allowed;} .bm-locked #mkBasemapAttr{opacity:.5;}
   .hex-sz{display:flex;gap:8px;align-items:center;} .hex-sz input[type=range]{flex:1;min-width:0;} .hex-sz input[type=number]{flex:0 0 72px;width:72px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:12px;} .hex-sz select{flex:0 0 auto;width:auto;padding:3px 4px;border:1px solid var(--line);border-radius:4px;font-size:12px;}
+  .proj-pop{position:absolute;z-index:30;background:#fff;border-radius:8px;box-shadow:0 3px 14px rgba(0,0,0,.3);padding:10px 12px 10px;max-width:280px;max-height:260px;overflow:auto;font-size:12px;}
+  .proj-pop-x{position:absolute;right:4px;top:2px;border:none;background:none;font-size:16px;color:#8a94a3;cursor:pointer;line-height:1;}
+  .proj-pop-b{padding-right:12px;}
   .gal-form{display:flex;flex-direction:column;gap:8px;} .gal-form input[type=text],.gal-form textarea,.gal-form select{font:13px inherit;font-family:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;color:var(--text);}
   .gal-form textarea{resize:vertical;} .gal-form .fc-lbl>span{font-size:11px;color:var(--muted);}
   .gal-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;} @media (max-width:560px){ .gal-2{grid-template-columns:1fr;} }
@@ -571,6 +574,7 @@
   .sv-globe{position:absolute;inset:0;z-index:750;background:#0b1e3a;} .sv-gmap{position:absolute;inset:0;}
   .sv-parts{text-align:right;} .sv-parts>button{font:600 12px var(--ui,system-ui);background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}
   .sv-parts .svp-list{margin-top:6px;background:rgba(255,255,255,.97);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;font-size:12px;}
+  .sv-parts.off>button{opacity:.45;cursor:not-allowed;box-shadow:none;}
   .sv-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}
   .sv-legend{background:rgba(255,255,255,.93);padding:8px 10px;border-radius:6px;
     box-shadow:0 1px 6px rgba(0,0,0,.25);font-size:12px;max-height:46%;overflow:auto;line-height:1.5;}
@@ -2689,6 +2693,8 @@ function closeCompare(){
   swipe=null;
   ['swipeL','swipeR'].forEach(n=>{ const pn=mkMap.getPane(n); if(pn) pn.style.clip=''; });
   mkLayers.forEach(l=>{ if(l.visible) renderLayer(l); });
+  /* the swipe panes' canvases stayed on the map, empty but on top, and swallowed every click */
+  Object.keys(swipeRenderers).forEach(k=>{ try{ mkMap.removeLayer(swipeRenderers[k]); }catch(_){} delete swipeRenderers[k]; });
   restackMakerLayers();
 }
 /* ---- v59: the globe draws exactly what the flat map draws ----
@@ -12502,7 +12508,7 @@ function drawSymbolOnCanvas(ctx, st, color, x, y, r, opacity){
 let projActive=false, projKey='mercator-edit', projTimer=null, worldLand=null, worldLandLoading=false;
 /* view state: k = zoom multiplier on the fitted scale, tx/ty = pan offset in px */
 let projView={k:1, tx:0, ty:0, fitTo:'auto'};
-let projLastProjection=null;
+let projLastProjection=null, projHits=[];
 
 const PROJ_DEFS={
   equalEarth:   {label:'Equal Earth',            make:()=>d3.geoEqualEarth(),             kind:'world'},
@@ -12599,18 +12605,90 @@ function buildProjection(w, h){
       [projView.fitBox[0],projView.fitBox[1]]]]};
   else fitObj = (def.kind==='world' || !fc.features.length) ? {type:'Sphere'} : fc;
 
-  try{ proj.fitExtent(extent, fitObj); }
-  catch(_){ try{ proj.fitExtent(extent, {type:'Sphere'}); }catch(__){} }
+  /* The base fit is worked out once per view and kept while the globe is turned:
+     re-fitting on every drag step made rotating projections pan and zoom as they turned. */
+  const fkey=[projKey,w,h,projView.fitTo,JSON.stringify(projView.fitBox||null),fc.features.length,
+    def.kind==='rotate'?'':lon+','+lat, def.kind==='conic'?document.getElementById('projP1').value+','+document.getElementById('projP2').value:''].join('|');
+  if(projView.base && projView.base.key===fkey){ proj.scale(projView.base.s); proj.translate(projView.base.t); }
+  else {
+    try{ proj.fitExtent(extent, fitObj); }
+    catch(_){ try{ proj.fitExtent(extent, {type:'Sphere'}); }catch(__){} }
+    if(def.kind==='rotate'){ proj.translate([w/2, h/2]); }   /* turn about the middle of the panel */
+    projView.base={key:fkey, s:proj.scale(), t:proj.translate()};
+  }
 
   /* apply user zoom/pan on top of the fit */
   const s=proj.scale(), t=proj.translate();
+  projLastScale=s*projView.k;
   proj.scale(s*projView.k);
   proj.translate([t[0]*projView.k + (w/2)*(1-projView.k) + projView.tx,
                   t[1]*projView.k + (h/2)*(1-projView.k) + projView.ty]);
   return proj;
 }
 
-let projWheelRaf=0;
+let projWheelRaf=0, projLastScale=150, projGrab=null;
+/* find the centre (lon, lat) that puts the grabbed place g under the cursor c — a few Newton steps */
+function projSolveGrab(g, c, lon, lat){
+  const def=PROJ_DEFS[projKey]; if(!def || !projLastProjection) return null;
+  const S=projLastProjection.scale(), T=projLastProjection.translate();
+  const P=def.make().scale(S).translate(T);
+  const f=(lo,la)=>{ P.rotate([-lo,-la]); const q=P(g); return (q && isFinite(q[0]) && isFinite(q[1])) ? [q[0]-c[0], q[1]-c[1]] : null; };
+  let x=lon, y=lat;
+  for(let it=0; it<8; it++){
+    const r0=f(x,y); if(!r0) return null;
+    if(Math.hypot(r0[0],r0[1])<0.3) break;
+    const h=Math.max(1e-6, 0.5/ S * 57.3);
+    const rx=f(x+h,y), ry=f(x,y+h); if(!rx||!ry) return null;
+    const a=(rx[0]-r0[0])/h, b=(ry[0]-r0[0])/h, cc=(rx[1]-r0[1])/h, d=(ry[1]-r0[1])/h;
+    const det=a*d-b*cc; if(!isFinite(det) || Math.abs(det)<1e-12) return null;
+    let sx=( d*r0[0]-b*r0[1])/det, sy=(-cc*r0[0]+a*r0[1])/det;
+    const m=Math.max(Math.abs(sx),Math.abs(sy)); if(m>20){ sx*=20/m; sy*=20/m; }
+    x-=sx; y=Math.max(-89.999, Math.min(89.999, y-sy));
+  }
+  const fin=f(x,y); if(!fin || Math.hypot(fin[0],fin[1])>6) return null;
+  return [((x+180)%360+360)%360-180, y];
+}
+/* which feature is under a point of the projected view: the features are re-traced
+   (as drawn, top layer first) into a hidden canvas and tested there */
+let projHitCtx=null;
+function projFeatureAt(x, y){
+  if(!projLastProjection || !projHits.length) return null;
+  if(!projHitCtx) projHitCtx=document.createElement('canvas').getContext('2d');
+  const ctx=projHitCtx, path=d3.geoPath(projLastProjection, ctx);
+  const tol=5;
+  for(let i=projHits.length-1;i>=0;i--){
+    const h=projHits[i]; if(!h.lyr.visible) continue;
+    try{
+      if(/Point/.test(h.gt)){
+        const pts=h.gt==='Point'?[h.f0.geometry.coordinates]:h.f0.geometry.coordinates;
+        for(const c of pts){ const q=projLastProjection(c); if(q && Math.hypot(q[0]-x,q[1]-y)<=Math.max(4,h.r)+2) return h; }
+        continue;
+      }
+      ctx.beginPath(); path(h.f && h.f.type==='Feature'?forD3(h.f):h.f);
+      if(/Polygon/.test(h.gt) && ctx.isPointInPath(x,y,'evenodd')) return h;
+      ctx.lineWidth=Math.max(tol*2, (h.lyr.style.strokeWeight||1)+tol); if(ctx.isPointInStroke(x,y)) return h;
+    }catch(_){}
+  }
+  return null;
+}
+function projClick(e){
+  const host=document.getElementById('mk-proj'), r=host.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  document.querySelectorAll('.proj-pop').forEach(p=>p.remove());
+  const h=projFeatureAt(x, y);
+  if(!h){ if(!(e.shiftKey||e.ctrlKey||e.metaKey)) clearSelection(); return; }
+  const i=fidOf(h.lyr, h.f0);
+  if(i!=null){ const changed=mkSelectedId!==h.lyr.id; mkSelectedId=h.lyr.id; setSelection(h.lyr, [i], (e.shiftKey||e.ctrlKey||e.metaKey)?'toggle':'set'); scrollTableToFeature(i);
+    if(changed){ renderMakerLayerList(); if(typeof renderMakerPanels==='function') renderMakerPanels(); } }
+  const props=(i!=null && h.lyr.geojson.features[i]) ? h.lyr.geojson.features[i].properties : h.f0.properties;
+  const pop=document.createElement('div'); pop.className='proj-pop';
+  pop.innerHTML='<button type="button" class="proj-pop-x" aria-label="Close">×</button><div class="proj-pop-b">'+(makerPopupHtml(props||{})||'(no attributes)')+'</div>';
+  host.appendChild(pop);
+  const pw=pop.offsetWidth, ph=pop.offsetHeight;
+  pop.style.left=Math.max(6, Math.min(host.clientWidth-pw-6, x-pw/2))+'px';
+  pop.style.top=(y-ph-14>6 ? y-ph-14 : y+14)+'px';
+  pop.querySelector('.proj-pop-x').onclick=ev=>{ ev.stopPropagation(); pop.remove(); };
+  ['mousedown','wheel','dblclick'].forEach(t=>pop.addEventListener(t, ev=>ev.stopPropagation()));
+}
 function renderProjection(){
   if(!projActive) return;
   const wrap=document.getElementById('mk-proj');
@@ -12625,7 +12703,7 @@ function renderProjection(){
   ctx.fillRect(0,0,w,h);
   const proj=buildProjection(w,h);
   if(!proj) return;
-  projLastProjection=proj;
+  projLastProjection=proj; projHits=[];
   const def=PROJ_DEFS[projKey];
   const path0=d3.geoPath(proj, ctx);
   const path=g=>path0(g && (g.type==='Feature') ? forD3(g) : g);
@@ -12693,6 +12771,7 @@ function renderProjection(){
       const f = def.interrupted && !/Point/.test(f0.geometry.type) ? prepForInterrupted(f0) : f0;
       const color=featureColor(lyr,f0);
       const gt=f0.geometry.type;
+      projHits.push({lyr, f0, f, gt, r:/Point/.test(gt)?featureRadius(lyr,f0):0});
       try{
         if(/Point/.test(gt)){
           const r=featureRadius(lyr,f0);
@@ -12794,7 +12873,7 @@ function renderProjection(){
 
   if(def.interrupted){ ctx.restore(); if(showSphere){ ctx.beginPath(); path({type:'Sphere'}); ctx.strokeStyle='#5a6e8c'; ctx.lineWidth=1.2; ctx.stroke(); } }
   const zoomPct=Math.round(projView.k*100);
-  document.getElementById('projMsg').textContent=def.label+' · '+zoomPct+'% · scroll or double-click to zoom, drag to '+(def.kind==='rotate'?'rotate':'pan');
+  document.getElementById('projMsg').textContent=def.label+' · '+zoomPct+'% · scroll or double-click to zoom, drag to '+(def.kind==='rotate'?'rotate (Shift+drag to pan)':'pan')+' · click a feature for its details';
 }
 
 /* ---------- fit helpers ---------- */
@@ -12892,6 +12971,7 @@ if('ResizeObserver' in window){
     const rect=el.getBoundingClientRect();
     const cx=el.clientWidth/2, cy=el.clientHeight/2;
     const dx=(e.clientX-rect.left)-cx, dy=(e.clientY-rect.top)-cy;
+    document.querySelectorAll('.proj-pop').forEach(p=>p.remove());
     const target=Math.max(0.2, Math.min(400, projView.k*(e.deltaY<0?1.15:1/1.15)));
     const F=target/projView.k;
     projView.tx = dx - F*(dx - projView.tx);
@@ -12901,26 +12981,41 @@ if('ResizeObserver' in window){
     if(!projWheelRaf) projWheelRaf=requestAnimationFrame(()=>{ projWheelRaf=0; renderProjection(); });
   }, {passive:false});
 
+  let downAt=null;
+  el.addEventListener('click', e=>{
+    if(!projActive || !downAt) return;
+    if(Math.hypot(e.clientX-downAt[0], e.clientY-downAt[1])>4) return;   /* that was a drag */
+    if(e.target.closest && e.target.closest('#projZoomCtl,.swipe-bar,#swipePanel,.proj-pop')) return;
+    projClick(e);
+  });
   el.addEventListener('mousedown', e=>{
     if(!projActive) return;
-    if(e.target.closest && e.target.closest('#projZoomCtl,.swipe-bar,#swipePanel')) return;  /* don't drag off the zoom buttons or divider */
+    if(e.target.closest && e.target.closest('#projZoomCtl,.swipe-bar,#swipePanel,.proj-pop')) return;  /* don't drag off the zoom buttons or divider */
+    downAt=[e.clientX, e.clientY];
     dragging=true; lastX=e.clientX; lastY=e.clientY;
+    projGrab=null;
+    { const d0=PROJ_DEFS[projKey]; if(d0 && d0.kind==='rotate' && projLastProjection && projLastProjection.invert){
+        const r=el.getBoundingClientRect(), g=projLastProjection.invert([e.clientX-r.left, e.clientY-r.top]);
+        if(g && isFinite(g[0]) && isFinite(g[1])) projGrab=g; } }
     el.style.cursor='grabbing';
   });
   window.addEventListener('mousemove', e=>{
     if(!dragging||!projActive) return;
     const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    if(dx||dy) document.querySelectorAll('.proj-pop').forEach(p=>p.remove());
     lastX=e.clientX; lastY=e.clientY;
     const def=PROJ_DEFS[projKey];
-    if(def && def.kind==='rotate'){
-      /* rotate the globe: scale sensitivity with zoom */
+    if(def && def.kind==='rotate' && !e.shiftKey){
+      /* turn the globe so the point under the cursor follows it (Shift+drag slides the view instead) */
       const lonEl=document.getElementById('projLon'), latEl=document.getElementById('projLat');
-      const sens=0.35/Math.sqrt(projView.k);
-      let lon=(parseFloat(lonEl.value)||0)+dx*sens;
-      let lat=(parseFloat(latEl.value)||0)-dy*sens;
+      let lon=parseFloat(lonEl.value)||0, lat=parseFloat(latEl.value)||0;
+      const r=el.getBoundingClientRect(), cur=[e.clientX-r.left, e.clientY-r.top];
+      const solved = projGrab ? projSolveGrab(projGrab, cur, lon, lat) : null;
+      if(solved){ lon=solved[0]; lat=solved[1]; }
+      else { const sens=180/(Math.PI*Math.max(1, projLastScale)); lon-=dx*sens; lat+=dy*sens; }
       lon=((lon+180)%360+360)%360-180;
       lat=Math.max(-90, Math.min(90, lat));
-      lonEl.value=lon.toFixed(2); latEl.value=lat.toFixed(2);
+      lonEl.value=+lon.toFixed(5); latEl.value=+lat.toFixed(5);   /* fine steps: when zoomed in, one pixel is a tiny fraction of a degree */
     } else {
       projView.tx+=dx; projView.ty+=dy;
     }
@@ -18126,6 +18221,15 @@ function svSetBasemap(key){
   svApplyParts();
 }
 let svParts=null;
+/* basemap parts only exist in the vector basemaps: grey the panel out for the others */
+function svPartsSync(key){
+  const box=document.querySelector('.sv-parts'); if(!box) return;
+  const vec=!!(BASEMAPS[key] && BASEMAPS[key].kind==='vector');
+  box.classList.toggle('off', !vec);
+  const b=box.querySelector('button'); b.disabled=!vec; b.title=vec?'':'Parts can be switched on and off only on the vector basemaps (Positron, Bright, Liberty, Dark, Fiord).';
+  if(!vec){ box.querySelector('.svp-list').hidden=true; b.setAttribute('aria-expanded','false'); }
+  box.querySelectorAll('input').forEach(c=>c.disabled=!vec);
+}
 function svApplyParts(){
   if(!svParts) return;
   svBmLayers.forEach(l=>{ const m=l.getMaplibreMap && l.getMaplibreMap(); if(m) applyPartsTo(m, svParts); });
@@ -18191,7 +18295,7 @@ async function enterShareViewer(){
     const d=L.DomUtil.create('div','sv-basemap');
     d.innerHTML='<select title="Basemap">'+Object.keys(BASEMAPS).map(k=>'<option value="'+k+'"'+(k===payload.basemap?' selected':'')+'>'+(SV_BM_LABELS[k]||k)+'</option>').join('')+'</select>';
     L.DomEvent.disableClickPropagation(d);
-    d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); };
+    d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); svPartsSync(e.target.value); };
     return d;
   }; bmCtl.addTo(svMap);
   const ptCtl=L.control({position:'topright'}); ptCtl.onAdd=()=>{
@@ -18201,6 +18305,7 @@ async function enterShareViewer(){
     const b=d.firstChild, list=d.lastChild; b.onclick=()=>{ list.hidden=!list.hidden; b.setAttribute('aria-expanded', String(!list.hidden)); };
     d.querySelectorAll('input').forEach(c=>c.onchange=()=>{ svParts[c.dataset.k]=c.checked; svApplyParts(); });
     return d; }; ptCtl.addTo(svMap);
+  svPartsSync(BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron');
   const brand=L.control({position:'bottomleft'}); brand.onAdd=()=>{ const d=L.DomUtil.create('div','sv-brand'); d.innerHTML='<svg class="mom-logo" width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg><a href="'+esc(location.href.split('#')[0])+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Made with Map-O-Matic</a>'; return d; }; brand.addTo(svMap);
   window.__svMap=svMap;            /* testing hook */
   setTimeout(()=>svMap.invalidateSize(), 150);

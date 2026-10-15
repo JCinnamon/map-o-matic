@@ -579,6 +579,32 @@
   .sel-fchip{font-size:11px;padding:2px 7px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);cursor:pointer;}
   .sel-fchip:hover{border-color:var(--teal);color:var(--teal);}
   #spExpr{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;padding:6px;border:1px solid var(--line);border-radius:4px;}
+  .mkl-tabs{display:flex;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .mkl-tabs button{flex:1;border:none;background:none;padding:9px 6px 8px;font-size:12.5px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;}
+  .mkl-tabs button.on{color:var(--teal);border-bottom-color:var(--teal);}
+  .mkl-badge{display:inline-block;margin-left:5px;font-size:10.5px;font-weight:700;background:var(--teal);color:#fff;border-radius:8px;padding:0 6px;line-height:16px;vertical-align:1px;}
+  .mkl-badge:empty{display:none;}
+  .mkl-pane{flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;}
+  .mkl-pane.hidden{display:none !important;}
+  .mkl-pane[data-lp=layers] #mk-layerlist{flex:1 0 auto;overflow:visible;}
+  .mkl-baserow{display:flex;align-items:center;gap:7px;margin:4px 10px 10px;padding:7px 9px;border:1px dashed var(--line);border-radius:7px;background:rgba(127,140,160,.06);font-size:12px;color:var(--text);text-align:left;cursor:pointer;}
+  .mkl-baserow:hover{border-color:var(--teal);}
+  .mkl-baserow .bi{width:26px;height:20px;border-radius:4px;flex-shrink:0;background:linear-gradient(135deg,#cfd8e3,#e8edf2);border:1px solid var(--line);}
+  .mkl-baserow b{font-weight:700;} .mkl-baserow span.sub{display:block;color:var(--muted);font-size:11px;}
+  .bmp-list{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;margin-top:6px;}
+  .bmp-list label{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .bmp-list input{margin:0;}
+  .bmp-head{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;margin-top:9px;}
+  .bmp-note{font-size:11.5px;color:var(--muted);margin-top:6px;}
+  .mk-src-btn a{font-weight:700;font-size:15px;}
+  .mk-src-panel{position:absolute;right:10px;bottom:52px;z-index:900;width:300px;max-height:60%;overflow:auto;background:#fff;color:#22293a;border:1px solid #d7dce3;border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.22);padding:9px 12px;font-size:12px;}
+  .msp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;} .msp-h b{font-size:12.5px;} .msp-h button{border:none;background:none;font-size:17px;color:#6b7386;cursor:pointer;}
+  .msp-r{padding:6px 0;border-top:1px solid #eef1f5;} .msp-t{font-weight:700;} .msp-t span{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#6b7386;margin-right:3px;}
+  .msp-c{color:#3a4252;margin-top:2px;} .msp-l{color:#6b7386;margin-top:2px;} .msp-f{border-top:1px solid #eef1f5;padding-top:6px;margin-top:2px;color:#6b7386;font-size:11.5px;}
+  #mk-map .leaflet-control-attribution{max-width:calc(100% - 140px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  html[data-theme=dark] .mk-src-panel{background:var(--panel);color:var(--text);border-color:var(--line);} html[data-theme=dark] .msp-c{color:var(--text);} html[data-theme=dark] .msp-r,html[data-theme=dark] .msp-f{border-color:var(--line);}
+  .grid-seg{display:flex;margin-top:6px;border:1px solid var(--line);border-radius:6px;overflow:hidden;} .grid-seg button{flex:1;border:none;background:none;padding:4px 2px;font-size:11.5px;color:var(--text);cursor:pointer;} .grid-seg button+button{border-left:1px solid var(--line);} .grid-seg button.on{background:var(--teal);color:#fff;}
+  #mkBaseOpts .cs-sw{width:26px !important;min-width:26px;height:20px !important;flex:0 0 26px;padding:0;}
+  .bms-opt[hidden]{display:none !important;}
   .bms-opt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap;}
   .bms-opt input[type=date],.bms-opt input[type=number]{padding:3px 5px;border:1px solid var(--line);border-radius:4px;font-size:12px;background:var(--panel);color:var(--text);}
   .bms-opt input[type=number]{width:70px;} .bms-opt input[type=range]{flex:1;min-width:90px;}
@@ -1322,6 +1348,8 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 <!-- ================= MAP MAKER ================= -->
 <div id="module-maker" class="module hidden">
   <aside id="mk-left">
+    <div class="mkl-tabs" role="tablist" aria-label="Left panel"><button type="button" role="tab" id="mklTabLayers" data-lt="layers" class="on" aria-selected="true">Layers</button><button type="button" role="tab" id="mklTabBase" data-lt="base" aria-selected="false">Basemap<span class="mkl-badge" id="mklBaseBadge"></span></button></div>
+    <div class="mkl-pane" data-lp="layers" role="tabpanel" aria-labelledby="mklTabLayers">
     <div class="sec">
       <span id="geoSearchWrap">
         <input type="text" id="geoSearchInput" placeholder="🔍 Go to place… (press Enter)" autocomplete="off">
@@ -1337,44 +1365,6 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
           <button id="mkAddOnline">🌐 Online sources…</button>
         </div>
       </div>
-    </div>
-    <div class="sec">
-      <h3>Basemap</h3>
-      <select id="mkBasemap" aria-label="Basemap" style="width:100%;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">
-        <optgroup label="Open vector (OpenFreeMap)">
-          <option value="ofm-positron">Positron (light)</option>
-          <option value="ofm-bright">Bright</option>
-          <option value="ofm-liberty">Liberty (streets)</option>
-          <option value="ofm-dark">Dark</option>
-          <option value="ofm-fiord">Fiord (muted)</option>
-        </optgroup>
-        <optgroup label="Open raster">
-          <option value="osm">OpenStreetMap</option>
-          <option value="opentopomap">OpenTopoMap (terrain, contours)</option>
-          <option value="s2cloudless">Sentinel-2 Cloudless (open, 10 m)</option>
-        </optgroup>
-        <optgroup label="Satellite imagery">
-          <option value="satellite">Satellite</option>
-          <option value="satellite-hybrid">Satellite Hybrid</option>
-        </optgroup>
-        <optgroup label="NASA (GIBS)">
-          <option value="nasa-bluemarble">Blue Marble (relief)</option>
-          <option value="nasa-blackmarble">Black Marble (night lights 2016)</option>
-          <option value="nasa-citylights">City Lights 2012</option>
-          <option value="nasa-modis">MODIS daily true colour (pick a date)</option>
-          <option value="nasa-viirs">VIIRS daily true colour (pick a date)</option>
-        </optgroup>
-        <optgroup label="Historical (OpenHistoricalMap)">
-          <option value="ohm">OpenHistoricalMap (pick a year)</option>
-          <option value="ohm-woodblock">OpenHistoricalMap — woodblock</option>
-          <option value="ohm-scroll">OpenHistoricalMap — Japanese scroll</option>
-        </optgroup>
-        <option value="none">None (blank canvas)</option>
-      </select>
-      <div id="mkBmOpts"></div>
-      <div id="mkStackWrap"></div>
-      <div id="mkGridWrap"></div>
-      <div class="kv" id="mkBasemapAttr" style="margin-top:5px;"></div>
     </div>
     <div class="sec">
       <h3>Projection</h3>
@@ -1423,6 +1413,50 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="sec" style="border-bottom:none;padding-bottom:4px;"><h3>Layers</h3></div>
     <div id="mk-layerlist"><div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div></div>
     <div id="mk-overlaylist"></div>
+    <button type="button" class="mkl-baserow" id="mkBaseRow" title="Basemap, overlays and grid — open the Basemap tab"></button>
+    </div>
+    <div class="mkl-pane hidden" data-lp="base" role="tabpanel" aria-labelledby="mklTabBase">
+    <div class="sec">
+      <h3>Basemap</h3>
+      <select id="mkBasemap" aria-label="Basemap" style="width:100%;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">
+        <optgroup label="Open vector (OpenFreeMap)">
+          <option value="ofm-positron">Positron (light)</option>
+          <option value="ofm-bright">Bright</option>
+          <option value="ofm-liberty">Liberty (streets)</option>
+          <option value="ofm-dark">Dark</option>
+          <option value="ofm-fiord">Fiord (muted)</option>
+        </optgroup>
+        <optgroup label="Open raster">
+          <option value="osm">OpenStreetMap</option>
+          <option value="opentopomap">OpenTopoMap (terrain, contours)</option>
+          <option value="s2cloudless">Sentinel-2 Cloudless (open, 10 m)</option>
+        </optgroup>
+        <optgroup label="Satellite imagery">
+          <option value="satellite">Satellite</option>
+          <option value="satellite-hybrid">Satellite Hybrid</option>
+        </optgroup>
+        <optgroup label="NASA (GIBS)">
+          <option value="nasa-bluemarble">Blue Marble (relief)</option>
+          <option value="nasa-blackmarble">Black Marble (night lights 2016)</option>
+          <option value="nasa-citylights">City Lights 2012</option>
+          <option value="nasa-modis">MODIS daily true colour (pick a date)</option>
+          <option value="nasa-viirs">VIIRS daily true colour (pick a date)</option>
+        </optgroup>
+        <optgroup label="Historical (OpenHistoricalMap)">
+          <option value="ohm">OpenHistoricalMap (pick a year)</option>
+          <option value="ohm-woodblock">OpenHistoricalMap — woodblock</option>
+          <option value="ohm-scroll">OpenHistoricalMap — Japanese scroll</option>
+        </optgroup>
+        <option value="none">None (blank canvas)</option>
+      </select>
+      <div id="mkBaseOpts"></div>
+      <div id="mkBmOpts"></div>
+      <div id="mkBmParts"></div>
+    </div>
+    <div class="sec"><div id="mkStackWrap"></div></div>
+    <div class="sec"><div id="mkGridWrap"></div></div>
+    <div class="sec mkl-src"><button type="button" class="btn small light" id="mkSourcesBtn" style="width:100%;justify-content:center;">ⓘ Basemap sources and credits</button><div class="kv" id="mkBasemapAttr" hidden></div></div>
+    </div>
   </aside>
 
   <div id="mk-center">
@@ -1538,7 +1572,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <h2>Quick start</h2>
     <p class="kv" style="margin-top:-4px;">Four modules, in the buttons at the top. Work saves in this browser as you go.</p>
     <div class="help-step"><b>🧭 Map Maker: build the map.</b>
-      <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, online sources), then style, filter and label each layer. The Tools tab has the table, calculator and spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more. Under the basemap, <b>+ Add overlay</b> stacks hillshade, contours, night lights or an old map, and <b>Grid</b> adds a lat/long or UTM grid. ☾ in the top bar switches to the dark interface.</p>
+      <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, online sources), then style, filter and label each layer. The Tools tab has the table, calculator and spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more. The left panel’s <b>Basemap</b> tab sets the basemap, its opacity and parts, stacks overlays (hillshade, contours, night lights, an old map) and adds a lat/long or UTM grid; ⓘ on the map lists their sources. ☾ in the top bar switches to the dark interface.</p>
     </div>
     <div class="help-step"><b>▣ Map Composer: lay out the page.</b>
       <p>Arrange the map with a title, legend, north arrow, scale bar, text and images, or start from a template. Maps arrive from Map Maker ready to use; a map image from other software can be added with <b>Map Frame</b> and its scale calibrated. <b>View as</b> checks colours for colour blindness and greyscale print.</p>
@@ -1720,6 +1754,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
           <option value="bbox">Bounding box</option>
           <option value="simplify">Simplify (generalize)</option>
           <option value="smooth">Smooth lines and polygons</option>
+          <option value="thiessen">Thiessen (Voronoi) polygons</option>
           <option value="fixgeom">Check and fix geometries</option>
         </optgroup>
       </select>
@@ -2772,11 +2807,12 @@ const CUSTOM_TILE_RE=/^https:\/\/[^\s<>"'`\\]+$/i;
 function customTileOk(u){ return CUSTOM_TILE_RE.test(u||'') && /\{z\}/.test(u) && /\{x\}/.test(u) && /\{-?y\}/.test(u) && u.length<=500; }
 let mkBmStack=[];                               /* overlays, bottom → top */
 function gibsDefaultDate(){ return new Date(Date.now()-2*864e5).toISOString().slice(0,10); }
-let mkBmo={date:gibsDefaultDate(), year:1900};  /* date for daily imagery, year for OpenHistoricalMap */
+let mkBmo={date:gibsDefaultDate(), year:1900, bop:1, paper:'#ffffff'};  /* date for daily imagery, year for OpenHistoricalMap */
 function bmoClean(o){
   o=(o&&typeof o==='object')?o:{};
   const d=/^\d{4}-\d{2}-\d{2}$/.test(o.date||'')?o.date:gibsDefaultDate();
-  const y=Math.round(+o.year); return {date:d, year:isFinite(y)?Math.max(-4000,Math.min(2100,y)):1900};
+  const y=Math.round(+o.year), op=+o.bop;
+  return {date:d, year:isFinite(y)?Math.max(-4000,Math.min(2100,y)):1900, bop:isFinite(op)?Math.max(0.1,Math.min(1,op)):1, paper:/^#[0-9a-f]{6}$/i.test(o.paper||'')?o.paper:'#ffffff'};
 }
 function bmUrl(u, o){ return String(u).replace('{date}', (o&&o.date)||gibsDefaultDate()); }
 function bmAttrText(bm, o){ return bm ? String(bm.attr||'').replace('{date}', (o&&o.date)||'') : ''; }
@@ -2835,24 +2871,31 @@ function momTerrainLayer(L, kind, o){
     im.src=SRC+z+'/'+x+'/'+y+'.png';
   }
   /* elevation on a 258×258 grid: the tile's 256 pixels plus a one-pixel rim */
-  function grid(E, z, x, f){
-    var G=new Float32Array(258*258), s=1/f, ox=(x%f)*256/f;
-    return function(oy){
-      for(var j=0;j<258;j++){ var v=oy+(j-0.5)*s-0.5; v=v<0?0:v>255?255:v; var v0=Math.floor(v), v1=Math.min(255,v0+1), fv=v-v0;
-        for(var i=0;i<258;i++){ var u=ox+(i-0.5)*s-0.5; u=u<0?0:u>255?255:u; var u0=Math.floor(u), u1=Math.min(255,u0+1), fu=u-u0;
-          var a=E[v0*256+u0], b=E[v0*256+u1], c=E[v1*256+u0], d=E[v1*256+u1];
-          G[j*258+i]=(a*(1-fu)+b*fu)*(1-fv)+(c*(1-fu)+d*fu)*fv; } }
-      return G; };
+  /* elevation on an (N+2)×(N+2) grid: the tile's N pixels plus a one-pixel rim (N=256, or more for print captures) */
+  var N=256, W=258;
+  /* elevation for the target tile, sampled from whichever source tiles it spans
+     (neighbours included), so shading and contours run on across tile edges */
+  function grid(T, x0t, y0t, sc, tx, ty){
+    var G=new Float32Array(W*W), C=T[(ty-y0t)+','+(tx-x0t)];
+    var val=function(U,V){ var ix=Math.floor(U/256), iy=Math.floor(V/256), E=T[(iy-y0t)+','+(ix-x0t)];
+      if(!E||!E.length) return NaN; return E[(V-iy*256)*256+(U-ix*256)]; };
+    for(var j=0;j<W;j++){ var V=(ty*256+(j-0.5)*256/N)*sc-0.5, v0=Math.floor(V), fv=V-v0;
+      for(var i=0;i<W;i++){ var U=(tx*256+(i-0.5)*256/N)*sc-0.5, u0=Math.floor(U), fu=U-u0;
+        var a=val(u0,v0), b=val(u0+1,v0), c=val(u0,v0+1), d=val(u0+1,v0+1);
+        var r=(a*(1-fu)+b*fu)*(1-fv)+(c*(1-fu)+d*fu)*fv;
+        if(!isFinite(r)){ r=[a,b,c,d].filter(isFinite)[0]; if(r==null) r=j>0?G[(j-1)*W+i]:(i>0?G[i-1]:0); }
+        G[j*W+i]=r; } }
+    return G;
   }
   function hill(cx, G, z, y){
-    var lat=Math.atan(Math.sinh(Math.PI*(1-2*(y+0.5)/Math.pow(2,z)))), m=40075016.686*Math.cos(lat)/(256*Math.pow(2,z));
+    var lat=Math.atan(Math.sinh(Math.PI*(1-2*(y+0.5)/Math.pow(2,z)))), m=40075016.686*Math.cos(lat)/(N*Math.pow(2,z));
     var ex=o.ex||Math.pow(1.3,Math.max(0,11-z)), zen=Math.PI/4, az=135*Math.PI/180, cz=Math.cos(zen), sz=Math.sin(zen);
-    var img=cx.createImageData(256,256), p=img.data;
-    for(var j=1;j<257;j++) for(var i=1;i<257;i++){
-      var r=j*258+i, a=G[r-259], b=G[r-258], c=G[r-257], d=G[r-1], f=G[r+1], g=G[r+257], h=G[r+258], k=G[r+259];
+    var img=cx.createImageData(N,N), p=img.data;
+    for(var j=1;j<=N;j++) for(var i=1;i<=N;i++){
+      var r=j*W+i, a=G[r-W-1], b=G[r-W], c=G[r-W+1], d=G[r-1], f=G[r+1], g=G[r+W-1], h=G[r+W], k=G[r+W+1];
       var dx=((c+2*f+k)-(a+2*d+g))/(8*m)*ex, dy=((g+2*h+k)-(a+2*b+c))/(8*m)*ex;
       var sl=Math.atan(Math.sqrt(dx*dx+dy*dy)), asp=Math.atan2(dy,-dx); if(asp<0) asp+=2*Math.PI;
-      var hs=(cz*Math.cos(sl)+sz*Math.sin(sl)*Math.cos(az-asp))/cz, q=((j-1)*256+(i-1))*4;
+      var hs=(cz*Math.cos(sl)+sz*Math.sin(sl)*Math.cos(az-asp))/cz, q=((j-1)*N+(i-1))*4;
       if(hs<1){ p[q]=p[q+1]=p[q+2]=20; p[q+3]=Math.min(200,(1-hs)*230); }
       else { p[q]=p[q+1]=p[q+2]=255; p[q+3]=Math.min(120,(hs-1)/0.414*120); }
     }
@@ -2860,11 +2903,11 @@ function momTerrainLayer(L, kind, o){
   }
   function cont(cx, G0, z){
     var step=o.step||(z<=4?1000:z<=7?500:z<=10?200:z<=12?100:z<=13?50:z<=14?20:10);
-    var G=new Float32Array(258*258);   /* a light blur keeps the lines from wiggling */
-    for(var j=0;j<258;j++) for(var i=0;i<258;i++){ var s=0,nn=0; for(var dj=-1;dj<=1;dj++) for(var di=-1;di<=1;di++){ var jj=j+dj, ii=i+di; if(jj<0||ii<0||jj>257||ii>257) continue; s+=G0[jj*258+ii]; nn++; } G[j*258+i]=s/nn; }
+    var G=new Float32Array(W*W), R=Math.max(1,Math.round(N/256));   /* a light blur keeps the lines from wiggling */
+    for(var j=0;j<W;j++) for(var i=0;i<W;i++){ var s=0,nn=0; for(var dj=-R;dj<=R;dj++) for(var di=-R;di<=R;di++){ var jj=j+dj, ii=i+di; if(jj<0||ii<0||jj>W-1||ii>W-1) continue; s+=G0[jj*W+ii]; nn++; } G[j*W+i]=s/nn; }
     var col=o.color||'#7a5230', P=[new Path2D(), new Path2D()];
-    for(var j=0;j<257;j++) for(var i=0;i<257;i++){
-      var a=G[j*258+i], b=G[j*258+i+1], c=G[(j+1)*258+i+1], d=G[(j+1)*258+i];
+    for(var j=0;j<W-1;j++) for(var i=0;i<W-1;i++){
+      var a=G[j*W+i], b=G[j*W+i+1], c=G[(j+1)*W+i+1], d=G[(j+1)*W+i];
       var lo=Math.min(a,b,c,d), hi=Math.max(a,b,c,d); if(hi<=0) continue;
       var l0=Math.max(1,Math.ceil(lo/step)), l1=Math.floor(hi/step);
       for(var lv=l0;lv<=l1;lv++){
@@ -2878,16 +2921,25 @@ function momTerrainLayer(L, kind, o){
         if(pts.length===4){ pa.moveTo(pts[2][0],pts[2][1]); pa.lineTo(pts[3][0],pts[3][1]); }
       }
     }
-    cx.strokeStyle=col; cx.lineCap='round'; cx.globalAlpha=0.75; cx.lineWidth=0.6; cx.stroke(P[0]); cx.globalAlpha=1; cx.lineWidth=1.2; cx.stroke(P[1]);
+    var q=N/256; cx.strokeStyle=col; cx.lineCap='round'; cx.globalAlpha=0.75; cx.lineWidth=0.6*q; cx.stroke(P[0]); cx.globalAlpha=1; cx.lineWidth=1.2*q; cx.stroke(P[1]);
   }
   var TL=L.GridLayer.extend({
     createTile:function(co, done){
-      var t=document.createElement('canvas'); t.width=t.height=256;
-      var sz=Math.min(co.z,15), f=Math.pow(2,co.z-sz), sx=Math.floor(co.x/f), sy=Math.floor(co.y/f);
-      get(sz, sx, sy, function(E){
-        if(E.length){ try{ var G=grid(E, co.z, co.x, f)((co.y%f)*256/f), cx=t.getContext('2d'); if(kind==='hill') hill(cx,G,co.z,co.y); else cont(cx,G,co.z); }catch(_){} }
+      var pr=Math.max(1,Math.min(4,(typeof window!=='undefined'&&window.__momPR)||1)); N=Math.round(256*pr); W=N+2;
+      var t=document.createElement('canvas'); t.width=t.height=N; t.style.width=t.style.height='256px';
+      var sz=Math.max(0,Math.min(15, co.z+Math.round(Math.log2(pr))));   /* deeper source tiles for print captures */
+      var sc=Math.pow(2,sz-co.z), n=Math.pow(2,sz), NN=N, WW=W, T={};
+      var x0=Math.floor((co.x*256-2)*sc/256), x1=Math.floor(((co.x+1)*256+2)*sc/256), y0=Math.floor((co.y*256-2)*sc/256), y1=Math.floor(((co.y+1)*256+2)*sc/256);
+      var left=(x1-x0+1)*(y1-y0+1);
+      for(var ty=y0;ty<=y1;ty++) for(var tx=x0;tx<=x1;tx++) (function(key, gx, gy){
+        if(gy<0||gy>=n){ T[key]=null; if(--left===0) fin(); return; }
+        get(sz, ((gx%n)+n)%n, gy, function(E){ T[key]=E; if(--left===0) fin(); });
+      })((ty-y0)+','+(tx-x0), tx, ty);
+      function fin(){
+        N=NN; W=WW;
+        try{ var G=grid(T, x0, y0, sc, co.x, co.y), cx=t.getContext('2d'); if(kind==='hill') hill(cx,G,co.z,co.y); else cont(cx,G,co.z); }catch(_){}
         done(null,t);
-      });
+      }
       return t;
     }
   });
@@ -3031,6 +3083,7 @@ function initMakerMap(){
   L.control.scale({imperial:false}).addTo(mkMap);
   setBasemap(DEFAULT_BASEMAP);
   addMapToolControls();
+  addSourcesControl();
   const mapEl = document.getElementById('mk-map');
   mapEl.addEventListener('dragover', e=>{e.preventDefault();});
   mapEl.addEventListener('drop', e=>{
@@ -3060,7 +3113,7 @@ function addMapToolControls(){
       '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
       '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
-      '<a href="#" id="mkBasemapBtn" title="Basemap parts — turn labels, roads, borders… on or off">'+BM_PARTS_ICON+'</a>'+
+      '<a href="#" id="mkBasemapBtn" title="Basemap, overlays, parts and grid (opens the Basemap tab)">'+BM_PARTS_ICON+'</a>'+
       '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
@@ -3069,7 +3122,7 @@ function addMapToolControls(){
   setTimeout(()=>{
     const g=document.getElementById('mkGlobeBtn'); if(g) g.onclick=e=>{ e.preventDefault(); toggleGlobeView(); };
     const m=document.getElementById('mkMeasureBtn'); if(m) m.onclick=e=>{ e.preventDefault(); toggleMeasure(); };
-    const b=document.getElementById('mkBasemapBtn'); if(b) b.onclick=e=>{ e.preventDefault(); toggleBasemapPanel(); };
+    const b=document.getElementById('mkBasemapBtn'); if(b) b.onclick=e=>{ e.preventDefault(); openLeftTab('base'); };
     const cp=document.getElementById('mkCompareBtn'); if(cp) cp.onclick=e=>{ e.preventDefault(); if(swipe||document.getElementById('swipePanel')) closeCompare(); else openCompare(); };
     const sb=document.getElementById('mkSelBtn'); if(sb) sb.onclick=e=>{ e.preventDefault(); selToolSet(!selTool); };
     /* full extent sits with the zoom buttons */
@@ -3985,12 +4038,18 @@ async function withHiRes(k, fn){
     gls.forEach(m=>{ try{ m.setPixelRatio(k); }catch(_){} });
     if(projActive) renderProjection();
     rs.forEach(r=>{ try{ r._redraw(); }catch(_){} });   /* draw now rather than on the next animation frame */
+    if(typeof mkGridLayer!=='undefined' && mkGridLayer) try{ mkGridLayer._draw(); }catch(_){}
+    /* computed terrain overlays are redrawn at the capture's pixel density */
+    const terr=(!(typeof mkGlobe!=='undefined' && mkGlobe) && !projActive && typeof mkStackLayers!=='undefined') ? mkStackLayers.filter(l=>l instanceof L.GridLayer && !(l instanceof L.TileLayer)) : [];
+    await Promise.all(terr.map(l=>new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; l.once('load', ()=>setTimeout(f,40)); try{ l.redraw(); }catch(_){ f(); } setTimeout(f, 8000); })));
     /* vector tiles don't reload for a new pixel ratio, so one full repaint is enough */
     await Promise.all(gls.map(m=>new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; try{ m.once('render', ()=>setTimeout(f, 60)); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, 3000); })));
     return await fn();
   } finally {
     window.__momPR=null;
     rs.forEach(r=>{ try{ r._reset(); }catch(_){} });
+    if(typeof mkGridLayer!=='undefined' && mkGridLayer) try{ mkGridLayer._draw(); }catch(_){}
+    if(!(typeof mkGlobe!=='undefined' && mkGlobe) && !projActive && typeof mkStackLayers!=='undefined') mkStackLayers.forEach(l=>{ if(l instanceof L.GridLayer && !(l instanceof L.TileLayer)) try{ l.redraw(); }catch(_){} });
     gls.forEach(m=>{ try{ m.setPixelRatio(window.devicePixelRatio||1); }catch(_){} });
     if(projActive) renderProjection();
   }
@@ -4086,7 +4145,37 @@ async function glCaptureOptions(root){
 async function paneComposite(el, scale){
   const er=el.getBoundingClientRect();
   const panes=[...el.querySelectorAll('.leaflet-tile-pane, .mom-ov-pane')].filter(p=>p.style.display!=='none' && p.style.visibility!=='hidden');
-  if(!panes.some(p=>p.classList.contains('mom-ov-pane'))) return null;
+  const hi=(window.__momPR||1)>1, faded=panes.some(p=>p.classList.contains('leaflet-tile-pane') && parseFloat(getComputedStyle(p).opacity)<1);
+  if(!panes.some(p=>p.classList.contains('mom-ov-pane')) && !hi && !faded) return null;
+  /* print-quality captures fetch raster tiles from deeper zoom levels instead of enlarging the screen tiles */
+  const map=(typeof mkMap!=='undefined' && mkMap && el.contains(mkMap.getContainer())) ? mkMap : (typeof insetMap!=='undefined' && insetMap && el.contains(insetMap.getContainer())) ? insetMap : null;
+  const hiDone=new Set();
+  const hiLayers=(hi && map) ? Object.values(map._layers).filter(l=>l instanceof L.TileLayer && l._container && el.contains(l._container)) : [];
+  const hiDraw=async (layer, px)=>{
+    const z0=Math.round(map.getZoom()), mx=layer.options.maxNativeZoom!=null?layer.options.maxNativeZoom:(layer.options.maxZoom||19);
+    const sz=map.getSize(), c0=map.containerPointToLatLng([0,0]), c1=map.containerPointToLatLng([sz.x,sz.y]);
+    /* one zoom level deeper for a 3–4× capture: twice the detail while labels stay readable */
+    let dz=Math.max(0, Math.round(Math.log2(scale))-1), zc, nw, se, x0, x1, y0, y1;
+    for(;;){ zc=Math.max(0, Math.min(mx, z0+dz)); nw=map.project(c0, zc); se=map.project(c1, zc);
+      x0=Math.floor(nw.x/256); x1=Math.floor(se.x/256); y0=Math.floor(nw.y/256); y1=Math.floor(se.y/256);
+      if((x1-x0+1)*(y1-y0+1)<=320 || dz===0) break; dz--; }
+    if(zc<=Math.min(mx, z0)) return false;            /* nothing finer exists: the screen tiles will do */
+    const mc=map.getContainer().getBoundingClientRect(), k=(sz.x*scale)/(se.x-nw.x), n=Math.pow(2,zc);
+    const ox0=(mc.left-er.left)*scale, oy0=(mc.top-er.top)*scale, jobs=[];
+    for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++){
+      if(y<0||y>=n) continue;
+      const wx=((x%n)+n)%n, data=Object.assign({}, layer.options, {x:wx, y:layer.options.tms?n-1-y:y, z:zc, s:layer._getSubdomain?layer._getSubdomain({x:wx,y}):'a', r:''}); data['-y']=n-1-y;
+      let url; try{ url=L.Util.template(layer._url, data); }catch(_){ continue; }
+      jobs.push(new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous'; const t=setTimeout(()=>res(null),12000);
+        im.onload=()=>{ clearTimeout(t); res({im, x, y}); }; im.onerror=()=>{ clearTimeout(t); res(null); }; im.src=url; }));
+    }
+    const got=(await Promise.all(jobs)).filter(Boolean);
+    if(!got.length) return false;
+    px.globalAlpha=(layer.options.opacity==null?1:layer.options.opacity);
+    got.forEach(g=>{ try{ px.drawImage(g.im, ox0+(g.x*256-nw.x)*k, oy0+(g.y*256-nw.y)*k, 256*k+0.5, 256*k+0.5); }catch(_){} });
+    px.globalAlpha=1;
+    return true;
+  };
   panes.sort((a,b)=>(parseInt(getComputedStyle(a).zIndex,10)||0)-(parseInt(getComputedStyle(b).zIndex,10)||0));
   const W=Math.max(1,Math.round(er.width*scale)), H=Math.max(1,Math.round(er.height*scale));
   const out=document.createElement('canvas'); out.width=W; out.height=H; const ox=out.getContext('2d');
@@ -4094,8 +4183,10 @@ async function paneComposite(el, scale){
   const effOp=(n, top)=>{ let o=1; while(n && n!==top){ o*=parseFloat(getComputedStyle(n).opacity); n=n.parentNode; } return isFinite(o)?o:1; };
   for(const p of panes){
     const pc=document.createElement('canvas'); pc.width=W; pc.height=H; const px=pc.getContext('2d');
+    for(const hl of hiLayers){ if(p.contains(hl._container) && !hiDone.has(hl)){ try{ if(await hiDraw(hl, px)) hiDone.add(hl); }catch(_){} } }
     for(const it of p.querySelectorAll('img.leaflet-tile, canvas')){
       let src=it;
+      if(hiLayers.some(hl=>hiDone.has(hl) && hl._container.contains(it))) continue;
       if(it.tagName==='IMG' && !(it.complete && it.naturalWidth)) continue;
       if(it.classList.contains('maplibregl-canvas')){
         const m=gls.find(g=>g.getCanvas()===it); const url=m? await glFreshDataURL(m) : null; if(!url) continue;
@@ -4212,7 +4303,7 @@ function setBasemap(key){
   mkBasemapLayers=[];
   const bm=BASEMAPS[key];
   mkBasemapKey=key;
-  document.getElementById('mk-map').style.background = key==='none' ? '#ffffff' : '#dde3ea';
+  document.getElementById('mk-map').style.background = key==='none' ? mkBmo.paper : '#dde3ea';
   const attrEl=document.getElementById('mkBasemapAttr');
   if(bm && bm.kind==='vector'){
     let ok=false;
@@ -4240,6 +4331,7 @@ function setBasemap(key){
   if(sel) sel.value=key;
   if(typeof renderBmStack==='function') renderBmStack();
   if(typeof renderGridUi==='function') renderGridUi();
+  if(typeof applyBaseOpacity==='function'){ applyBaseOpacity(); renderBaseOpts(); renderBmParts(); renderBaseRow(); }
   restackMakerLayers && restackMakerLayers();
   /* keep an open globe in step with the basemap the user just chose */
   if(typeof globeApplyBasemap==='function' && mkGlobe) globeApplyBasemap();
@@ -4278,7 +4370,7 @@ function bmStackPaneStyle(it){
 }
 function bmStackChanged(rebuild){
   if(rebuild) applyBmStack();
-  renderBmStack();
+  renderBmStack(); renderBaseRow();
   if(typeof markProjectDirty==='function') markProjectDirty();
   if(typeof mkTouch==='function') mkTouch();
 }
@@ -4308,8 +4400,8 @@ function renderBmStack(){
   opts.innerHTML=(need.date?'<label class="bms-opt">Imagery date <input type="date" id="mkBmDate" min="2000-03-01" max="'+today+'" value="'+mkBmo.date+'" title="NASA daily imagery is ready a few hours after each satellite pass"></label>':'')+
     (need.year?'<label class="bms-opt">Year <input type="number" id="mkBmYear" min="-4000" max="2100" step="1" value="'+mkBmo.year+'" title="OpenHistoricalMap shows what stood in this year (negative = BCE)"><input type="range" id="mkBmYearR" min="1500" max="2025" step="1" value="'+Math.max(1500,Math.min(2025,mkBmo.year))+'" aria-label="Year slider"></label>':'');
   const rows=mkBmStack.map((it,i)=>({it,i})).reverse().map(({it,i})=>
-    '<div class="bms-row'+(it.on===false?' off':'')+'" draggable="true" data-i="'+i+'" tabindex="0" aria-label="'+esc(stackLabel(it))+' overlay. Alt+Up or Alt+Down moves it.">'+
-      '<div class="bms-top"><span class="bms-grip" title="Drag to change the order">⠿</span><input type="checkbox" data-a="on"'+(it.on===false?'':' checked')+' aria-label="Show '+esc(stackLabel(it))+'">'+
+    '<div class="bms-row'+(it.on===false?' off':'')+'" data-i="'+i+'" tabindex="0" aria-label="'+esc(stackLabel(it))+' overlay. Alt+Up or Alt+Down moves it.">'+
+      '<div class="bms-top"><span class="bms-grip" draggable="true" title="Drag to change the order">⠿</span><input type="checkbox" data-a="on"'+(it.on===false?'':' checked')+' aria-label="Show '+esc(stackLabel(it))+'">'+
       '<span class="bms-name" title="'+esc(stackLabel(it))+'">'+esc(stackLabel(it))+(bmGlobeSkips(it)?' <i class="bms-note">flat map only</i>':'')+'</span><button type="button" class="bms-x" data-a="rm" title="Remove this overlay" aria-label="Remove">×</button></div>'+
       '<div class="bms-ctl"><input type="range" data-a="op" min="0" max="100" value="'+Math.round(it.op*100)+'" aria-label="Opacity"><span class="bms-pct">'+Math.round(it.op*100)+'%</span>'+
       '<select data-a="bl" aria-label="Blend mode" title="Blend: Multiply darkens (good for hillshade and old maps on imagery), Screen lightens (good for night lights)">'+BM_BLENDS.map(b=>'<option value="'+b[0]+'"'+(it.bl===b[0]?' selected':'')+'>'+b[1]+'</option>').join('')+'</select></div></div>').join('');
@@ -4332,7 +4424,7 @@ function renderBmStack(){
     r.oninput=()=>{ it.op=(+r.value)/100; pct.textContent=r.value+'%'; bmStackPaneStyle(it); };
     r.onchange=()=>{ bmStackChanged(!!mkGlobe); };
     row.querySelector('[data-a="bl"]').onchange=e=>{ it.bl=e.target.value; bmStackPaneStyle(it); bmStackChanged(false); };
-    row.addEventListener('dragstart',e=>{ if(e.target.closest('input,select,button')){ e.preventDefault(); return; } e.dataTransfer.setData('text/plain', row.dataset.i); row.classList.add('drag'); });
+    row.querySelector('.bms-grip').addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', row.dataset.i); e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setDragImage(row, 10, 10); }catch(_){} row.classList.add('drag'); });
     row.addEventListener('dragend',()=>row.classList.remove('drag'));
     row.addEventListener('dragover',e=>{ e.preventDefault(); row.classList.add('over'); });
     row.addEventListener('dragleave',()=>row.classList.remove('over'));
@@ -4387,10 +4479,106 @@ function bmCustomDialog(){
 /* restore from a project, an undo step or a share link */
 function setBmStack(items, bmo){
   mkBmStack=stackClean(items); if(bmo) mkBmo=bmoClean(bmo);
-  applyBmStack(); renderBmStack();
+  applyBmStack(); renderBmStack(); applyBaseOpacity(); renderBaseOpts(); renderBaseRow();
 }
 function bmStackState(){ return {stack:clone(mkBmStack), bmo:Object.assign({}, mkBmo)}; }
 window.__bmStack=()=>({stack:mkBmStack, bmo:mkBmo, layers:mkStackLayers.length});
+
+/* ---------- left panel: Layers | Basemap tabs (v68) ---------- */
+function openLeftTab(t){
+  document.querySelectorAll('.mkl-tabs button').forEach(b=>{ const on=b.dataset.lt===t; b.classList.toggle('on',on); b.setAttribute('aria-selected',String(on)); });
+  document.querySelectorAll('.mkl-pane').forEach(p=>p.classList.toggle('hidden', p.dataset.lp!==t));
+  try{ localStorage.setItem('mom-lefttab', t); }catch(_){}
+}
+document.querySelectorAll('.mkl-tabs button').forEach(b=>b.onclick=()=>openLeftTab(b.dataset.lt));
+(function(){ let t=null; try{ t=localStorage.getItem('mom-lefttab'); }catch(_){} if(t==='base') openLeftTab('base'); })();
+/* the last row of the layer list stands for the whole basemap stack */
+function renderBaseRow(){
+  const r=document.getElementById('mkBaseRow'); if(!r) return;
+  const on=mkBmStack.filter(i=>i.on!==false);
+  const bits=[]; if(on.length) bits.push(on.length+' overlay'+(on.length===1?'':'s')); if(mkGrid) bits.push(mkGrid.kind==='utm'?'UTM grid':'lat/long grid'); if(mkBmo.bop<1) bits.push(Math.round(mkBmo.bop*100)+'% opacity');
+  r.innerHTML='<span class="bi" style="'+(mkBasemapKey==='none'?'background:'+mkBmo.paper:'')+'"></span><span><b>Basemap: '+esc(BM_LABELS[mkBasemapKey]||mkBasemapKey)+'</b><span class="sub">'+(bits.length?esc(bits.join(' · ')):'Overlays, grid, parts')+' ›</span></span>';
+  r.onclick=()=>openLeftTab('base');
+  const bd=document.getElementById('mklBaseBadge'); if(bd) bd.textContent=on.length?String(on.length):'';
+}
+/* base opacity over a paper colour */
+function applyBaseOpacity(){
+  if(!mkMap) return;
+  const tp=mkMap.getPane('tilePane'); if(tp) tp.style.opacity=mkBmo.bop<1?String(mkBmo.bop):'';
+  const el=document.getElementById('mk-map');
+  el.style.background = (mkBasemapKey==='none'||mkBmo.bop<1) ? mkBmo.paper : '#dde3ea';
+}
+function renderBaseOpts(){
+  const box=document.getElementById('mkBaseOpts'); if(!box) return;
+  const none=mkBasemapKey==='none';
+  box.innerHTML=(none?'':'<div class="bms-opt"><span>Opacity</span><input type="range" id="mkBaseOp" min="0.1" max="1" step="0.05" value="'+mkBmo.bop+'" aria-label="Basemap opacity"><span class="bms-pct" id="mkBaseOpV">'+Math.round(mkBmo.bop*100)+'%</span></div>')+
+    ('<div class="bms-opt" id="mkPaperRow"'+((none||mkBmo.bop<1)?'':' hidden')+' title="The colour that shows through a faded basemap (and the page colour with no basemap)"><span>'+(none?'Background colour':'Fades to')+'</span><input type="color" id="mkPaper" value="'+mkBmo.paper+'" aria-label="Paper colour"></div>');
+  const r=document.getElementById('mkBaseOp');
+  if(r){ r.oninput=()=>{ const was=mkBmo.bop<1; mkBmo.bop=+r.value; document.getElementById('mkBaseOpV').textContent=Math.round(mkBmo.bop*100)+'%'; applyBaseOpacity(); renderBaseRow(); const pr=document.getElementById('mkPaperRow'); if(pr) pr.hidden=!(mkBmo.bop<1); };
+    r.onchange=()=>{ markProjectDirty(); mkTouch(); }; }
+  const pp=document.getElementById('mkPaper');
+  if(pp){ pp.oninput=e=>{ mkBmo.paper=e.target.value; applyBaseOpacity(); renderBaseRow(); }; pp.onchange=()=>{ markProjectDirty(); mkTouch(); }; }
+}
+/* basemap parts, now listed with the basemap itself */
+function renderBmParts(){
+  const box=document.getElementById('mkBmParts'); if(!box) return;
+  if(!bmHasParts(mkBasemapKey)){ box.innerHTML=mkBasemapKey==='none'?'':'<div class="bmp-note">This basemap is a picture, so its parts (labels, roads…) can’t be switched separately. The OpenFreeMap styles can.</div>'; return; }
+  box.innerHTML='<div class="bmp-head">Show</div><div class="bmp-list">'+Object.keys(BM_PART_GROUPS).map(k=>'<label title="'+esc(BM_PART_GROUPS[k].label)+'"><input type="checkbox" data-part="'+k+'"'+(basemapParts[k]?' checked':'')+'> '+esc(BM_PART_GROUPS[k].label.replace(/ \(.*\)$/,''))+'</label>').join('')+'</div>';
+  box.querySelectorAll('input[data-part]').forEach(cb=>cb.onchange=()=>{ basemapParts[cb.dataset.part]=cb.checked; applyBasemapParts(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty(); mkTouch(); });
+}
+
+/* ---------- ⓘ Sources: who made the basemap and overlays (v68) ---------- */
+const SRC_LINKS={
+  ofm:['OpenFreeMap (OpenStreetMap data via OpenMapTiles)','Open Database Licence (data); styles MIT/BSD','https://openfreemap.org/'],
+  osm:['OpenStreetMap standard tiles','Open Database Licence','https://www.openstreetmap.org/copyright'],
+  opentopomap:['OpenTopoMap (OpenStreetMap + SRTM)','CC BY-SA','https://opentopomap.org/about'],
+  s2cloudless:['Sentinel-2 cloudless 2023, EOX','CC BY-NC-SA 4.0 (non-commercial)','https://s2maps.eu/'],
+  satellite:['World imagery (Vantor/Maxar, Earthstar Geographics)','Free to use with attribution; not open','https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9'],
+  nasa:['NASA EOSDIS Global Imagery Browse Services (GIBS)','Public domain (no copyright)','https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api'],
+  ohm:['OpenHistoricalMap','CC0 (public domain)','https://www.openhistoricalmap.org/copyright'],
+  terrain:['Terrarium elevation tiles on AWS Open Data — SRTM, GMTED2010, ETOPO1, NED and other sources','Open data; credit the sources listed','https://registry.opendata.aws/terrain-tiles/'],
+  openseamap:['OpenSeaMap','CC BY-SA','https://openseamap.org/']
+};
+function srcFamily(k){
+  if(/^ofm-/.test(k)) return 'ofm'; if(/^satellite/.test(k)) return 'satellite'; if(/^nasa-/.test(k)) return 'nasa'; if(/^ohm/.test(k)) return 'ohm';
+  if(k==='hillshade'||k==='contours') return 'terrain'; return k;
+}
+function sourcesList(){
+  const rows=[];
+  const add=(role, label, k, it)=>{
+    if(k==='custom'){ let host=''; try{ host=new URL(it.url.replace(/\{[^}]+\}/g,'0')).host; }catch(_){}
+      rows.push({role, label, credit:it.attr||'(no credit given — add one)', lic:'Check the tile provider’s terms', url:host?'https://'+host+'/':''}); return; }
+    const f=SRC_LINKS[srcFamily(k)]||['','',''];
+    const bm=BASEMAPS[k];
+    rows.push({role, label, credit:bm?bmAttrText(bm,mkBmo):(BM_OVERLAYS[k]&&BM_OVERLAYS[k].attr)||f[0], src:f[0], lic:f[1], url:f[2]});
+  };
+  if(mkBasemapKey!=='none') add('Basemap', BM_LABELS[mkBasemapKey]||mkBasemapKey, mkBasemapKey);
+  mkBmStack.filter(i=>i.on!==false).slice().reverse().forEach(i=>add('Overlay', stackLabel(i), i.k, i));
+  return rows;
+}
+function toggleSourcesPanel(force){
+  const host=document.getElementById('mk-map'); let p=document.getElementById('mkSrcPanel');
+  if(p && force!==true){ p.remove(); return; }
+  if(p) p.remove();
+  p=document.createElement('div'); p.id='mkSrcPanel'; p.className='mk-src-panel'; p.setAttribute('role','dialog'); p.setAttribute('aria-label','Basemap sources');
+  const rows=sourcesList();
+  p.innerHTML='<div class="msp-h"><b>Basemap sources</b><button type="button" aria-label="Close">×</button></div>'+
+    (rows.length? rows.map(r=>'<div class="msp-r"><div class="msp-t"><span>'+r.role+'</span> '+esc(r.label)+'</div><div class="msp-c">'+esc(r.credit)+'</div>'+
+      ((r.src&&r.src!==r.credit)?'<div class="msp-c">'+esc(r.src)+'</div>':'')+'<div class="msp-l">'+esc(r.lic||'')+(r.url?' · <a href="'+esc(r.url)+'" target="_blank" rel="noopener">terms ↗</a>':'')+'</div></div>').join('')
+      : '<div class="msp-c">No basemap is shown.</div>')+
+    '<div class="msp-f">Data layers’ sources are listed in the 📝 Process Log. Keep these credits on any map you publish.</div>';
+  host.appendChild(p);
+  L.DomEvent.disableClickPropagation(p); L.DomEvent.disableScrollPropagation(p);
+  p.querySelector('.msp-h button').onclick=()=>p.remove();
+}
+function addSourcesControl(){
+  const c=L.control({position:'bottomright'});
+  c.onAdd=()=>{ const d=L.DomUtil.create('div','leaflet-bar mk-src-btn'); d.setAttribute('data-html2canvas-ignore','true'); d.innerHTML='<a href="#" role="button" title="Basemap sources and credits" aria-label="Basemap sources and credits">ⓘ</a>';
+    L.DomEvent.disableClickPropagation(d); d.firstChild.onclick=e=>{ e.preventDefault(); toggleSourcesPanel(); }; return d; };
+  c.addTo(mkMap);
+  try{ mkMap.attributionControl.setPrefix(false); }catch(_){}
+  const sb=document.getElementById('mkSourcesBtn'); if(sb) sb.onclick=()=>toggleSourcesPanel(true);
+}
 
 /* ---------- layer groups (v67) ----------
    A group is a run of layers sharing lyr.group: one switch shows or hides them all,
@@ -4469,14 +4657,14 @@ const MomGrid=L.Layer.extend({
   onRemove(map){ map.off('move zoom resize viewreset moveend', this._draw, this); L.DomUtil.remove(this._c); this._c=null; },
   _draw(){
     const map=this._map, c=this._c; if(!map||!c||!mkGrid) return;
-    const sz=map.getSize(), dpr=window.devicePixelRatio||1;
-    c.width=Math.round(sz.x*dpr); c.height=Math.round(sz.y*dpr); c.style.width=sz.x+'px'; c.style.height=sz.y+'px';
+    const sz=map.getSize(), dpr=window.__momPR||window.devicePixelRatio||1, W=sz.x, H=sz.y;
+    c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); c.style.width=W+'px'; c.style.height=H+'px';
     L.DomUtil.setPosition(c, map.containerPointToLayerPoint([0,0]));
-    const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,sz.x,sz.y);
-    const col=mkGrid.color||'#1b2a4a', lw=mkGrid.width||0.8;
-    g.strokeStyle=col; g.lineWidth=lw; g.globalAlpha=mkGrid.opacity==null?0.7:mkGrid.opacity;
-    const labels=[], P=ll=>map.latLngToContainerPoint(ll);
-    const b=map.getBounds();
+    const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+    const col=mkGrid.color||'#1b2a4a', lw=mkGrid.width||0.8, style=mkGrid.style||'lines';
+    const P=ll=>{ const p=map.latLngToContainerPoint(ll); return [p.x,p.y]; };
+    const b=map.getBounds(), lines=[], crosses=[];
+    let corner='';
     if(mkGrid.kind==='utm'){
       const cen=map.getCenter(), zone=Math.max(1,Math.min(60,Math.floor((cen.lng+180)/6)+1)), south=cen.lat<0;
       const corners=[[b.getSouth(),b.getWest()],[b.getNorth(),b.getWest()],[b.getSouth(),b.getEast()],[b.getNorth(),b.getEast()],[cen.lat,b.getWest()],[cen.lat,b.getEast()]].map(q=>utmFwd(Math.max(-80,Math.min(84,q[0])),q[1],zone));
@@ -4484,35 +4672,64 @@ const MomGrid=L.Layer.extend({
       const x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
       const step=mkGrid.step>0?mkGrid.step:(GRID_M.find(s=>(x1-x0)/s>=4)||10);
       if((x1-x0)/step>80||(y1-y0)/step>80){ this._note('Zoom in to show the UTM grid'); return; }
-      const seg=(ax,ay,bx,by)=>{ g.beginPath(); for(let k=0;k<=24;k++){ const t=k/24, ll=utmInv(ax+(bx-ax)*t, ay+(by-ay)*t, zone, south), p=P(ll); k?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y); } g.stroke(); };
-      for(let x=Math.ceil(x0/step)*step; x<=x1; x+=step){ seg(x,y0,x,y1); const ll=utmInv(x,(y0+y1)/2,zone,south); labels.push({t:Math.round(x/1000*1000)/1000+' km E', side:'b', x:P(utmInv(x,y0,zone,south)).x}); }
-      for(let y=Math.ceil(y0/step)*step; y<=y1; y+=step){ seg(x0,y,x1,y); labels.push({t:Math.round(y/1000*1000)/1000+' km N', side:'l', y:P(utmInv(x0,y,zone,south)).y}); }
-      labels.push({t:'UTM zone '+zone+(south?'S':'N')+' · WGS 84', side:'corner'});
+      const seg=(ax,ay,bx,by)=>{ const pts=[]; for(let k=0;k<=24;k++){ const t=k/24; pts.push(P(utmInv(ax+(bx-ax)*t, ay+(by-ay)*t, zone, south))); } return pts; };
+      const lab=v=>(v>=1e5&&step>=1000? (v/1000).toLocaleString()+' km' : Math.round(v).toLocaleString()+' m');
+      const X=[], Y=[];
+      for(let x=Math.ceil(x0/step)*step; x<=x1; x+=step){ X.push(x); lines.push({pts:seg(x,y0,x,y1), lab:lab(x)+' E', d:'v'}); }
+      for(let y=Math.ceil(y0/step)*step; y<=y1; y+=step){ Y.push(y); lines.push({pts:seg(x0,y,x1,y), lab:lab(y)+' N', d:'h'}); }
+      if(style==='crosses') X.forEach(x=>Y.forEach(y=>crosses.push(P(utmInv(x,y,zone,south)))));
+      corner='UTM zone '+zone+(south?'S':'N')+' · WGS 84';
     } else {
       const w=b.getEast()-b.getWest(), step=mkGrid.step>0?mkGrid.step:(GRID_DEG.find(s=>w/s>=4)||GRID_DEG[GRID_DEG.length-1]);
-      if(w/step>200){ this._note(''); return; }
-      const S=Math.max(-85,b.getSouth()), N=Math.min(85,b.getNorth());
-      for(let lon=Math.ceil(b.getWest()/step)*step; lon<=b.getEast()+1e-9; lon+=step){ const a=P([S,lon]), z=P([N,lon]); g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(z.x,z.y); g.stroke(); labels.push({t:fmtDeg(((lon+540)%360)-180,false,step), side:'b', x:a.x}); }
-      for(let lat=Math.ceil(S/step)*step; lat<=N+1e-9; lat+=step){ const a=P([lat,b.getWest()]), z=P([lat,b.getEast()]); g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(z.x,z.y); g.stroke(); labels.push({t:fmtDeg(lat,true,step), side:'l', y:a.y}); }
+      if(w/step>200){ return; }
+      const S=Math.max(-85,b.getSouth()), N=Math.min(85,b.getNorth()), LO=[], LA=[];
+      for(let lon=Math.ceil(b.getWest()/step)*step; lon<=b.getEast()+1e-9; lon+=step){ LO.push(lon); lines.push({pts:[P([S,lon]),P([N,lon])], lab:fmtDeg(((lon+540)%360)-180,false,step), d:'v'}); }
+      for(let lat=Math.ceil(S/step)*step; lat<=N+1e-9; lat+=step){ LA.push(lat); lines.push({pts:[P([lat,b.getWest()]),P([lat,b.getEast()])], lab:fmtDeg(lat,true,step), d:'h'}); }
+      if(style==='crosses') LO.forEach(lo=>LA.forEach(la=>crosses.push(P([la,lo]))));
+    }
+    /* where a polyline crosses a horizontal (y) or vertical (x) edge */
+    const cut=(pts, axis, v)=>{ for(let k=1;k<pts.length;k++){ const a=pts[k-1], q=pts[k], i=axis==='y'?1:0; if((a[i]-v)*(q[i]-v)<=0 && a[i]!==q[i]){ const t=(v-a[i])/(q[i]-a[i]); return [a[0]+(q[0]-a[0])*t, a[1]+(q[1]-a[1])*t]; } } return null; };
+    const op=mkGrid.opacity==null?0.7:mkGrid.opacity;
+    const halo=(t,x,y,align,rot)=>{ g.save(); g.translate(x,y); if(rot) g.rotate(rot); g.textAlign=align; g.textBaseline='middle'; g.lineWidth=3; g.strokeStyle='rgba(255,255,255,.9)'; g.strokeText(t,0,0); g.fillStyle=col; g.fillText(t,0,0); g.restore(); };
+    g.font='600 10.5px -apple-system,Segoe UI,Helvetica,Arial,sans-serif';
+    if(style==='border'){
+      const B=26;
+      g.globalAlpha=1; g.fillStyle=mkGrid.band||'rgba(255,255,255,0.94)';
+      g.fillRect(0,0,W,B); g.fillRect(0,H-B,W,B); g.fillRect(0,B,B,H-2*B); g.fillRect(W-B,B,B,H-2*B);
+      g.strokeStyle=col; g.lineWidth=1.3; g.strokeRect(B+0.5,B+0.5,W-2*B-1,H-2*B-1);
+      g.lineWidth=Math.max(1,lw); const T=7;
+      lines.forEach(l=>{
+        if(l.d==='v'){ [[B,1],[H-B,-1]].forEach(([yy,dir])=>{ const p=cut(l.pts,'y',yy); if(!p||p[0]<B||p[0]>W-B) return; g.beginPath(); g.moveTo(p[0],yy); g.lineTo(p[0],yy+dir*T); g.stroke(); if(mkGrid.labels!==false) halo(l.lab,p[0],dir>0?B/2:H-B/2,'center'); }); }
+        else { [[B,1],[W-B,-1]].forEach(([xx,dir])=>{ const p=cut(l.pts,'x',xx); if(!p||p[1]<B||p[1]>H-B) return; g.beginPath(); g.moveTo(xx,p[1]); g.lineTo(xx+dir*T,p[1]); g.stroke(); if(mkGrid.labels!==false) halo(l.lab,dir>0?B/2:W-B/2,p[1],'center',-Math.PI/2); }); }
+      });
+      if(corner && mkGrid.labels!==false){ g.font='600 9.5px -apple-system,Segoe UI,Helvetica,Arial,sans-serif'; halo(corner, W-B-4, H-B-9, 'right'); }
+      return;
+    }
+    g.strokeStyle=col; g.lineWidth=lw; g.globalAlpha=op;
+    if(style==='crosses'){
+      const A=Math.max(4, (mkGrid.width||0.8)*6);
+      g.lineWidth=Math.max(1,lw*1.3);
+      crosses.forEach(p=>{ if(p[0]<-A||p[1]<-A||p[0]>W+A||p[1]>H+A) return; g.beginPath(); g.moveTo(p[0]-A,p[1]); g.lineTo(p[0]+A,p[1]); g.moveTo(p[0],p[1]-A); g.lineTo(p[0],p[1]+A); g.stroke(); });
+    } else {
+      lines.forEach(l=>{ g.beginPath(); l.pts.forEach((p,k)=>k?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.stroke(); });
     }
     if(mkGrid.labels===false) return;
-    g.globalAlpha=1; g.font='600 10.5px -apple-system,Segoe UI,Helvetica,Arial,sans-serif'; g.textBaseline='middle';
-    const halo=t=>{ g.lineWidth=3; g.strokeStyle='rgba(255,255,255,.9)'; g.strokeText(t.s, t.x, t.y); g.fillStyle=col; g.fillText(t.s, t.x, t.y); };
-    labels.forEach(l=>{
-      if(l.side==='b' && l.x>60 && l.x<sz.x-40){ g.textAlign='center'; halo({s:l.t, x:l.x, y:11}); }
-      else if(l.side==='l' && l.y>24 && l.y<sz.y-50){ g.textAlign='right'; halo({s:l.t, x:sz.x-6, y:l.y-7}); }
-      else if(l.side==='corner'){ g.textAlign='right'; halo({s:l.t, x:sz.x-8, y:sz.y-44}); }
+    g.globalAlpha=1;
+    lines.forEach(l=>{
+      if(l.d==='v'){ const p=cut(l.pts,'y',11); if(p && p[0]>60 && p[0]<W-40) halo(l.lab,p[0],11,'center'); }
+      else { const p=cut(l.pts,'x',W-6); if(p && p[1]>24 && p[1]<H-50) halo(l.lab,W-6,p[1]-7,'right'); }
     });
+    if(corner) halo(corner, 8, H-40, 'left');
   },
   _note(t){ const g=this._c.getContext('2d'); if(!t) return; g.globalAlpha=1; g.font='600 11px sans-serif'; g.textAlign='right'; g.fillStyle=mkGrid.color||'#1b2a4a'; g.fillText(t, this._map.getSize().x-8, this._map.getSize().y-44); }
 });
 function gridClean(o){
   if(!o || typeof o!=='object' || !['latlon','utm'].includes(o.kind)) return null;
   const n=(v,d,lo,hi)=>{ v=+v; return isFinite(v)?Math.max(lo,Math.min(hi,v)):d; };
-  return {kind:o.kind, color:/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:'#1b2a4a', opacity:n(o.opacity,0.7,0.1,1), width:n(o.width,0.8,0.3,4), step:n(o.step,0,0,1e6), labels:o.labels!==false};
+  return {kind:o.kind, style:['lines','border','crosses'].includes(o.style)?o.style:'lines', color:/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:'#1b2a4a', opacity:n(o.opacity,0.7,0.1,1), width:n(o.width,0.8,0.3,4), step:n(o.step,0,0,1e6), labels:o.labels!==false};
 }
 function setGrid(o){
-  mkGrid=gridClean(o);
+  mkGrid=gridClean(o); setTimeout(()=>{ if(typeof renderBaseRow==='function') renderBaseRow(); },0);
   if(mkGridLayer && mkMap){ try{ mkMap.removeLayer(mkGridLayer); }catch(_){} mkGridLayer=null; }
   if(mkGrid && mkMap){ mkGridLayer=new MomGrid(); mkGridLayer.addTo(mkMap); }
   renderGridUi();
@@ -4524,13 +4741,15 @@ function renderGridUi(){
   const stepLbl=v=>k==='utm'?(v>=1000?v/1000+' km':v+' m'):fmtStep(v);
   box.innerHTML='<div class="bms-head"><span>Grid</span><select id="mkGridKind" aria-label="Map grid"><option value="">None</option><option value="latlon"'+(k==='latlon'?' selected':'')+'>Latitude / longitude</option><option value="utm"'+(k==='utm'?' selected':'')+'>UTM (metres)</option></select></div>'+
     (mkGrid?'<div class="grid-opts"><select id="mkGridStep" aria-label="Grid spacing"><option value="0">Spacing: automatic</option>'+steps.map(v=>'<option value="'+v+'"'+(Math.abs(mkGrid.step-v)<1e-9?' selected':'')+'>'+stepLbl(v)+'</option>').join('')+'</select>'+
-      '<input type="color" id="mkGridColor" value="'+mkGrid.color+'" aria-label="Grid colour"><label class="grid-lbl"><input type="checkbox" id="mkGridLabels"'+(mkGrid.labels?' checked':'')+'> Labels</label></div>':'');
+      '<input type="color" id="mkGridColor" value="'+mkGrid.color+'" aria-label="Grid colour"><label class="grid-lbl"><input type="checkbox" id="mkGridLabels"'+(mkGrid.labels?' checked':'')+'> Labels</label></div>'+
+      '<div class="grid-seg" role="radiogroup" aria-label="Grid style">'+[['lines','Lines'],['border','Border ticks'],['crosses','Crosses']].map(o=>'<button type="button" role="radio" data-gs="'+o[0]+'" aria-checked="'+(mkGrid.style===o[0])+'" class="'+(mkGrid.style===o[0]?'on':'')+'">'+o[1]+'</button>').join('')+'</div>':'');
   const upd=()=>{ if(mkGridLayer) mkGridLayer._draw(); if(typeof markProjectDirty==='function') markProjectDirty(); };
-  document.getElementById('mkGridKind').onchange=e=>{ const v=e.target.value; setGrid(v?{kind:v, color:mkGrid?mkGrid.color:'#1b2a4a', labels:true}:null); markProjectDirty(); };
+  document.getElementById('mkGridKind').onchange=e=>{ const v=e.target.value; setGrid(v?{kind:v, style:mkGrid?mkGrid.style:'lines', color:mkGrid?mkGrid.color:'#1b2a4a', labels:true}:null); markProjectDirty(); };
   if(mkGrid){
     document.getElementById('mkGridStep').onchange=e=>{ mkGrid.step=+e.target.value; upd(); };
     document.getElementById('mkGridColor').oninput=e=>{ mkGrid.color=e.target.value; upd(); };
     document.getElementById('mkGridLabels').onchange=e=>{ mkGrid.labels=e.target.checked; upd(); };
+    box.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{ mkGrid.style=b.dataset.gs; renderGridUi(); upd(); });
   }
 }
 function fmtStep(v){ if(v>=1) return v+'°'; const m=v*60; if(m>=1-1e-9) return Math.round(m)+'′'; return Math.round(v*3600)+'″'; }
@@ -9484,7 +9703,12 @@ function renderSpatialForm(){
   } else if(op==='smooth'){
     el.innerHTML=selA+`
       <div class="field"><label>Smoothness (passes)</label><select id="spSmoothN"><option value="1">1 — slight</option><option value="2" selected>2 — moderate</option><option value="3">3 — strong</option><option value="4">4 — very strong</option></select></div>
-      <div class="kv">Chaikin corner-cutting: rounds the corners of lines and polygon outlines. Lines keep their end points. Shared borders between neighbouring polygons are smoothed the same way, but tiny gaps can open where they meet — smooth a dissolved outline, or simplify first, for very jagged data.</div>`;
+      <div class="kv">Smoothing <b>adds</b> points to round corners, keeping the overall detail; Simplify does the opposite and removes points. Chaikin corner-cutting: rounds the corners of lines and polygon outlines. Lines keep their end points. Shared borders between neighbouring polygons are smoothed the same way, but tiny gaps can open where they meet — smooth a dissolved outline, or simplify first, for very jagged data.</div>`;
+  } else if(op==='thiessen'){
+    const polys=mkLayers.filter(l=>l.geom==='polygon');
+    el.innerHTML=`<div class="field"><label>Points</label><select id="spA">${layerOptions(mkLayers.some(l=>l.id===mkSelectedId&&l.geom==='point')?mkSelectedId:(mkLayers.find(l=>l.geom==='point')||{}).id,null)}</select></div>
+      <div class="field"><label>Clip the polygons to</label><select id="spClip"><option value="">the points’ extent, plus a margin</option>${polys.map(l=>'<option value="'+l.id+'">'+esc(l.name)+' (outline)</option>').join('')}</select></div>
+      <div class="kv">Each polygon holds the area closer to its point than to any other, and carries that point’s attributes plus its area (area_km2). Thiessen polygons are a classic way to turn stations or facilities into service areas, though straight-line nearness ignores roads, rivers and borders.</div>`;
   } else if(op==='fixgeom'){
     el.innerHTML=selA+`
       <div class="checkline"><input type="checkbox" id="spFixOnly"><label for="spFixOnly" style="margin:0;color:var(--text);">Only check — select the features with problems</label></div>
@@ -9511,7 +9735,7 @@ function renderSpatialForm(){
     el.innerHTML=selA+`
       <div class="field"><label>Tolerance (degrees; ~0.001 ≈ 100 m)</label><input type="number" id="spTol" value="0.001" min="0.00001" step="0.0005"></div>
       <div class="checkline"><input type="checkbox" id="spHQ" checked><label for="spHQ" style="margin:0;color:var(--text);">High quality (slower, better shape retention)</label></div>
-      <div class="kv">Douglas–Peucker generalization — the classic cartographic line simplification.</div>`;
+      <div class="kv">Douglas–Peucker generalization — the classic cartographic line simplification. It <b>removes</b> points, so outlines get coarser and more angular. To round corners off instead, use <b>Smooth lines and polygons</b>; simplifying first and then smoothing is a common pairing.</div>`;
   } else if(op==='nearest'){
     el.innerHTML=`<div class="field"><label>For each feature in</label><select id="spA">${layerOptions(mkSelectedId,null)}</select></div>
       <div class="field"><label>find the nearest feature in</label><select id="spB">${layerOptions(null,null)}</select></div>
@@ -13290,6 +13514,32 @@ document.getElementById('spRunBtn').onclick=()=>{
         const out=visibleFeatures(A).map(f=>({type:'Feature', properties:Object.assign({}, f.properties), geometry:smoothGeom(f.geometry, n)}));
         addMakerLayer({type:'FeatureCollection', features:out}, A.name+'_smoothed');
       }
+      else if(op==='thiessen'){
+        if(A.geom!=='point'){ status.textContent='Choose a point layer.'; return; }
+        const seen=new Set(), pts=[]; let dup=0;
+        visibleFeatures(A).forEach(f=>{ const g=f.geometry; if(!g||g.type!=='Point'||!isFinite(g.coordinates[0])||!isFinite(g.coordinates[1])) return;
+          const k=g.coordinates[0].toFixed(7)+','+g.coordinates[1].toFixed(7); if(seen.has(k)){ dup++; return; } seen.add(k); pts.push(f); });
+        if(pts.length<2){ status.textContent='Thiessen polygons need at least two distinct points.'; return; }
+        const clipL=mkLayers.find(l=>l.id===gv('spClip'));
+        const bb=turf.bbox({type:'FeatureCollection', features:clipL?visibleFeatures(clipL):pts});
+        const mx=Math.max((bb[2]-bb[0])*0.08, 0.005), my=Math.max((bb[3]-bb[1])*0.08, 0.005);
+        const box=[bb[0]-mx, bb[1]-my, bb[2]+mx, bb[3]+my];
+        const vor=turf.voronoi({type:'FeatureCollection', features:pts.map(f=>turf.point(f.geometry.coordinates))}, {bbox:box});
+        let clipPoly=null;
+        if(clipL){ clipPoly=unionAll(visibleFeatures(clipL).filter(f=>f.geometry&&/Polygon/.test(f.geometry.type))); if(!clipPoly){ status.textContent='Could not merge the clip layer into one outline.'; return; } }
+        const out=[]; let lost=0;
+        (vor.features||[]).forEach((cell,i)=>{
+          if(!cell||!cell.geometry){ lost++; return; }
+          let g=cell;
+          if(clipPoly){ try{ g=turf.intersect(cell, clipPoly); }catch(_){ g=null; } }
+          if(!g||!g.geometry){ lost++; return; }
+          const props=Object.assign({}, pts[i].properties); props.area_km2=+(turf.area(g)/1e6).toFixed(3);
+          out.push({type:'Feature', properties:props, geometry:g.geometry});
+        });
+        if(!out.length){ status.textContent='No polygons could be built.'; return; }
+        addMakerLayer({type:'FeatureCollection', features:out}, A.name+'_thiessen');
+        if(dup||lost) setTimeout(()=>loadReport((dup?dup+' point'+(dup===1?' shares':'s share')+' a location with another and was skipped. ':'')+(lost?lost+' cell'+(lost===1?' falls':'s fall')+' outside the clip outline and '+(lost===1?'was':'were')+' left out.':'')),50);
+      }
       else if(op==='fixgeom'){
         const only=document.getElementById('spFixOnly').checked;
         const counts={}, bad=[];
@@ -14382,11 +14632,20 @@ function layoutJSON(){
    use hundreds of megabytes. */
 const histImages=[], histImageIdx=new Map();
 function histPackImages(json){
-  return json.replace(/"src":"(data:image\/[^"]{200,})"/g, (m,url)=>{
+  /* a plain scan rather than a regular expression: a print-resolution map frame can be
+     tens of megabytes, which overflowed the regex engine's stack */
+  const key='"src":"data:image/'; let out='', i=0;
+  for(;;){
+    const a=json.indexOf(key, i); if(a<0){ out+=json.slice(i); break; }
+    const st=a+7, e=json.indexOf('"', st);
+    if(e<0){ out+=json.slice(i); break; }
+    if(e-st<200){ out+=json.slice(i, e+1); i=e+1; continue; }
+    const url=json.slice(st, e);
     let k=histImageIdx.get(url);
     if(k==null){ k=histImages.length; histImages.push(url); histImageIdx.set(url,k); }
-    return '"src":"@@img:'+k+'"';
-  });
+    out+=json.slice(i, a)+'"src":"@@img:'+k+'"'; i=e+1;
+  }
+  return out;
 }
 function histUnpackImages(json){ return json.replace(/"src":"@@img:(\d+)"/g, (m,k)=>'"src":"'+histImages[+k]+'"'); }
 function snapshotState(){
@@ -19229,6 +19488,7 @@ ${stSpec.length||(vecDef&&vecDef.ohm) ? MOM_STACK_RT : ''}
 ${vecDef ? `try{var BM=L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},attributionControl:{customAttribution:${JSON.stringify(vecDef.attr)}},interactive:false}).addTo(map);var GM=BM.getMaplibreMap&&BM.getMaplibreMap();if(GM){GM.once('idle',ready);${vecDef.ohm?'momWhenStyle(GM,function(m){momOhmYear(m,'+bmo.year+');});':''}}else ready();}catch(e){ready();}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}})${i===0?".on('load',ready)":''}.addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');setTimeout(ready,50);`}
 ${bmHasParts(basemap) ? partsEmbedJs(snap.partsOff||[], "function(){return (typeof GM!=='undefined')?GM:null;}", !!opts.partsUi) : ''}
 ${stSpec.length ? 'momStackLeaflet(L,map,'+JSON.stringify(stSpec).replace(/<\//g,'<\\/')+');' : ''}
+${(bmo.bop<1||basemap==='none') ? "map.getPane('tilePane').style.opacity='"+bmo.bop+"';map.getContainer().style.background='"+bmo.paper+"';" : ''}
 ${opts.zoomPos==='bottomleft' ? "try{map.zoomControl.setPosition('bottomleft');}catch(e){}" : ''}
 ${layers.some(L2=>L2.fc.features.some(f=>f.properties&&f.properties._cs&&f.properties._cs.pat)) ? momPatTile.toString()+'\n'+momPattern.toString() : 'function momPattern(){return null;}'}
 function styleFn(f){var s=f.properties._cs||{};var o={color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};if(s.pat){var pp=momPattern(s.pat.k,(s.fill&&s.fill!=='rgba(0,0,0,0)')?s.fill:'',s.pat.c,s.pat.g);if(pp)o.fillColor=pp;}return o;}
@@ -19417,7 +19677,7 @@ function buildSharePayload(){
   const rec=projectsCache.find(p=>p.id===currentProjectId);
   const out={v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers, partsOff:partsOff()};
   if(mkBmStack.length) out.stack=clone(mkBmStack);
-  if(bmStackNeeds().date||bmStackNeeds().year) out.bmo=Object.assign({}, mkBmo);
+  if(bmStackNeeds().date||bmStackNeeds().year||mkBmo.bop<1||mkBmo.paper!=='#ffffff') out.bmo=Object.assign({}, mkBmo);
   if(typeof mkGlobe!=='undefined' && mkGlobe){ const c=mkGlobe.getCenter(); out.globe={c:[+c.lng.toFixed(5), +c.lat.toFixed(5)], z:+mkGlobe.getZoom().toFixed(2), br:+mkGlobe.getBearing().toFixed(1), pt:+mkGlobe.getPitch().toFixed(1)}; }
   return out;
 }
@@ -19633,6 +19893,7 @@ async function enterShareViewer(){
   svBmo=bmoClean(payload.bmo); svStack=stackSpec(stackClean(payload.stack), svBmo);
   svSetBasemap(BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron');
   try{ momStackLeaflet(L, svMap, svStack); }catch(_){}
+  if(svBmo.bop<1){ svMap.getPane('tilePane').style.opacity=String(svBmo.bop); } if(svBmo.bop<1||!BASEMAPS[payload.basemap]) svMap.getContainer().style.background=svBmo.paper;
   const group=L.featureGroup().addTo(svMap), svGroups=[];
   (payload.layers||[]).forEach((L2,li)=>{
     if(L2.lbl) svInjectLabelCss(li, L2.lbl);

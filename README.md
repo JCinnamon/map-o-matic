@@ -1,4 +1,4 @@
-[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33514819/map-o-matic-README_2026.md)
+[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33517277/map-o-matic-README_2026.md)
 # Map-O-Matic
 
 **A free cartography studio that runs in your browser: style your data as a map, compose a print-ready layout, collect field data on phones, and gather your maps into an interactive atlas.**
@@ -89,6 +89,18 @@ Online datasets over 5,000 features prompt a choice — load all, load the first
 
 **Basemaps.** The default set is open. Five vector styles come from **OpenFreeMap** — *Positron* (light, the default), *Bright*, *Liberty* (full streets), *Dark* and *Fiord* (muted) — built on OpenStreetMap data through the OpenMapTiles schema and rendered with MapLibre GL, so they stay crisp at any zoom. Three open raster layers sit alongside them: **OpenStreetMap** standard, **OpenTopoMap** (topographic style with contours and hill shading from OpenStreetMap and SRTM elevation data, CC-BY-SA, up to zoom 17), and **Sentinel-2 Cloudless** — a cloud-free Copernicus mosaic from EOX, fully open but only ~10 m resolution, so it's context rather than street-level detail. For sharper imagery there are two higher-resolution options, **Satellite** and **Satellite Hybrid** (imagery plus roads, labels and boundaries from open OpenStreetMap-derived data): the reference overlay is open, but the imagery itself is proprietary (free to use with attribution, sourced from Vantor/Maxar and Earthstar Geographics), so it doesn't meet the open bar the way the rest do. The attribution for whichever basemap you pick shows under the picker; the Sentinel-2 mosaic is CC-BY-NC-SA (free for teaching and study, not commercial reuse). Projects saved before the switch that named an Esri or CARTO basemap are quietly mapped to the closest current one — old imagery projects land on Satellite. While a projection other than Web Mercator is on, the basemap list is greyed out: projected views draw their own world outline.
 
+**Layers and Basemap tabs.** The left panel has two tabs. **Layers** holds the place search, **+ Add data**, the projection and your data layers. The last row of the layer list stands for everything beneath your data (*Basemap: Positron · 2 overlays · grid*) and opens the **Basemap** tab, as does the layers button under the map controls. The Basemap tab holds:
+
+- the basemap picker;
+- the basemap's **opacity**, fading to a **paper colour** of your choice (white by default) so thematic data stands out;
+- which **parts** to show (borders, place labels, roads, water, buildings, land use, points of interest) on the vector basemaps;
+- the overlays;
+- the grid.
+
+The tab's badge counts the overlays switched on.
+
+**Sources and credits.** The **ⓘ** button on the map (and **Basemap sources and credits** at the foot of the Basemap tab) lists the basemap and each overlay with its credit, licence and a link to its terms. The credit line along the bottom of the map is kept to one line, with the full list one click away. Data layers' sources are in the Process Log.
+
 **More basemaps: NASA and historical.** **NASA (GIBS)**, all public domain: *Blue Marble* (shaded relief and bathymetry), *Black Marble* (night lights, 2016), *City Lights 2012*, and *MODIS* or *VIIRS* daily true-colour imagery for any date since 2000 (an **Imagery date** box appears under the picker; images are ready a few hours after each pass, and clouds are part of the picture). The NASA mosaics are coarse (roughly 1–2 km per pixel), so they suit regional and world maps rather than streets. **OpenHistoricalMap** (CC0) draws past boundaries, places and roads for a chosen **Year** (type a year, negative for BCE, or drag the slider), in its main style or as a *woodblock* or *Japanese scroll* map. Its coverage is volunteer-built and uneven, best for national borders and well-mapped cities. National Geographic's basemap isn't offered: it's an Esri product, not open.
 
 **Stacking overlays.** Under the basemap, **+ Add overlay…** puts layers on top of it, and they can be combined in any number:
@@ -98,9 +110,15 @@ Online datasets over 5,000 features prompt a choice — load all, load the first
 - Any NASA or OpenHistoricalMap layer, or another basemap (e.g. Sentinel-2 over a light basemap).
 - **Custom tiles**: paste an XYZ address (with {z}, {x}, {y}) for a scanned historical map georeferenced in Map Warper, Allmaps or the David Rumsey Georeferencer, with its own name, credit and most-detailed zoom.
 
-Each overlay has a show/hide box, an **opacity** slider and a **blend** mode. *Multiply* darkens, which suits hillshade and old maps over imagery. *Screen* lightens, which suits night lights over a dark basemap. Drag overlays to reorder them (the top of the list draws on top), or use Alt+↑/↓. The stack is saved with the project, undoable, and carried into Send to Composer, share links, exported web maps and atlas pages. On the globe, hillshade and raster overlays show with their opacity, but contour lines, vector overlays and blend modes are flat-map only (the panel says so). Credits for every layer in the stack appear under the picker and on the map.
+Each overlay has a show/hide box, an **opacity** slider and a **blend** mode. *Multiply* darkens, which suits hillshade and old maps over imagery. *Screen* lightens, which suits night lights over a dark basemap. Drag overlays to reorder them (the top of the list draws on top), or use Alt+↑/↓. The stack is saved with the project, undoable, and carried into Send to Composer, share links, exported web maps and atlas pages, along with the basemap's opacity and paper colour (which apply to flat maps, not the globe). For print-quality captures (Send to Composer, atlas stills), raster basemaps and overlays are fetched one zoom level deeper rather than enlarged. Hillshade and contours are recomputed at the capture's resolution, and the vector basemaps and grid are redrawn at it, so all of them stay sharp on the page. On the globe, hillshade and raster overlays show with their opacity, but contour lines, vector overlays and blend modes are flat-map only (the panel says so). Credits for every layer in the stack appear under the picker and on the map.
 
-**Map grid.** **Grid** under the basemap draws a **latitude/longitude** graticule (degrees, minutes and seconds as you zoom in) or a **UTM** grid in metres for the zone at the map's centre (WGS 84), over the data. Spacing is automatic or chosen, labels sit on the top and right edges, and the colour is adjustable. The grid comes across with **Send to Composer**, so a printed map can carry a reference grid. It is saved with the project.
+**Map grid.** **Grid** in the Basemap tab draws a **latitude/longitude** graticule (degrees, minutes and seconds as you zoom in) or a **UTM** grid in metres for the zone at the map's centre (WGS 84). It comes in three styles:
+
+- **Lines** across the map.
+- **Border ticks**: a neatline frame with tick marks and coordinate labels in the margin, in the printed-map tradition.
+- **Crosses**: small + marks where the lines would meet.
+
+Spacing is automatic or chosen, labels can be turned off, and the colour is adjustable. The grid comes across with **Send to Composer**, so a printed map can carry a reference grid. It is saved with the project.
 
 **Layer groups.** In a layer's **⋯** menu, **Add to a group…** puts it in a named group (or a new one). A group shows as a header in the layer list with:
 
@@ -163,7 +181,11 @@ A cartogram puts its units at invented coordinates, so selecting the mode switch
 
 **Joining a table** — **Tools → Join a table by a shared field** attaches the columns of a CSV, an Excel sheet or another layer's attribute table to a layer's features where a key field matches (population by neighbourhood name, census values by dissemination-area code). Key fields are suggested when names match, matching can ignore capitals, extra spaces and leading zeros, and a live preview lists the features that found no row and the rows that matched nothing. The result is a new layer; existing fields are never overwritten.
 
-**Spatial tools** — the **Tools** tab in the right panel (all client-side, via Turf.js): table join, buffer (with dissolve), select by location (intersects / within / contains / within-distance, with invert), points-in-polygons statistics (count, sum, mean, min, max), clip, erase, intersect (with attribute join), union, dissolve by attribute, merge layers, centroids, convex hull, bounding box, simplify (Douglas–Peucker generalization), **smooth lines and polygons** (Chaikin corner-cutting, 1–4 passes), **check and fix geometries**, nearest-neighbour join, and a distance matrix (CSV download). **Check and fix geometries** looks for:
+**Spatial tools** — the **Tools** tab in the right panel (all client-side, via Turf.js): table join, buffer (with dissolve), select by location (intersects / within / contains / within-distance, with invert), points-in-polygons statistics (count, sum, mean, min, max), clip, erase, intersect (with attribute join), union, dissolve by attribute, merge layers, centroids, convex hull, bounding box, simplify (Douglas–Peucker generalization), **smooth lines and polygons** (Chaikin corner-cutting, 1–4 passes), **Thiessen (Voronoi) polygons**, **check and fix geometries**, nearest-neighbour join, and a distance matrix (CSV download). **Simplify vs smooth.** They do opposite things. **Simplify** (generalize) *removes* vertices to cut detail, and outlines get coarser and more angular. **Smooth** *adds* vertices to round corners, keeping the overall detail. Simplifying first and then smoothing is a common pairing.
+
+**Thiessen polygons** split space so that each polygon holds the area closer to its point than to any other. The polygons carry the point's attributes plus `area_km2`, clipped to a margin around the points or to the outline of a polygon layer. Points sharing a location are skipped and reported.
+
+**Check and fix geometries** looks for:
 
 - missing or empty shapes;
 - coordinates that aren't numbers, or aren't longitude/latitude (a sign of the wrong coordinate system);

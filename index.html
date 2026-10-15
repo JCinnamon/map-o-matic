@@ -1198,6 +1198,39 @@ html[data-theme=dark] .stats-chip{background-color:#202328;}
 html[data-theme=dark] .stats-mini{background-color:var(--panel);}
 html[data-theme=dark] .stats-mini:hover{background-color:#22252b;}
 html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
+  /* ---- side-panel tabs: filled pills (v69) ---- */
+  .tabs, .mkl-tabs{gap:4px;padding:6px;background:rgba(47,125,120,.07);border-bottom:1px solid var(--line);}
+  .tabs > button, .mkl-tabs > button{flex:1;border:none !important;border-radius:7px;padding:7px 4px;font-size:12.5px;font-weight:700;color:var(--text);background:transparent;transition:background .15s;}
+  .tabs > button:hover:not(.active), .mkl-tabs > button:hover:not(.on){background:rgba(47,125,120,.14);}
+  .tabs > button.active, .mkl-tabs > button.on{background:var(--teal) !important;color:#fff !important;box-shadow:0 1px 3px rgba(20,60,60,.25);}
+  html[data-theme=dark] .tabs, html[data-theme=dark] .mkl-tabs{background:rgba(127,200,192,.07);}
+  /* ---- Basemap tab layout ---- */
+  [data-lp=base] .sec{padding:10px 12px;}
+  [data-lp=base] h3{margin:0;}
+  .bt-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .bt-head select{flex:0 1 130px;min-width:0;padding:4px;border:1px solid var(--line);border-radius:5px;font-size:12px;background:var(--panel);color:var(--text);}
+  .bt-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--text);}
+  .bt-lbl{width:52px;flex-shrink:0;color:var(--muted);font-size:11.5px;}
+  .bt-grow{flex:1;min-width:0;} .bt-gap{flex:1;}
+  .bt-row select, .bt-row input[type=date], .bt-row input[type=number]{padding:3px 5px;border:1px solid var(--line);border-radius:5px;font-size:12px;background:var(--panel);color:var(--text);}
+  .bt-row .cs-sw{width:26px !important;min-width:26px;height:20px !important;flex:0 0 26px;padding:0;}
+  .bt-paper[hidden]{display:none !important;}
+  .bt-sub{margin-top:9px;} .bt-sub.off{opacity:.42;} .bt-sub.off label{cursor:not-allowed;}
+  .bt-sub .bt-lbl{width:auto;margin-bottom:3px;}
+  .bmp-list{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-top:2px;}
+  .bmp-list label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;min-width:0;}
+  .grid-seg{margin-top:9px;}
+  .mkl-srcbtn{width:100%;border:none;background:none;color:var(--teal);font-size:12px;font-weight:600;padding:2px 0;text-align:left;cursor:pointer;}
+  .mkl-srcbtn:hover{text-decoration:underline;}
+  .bms-list{margin-top:8px;}
+  .cap-prog{margin:10px 0 2px;} .cap-prog[hidden]{display:none !important;}
+  .cp-bar{height:8px;border-radius:5px;background:rgba(127,140,160,.22);overflow:hidden;}
+  .cp-bar i{display:block;height:100%;width:3%;background:linear-gradient(90deg,var(--teal),#4fb3a9);border-radius:5px;transition:width .35s ease;}
+  .cp-msg{font-size:12px;color:var(--muted);margin-top:5px;}
+  .cap-float{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:3000;width:300px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.25);padding:10px 14px 12px;}
+  .cap-float .cp-msg{margin:0 0 7px;color:var(--text);font-weight:600;}
+  .kv-more{border:none;background:none;padding:0 2px;margin-left:1px;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;line-height:1;vertical-align:baseline;}
+  .kv-more:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -1348,7 +1381,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 <!-- ================= MAP MAKER ================= -->
 <div id="module-maker" class="module hidden">
   <aside id="mk-left">
-    <div class="mkl-tabs" role="tablist" aria-label="Left panel"><button type="button" role="tab" id="mklTabLayers" data-lt="layers" class="on" aria-selected="true">Layers</button><button type="button" role="tab" id="mklTabBase" data-lt="base" aria-selected="false">Basemap<span class="mkl-badge" id="mklBaseBadge"></span></button></div>
+    <div class="mkl-tabs" role="tablist" aria-label="Left panel"><button type="button" role="tab" id="mklTabLayers" data-lt="layers" class="on" aria-selected="true">Layers</button><button type="button" role="tab" id="mklTabBase" data-lt="base" aria-selected="false">Basemap</button></div>
     <div class="mkl-pane" data-lp="layers" role="tabpanel" aria-labelledby="mklTabLayers">
     <div class="sec">
       <span id="geoSearchWrap">
@@ -1455,7 +1488,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     </div>
     <div class="sec"><div id="mkStackWrap"></div></div>
     <div class="sec"><div id="mkGridWrap"></div></div>
-    <div class="sec mkl-src"><button type="button" class="btn small light" id="mkSourcesBtn" style="width:100%;justify-content:center;">ⓘ Basemap sources and credits</button><div class="kv" id="mkBasemapAttr" hidden></div></div>
+    <div class="sec mkl-src"><button type="button" class="mkl-srcbtn" id="mkSourcesBtn">ⓘ Sources and credits</button><div class="kv" id="mkBasemapAttr" hidden></div></div>
     </div>
   </aside>
 
@@ -1776,6 +1809,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="checkline"><input type="checkbox" id="sendScale" checked><label for="sendScale" style="margin:0;font-size:12.5px;color:var(--text);">Add a calibrated scale bar</label></div>
     <div class="checkline"><input type="checkbox" id="sendLabels"><label for="sendLabels" style="margin:0;font-size:12.5px;color:var(--text);">Bring labels as editable text (so they can be moved on the page)</label></div>
     <div id="sendNames"></div>
+    <div class="cap-prog" id="sendProg" hidden><div class="cp-bar"><i></i></div><div class="cp-msg"></div></div>
     <div class="kv" id="sendStatus"></div>
     <div class="modal-close-row">
       <button class="btn ghost" onclick="closeModal('modal-send')">Cancel</button>
@@ -2993,9 +3027,41 @@ function momStackGlobe(m, spec){
     }catch(e){}
   });
 }
+/* fade a globe's basemap layers towards a paper colour (user layers u_*, overlays momov* untouched) */
+function momGlobeFade(m, k, paper){
+  try{
+    k=+k; if(!(k>0&&k<=1)) k=1;
+    var st=m.getStyle(), O=m.__momOp||(m.__momOp={}), sig=(st.name||'')+'|';
+    var P={fill:['fill-opacity'], line:['line-opacity'], symbol:['text-opacity','icon-opacity'], raster:['raster-opacity'], circle:['circle-opacity','circle-stroke-opacity'],
+      'fill-extrusion':['fill-extrusion-opacity'], background:['background-opacity'], heatmap:['heatmap-opacity'], hillshade:[]};
+    var scale=function(v){
+      if(v==null) return k;
+      if(typeof v==='number') return v*k;
+      if(Array.isArray(v)){
+        if((v[0]==='interpolate'||v[0]==='interpolate-hcl'||v[0]==='interpolate-lab') && Array.isArray(v[2]) && v[2][0]==='zoom'){ var o=v.slice(0,3); for(var i=3;i<v.length;i+=2){ o.push(v[i], typeof v[i+1]==='number'?v[i+1]*k:['*',v[i+1],k]); } return o; }
+        if(v[0]==='step' && Array.isArray(v[1]) && v[1][0]==='zoom'){ var q=[v[0],v[1], typeof v[2]==='number'?v[2]*k:['*',v[2],k]]; for(var j=3;j<v.length;j+=2){ q.push(v[j], typeof v[j+1]==='number'?v[j+1]*k:['*',v[j+1],k]); } return q; }
+        return ['*',v,k];
+      }
+      if(typeof v==='object' && v.stops) return Object.assign({}, v, {stops:v.stops.map(function(s){ return [s[0], typeof s[1]==='number'?s[1]*k:s[1]]; })});
+      return v;
+    };
+    (st.layers||[]).forEach(function(ly){
+      if(/^(u_|momov|mompaper)/.test(ly.id)) return;
+      (P[ly.type]||[]).forEach(function(pr){
+        var key=sig+ly.id+'|'+pr; if(!O.hasOwnProperty(key)){ var v0=m.getPaintProperty(ly.id, pr); O[key]=v0===undefined?null:v0; }
+        try{ m.setPaintProperty(ly.id, pr, k>=1 ? (O[key]==null?undefined:O[key]) : scale(O[key])); }catch(e){}
+      });
+    });
+    var first=(st.layers||[])[0];
+    if(k<1){
+      if(!m.getLayer('mompaper')) m.addLayer({id:'mompaper', type:'background', paint:{'background-color':paper||'#ffffff'}}, first?first.id:undefined);
+      else m.setPaintProperty('mompaper','background-color',paper||'#ffffff');
+    } else if(m.getLayer('mompaper')) m.removeLayer('mompaper');
+  }catch(e){}
+}
 /* ===== end of the self-contained runtime ===== */
 const MOM_STACK_RT=[momTerrainLayer, momOhmYear, momWhenStyle, momStackLeaflet].map(f=>f.toString()).join('\n');
-const MOM_GLOBE_RT=[momOhmYear, momWhenStyle, momStackGlobe].map(f=>f.toString()).join('\n');
+const MOM_GLOBE_RT=[momOhmYear, momWhenStyle, momStackGlobe, momGlobeFade].map(f=>f.toString()).join('\n');
 
 let mkMap=null, mkBasemapLayers=[], mkLayers=[], mkSelectedId=null;
 
@@ -3113,7 +3179,6 @@ function addMapToolControls(){
       '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
       '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
-      '<a href="#" id="mkBasemapBtn" title="Basemap, overlays, parts and grid (opens the Basemap tab)">'+BM_PARTS_ICON+'</a>'+
       '<a href="#" id="mkCompareBtn" title="Compare two layers with a swipe divider">⇆</a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
@@ -3680,6 +3745,7 @@ function globeOnStyle(){
   if(BASEMAPS[mkBasemapKey] && BASEMAPS[mkBasemapKey].ohm) momOhmYear(mkGlobe, mkBmo.year);
   else globeApplyParts(mkGlobe);
   momStackGlobe(mkGlobe, stackSpec(mkBmStack, mkBmo));
+  if(mkBmo.bop<1) momGlobeFade(mkGlobe, mkBmo.bop, mkBmo.paper);
   globeAddUserLayers(mkGlobe);
   if(gMeas) gmDraw();
 }
@@ -3785,7 +3851,7 @@ function globeOpen(){
       '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
         '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
         '<div class="mk-gbar"><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
-        '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button><button type="button" id="mkGlobeParts" title="Basemap parts — turn labels, roads, borders… on or off">'+BM_PARTS_ICON+'</button></div></div>'+
+        '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button></div></div>'+
       '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
     /* mount inside the map area only, so the toolbar row (Layers, Send to
        Composer, Menu) and a docked attribute table stay visible in globe view */
@@ -3798,7 +3864,6 @@ function globeOpen(){
     host.querySelector('#mkGlobeZout').onclick=()=>{ if(mkGlobe) mkGlobe.zoomOut({duration:300}); };
     host.querySelector('#mkGlobeNorth').onclick=e=>{ if(mkGlobe) glbOrientPanel(mkGlobe, e.currentTarget); };
     host.querySelector('#mkGlobeMeasure').onclick=()=>globeMeasureToggle();
-    host.querySelector('#mkGlobeParts').onclick=()=>toggleBasemapPanel();
     host.querySelector('#mkGlobeSel').onclick=()=>selToolSet(!selTool);
   }
   host.style.display='block';
@@ -3956,10 +4021,10 @@ function measureFinish(){ /* keep the finished line; stop adding */ mkMap.off('m
 /* --- basemap layer toggles --- */
 const BM_PARTS_ICON='<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3 2 8l10 5 10-5z" fill="#2f7d78"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5" fill="none" stroke="#2f7d78" stroke-width="2" stroke-linejoin="round"/></svg>';
 const BM_PART_GROUPS={
-  boundary:{label:'Country & admin borders', src:['boundary']},
-  place:{label:'Place labels (cities, towns)', src:['place']},
-  transportation:{label:'Roads & railways', src:['transportation','transportation_name']},
-  water:{label:'Water & rivers', src:['water','waterway']},
+  boundary:{label:'Borders', src:['boundary']},
+  place:{label:'Place names', src:['place']},
+  transportation:{label:'Roads & rail', src:['transportation','transportation_name']},
+  water:{label:'Water', src:['water','waterway']},
   building:{label:'Buildings', src:['building']},
   landuse:{label:'Land use & parks', src:['landuse','landcover','park']},
   poi:{label:'Points of interest', src:['poi']}
@@ -4025,6 +4090,20 @@ const nextFrames=(n)=>new Promise(r=>{ const go=k=>{ if(k<=0) r(); else requestA
 function glIdle(m, ms){ return new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; try{ m.once('idle', f); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, ms||4000); }); }
 /* Run fn with every map in Map Maker redrawn at k× pixel density: basemap, canvas
    layers, projected view and globe all re-render crisply rather than being upscaled. */
+/* ---------- capture progress (v69) ----------
+   Shown in the Send dialog when it is open, otherwise as a small card over the map. */
+function capProgress(f, msg){
+  let el=document.querySelector('#modal-send:not(.hidden) #sendProg');
+  if(!el){
+    el=document.getElementById('capProgFloat');
+    if(!el && f!=null && f<1){ el=document.createElement('div'); el.id='capProgFloat'; el.className='cap-prog cap-float'; el.innerHTML='<div class="cp-msg"></div><div class="cp-bar"><i></i></div>'; document.body.appendChild(el); }
+  }
+  if(!el) return;
+  if(f==null || f>=1){ const bar=el.querySelector('.cp-bar i'); if(bar) bar.style.width='100%'; setTimeout(()=>{ el.hidden=true; if(el.id==='capProgFloat') el.remove(); }, 350); return; }
+  el.hidden=false;
+  el.querySelector('.cp-bar i').style.width=Math.round(Math.max(0.03,f)*100)+'%';
+  if(msg) el.querySelector('.cp-msg').textContent=msg;
+}
 async function withHiRes(k, fn){
   const root=document.getElementById('mk-map');
   const gh=document.getElementById('mk-globe'); if(gh) gh.classList.remove('loading');
@@ -4033,17 +4112,21 @@ async function withHiRes(k, fn){
   /* canvas layers of the flat map (hidden behind an open globe or projection, so left alone then) */
   const rs=(mkMap && !(typeof mkGlobe!=='undefined' && mkGlobe) && !projActive) ? Object.values(mkMap._layers).filter(l=>l instanceof L.Canvas) : [];
   window.__momPR=k;
+  capProgress(0.05, 'Redrawing the map at print resolution…');
   try{
     rs.forEach(r=>{ try{ r._reset(); }catch(_){} });
     gls.forEach(m=>{ try{ m.setPixelRatio(k); }catch(_){} });
     if(projActive) renderProjection();
     rs.forEach(r=>{ try{ r._redraw(); }catch(_){} });   /* draw now rather than on the next animation frame */
     if(typeof mkGridLayer!=='undefined' && mkGridLayer) try{ mkGridLayer._draw(); }catch(_){}
+    capProgress(0.2, 'Redrawing the basemap…');
     /* computed terrain overlays are redrawn at the capture's pixel density */
     const terr=(!(typeof mkGlobe!=='undefined' && mkGlobe) && !projActive && typeof mkStackLayers!=='undefined') ? mkStackLayers.filter(l=>l instanceof L.GridLayer && !(l instanceof L.TileLayer)) : [];
+    if(terr.length) capProgress(0.3, 'Redrawing hillshade and contours…');
     await Promise.all(terr.map(l=>new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; l.once('load', ()=>setTimeout(f,40)); try{ l.redraw(); }catch(_){ f(); } setTimeout(f, 8000); })));
     /* vector tiles don't reload for a new pixel ratio, so one full repaint is enough */
     await Promise.all(gls.map(m=>new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; try{ m.once('render', ()=>setTimeout(f, 60)); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, 3000); })));
+    capProgress(0.42, 'Building the image…');
     return await fn();
   } finally {
     window.__momPR=null;
@@ -4154,20 +4237,25 @@ async function paneComposite(el, scale){
   const hiDraw=async (layer, px)=>{
     const z0=Math.round(map.getZoom()), mx=layer.options.maxNativeZoom!=null?layer.options.maxNativeZoom:(layer.options.maxZoom||19);
     const sz=map.getSize(), c0=map.containerPointToLatLng([0,0]), c1=map.containerPointToLatLng([sz.x,sz.y]);
-    /* one zoom level deeper for a 3–4× capture: twice the detail while labels stay readable */
-    let dz=Math.max(0, Math.round(Math.log2(scale))-1), zc, nw, se, x0, x1, y0, y1;
+    /* imagery is fetched at the capture's full density; tiles with lettering drawn into them
+       (OpenStreetMap, OpenTopoMap, reference labels, scanned maps) stay at the screen's zoom so
+       their text keeps its size, and are resampled smoothly instead */
+    const lettered=!/World_Imagery|eox\.at|gibs\.earthdata/.test(layer._url||'');
+    let dz=lettered?0:Math.max(0, Math.round(Math.log2(scale))), zc, nw, se, x0, x1, y0, y1;
     for(;;){ zc=Math.max(0, Math.min(mx, z0+dz)); nw=map.project(c0, zc); se=map.project(c1, zc);
       x0=Math.floor(nw.x/256); x1=Math.floor(se.x/256); y0=Math.floor(nw.y/256); y1=Math.floor(se.y/256);
       if((x1-x0+1)*(y1-y0+1)<=320 || dz===0) break; dz--; }
     if(zc<=Math.min(mx, z0)) return false;            /* nothing finer exists: the screen tiles will do */
     const mc=map.getContainer().getBoundingClientRect(), k=(sz.x*scale)/(se.x-nw.x), n=Math.pow(2,zc);
     const ox0=(mc.left-er.left)*scale, oy0=(mc.top-er.top)*scale, jobs=[];
+    let nT=0, dT=0; const tick=()=>{ dT++; if(dT%4===0||dT===nT) capProgress(0.45+0.35*dT/Math.max(1,nT), 'Fetching sharper tiles '+dT+' of '+nT+'…'); };
     for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++){
       if(y<0||y>=n) continue;
       const wx=((x%n)+n)%n, data=Object.assign({}, layer.options, {x:wx, y:layer.options.tms?n-1-y:y, z:zc, s:layer._getSubdomain?layer._getSubdomain({x:wx,y}):'a', r:''}); data['-y']=n-1-y;
       let url; try{ url=L.Util.template(layer._url, data); }catch(_){ continue; }
-      jobs.push(new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous'; const t=setTimeout(()=>res(null),12000);
-        im.onload=()=>{ clearTimeout(t); res({im, x, y}); }; im.onerror=()=>{ clearTimeout(t); res(null); }; im.src=url; }));
+      nT++;
+      jobs.push(new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous'; const t=setTimeout(()=>{ tick(); res(null); },12000);
+        im.onload=()=>{ clearTimeout(t); tick(); res({im, x, y}); }; im.onerror=()=>{ clearTimeout(t); tick(); res(null); }; im.src=url; }));
     }
     const got=(await Promise.all(jobs)).filter(Boolean);
     if(!got.length) return false;
@@ -4182,7 +4270,7 @@ async function paneComposite(el, scale){
   const gls=glMapsForRoot(el);
   const effOp=(n, top)=>{ let o=1; while(n && n!==top){ o*=parseFloat(getComputedStyle(n).opacity); n=n.parentNode; } return isFinite(o)?o:1; };
   for(const p of panes){
-    const pc=document.createElement('canvas'); pc.width=W; pc.height=H; const px=pc.getContext('2d');
+    const pc=document.createElement('canvas'); pc.width=W; pc.height=H; const px=pc.getContext('2d'); px.imageSmoothingEnabled=true; px.imageSmoothingQuality='high';
     for(const hl of hiLayers){ if(p.contains(hl._container) && !hiDone.has(hl)){ try{ if(await hiDraw(hl, px)) hiDone.add(hl); }catch(_){} } }
     for(const it of p.querySelectorAll('img.leaflet-tile, canvas')){
       let src=it;
@@ -4237,6 +4325,7 @@ async function captureMapElement(el, scale, ignore){
     }
   });
   if(shots.length||comp) el.style.backgroundColor='transparent';
+  capProgress(0.84, 'Drawing symbols and labels…');
   let snap;
   try{
     snap=await html2canvas(el, Object.assign({useCORS:true, scale, logging:false}, ignore?{ignoreElements:ignore}:{},
@@ -4338,6 +4427,42 @@ function setBasemap(key){
 }
 document.getElementById('mkBasemap').addEventListener('change', e=>setBasemap(e.target.value));
 window.__setBasemap=setBasemap;      /* automated-testing hook */
+
+/* ---------- long notes fold to one line + ⓘ (v69) ----------
+   Any explanatory .kv note longer than about two lines shows its first sentence and an
+   ⓘ button that unfolds the rest, so panels stay short and the teaching notes stay
+   one click away. Consent text, status lines and live counts are left alone. */
+(function(){
+  const SKIP='#modal-gallery,#modal-help,.gal-form,.kv-keep,.cap-prog,#mkSrcPanel,#modal-log';
+  const LIVE=/(Status|Prev|Info|Count|Msg|Progress)$/;
+  const short=t=>{ t=t.replace(/\s+/g,' ').trim();
+    const m=/^(.{20,120}?[.!?])(\s|$)/.exec(t); if(m) return m[1];
+    const d=/^(.{20,100}?)\s[—–]\s/.exec(t); if(d) return d[1]+'.';
+    return t.slice(0,95).replace(/\s+\S*$/,'')+'…'; };
+  function collapse(el){
+    if(!el || el.__kvBusy || el.dataset.kvOpen==='1') return;
+    if((el.id && LIVE.test(el.id)) || el.closest(SKIP)) return;
+    const txt=(el.textContent||'').trim(); if(txt.length<=130) return;
+    if(el.querySelector('input,select,textarea,canvas,svg,img,table,ul,ol')) return;
+    const sh=short(txt); if(sh.length>=txt.length-20) return;
+    el.__kvBusy=true; el.__kvFull=el.innerHTML;
+    el.innerHTML=esc(sh)+' <button type="button" class="kv-more" aria-expanded="false" aria-label="More about this" title="More">ⓘ</button>';
+    el.querySelector('.kv-more').onclick=ev=>{ ev.preventDefault(); ev.stopPropagation(); el.__kvBusy=true; el.dataset.kvOpen='1';
+      el.innerHTML=el.__kvFull+' <button type="button" class="kv-more" aria-expanded="true" title="Less">less</button>';
+      el.querySelector('.kv-more').onclick=e2=>{ e2.preventDefault(); e2.stopPropagation(); delete el.dataset.kvOpen; el.__kvBusy=true; el.innerHTML=el.__kvFull; setTimeout(()=>{ el.__kvBusy=false; collapse(el); },0); };
+      setTimeout(()=>{ el.__kvBusy=false; },0); };
+    setTimeout(()=>{ el.__kvBusy=false; },0);
+  }
+  const scan=n=>{ if(n.nodeType!==1) return; if(n.classList.contains('kv')) collapse(n); n.querySelectorAll && n.querySelectorAll('.kv').forEach(collapse); };
+  const mo=new MutationObserver(ms=>{ ms.forEach(m=>{
+    m.addedNodes.forEach(scan);
+    const t=m.target.nodeType===1?m.target:m.target.parentElement;
+    const k=t && t.closest && t.closest('.kv');
+    if(k && !k.__kvBusy){ delete k.dataset.kvOpen; collapse(k); }
+  }); });
+  const start=()=>{ scan(document.body); mo.observe(document.body,{childList:true,subtree:true,characterData:true}); };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
 /* ---------- dark interface toggle ---------- */
 (function(){
   const b=document.getElementById('btnTheme'); if(!b) return;
@@ -4385,7 +4510,7 @@ function bmAttrAll(){
 }
 function bmAddOptionsHtml(){
   const g=(label, keys)=>'<optgroup label="'+label+'">'+keys.map(k=>'<option value="'+k+'">'+esc(BM_OVERLAYS[k]?BM_OVERLAYS[k].label:(BM_LABELS[k]||k))+'</option>').join('')+'</optgroup>';
-  return '<option value="">+ Add overlay…</option>'+
+  return '<option value="">+ Add…</option>'+
     g('Terrain',['hillshade','contours'])+
     g('NASA',['nasa-blackmarble','nasa-citylights','nasa-bluemarble','nasa-modis','nasa-viirs'])+
     g('Historical',['ohm','ohm-woodblock','ohm-scroll'])+
@@ -4397,16 +4522,16 @@ function renderBmStack(){
   const opts=document.getElementById('mkBmOpts'), wrap=document.getElementById('mkStackWrap');
   if(!opts || !wrap) return;
   const need=bmStackNeeds(), today=new Date().toISOString().slice(0,10);
-  opts.innerHTML=(need.date?'<label class="bms-opt">Imagery date <input type="date" id="mkBmDate" min="2000-03-01" max="'+today+'" value="'+mkBmo.date+'" title="NASA daily imagery is ready a few hours after each satellite pass"></label>':'')+
-    (need.year?'<label class="bms-opt">Year <input type="number" id="mkBmYear" min="-4000" max="2100" step="1" value="'+mkBmo.year+'" title="OpenHistoricalMap shows what stood in this year (negative = BCE)"><input type="range" id="mkBmYearR" min="1500" max="2025" step="1" value="'+Math.max(1500,Math.min(2025,mkBmo.year))+'" aria-label="Year slider"></label>':'');
+  opts.innerHTML=(need.date?'<div class="bt-row"><span class="bt-lbl">Date</span><input type="date" id="mkBmDate" class="bt-grow" min="2000-03-01" max="'+today+'" value="'+mkBmo.date+'" title="Day of the NASA satellite imagery"></div>':'')+
+    (need.year?'<div class="bt-row"><span class="bt-lbl">Year</span><input type="range" id="mkBmYearR" class="bt-grow" min="1500" max="2025" step="1" value="'+Math.max(1500,Math.min(2025,mkBmo.year))+'" aria-label="Year slider"><input type="number" id="mkBmYear" min="-4000" max="2100" step="1" value="'+mkBmo.year+'" title="OpenHistoricalMap year (negative = BCE)" style="width:66px"></div>':'');
   const rows=mkBmStack.map((it,i)=>({it,i})).reverse().map(({it,i})=>
     '<div class="bms-row'+(it.on===false?' off':'')+'" data-i="'+i+'" tabindex="0" aria-label="'+esc(stackLabel(it))+' overlay. Alt+Up or Alt+Down moves it.">'+
       '<div class="bms-top"><span class="bms-grip" draggable="true" title="Drag to change the order">⠿</span><input type="checkbox" data-a="on"'+(it.on===false?'':' checked')+' aria-label="Show '+esc(stackLabel(it))+'">'+
       '<span class="bms-name" title="'+esc(stackLabel(it))+'">'+esc(stackLabel(it))+(bmGlobeSkips(it)?' <i class="bms-note">flat map only</i>':'')+'</span><button type="button" class="bms-x" data-a="rm" title="Remove this overlay" aria-label="Remove">×</button></div>'+
       '<div class="bms-ctl"><input type="range" data-a="op" min="0" max="100" value="'+Math.round(it.op*100)+'" aria-label="Opacity"><span class="bms-pct">'+Math.round(it.op*100)+'%</span>'+
       '<select data-a="bl" aria-label="Blend mode" title="Blend: Multiply darkens (good for hillshade and old maps on imagery), Screen lightens (good for night lights)">'+BM_BLENDS.map(b=>'<option value="'+b[0]+'"'+(it.bl===b[0]?' selected':'')+'>'+b[1]+'</option>').join('')+'</select></div></div>').join('');
-  wrap.innerHTML='<div class="bms-head"><span>Overlays</span><select id="mkStackAdd" aria-label="Add an overlay">'+bmAddOptionsHtml()+'</select></div>'+
-    (rows?'<div class="bms-list">'+rows+'<div class="bms-base">Base: '+esc(BM_LABELS[mkBasemapKey]||mkBasemapKey)+'</div></div>':'<div class="kv bms-empty">Stack hillshade, contours, night lights or an old map over the basemap.</div>');
+  wrap.innerHTML='<div class="bt-head"><h3>Overlays</h3><select id="mkStackAdd" aria-label="Add an overlay">'+bmAddOptionsHtml()+'</select></div>'+
+    (rows?'<div class="bms-list">'+rows+'</div>':'<div class="kv bms-empty">Hillshade, contours, night lights, old maps…</div>');
   const attrEl=document.getElementById('mkBasemapAttr'); if(attrEl) attrEl.textContent=bmAttrAll();
   /* events */
   const d=document.getElementById('mkBmDate');
@@ -4457,7 +4582,7 @@ function bmCustomDialog(){
   let m=document.getElementById('modal-bmcustom');
   if(!m){ m=document.createElement('div'); m.className='modal-overlay hidden'; m.id='modal-bmcustom';
     m.innerHTML='<div class="modal" style="max-width:520px"><h2>Add custom map tiles</h2>'+
-      '<p class="kv" style="margin-top:0">Paste an XYZ tile address — for example a scanned historical map you or a library georeferenced in <a href="https://mapwarper.net" target="_blank" rel="noopener">Map Warper</a>, <a href="https://allmaps.org" target="_blank" rel="noopener">Allmaps</a> or the David Rumsey Georeferencer. It must contain {z}, {x} and {y} and start with https.</p>'+
+      '<p class="kv kv-keep" style="margin-top:0">An https XYZ address with {z}, {x} and {y} — e.g. a scanned map from <a href="https://mapwarper.net" target="_blank" rel="noopener">Map Warper</a> or <a href="https://allmaps.org" target="_blank" rel="noopener">Allmaps</a>.</p>'+
       '<div class="field"><label>Tile address</label><input type="text" id="bmcUrl" placeholder="https://…/{z}/{x}/{y}.png" spellcheck="false"></div>'+
       '<div class="row2"><div class="field"><label>Name</label><input type="text" id="bmcName" maxlength="80" placeholder="e.g. Vancouver 1912"></div>'+
       '<div class="field" style="max-width:120px"><label>Most detailed zoom</label><input type="number" id="bmcMz" min="1" max="22" value="18"></div></div>'+
@@ -4499,7 +4624,6 @@ function renderBaseRow(){
   const bits=[]; if(on.length) bits.push(on.length+' overlay'+(on.length===1?'':'s')); if(mkGrid) bits.push(mkGrid.kind==='utm'?'UTM grid':'lat/long grid'); if(mkBmo.bop<1) bits.push(Math.round(mkBmo.bop*100)+'% opacity');
   r.innerHTML='<span class="bi" style="'+(mkBasemapKey==='none'?'background:'+mkBmo.paper:'')+'"></span><span><b>Basemap: '+esc(BM_LABELS[mkBasemapKey]||mkBasemapKey)+'</b><span class="sub">'+(bits.length?esc(bits.join(' · ')):'Overlays, grid, parts')+' ›</span></span>';
   r.onclick=()=>openLeftTab('base');
-  const bd=document.getElementById('mklBaseBadge'); if(bd) bd.textContent=on.length?String(on.length):'';
 }
 /* base opacity over a paper colour */
 function applyBaseOpacity(){
@@ -4511,19 +4635,19 @@ function applyBaseOpacity(){
 function renderBaseOpts(){
   const box=document.getElementById('mkBaseOpts'); if(!box) return;
   const none=mkBasemapKey==='none';
-  box.innerHTML=(none?'':'<div class="bms-opt"><span>Opacity</span><input type="range" id="mkBaseOp" min="0.1" max="1" step="0.05" value="'+mkBmo.bop+'" aria-label="Basemap opacity"><span class="bms-pct" id="mkBaseOpV">'+Math.round(mkBmo.bop*100)+'%</span></div>')+
-    ('<div class="bms-opt" id="mkPaperRow"'+((none||mkBmo.bop<1)?'':' hidden')+' title="The colour that shows through a faded basemap (and the page colour with no basemap)"><span>'+(none?'Background colour':'Fades to')+'</span><input type="color" id="mkPaper" value="'+mkBmo.paper+'" aria-label="Paper colour"></div>');
+  box.innerHTML='<div class="bt-row">'+(none?'<span class="bt-lbl">Background</span><span class="bt-grow"></span>':'<span class="bt-lbl">Opacity</span><input type="range" id="mkBaseOp" class="bt-grow" min="0.1" max="1" step="0.05" value="'+mkBmo.bop+'" aria-label="Basemap opacity"><span class="bms-pct" id="mkBaseOpV">'+Math.round(mkBmo.bop*100)+'%</span>')+
+    '<span id="mkPaperRow" class="bt-paper"'+((none||mkBmo.bop<1)?'':' hidden')+' title="Colour behind a faded basemap"><input type="color" id="mkPaper" value="'+mkBmo.paper+'" aria-label="Paper colour"></span></div>';
   const r=document.getElementById('mkBaseOp');
-  if(r){ r.oninput=()=>{ const was=mkBmo.bop<1; mkBmo.bop=+r.value; document.getElementById('mkBaseOpV').textContent=Math.round(mkBmo.bop*100)+'%'; applyBaseOpacity(); renderBaseRow(); const pr=document.getElementById('mkPaperRow'); if(pr) pr.hidden=!(mkBmo.bop<1); };
+  if(r){ r.oninput=()=>{ const was=mkBmo.bop<1; mkBmo.bop=+r.value; document.getElementById('mkBaseOpV').textContent=Math.round(mkBmo.bop*100)+'%'; applyBaseOpacity(); renderBaseRow(); const pr=document.getElementById('mkPaperRow'); if(pr) pr.hidden=!(mkBmo.bop<1); if(typeof mkGlobe!=='undefined' && mkGlobe && glbStyleReady(mkGlobe)) momGlobeFade(mkGlobe, mkBmo.bop, mkBmo.paper); };
     r.onchange=()=>{ markProjectDirty(); mkTouch(); }; }
   const pp=document.getElementById('mkPaper');
-  if(pp){ pp.oninput=e=>{ mkBmo.paper=e.target.value; applyBaseOpacity(); renderBaseRow(); }; pp.onchange=()=>{ markProjectDirty(); mkTouch(); }; }
+  if(pp){ pp.oninput=e=>{ mkBmo.paper=e.target.value; applyBaseOpacity(); renderBaseRow(); if(typeof mkGlobe!=='undefined' && mkGlobe && glbStyleReady(mkGlobe) && mkBmo.bop<1) momGlobeFade(mkGlobe, mkBmo.bop, mkBmo.paper); }; pp.onchange=()=>{ markProjectDirty(); mkTouch(); }; }
 }
 /* basemap parts, now listed with the basemap itself */
 function renderBmParts(){
   const box=document.getElementById('mkBmParts'); if(!box) return;
-  if(!bmHasParts(mkBasemapKey)){ box.innerHTML=mkBasemapKey==='none'?'':'<div class="bmp-note">This basemap is a picture, so its parts (labels, roads…) can’t be switched separately. The OpenFreeMap styles can.</div>'; return; }
-  box.innerHTML='<div class="bmp-head">Show</div><div class="bmp-list">'+Object.keys(BM_PART_GROUPS).map(k=>'<label title="'+esc(BM_PART_GROUPS[k].label)+'"><input type="checkbox" data-part="'+k+'"'+(basemapParts[k]?' checked':'')+'> '+esc(BM_PART_GROUPS[k].label.replace(/ \(.*\)$/,''))+'</label>').join('')+'</div>';
+  const on=bmHasParts(mkBasemapKey);
+  box.innerHTML='<div class="bt-sub'+(on?'':' off')+'" title="'+(on?'':'Only the OpenFreeMap vector basemaps have separate parts')+'"><div class="bt-lbl">Show</div><div class="bmp-list">'+Object.keys(BM_PART_GROUPS).map(k=>'<label><input type="checkbox" data-part="'+k+'"'+(basemapParts[k]?' checked':'')+(on?'':' disabled')+'> '+esc(BM_PART_GROUPS[k].label)+'</label>').join('')+'</div></div>';
   box.querySelectorAll('input[data-part]').forEach(cb=>cb.onchange=()=>{ basemapParts[cb.dataset.part]=cb.checked; applyBasemapParts(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty(); mkTouch(); });
 }
 
@@ -4690,7 +4814,8 @@ const MomGrid=L.Layer.extend({
     /* where a polyline crosses a horizontal (y) or vertical (x) edge */
     const cut=(pts, axis, v)=>{ for(let k=1;k<pts.length;k++){ const a=pts[k-1], q=pts[k], i=axis==='y'?1:0; if((a[i]-v)*(q[i]-v)<=0 && a[i]!==q[i]){ const t=(v-a[i])/(q[i]-a[i]); return [a[0]+(q[0]-a[0])*t, a[1]+(q[1]-a[1])*t]; } } return null; };
     const op=mkGrid.opacity==null?0.7:mkGrid.opacity;
-    const halo=(t,x,y,align,rot)=>{ g.save(); g.translate(x,y); if(rot) g.rotate(rot); g.textAlign=align; g.textBaseline='middle'; g.lineWidth=3; g.strokeStyle='rgba(255,255,255,.9)'; g.strokeText(t,0,0); g.fillStyle=col; g.fillText(t,0,0); g.restore(); };
+    const lcol=mkGrid.lcolor||col;
+    const halo=(t,x,y,align,rot)=>{ g.save(); g.translate(x,y); if(rot) g.rotate(rot); g.textAlign=align; g.textBaseline='middle'; g.lineWidth=3; g.strokeStyle='rgba(255,255,255,.9)'; g.strokeText(t,0,0); g.fillStyle=lcol; g.fillText(t,0,0); g.restore(); };
     g.font='600 10.5px -apple-system,Segoe UI,Helvetica,Arial,sans-serif';
     if(style==='border'){
       const B=26;
@@ -4726,7 +4851,7 @@ const MomGrid=L.Layer.extend({
 function gridClean(o){
   if(!o || typeof o!=='object' || !['latlon','utm'].includes(o.kind)) return null;
   const n=(v,d,lo,hi)=>{ v=+v; return isFinite(v)?Math.max(lo,Math.min(hi,v)):d; };
-  return {kind:o.kind, style:['lines','border','crosses'].includes(o.style)?o.style:'lines', color:/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:'#1b2a4a', opacity:n(o.opacity,0.7,0.1,1), width:n(o.width,0.8,0.3,4), step:n(o.step,0,0,1e6), labels:o.labels!==false};
+  return {kind:o.kind, style:['lines','border','crosses'].includes(o.style)?o.style:'lines', color:/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:'#1b2a4a', lcolor:/^#[0-9a-f]{6}$/i.test(o.lcolor||'')?o.lcolor:null, opacity:n(o.opacity,0.7,0.1,1), width:n(o.width,0.8,0.3,4), step:n(o.step,0,0,1e6), labels:o.labels!==false};
 }
 function setGrid(o){
   mkGrid=gridClean(o); setTimeout(()=>{ if(typeof renderBaseRow==='function') renderBaseRow(); },0);
@@ -4739,16 +4864,17 @@ function renderGridUi(){
   const k=mkGrid?mkGrid.kind:'';
   const steps=k==='utm'?GRID_M:k==='latlon'?GRID_DEG:[];
   const stepLbl=v=>k==='utm'?(v>=1000?v/1000+' km':v+' m'):fmtStep(v);
-  box.innerHTML='<div class="bms-head"><span>Grid</span><select id="mkGridKind" aria-label="Map grid"><option value="">None</option><option value="latlon"'+(k==='latlon'?' selected':'')+'>Latitude / longitude</option><option value="utm"'+(k==='utm'?' selected':'')+'>UTM (metres)</option></select></div>'+
-    (mkGrid?'<div class="grid-opts"><select id="mkGridStep" aria-label="Grid spacing"><option value="0">Spacing: automatic</option>'+steps.map(v=>'<option value="'+v+'"'+(Math.abs(mkGrid.step-v)<1e-9?' selected':'')+'>'+stepLbl(v)+'</option>').join('')+'</select>'+
-      '<input type="color" id="mkGridColor" value="'+mkGrid.color+'" aria-label="Grid colour"><label class="grid-lbl"><input type="checkbox" id="mkGridLabels"'+(mkGrid.labels?' checked':'')+'> Labels</label></div>'+
+  box.innerHTML='<div class="bt-head"><h3>Grid</h3><select id="mkGridKind" aria-label="Map grid"><option value="">None</option><option value="latlon"'+(k==='latlon'?' selected':'')+'>Lat / long</option><option value="utm"'+(k==='utm'?' selected':'')+'>UTM (m)</option></select></div>'+
+    (mkGrid?'<div class="bt-row"><span class="bt-lbl">Spacing</span><select id="mkGridStep" class="bt-grow" aria-label="Grid spacing"><option value="0">Automatic</option>'+steps.map(v=>'<option value="'+v+'"'+(Math.abs(mkGrid.step-v)<1e-9?' selected':'')+'>'+stepLbl(v)+'</option>').join('')+'</select></div>'+
+      '<div class="bt-row"><span class="bt-lbl">Lines</span><input type="color" id="mkGridColor" value="'+mkGrid.color+'" aria-label="Grid line colour"><span class="bt-gap"></span><label class="grid-lbl"><input type="checkbox" id="mkGridLabels"'+(mkGrid.labels?' checked':'')+'> Labels</label><input type="color" id="mkGridLColor" value="'+(mkGrid.lcolor||mkGrid.color)+'" aria-label="Grid label colour"'+(mkGrid.labels?'':' disabled')+'></div>'+
       '<div class="grid-seg" role="radiogroup" aria-label="Grid style">'+[['lines','Lines'],['border','Border ticks'],['crosses','Crosses']].map(o=>'<button type="button" role="radio" data-gs="'+o[0]+'" aria-checked="'+(mkGrid.style===o[0])+'" class="'+(mkGrid.style===o[0]?'on':'')+'">'+o[1]+'</button>').join('')+'</div>':'');
   const upd=()=>{ if(mkGridLayer) mkGridLayer._draw(); if(typeof markProjectDirty==='function') markProjectDirty(); };
-  document.getElementById('mkGridKind').onchange=e=>{ const v=e.target.value; setGrid(v?{kind:v, style:mkGrid?mkGrid.style:'lines', color:mkGrid?mkGrid.color:'#1b2a4a', labels:true}:null); markProjectDirty(); };
+  document.getElementById('mkGridKind').onchange=e=>{ const v=e.target.value; setGrid(v?{kind:v, style:mkGrid?mkGrid.style:'lines', color:mkGrid?mkGrid.color:'#1b2a4a', lcolor:mkGrid?mkGrid.lcolor:null, labels:true}:null); markProjectDirty(); };
   if(mkGrid){
     document.getElementById('mkGridStep').onchange=e=>{ mkGrid.step=+e.target.value; upd(); };
     document.getElementById('mkGridColor').oninput=e=>{ mkGrid.color=e.target.value; upd(); };
-    document.getElementById('mkGridLabels').onchange=e=>{ mkGrid.labels=e.target.checked; upd(); };
+    document.getElementById('mkGridLabels').onchange=e=>{ mkGrid.labels=e.target.checked; renderGridUi(); upd(); };
+    document.getElementById('mkGridLColor').oninput=e=>{ mkGrid.lcolor=e.target.value; upd(); };
     box.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{ mkGrid.style=b.dataset.gs; renderGridUi(); upd(); });
   }
 }
@@ -7583,7 +7709,7 @@ function renderStyleTab(){
         return '<label class="ch-f"><input type="checkbox" data-f="'+esc(f)+'"'+(i>=0?' checked':'')+'>'+(i>=0?'<input type="color" data-c="'+esc(f)+'" value="'+toHex(chartColorOf(st,f,i))+'" aria-label="Colour for '+esc(f)+'">':'<span class="ch-nc"></span>')+'<span>'+esc(f)+'</span></label>'; }).join(''):'<span class="kv">This layer has no numeric fields.</span>'}</div></div>
       <div class="row2"><div class="field"><label>Size</label><select id="stChSize"${st.chartType==='bar'?' disabled':''}><option value="fixed"${st.chartSize==='fixed'?' selected':''}>All the same</option><option value="prop"${st.chartSize==='prop'?' selected':''}>By total (area)</option></select></div>
       <div class="field"><label>${st.chartType==='bar'?'Half-width (px)':st.chartSize==='prop'?'Largest radius (px)':'Radius (px)'}</label><input type="number" id="stChR" min="4" max="80" value="${st.chartR}"></div></div>
-      <p class="kv">${st.chartFields.length<2?'Tick at least two fields that are parts of one whole (e.g. counts by age group).':'Slices show each field’s share of the total'+(st.chartType==='bar'?'; bar heights share one scale across the map.':'.')}</p>`;
+      ${st.chartFields.length<2?'<p class="kv">Tick two or more fields that make up one whole.</p>':''}`;
   }
   if(lyr.geom==='point' && st.mode!=='chart'){
     html+=`<div class="field"><label>Symbol</label>
@@ -7847,7 +7973,7 @@ function renderStyleTab(){
       <div class="checkline"><input type="checkbox" id="stExOn" ${x.on?'checked':''}><label for="stExOn" style="margin:0;color:var(--text);">Raise each area by a value (prism map)</label></div>`+
       (x.on?`<div class="row2"><div class="field"><label>Height from</label><select id="stExField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(x.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
       <div class="field"><label>Tallest (m)</label><input type="number" id="stExMax" min="10" step="100" value="${x.maxH||extrudeDefaultHeight(lyr)}"></div></div>
-      <p class="kv">Shows on the globe ${typeof mkGlobe!=='undefined'&&mkGlobe?'— tilt it with right-drag or the compass button':'(🌐 button); tilt it to see the heights'}. Height doubles up a value that colour may already show, so say which in the legend.</p>`:'');
+      <p class="kv">Shows on the globe; tilt it to see the heights.</p>`:'');
   }
   if(lyr.geom==='polygon' && ['single','cat','grad','chart'].includes(st.mode)){
     html+=`<div class="row2"><div class="field"><label>Fill pattern</label><select id="stPat">${PATTERNS.map(o=>'<option value="'+o[0]+'"'+((st.pattern||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')}</select></div>`+
@@ -9703,23 +9829,23 @@ function renderSpatialForm(){
   } else if(op==='smooth'){
     el.innerHTML=selA+`
       <div class="field"><label>Smoothness (passes)</label><select id="spSmoothN"><option value="1">1 — slight</option><option value="2" selected>2 — moderate</option><option value="3">3 — strong</option><option value="4">4 — very strong</option></select></div>
-      <div class="kv">Smoothing <b>adds</b> points to round corners, keeping the overall detail; Simplify does the opposite and removes points. Chaikin corner-cutting: rounds the corners of lines and polygon outlines. Lines keep their end points. Shared borders between neighbouring polygons are smoothed the same way, but tiny gaps can open where they meet — smooth a dissolved outline, or simplify first, for very jagged data.</div>`;
+      <div class="kv">Rounds corners by adding points (Chaikin). Simplify does the opposite.</div>`;
   } else if(op==='thiessen'){
     const polys=mkLayers.filter(l=>l.geom==='polygon');
     el.innerHTML=`<div class="field"><label>Points</label><select id="spA">${layerOptions(mkLayers.some(l=>l.id===mkSelectedId&&l.geom==='point')?mkSelectedId:(mkLayers.find(l=>l.geom==='point')||{}).id,null)}</select></div>
       <div class="field"><label>Clip the polygons to</label><select id="spClip"><option value="">the points’ extent, plus a margin</option>${polys.map(l=>'<option value="'+l.id+'">'+esc(l.name)+' (outline)</option>').join('')}</select></div>
-      <div class="kv">Each polygon holds the area closer to its point than to any other, and carries that point’s attributes plus its area (area_km2). Thiessen polygons are a classic way to turn stations or facilities into service areas, though straight-line nearness ignores roads, rivers and borders.</div>`;
+      <div class="kv">Each polygon is the area nearest its point, with the point’s attributes and area_km2.</div>`;
   } else if(op==='fixgeom'){
     el.innerHTML=selA+`
       <div class="checkline"><input type="checkbox" id="spFixOnly"><label for="spFixOnly" style="margin:0;color:var(--text);">Only check — select the features with problems</label></div>
-      <div class="kv">Finds missing or empty shapes, coordinates that aren't numbers or aren't longitude/latitude, repeated points, unclosed or too-short rings, self-intersecting polygons and rings wound the wrong way. Fixing makes a corrected copy; shapes that can't be repaired are left out and listed.</div>`;
+      <div class="kv">Finds empty shapes, bad coordinates, repeated points, open rings, bow-ties and wrong winding.</div>`;
   } else if(op==='selexpr'){
     const L0=mkLayers.find(l=>l.id===mkSelectedId)||mkLayers[0];
     el.innerHTML=selA+`
-      <div class="field"><label>Expression</label><textarea id="spExpr" rows="3" spellcheck="false" placeholder="e.g.  population > 5000 AND name LIKE 'K%'"></textarea></div>
+      <div class="field"><label>Expression</label><textarea id="spExpr" rows="3" spellcheck="false" placeholder="population > 5000 AND name LIKE 'K%'"></textarea></div>
       <div class="sel-fields" id="spExprFields"></div>
       <div class="field"><label>Result</label><select id="spExprMode"><option value="set">New selection</option><option value="add">Add to the selection</option><option value="within">Select within the current selection</option><option value="layer">Copy the matches to a new layer</option></select></div>
-      <div class="kv" id="spExprPrev">Use field names, numbers and 'text'. Works: &gt; &lt; = &lt;&gt; AND OR NOT, LIKE 'K%', IS NULL — or JavaScript (&amp;&amp;, ||, .includes()).</div>`;
+      <div class="kv" id="spExprPrev">e.g. pop &gt; 5000 AND name LIKE 'K%'. SQL words or JavaScript both work.</div>`;
     const fillFields=()=>{ const l=mkLayers.find(x=>x.id===document.getElementById('spA').value)||L0; const box=document.getElementById('spExprFields');
       box.innerHTML=fieldsOf(l).slice(0,60).map(f=>'<button type="button" class="sel-fchip" data-f="'+esc(f)+'">'+esc(f)+'</button>').join('');
       box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const t=document.getElementById('spExpr'), f=b.dataset.f, ins=/^[A-Za-z_$][\w$]*$/.test(f)?f:'field("'+f.replace(/"/g,'\"')+'")';
@@ -9735,7 +9861,7 @@ function renderSpatialForm(){
     el.innerHTML=selA+`
       <div class="field"><label>Tolerance (degrees; ~0.001 ≈ 100 m)</label><input type="number" id="spTol" value="0.001" min="0.00001" step="0.0005"></div>
       <div class="checkline"><input type="checkbox" id="spHQ" checked><label for="spHQ" style="margin:0;color:var(--text);">High quality (slower, better shape retention)</label></div>
-      <div class="kv">Douglas–Peucker generalization — the classic cartographic line simplification. It <b>removes</b> points, so outlines get coarser and more angular. To round corners off instead, use <b>Smooth lines and polygons</b>; simplifying first and then smoothing is a common pairing.</div>`;
+      <div class="kv">Douglas–Peucker: removes points, so outlines get coarser. To round corners, use Smooth.</div>`;
   } else if(op==='nearest'){
     el.innerHTML=`<div class="field"><label>For each feature in</label><select id="spA">${layerOptions(mkSelectedId,null)}</select></div>
       <div class="field"><label>find the nearest feature in</label><select id="spB">${layerOptions(null,null)}</select></div>
@@ -12764,7 +12890,7 @@ async function atCaptureMap(p, basemap, quiet){
     p.thumb=await atToJpeg(url, 900, 0.8);
     p.still=await atToJpeg(url, 2800, 0.9);   /* sharper copy for the PDF */
   }catch(_){ p.thumb=''; }
-  finally{ if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
+  finally{ capProgress(1); if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
   atDirty(); if(!document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas();
   mlog('compose','Captured a live map for the atlas page "'+(p.title||'Map')+'" ('+mkLayers.filter(l=>l.visible).map(l=>l.name).join(', ')+').');
   return true;
@@ -13982,8 +14108,9 @@ document.getElementById('sendGoBtn').onclick=()=>{
   if(mkGlobe){
     /* globe view: the basemap and data are already baked into the WebGL canvas.
        Read it inside a render callback or it comes back blank/black. */
-    status.textContent='Capturing globe…';
+    status.textContent='';
     withHiRes(4, ()=>glFreshDataURL(mkGlobe)).then(dataURL=>{
+      capProgress(1);
       if(!dataURL){ status.textContent='Could not capture the globe.'; return; }
       closeModal('modal-send');
       window.__layout.receiveFromMaker(dataURL, null, specs, false, []);
@@ -13993,8 +14120,9 @@ document.getElementById('sendGoBtn').onclick=()=>{
   }
   if(projActive){
     /* projected view: capture the projection canvas directly, redrawn at 3× */
-    status.textContent='Capturing map…';
+    status.textContent='';
     withHiRes(4, async ()=>document.getElementById('projCanvas').toDataURL('image/png')).then(dataURL=>{
+    capProgress(1);
     closeModal('modal-send');
     window.__layout.receiveFromMaker(dataURL, null, specs, false, labels);
     if(wantScale) toast('No scale bar added — scale varies across a projected map.', 4200);
@@ -14009,16 +14137,20 @@ document.getElementById('sendGoBtn').onclick=()=>{
   if(wantLabels) hideLabelsForCapture(true);      /* they arrive as text instead */
   const center=mkMap.getCenter(), zoom=mkMap.getZoom();
   const metersPerScreenPx = 156543.03392 * Math.cos(center.lat*Math.PI/180) / Math.pow(2, zoom);
-  status.textContent='Capturing map at print quality…';
+  status.textContent='';
+  const goBtn=document.getElementById('sendGoBtn'); if(goBtn) goBtn.disabled=true;
   withHiRes(CAPSCALE, ()=>captureMapElement(mapEl, CAPSCALE)).then(dataURL=>{
     mapEl.classList.remove('capturing');
     if(wantLabels) hideLabelsForCapture(false);
     const metersPerImagePx = metersPerScreenPx / CAPSCALE;
+    capProgress(0.96, 'Placing it on the page…');
+    if(goBtn) goBtn.disabled=false; capProgress(1);
     closeModal('modal-send');
     window.__layout.receiveFromMaker(dataURL, metersPerImagePx, specs, wantScale, labels);
   }).catch(err=>{
     mapEl.classList.remove('capturing');
     if(wantLabels) hideLabelsForCapture(false);
+    if(goBtn) goBtn.disabled=false; capProgress(1);
     status.textContent='Capture failed: '+err.message+'. Try a different basemap (some tile servers block capture).';
   });
 };
@@ -16780,6 +16912,22 @@ document.getElementById('insetAddToLayoutBtn').onclick=()=>{
 };
 
 /* ---------- receive from Map Maker ---------- */
+/* Images on the page (map frames above all) are drawn straight from the full-resolution
+   source with high-quality resampling. Fabric's object cache would otherwise hold a
+   screen-sized copy (capped near 2 megapixels) and stretch it for 300-dpi exports,
+   and the browser's default resampling makes large downscales jagged on screen. */
+(function(){
+  if(!window.fabric || !fabric.Image) return;
+  fabric.Image.prototype.objectCaching=false;
+  const rf=fabric.Image.prototype._renderFill;
+  fabric.Image.prototype._renderFill=function(ctx){
+    const e=ctx.imageSmoothingEnabled, q=ctx.imageSmoothingQuality;
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    try{ return rf.call(this, ctx); } finally { ctx.imageSmoothingEnabled=e; ctx.imageSmoothingQuality=q; }
+  };
+  fabric.perfLimitSizeTotal=Math.max(fabric.perfLimitSizeTotal||0, 16e6);
+  fabric.maxCacheSideLimit=Math.max(fabric.maxCacheSideLimit||0, 8192);
+})();
 function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, labelPlacements){
   switchModule('layout');
   fabric.Image.fromURL(dataURL, img=>{
@@ -19374,7 +19522,7 @@ function buildGlobeEmbedHtml(opts, snap){
   const bmo=bmoClean(snap.bmo);
   const style=styleUrl || globeRasterStyle(bmKey==='none'?'none':bmKey, bmo);
   const gSpec=stackSpec(stackClean(snap.stack), bmo).filter(x=>x.t==='tiles'||x.t==='hill');
-  const ohmY=(BASEMAPS[bmKey]&&BASEMAPS[bmKey].ohm)?bmo.year:null;
+  const ohmY=(BASEMAPS[bmKey]&&BASEMAPS[bmKey].ohm)?bmo.year:null, gFade=bmo.bop<1;
   const g=snap.globe;
   const data=JSON.stringify(snap.gLayers).replace(/<\/(script)/gi,'<\\/$1').replace(/<!--/g,'<\\!--');
   const lgHtml=opts.legend ? snap.legendHtml : '';
@@ -19402,11 +19550,11 @@ function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'
 var map=new maplibregl.Map({container:'map',style:${JSON.stringify(style)},projection:{type:'globe'},center:${JSON.stringify(g.c)},zoom:${+g.z||1.5},bearing:${+g.br||0},pitch:${+g.pt||0},attributionControl:{compact:true}});
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'${opts.zoomPos==='bottomleft'?'bottom-left':'top-left'}');
 ${bmHasParts(bmKey) ? partsEmbedJs(snap.partsOff||[], 'function(){return map;}', !!opts.partsUi) : ''}
-${(gSpec.length||ohmY!=null) ? MOM_GLOBE_RT : ''}
+${(gSpec.length||ohmY!=null||gFade) ? MOM_GLOBE_RT : ''}
 var added=false;
 function add(){ if(added||!(map.style&&map.style._loaded))return; added=true;
   try{map.setProjection({type:'globe'});}catch(e){} try{map.setSky&&map.setSky({});}catch(e){}
-  ${ohmY!=null?'momOhmYear(map,'+ohmY+');':''}${gSpec.length?'momStackGlobe(map,'+JSON.stringify(gSpec)+');':''}
+  ${ohmY!=null?'momOhmYear(map,'+ohmY+');':''}${gSpec.length?'momStackGlobe(map,'+JSON.stringify(gSpec)+');':''}${gFade?'momGlobeFade(map,'+bmo.bop+','+JSON.stringify(bmo.paper)+');':''}
   var ids=[];
   var keys=Object.keys(ICONS), left=keys.length;
   var build=function(){
@@ -19863,6 +20011,7 @@ function svOpenGlobe(mapDiv, payload, groups){
   const addAll=()=>{ try{ map.setProjection({type:'globe'}); }catch(_){}
     const k=map.__bk||bk; if(BASEMAPS[k]&&BASEMAPS[k].ohm) momOhmYear(map, svBmo.year);
     momStackGlobe(map, svStack.filter(x=>x.t==='tiles'||x.t==='hill'));
+    if(svBmo.bop<1) momGlobeFade(map, svBmo.bop, svBmo.paper);
     ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); if(svParts) applyPartsTo(map, svParts); };
   let done=false; const tryAdd=()=>{ if(done||!glbStyleReady(map)) return; done=true; addAll(); };
   map.on('load', tryAdd); map.on('styledata', tryAdd); const poll=setInterval(()=>{ if(done) clearInterval(poll); else tryAdd(); }, 200);

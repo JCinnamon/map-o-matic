@@ -1,4 +1,4 @@
-[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33517277/map-o-matic-README_2026.md)
+[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33518543/map-o-matic-README_2026.md)
 # Map-O-Matic
 
 **A free cartography studio that runs in your browser: style your data as a map, compose a print-ready layout, collect field data on phones, and gather your maps into an interactive atlas.**
@@ -89,15 +89,13 @@ Online datasets over 5,000 features prompt a choice — load all, load the first
 
 **Basemaps.** The default set is open. Five vector styles come from **OpenFreeMap** — *Positron* (light, the default), *Bright*, *Liberty* (full streets), *Dark* and *Fiord* (muted) — built on OpenStreetMap data through the OpenMapTiles schema and rendered with MapLibre GL, so they stay crisp at any zoom. Three open raster layers sit alongside them: **OpenStreetMap** standard, **OpenTopoMap** (topographic style with contours and hill shading from OpenStreetMap and SRTM elevation data, CC-BY-SA, up to zoom 17), and **Sentinel-2 Cloudless** — a cloud-free Copernicus mosaic from EOX, fully open but only ~10 m resolution, so it's context rather than street-level detail. For sharper imagery there are two higher-resolution options, **Satellite** and **Satellite Hybrid** (imagery plus roads, labels and boundaries from open OpenStreetMap-derived data): the reference overlay is open, but the imagery itself is proprietary (free to use with attribution, sourced from Vantor/Maxar and Earthstar Geographics), so it doesn't meet the open bar the way the rest do. The attribution for whichever basemap you pick shows under the picker; the Sentinel-2 mosaic is CC-BY-NC-SA (free for teaching and study, not commercial reuse). Projects saved before the switch that named an Esri or CARTO basemap are quietly mapped to the closest current one — old imagery projects land on Satellite. While a projection other than Web Mercator is on, the basemap list is greyed out: projected views draw their own world outline.
 
-**Layers and Basemap tabs.** The left panel has two tabs. **Layers** holds the place search, **+ Add data**, the projection and your data layers. The last row of the layer list stands for everything beneath your data (*Basemap: Positron · 2 overlays · grid*) and opens the **Basemap** tab, as does the layers button under the map controls. The Basemap tab holds:
+**Layers and Basemap tabs.** The left panel has two tabs. **Layers** holds the place search, **+ Add data**, the projection and your data layers. The last row of the layer list stands for everything beneath your data (*Basemap: Positron · 2 overlays · grid*) and opens the **Basemap** tab. The Basemap tab holds:
 
 - the basemap picker;
 - the basemap's **opacity**, fading to a **paper colour** of your choice (white by default) so thematic data stands out;
-- which **parts** to show (borders, place labels, roads, water, buildings, land use, points of interest) on the vector basemaps;
+- which **parts** to show (borders, place names, roads and rail, water, buildings, land use and parks, points of interest), greyed out on basemaps that are pictures rather than vector styles;
 - the overlays;
 - the grid.
-
-The tab's badge counts the overlays switched on.
 
 **Sources and credits.** The **ⓘ** button on the map (and **Basemap sources and credits** at the foot of the Basemap tab) lists the basemap and each overlay with its credit, licence and a link to its terms. The credit line along the bottom of the map is kept to one line, with the full list one click away. Data layers' sources are in the Process Log.
 
@@ -110,7 +108,7 @@ The tab's badge counts the overlays switched on.
 - Any NASA or OpenHistoricalMap layer, or another basemap (e.g. Sentinel-2 over a light basemap).
 - **Custom tiles**: paste an XYZ address (with {z}, {x}, {y}) for a scanned historical map georeferenced in Map Warper, Allmaps or the David Rumsey Georeferencer, with its own name, credit and most-detailed zoom.
 
-Each overlay has a show/hide box, an **opacity** slider and a **blend** mode. *Multiply* darkens, which suits hillshade and old maps over imagery. *Screen* lightens, which suits night lights over a dark basemap. Drag overlays to reorder them (the top of the list draws on top), or use Alt+↑/↓. The stack is saved with the project, undoable, and carried into Send to Composer, share links, exported web maps and atlas pages, along with the basemap's opacity and paper colour (which apply to flat maps, not the globe). For print-quality captures (Send to Composer, atlas stills), raster basemaps and overlays are fetched one zoom level deeper rather than enlarged. Hillshade and contours are recomputed at the capture's resolution, and the vector basemaps and grid are redrawn at it, so all of them stay sharp on the page. On the globe, hillshade and raster overlays show with their opacity, but contour lines, vector overlays and blend modes are flat-map only (the panel says so). Credits for every layer in the stack appear under the picker and on the map.
+Each overlay has a show/hide box, an **opacity** slider and a **blend** mode. *Multiply* darkens, which suits hillshade and old maps over imagery. *Screen* lightens, which suits night lights over a dark basemap. Drag overlays to reorder them (the top of the list draws on top), or use Alt+↑/↓. The stack is saved with the project, undoable, and carried into Send to Composer, share links, exported web maps and atlas pages, along with the basemap's opacity and paper colour, which also apply on the globe. For print-quality captures (Send to Composer, atlas stills), aerial and satellite imagery is fetched at the capture's full detail, while raster maps with lettering drawn in (OpenStreetMap, OpenTopoMap, scanned maps) keep the screen's zoom so their text stays the same size, resampled smoothly. A progress bar in the Send dialog shows each step. Hillshade and contours are recomputed at the capture's resolution, and the vector basemaps and grid are redrawn at it, so all of them stay sharp on the page. On the globe, hillshade and raster overlays show with their opacity, but contour lines, vector overlays and blend modes are flat-map only (the panel says so). Credits for every layer in the stack appear under the picker and on the map.
 
 **Map grid.** **Grid** in the Basemap tab draws a **latitude/longitude** graticule (degrees, minutes and seconds as you zoom in) or a **UTM** grid in metres for the zone at the map's centre (WGS 84). It comes in three styles:
 
@@ -118,7 +116,7 @@ Each overlay has a show/hide box, an **opacity** slider and a **blend** mode. *M
 - **Border ticks**: a neatline frame with tick marks and coordinate labels in the margin, in the printed-map tradition.
 - **Crosses**: small + marks where the lines would meet.
 
-Spacing is automatic or chosen, labels can be turned off, and the colour is adjustable. The grid comes across with **Send to Composer**, so a printed map can carry a reference grid. It is saved with the project.
+Spacing is automatic or chosen. Lines and labels each have their own colour, and labels can be turned off. The grid comes across with **Send to Composer**, so a printed map can carry a reference grid. It is saved with the project.
 
 **Layer groups.** In a layer's **⋯** menu, **Add to a group…** puts it in a named group (or a new one). A group shows as a header in the layer list with:
 
@@ -130,6 +128,8 @@ Spacing is automatic or chosen, labels can be turned off, and the colour is adju
 Dragging a layer next to a grouped layer adds it to that group, and dragging it beside an ungrouped layer takes it out. Groups are saved with the project.
 
 **Projections.** Switch from the Web Mercator editing view into any of 13 projections: world (Equal Earth, Robinson, Winkel Tripel, Mollweide, Mercator, Orthographic), regional conic (Albers Equal-Area, Lambert Conformal, with adjustable centre and standard parallels), azimuthal (Equidistant, Stereographic), and historical/novelty (Gall–Peters, Goode Homolosine, Bonne). The projected view is fully interactive and behaves like the normal map: scroll or double-click to zoom (Shift+double-click zooms out), on-screen **+/−** buttons, drag to pan (or rotate the globe on Orthographic/azimuthal projections), with **Fit to data** and **Fit to world** buttons to reset the view. On interrupted projections (Goode Homolosine) everything is clipped to the lobes, so continents, Antarctica and the graticule are not smeared across the gaps. Choosing a projection while the globe is open closes the globe; the ⤢ button under the map's zoom controls zooms to all visible layers in the flat, projected and globe views; while a cartogram is on the map only the equal-area projections can be chosen. The projected view redraws to fit whenever a side panel is opened, closed or resized. An optional graticule and world-land backdrop can be toggled; raster basemaps can't be reprojected client-side, so they hide while a projection is active. In the projected views, **click a feature** to see its attributes and select it (Shift/Ctrl/Cmd adds to the selection; the table follows). On the azimuthal, stereographic and orthographic views, dragging turns the globe so the place you grabbed stays under the pointer; **Shift+drag** slides the view instead.
+
+**Shorter notes.** Longer explanations in the panels fold to their first sentence with an **ⓘ** that unfolds the rest.
 
 **Dark interface.** The ☾ button in the top bar switches panels, menus and dialogs to a dark theme (☀ switches back). On a first visit it follows the computer's light or dark setting. Maps, Composer pages and atlases keep their own colours, so what you print or share looks the same either way.
 
@@ -249,6 +249,8 @@ Every page has a title, an optional caption and optional text of its own. **+ Ad
 ## Map Composer: composing the page
 
 Elements: map frame (image, or from Map Maker), inset/locator map, title and text, legend, north arrow (3 styles), scale bar, neatline (plain or tick-marked), images/logos, and sketching. Selecting an element in the **Elements** tab opens its properties.
+
+**Image quality.** Map frames are drawn from the full-resolution capture with high-quality resampling, both on screen and in PDF/PNG exports. A map frame on the page is usually narrower than the Map Maker map was on screen, so its labels print proportionally smaller; the vector basemaps stay sharpest.
 
 **Cropping.** Map frames, inset maps and images can be cropped on the page: double-click the element (or use **Crop** in its properties). The full picture shows faded behind an orange box; drag or resize the box and press Enter (or click elsewhere) to apply, Esc to cancel. The crop can be changed later, and **Remove crop** restores the whole picture. The **inset/locator map** has the same live basemap engine as the main map — a basemap dropdown offering every basemap (vector, raster, satellite, or blank) and the same basemap-parts toggles (borders, place labels, roads, water, and so on) — plus optional data overlays and a locator box; it opens on whatever basemap Map Maker is currently showing so the two match by default.
 

@@ -1231,6 +1231,14 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .cap-float .cp-msg{margin:0 0 7px;color:var(--text);font-weight:600;}
   .kv-more{border:none;background:none;padding:0 2px;margin-left:1px;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;line-height:1;vertical-align:baseline;}
   .kv-more:hover{text-decoration:underline;}
+  /* folded side panel: a strip of sideways section labels (v70) */
+  .splitter.closed{width:30px;margin:0;background:var(--panel);cursor:default;}
+  .splitter.closed .splitter-tab{top:10px;transform:translateX(-50%);height:26px;width:20px;}
+  .sp-rail{display:none;}
+  .splitter.closed .sp-rail{display:flex;flex-direction:column;align-items:center;gap:6px;position:absolute;top:44px;left:0;right:0;}
+  .sp-lbl{writing-mode:vertical-rl;border:1px solid var(--line);background:rgba(47,125,120,.08);color:var(--text);font-size:12px;font-weight:700;letter-spacing:.03em;padding:10px 3px;border-radius:7px;cursor:pointer;width:24px;line-height:1;}
+  .sp-rail.left .sp-lbl{transform:rotate(180deg);}
+  .sp-lbl:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
 </style>
 </head>
 <body>
@@ -1851,7 +1859,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <h2>Export</h2>
     <div class="field"><label>What to export</label>
       <select id="exportFormat">
-        <optgroup label="Layout page">
+        <optgroup label="Layout page" id="expLayoutGroup">
           <option value="pdf">Layout — PDF (print-ready)</option>
           <option value="png">Layout — PNG image</option>
           <option value="svg">Layout — SVG (vector, editable in Illustrator/Inkscape)</option>
@@ -1864,7 +1872,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
           <option value="embed">Interactive web map — HTML file + embed code</option>
         </optgroup>
         <optgroup label="Everything">
-          <option value="archive">Project archive — layout PDF/PNG + all layers + project file (zip)</option>
+          <option value="archive" id="expArchiveOpt">Project archive — layout PDF/PNG + all layers + project file (zip)</option>
         </optgroup>
       </select>
     </div>
@@ -4269,8 +4277,9 @@ async function paneComposite(el, scale){
   const out=document.createElement('canvas'); out.width=W; out.height=H; const ox=out.getContext('2d');
   const gls=glMapsForRoot(el);
   const effOp=(n, top)=>{ let o=1; while(n && n!==top){ o*=parseFloat(getComputedStyle(n).opacity); n=n.parentNode; } return isFinite(o)?o:1; };
+  const pc=document.createElement('canvas'); pc.width=W; pc.height=H; const px=pc.getContext('2d');
   for(const p of panes){
-    const pc=document.createElement('canvas'); pc.width=W; pc.height=H; const px=pc.getContext('2d'); px.imageSmoothingEnabled=true; px.imageSmoothingQuality='high';
+    px.setTransform(1,0,0,1,0,0); px.globalAlpha=1; px.clearRect(0,0,W,H); px.imageSmoothingEnabled=true; px.imageSmoothingQuality='high';
     for(const hl of hiLayers){ if(p.contains(hl._container) && !hiDone.has(hl)){ try{ if(await hiDraw(hl, px)) hiDone.add(hl); }catch(_){} } }
     for(const it of p.querySelectorAll('img.leaflet-tile, canvas')){
       let src=it;
@@ -4290,7 +4299,8 @@ async function paneComposite(el, scale){
     ox.drawImage(pc,0,0);
     ox.globalAlpha=1; ox.globalCompositeOperation='source-over';
   }
-  try{ ox.getImageData(0,0,1,1); }catch(_){ return null; }   /* a tile without CORS tainted it */
+  pc.width=pc.height=0;   /* hand the memory back straight away */
+  try{ ox.getImageData(0,0,1,1); }catch(_){ out.width=out.height=0; return null; }   /* a tile without CORS tainted it */
   return {canvas:out, panes};
 }
 async function captureMapElement(el, scale, ignore){
@@ -4341,10 +4351,12 @@ async function captureMapElement(el, scale, ignore){
   out.width=snap.width; out.height=snap.height;
   const cx=out.getContext('2d');
   cx.fillStyle='#ffffff'; cx.fillRect(0,0,out.width,out.height);
-  if(comp){ if(elBg && elBg!=='rgba(0, 0, 0, 0)'){ cx.fillStyle=elBg; cx.fillRect(0,0,out.width,out.height); } cx.drawImage(comp.canvas, 0, 0, out.width, out.height); }
+  if(comp){ if(elBg && elBg!=='rgba(0, 0, 0, 0)'){ cx.fillStyle=elBg; cx.fillRect(0,0,out.width,out.height); } cx.drawImage(comp.canvas, 0, 0, out.width, out.height); comp.canvas.width=comp.canvas.height=0; }
   shots.forEach(s=>{ try{ if(s.bg){ cx.fillStyle=s.bg; cx.fillRect(s.x*scale, s.y*scale, s.w*scale, s.h*scale); } cx.drawImage(s.im, s.x*scale, s.y*scale, s.w*scale, s.h*scale); }catch(_){} });
   cx.drawImage(snap, 0, 0);
-  return out.toDataURL('image/png');
+  snap.width=snap.height=0;
+  const url=out.toDataURL('image/png'); out.width=out.height=0;
+  return url;
 }
 /* Turn each snapshot into a plain 2-D canvas up front. Swapping in an <img> at
    clone time raced with image decoding, so html2canvas sometimes rasterized a
@@ -14013,7 +14025,7 @@ function renderTopMenu(){
   } else if(mod==='atlas' && atlas){
     h+='<div class="tg">This atlas</div>'+it('atlas-share','🔗 Share atlas link…','A link that opens the atlas in a browser')+it('atlas-export','⬇ Export as web page','One HTML file to host anywhere')+it('atlas-pdf','⬇ Download PDF','One page per atlas page, ready to print')+it('gallery-atlas','🎓 Submit to course gallery…','Share this atlas on the class gallery page')+it('atlas-preview','👁 Preview','Full screen, as readers will see it');
   }
-  h+='<div class="tg">'+(mod==='atlas'?'Map &amp; project':'Share &amp; export')+'</div>'+it('share','🔗 Share map link or embed…','A live link to the Map Maker view, or embed code')+it('files','⬇ Export files…','PDF, PNG, SVG, web map, data, archive');
+  h+='<div class="tg">'+(mod==='atlas'?'Map &amp; project':'Share &amp; export')+'</div>'+it('share','🔗 Share map link or embed…','A live link to the Map Maker view, or embed code')+it('files','⬇ Export files…', mod==='maker'?'Map image, web map, data layers':'PDF, PNG, SVG, web map, data, archive');
   m.innerHTML=h;
 }
 (function(){
@@ -14104,12 +14116,13 @@ document.getElementById('sendGoBtn').onclick=()=>{
   const sendTitle=applySendNames();
   setTimeout(()=>placeSendTitle(sendTitle), 900);
   const specs = wantLegend ? mkLayers.filter(l=>l.visible).map(legendSpecForLayer).filter(s=>s.items.length) : [];
-  const labels = wantLabels ? collectLabelPlacements() : [];
+  const labelsNow = ()=>wantLabels ? collectLabelPlacements() : [];
   if(mkGlobe){
     /* globe view: the basemap and data are already baked into the WebGL canvas.
        Read it inside a render callback or it comes back blank/black. */
     status.textContent='';
-    withHiRes(4, ()=>glFreshDataURL(mkGlobe)).then(dataURL=>{
+    const gc=mkGlobe.getCanvas(), gk=capScaleFor(gc.clientWidth, gc.clientHeight, 3);
+    withHiRes(gk, ()=>glFreshDataURL(mkGlobe)).then(dataURL=>{
       capProgress(1);
       if(!dataURL){ status.textContent='Could not capture the globe.'; return; }
       closeModal('modal-send');
@@ -14121,39 +14134,80 @@ document.getElementById('sendGoBtn').onclick=()=>{
   if(projActive){
     /* projected view: capture the projection canvas directly, redrawn at 3× */
     status.textContent='';
-    withHiRes(4, async ()=>document.getElementById('projCanvas').toDataURL('image/png')).then(dataURL=>{
+    const pcv=document.getElementById('projCanvas');
+    withHiRes(capScaleFor(pcv.clientWidth, pcv.clientHeight, 3), async ()=>pcv.toDataURL('image/png')).then(dataURL=>{
     capProgress(1);
     closeModal('modal-send');
-    window.__layout.receiveFromMaker(dataURL, null, specs, false, labels);
+    window.__layout.receiveFromMaker(dataURL, null, specs, false, labelsNow());
     if(wantScale) toast('No scale bar added — scale varies across a projected map.', 4200);
     });
     return;
   }
-  status.textContent='Capturing map…';
+  /* Print layout: the map is redrawn at the size it will have on the page (a frame is
+     usually narrower than the screen map), showing exactly the same area, at 300 dpi.
+     Labels, roads and symbols then print at their on-screen size instead of being
+     shrunk, and the image is no bigger than the page needs, which keeps memory down. */
   const mapEl=document.getElementById('mk-map');
+  const goBtn=document.getElementById('sendGoBtn'); if(goBtn) goBtn.disabled=true;
+  status.textContent='';
   mapEl.classList.add('capturing');
   mkMap.closePopup();
-  const CAPSCALE=4;   /* print quality: the map is redrawn at 4× before capture */
-  if(wantLabels) hideLabelsForCapture(true);      /* they arrive as text instead */
-  const center=mkMap.getCenter(), zoom=mkMap.getZoom();
-  const metersPerScreenPx = 156543.03392 * Math.cos(center.lat*Math.PI/180) / Math.pow(2, zoom);
-  status.textContent='';
-  const goBtn=document.getElementById('sendGoBtn'); if(goBtn) goBtn.disabled=true;
-  withHiRes(CAPSCALE, ()=>captureMapElement(mapEl, CAPSCALE)).then(dataURL=>{
-    mapEl.classList.remove('capturing');
+  const mr=mapEl.getBoundingClientRect();
+  let tw=pageW()*0.85, th=pageH()*0.62;
+  try{ const ph=firstPlaceholder('mapframe'); if(ph){ const bb=ph.getBoundingRect(true,true); const z=canvas.getZoom()||1; tw=bb.width/z; th=bb.height/z; } }catch(_){}
+  const s0=Math.min(1, tw/mr.width, th/mr.height);
+  const fw=Math.max(120, Math.round(mr.width*s0)), fh=Math.max(90, Math.round(mr.height*s0));
+  const CAPSCALE=capScaleFor(fw, fh, 300/96);
+  const saved={css:mapEl.style.cssText, c:mkMap.getCenter(), z:mkMap.getZoom(), b:mkMap.getBounds(), snap:mkMap.options.zoomSnap};
+  const restore=()=>{
+    mapEl.style.cssText=saved.css; mapEl.classList.remove('capturing');
     if(wantLabels) hideLabelsForCapture(false);
-    const metersPerImagePx = metersPerScreenPx / CAPSCALE;
-    capProgress(0.96, 'Placing it on the page…');
+    try{ mkMap.invalidateSize({pan:false}); mkMap.options.zoomSnap=saved.snap; mkMap.setView(saved.c, saved.z, {animate:false}); }catch(_){}
     if(goBtn) goBtn.disabled=false; capProgress(1);
+  };
+  (async ()=>{
+    if(s0<0.98){
+      capProgress(0.03, 'Fitting the map to the page frame…');
+      mkMap.options.zoomSnap=0;
+      mapEl.style.width=fw+'px'; mapEl.style.height=fh+'px'; mapEl.style.flex='none'; mapEl.style.alignSelf='center';
+      mkMap.invalidateSize({pan:false});
+      mkMap.fitBounds(saved.b, {padding:[0,0], animate:false});
+      await mapSettled(4500);
+    }
+    const labels = wantLabels ? collectLabelPlacements() : [];
+    if(wantLabels) hideLabelsForCapture(true);      /* they arrive as text instead */
+    const center=mkMap.getCenter(), zoom=mkMap.getZoom();
+    const metersPerScreenPx = 156543.03392 * Math.cos(center.lat*Math.PI/180) / Math.pow(2, zoom);
+    const dataURL=await withHiRes(CAPSCALE, ()=>captureMapElement(mapEl, CAPSCALE));
+    restore();
+    capProgress(1);
     closeModal('modal-send');
-    window.__layout.receiveFromMaker(dataURL, metersPerImagePx, specs, wantScale, labels);
-  }).catch(err=>{
-    mapEl.classList.remove('capturing');
-    if(wantLabels) hideLabelsForCapture(false);
-    if(goBtn) goBtn.disabled=false; capProgress(1);
+    window.__layout.receiveFromMaker(dataURL, metersPerScreenPx/CAPSCALE, specs, wantScale, labels, 1/CAPSCALE);
+  })().catch(err=>{
+    restore();
     status.textContent='Capture failed: '+err.message+'. Try a different basemap (some tile servers block capture).';
   });
 };
+/* the biggest capture density up to `want` that keeps the image under ~14 megapixels */
+function capScaleFor(w, h, want){
+  const maxPx=14e6; let k=want||3;
+  if(w*h*k*k>maxPx) k=Math.sqrt(maxPx/(w*h));
+  return Math.max(1, k);
+}
+/* wait until the basemap has redrawn and the raster tiles in view have arrived */
+function mapSettled(maxMs){
+  return new Promise(res=>{
+    let done=false; const fin=()=>{ if(!done){ done=true; setTimeout(res, 120); } };
+    const waits=[];
+    mkBasemapLayers.concat(typeof mkStackLayers!=='undefined'?mkStackLayers:[]).forEach(l=>{
+      const m=l.getMaplibreMap && l.getMaplibreMap();
+      if(m) waits.push(new Promise(r=>{ let ok=false; const f=()=>{ if(!ok){ ok=true; r(); } }; try{ m.resize(); m.once('idle', f); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, maxMs); }));
+      else if(l instanceof L.GridLayer) waits.push(new Promise(r=>{ let ok=false; const f=()=>{ if(!ok){ ok=true; r(); } }; if(!l.isLoading || !l.isLoading()) setTimeout(f, 400); l.once('load', f); setTimeout(f, maxMs); }));
+    });
+    if(typeof mkGridLayer!=='undefined' && mkGridLayer) try{ mkGridLayer._draw(); }catch(_){}
+    Promise.all(waits).then(fin); setTimeout(fin, maxMs+300);
+  });
+}
 /* ================= PROJECTED PREVIEW (d3-geo) ================= */
 /* Point symbols are stored as SVG path data in a 0–100 box, which Path2D
    understands directly — so map and projected view draw the same shape. */
@@ -16928,7 +16982,7 @@ document.getElementById('insetAddToLayoutBtn').onclick=()=>{
   fabric.perfLimitSizeTotal=Math.max(fabric.perfLimitSizeTotal||0, 16e6);
   fabric.maxCacheSideLimit=Math.max(fabric.maxCacheSideLimit||0, 8192);
 })();
-function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, labelPlacements){
+function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, labelPlacements, exactScale){
   switchModule('layout');
   fabric.Image.fromURL(dataURL, img=>{
     const calibration = metersPerImagePx!=null ? {constant:metersPerImagePx, calibratedAt:Date.now()} : null;
@@ -16937,7 +16991,7 @@ function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, lab
       fitIntoPlaceholder(img, ph);
     } else {
       const maxW=pageW()*0.85, maxH=pageH()*0.62;
-      const s0=Math.min(maxW/img.width, maxH/img.height, 1);
+      const s0=exactScale ? Math.min(exactScale, maxW/img.width, maxH/img.height) : Math.min(maxW/img.width, maxH/img.height, 1);
       img.set({left:(pageW()-img.width*s0)/2, top:70, scaleX:s0, scaleY:s0});
     }
     const s=img.scaleX;
@@ -17127,7 +17181,19 @@ function makeSplitter(panel, side, key, min, max, onChange){
   sp.addEventListener('pointerup', end); sp.addEventListener('pointercancel', end);
   sp.addEventListener('dblclick', e=>{ if(e.target!==tab){ st.w=null; panel.style.width=''; panel.style.minWidth=''; panel.style.maxWidth=''; changed(); } });
   tab.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); st.hidden=!st.hidden; changed(); } });
-  return {toggle:()=>{ st.hidden=!st.hidden; changed(); }, el:sp};
+  const api={toggle:()=>{ st.hidden=!st.hidden; changed(); }, open:()=>{ if(st.hidden){ st.hidden=false; changed(); } }, el:sp, isHidden:()=>!!st.hidden};
+  /* when the panel is folded away, its sections show as sideways labels on the strip;
+     clicking one opens the panel at that section */
+  api.setLabels=list=>{
+    let rail=sp.querySelector('.sp-rail'); if(rail) rail.remove();
+    rail=document.createElement('div'); rail.className='sp-rail '+side; rail.setAttribute('role','tablist'); rail.setAttribute('aria-label','Folded panel');
+    list.forEach(it=>{ const b=document.createElement('button'); b.type='button'; b.className='sp-lbl'; b.textContent=it.label; b.title='Open '+it.label;
+      b.addEventListener('pointerdown', e=>e.stopPropagation());
+      b.onclick=e=>{ e.stopPropagation(); api.open(); if(it.go) setTimeout(it.go, 40); };
+      rail.appendChild(b); });
+    sp.appendChild(rail);
+  };
+  return api;
 }
 const onMakerResize=()=>{ if(mkMap) mkMap.invalidateSize(); };
 const onLayoutResize=()=>{ canvas.calcOffset(); canvas.renderAll(); positionEmbedFrames(); };
@@ -17140,6 +17206,16 @@ window.__splitters={
   atLeft: makeSplitter(document.querySelector('#module-atlas .at-left'),'left','atLeft',200,420,null),
   atRight: makeSplitter(document.querySelector('#module-atlas .at-right'),'right','atRight',260,480,null)
 };
+(function(){
+  const S=window.__splitters, click=sel=>()=>{ const b=document.querySelector(sel); if(b) b.click(); };
+  S.mkLeft.setLabels([{label:'Layers', go:()=>openLeftTab('layers')},{label:'Basemap', go:()=>openLeftTab('base')}]);
+  S.mkRight.setLabels([{label:'Style', go:click('#mk-tabs [data-tab="style"]')},{label:'Data', go:click('#mk-tabs [data-tab="data"]')},{label:'Tools', go:click('#mk-tabs [data-tab="tools"]')}]);
+  S.loRight.setLabels([{label:'Properties', go:click('#lo-tabs [data-tab="props"]')},{label:'Elements', go:click('#lo-tabs [data-tab="layers"]')}]);
+  S.fcLeft.setLabels([{label:'Forms'}]);
+  S.fcRight.setLabels([{label:'Share to phones'}]);
+  S.atLeft.setLabels([{label:'Pages'}]);
+  S.atRight.setLabels([{label:'Atlas settings'}]);
+})();
 
 /* ---------- P3: colour-vision and greyscale check (view only) ----------
    Simulated with Machado, Oliveira & Fernandes (2009) matrices at full severity,
@@ -19192,10 +19268,19 @@ document.getElementById('projectSwitcher').addEventListener('change', e=>{
 });
 
 /* ---------- unified export ---------- */
+let exportOpenedFromMaker=false;
 document.getElementById('btnExportOpen').onclick=()=>{
   requireProject(()=>{
     const rec=projectsCache.find(p=>p.id===currentProjectId);
     document.getElementById('exportName').value=(rec?rec.name:'my-map').replace(/[^a-z0-9\-_ ]+/gi,'').trim().replace(/\s+/g,'-')||'my-map';
+    /* in Map Maker the layout page holds whatever was last sent, not this view: offer map formats only */
+    const inMaker=(window.curModule==='maker'), sel=document.getElementById('exportFormat');
+    const lg=document.getElementById('expLayoutGroup'), ar=document.getElementById('expArchiveOpt');
+    if(lg){ lg.hidden=inMaker; lg.disabled=inMaker; }
+    if(ar){ ar.hidden=inMaker; ar.disabled=inMaker; }
+    if(inMaker && ['pdf','png','svg','archive'].includes(sel.value)) sel.value='mapimg';
+    if(!inMaker && sel.value==='mapimg' && exportOpenedFromMaker) sel.value='pdf';
+    exportOpenedFromMaker=inMaker;
     updateExportUI();
     openModal('modal-export');
   });

@@ -991,7 +991,7 @@
   #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b2a4a;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;z-index:2000;box-shadow:0 4px 16px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s;max-width:80vw;}
   #toast.show{opacity:1;}
   .capturing .leaflet-control-zoom,.capturing .leaflet-control-scale,
-  .capturing .mk-mapctl,.capturing #mkBasemapPanel{display:none !important;}
+  .capturing .mk-mapctl,.capturing #mkBasemapPanel,.capturing .leaflet-control-attribution,.capturing .mk-src-btn,.capturing #mkSrcPanel{display:none !important;}
 
   /* ---------- dark interface (v67) ----------
      Panels, menus and dialogs only: maps, Composer pages and atlases keep their own
@@ -12422,6 +12422,20 @@ const ATLAS_CSS=`
   background:linear-gradient(var(--accent),var(--accent)) left top/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left top/2px 2.4em no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2px 2.4em no-repeat,
   linear-gradient(var(--accent),var(--accent)) left bottom/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/2px 2.4em no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2.4em 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2px 2.4em no-repeat;}
 .av-th-custom:not(.av-cf-none) .av-inner{padding:7.5% 8% 9.5%;}
+/* v71: a spread is one element two pages wide, and percentages here are of its width,
+   so frames and fill-to-margins use half the single-page values to land in the same place */
+.av-th-classic .av-spreadpg::before,.av-th-custom.av-cf-hair .av-spreadpg::before{inset:3.4% 2%;}
+.av-th-noir .av-spreadpg::before{inset:3.2% 1.8%;}
+.av-th-custom.av-cf-double .av-spreadpg::before,.av-th-custom.av-cf-corners .av-spreadpg::before{inset:3.2% 1.8%;}
+.av-th-custom.av-cf-thick .av-spreadpg::before{inset:3% 1.5%;}
+.av-spreadpg.av-fill{padding:3% 3.25% 4%;}
+.av-th-historic .av-spreadpg.av-fill{padding:4.5% 5% 5.5%;}
+.av-th-noir .av-spreadpg.av-fill{padding:4.75% 5% 5.5%;}
+.av-th-retro .av-spreadpg.av-fill{padding:2.75% 3.25% 6%;}
+.av-th-custom:not(.av-cf-none) .av-spreadpg.av-fill{padding:3.75% 4% 4.75%;}
+.av-spreadpg.av-fill .av-mstage,.av-spreadpg.av-fill>.av-media{flex:1 1 100%;min-height:0;}
+.av-spreadpg.av-fill.av-sp-col .av-spc-main{flex:0 0 72%;}
+.av-single .av-spreadpg.av-fill{padding:6% 6.5% 8%;}
 .av-th-custom.av-chs-plain .av-h{border-bottom:none;padding-bottom:0;}
 .av-th-custom.av-chs-underline .av-h{border-bottom:2px solid var(--accent);}
 .av-th-custom.av-chs-centred .av-h{border-bottom:none;padding-bottom:0;text-align:center;}
@@ -12888,7 +12902,7 @@ function atToJpeg(dataURL, max, q){
   return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,max/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL('image/jpeg',q||0.85)); }; im.onerror=()=>res(''); im.src=dataURL; });
 }
 async function atCaptureMap(p, basemap, quiet){
-  if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer in Map Maker first.', 3500); return false; }
+  if(!mkLayers.some(l=>l.visible) && mkBasemapKey==='none'){ toast('Turn on a basemap or at least one layer in Map Maker first.', 3500); return false; }
 
   if(!quiet) toast('Capturing the map from Map Maker…');
   const wasHidden=document.getElementById('module-maker').classList.contains('hidden');
@@ -14076,6 +14090,23 @@ function placeSendTitle(text){
 }
 /* Labels are drawn into the captured image by default. Sending them as separate
    text objects instead lets them be nudged, restyled or deleted on the page. */
+/* The credits a printed map owes, as one text block for the Composer page: the
+   basemap and overlays, then each visible data layer and where it came from. */
+function makerSourcesText(){
+  const parts=[];
+  const bm=bmAttrAll ? bmAttrAll() : '';
+  if(bm) parts.push('Basemap: '+bm.replace(/\s*·\s*/g,'; '));
+  const data=mkLayers.filter(l=>l.visible).map(l=>{
+    const ds=(typeof datasetById==='function')?datasetById(l.datasetId):null, src=ds&&ds.source;
+    let where='';
+    if(src&&src.url){ try{ where=new URL(src.url).host.replace(/^www\./,''); }catch(_){ where=String(src.url).slice(0,60); } }
+    else if(src&&(src.name||src.title)) where=String(src.name||src.title).slice(0,80);
+    const nm=(l.style&&l.style.legendTitle)||prettyName(l.name);
+    return where ? nm+' ('+where+')' : nm;
+  });
+  if(data.length) parts.push('Data: '+data.join('; '));
+  return parts.join('. ')+(parts.length?'.':'');
+}
 function collectLabelPlacements(){
   const out=[];
   const mapEl=document.getElementById('mk-map');
@@ -14126,7 +14157,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
       capProgress(1);
       if(!dataURL){ status.textContent='Could not capture the globe.'; return; }
       closeModal('modal-send');
-      window.__layout.receiveFromMaker(dataURL, null, specs, false, []);
+      window.__layout.receiveFromMaker(dataURL, null, specs, false, [], null, makerSourcesText());
       if(wantScale) toast('No scale bar added — scale isn’t constant across a globe.', 4200);
     });
     return;
@@ -14138,7 +14169,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
     withHiRes(capScaleFor(pcv.clientWidth, pcv.clientHeight, 3), async ()=>pcv.toDataURL('image/png')).then(dataURL=>{
     capProgress(1);
     closeModal('modal-send');
-    window.__layout.receiveFromMaker(dataURL, null, specs, false, labelsNow());
+    window.__layout.receiveFromMaker(dataURL, null, specs, false, labelsNow(), null, makerSourcesText());
     if(wantScale) toast('No scale bar added — scale varies across a projected map.', 4200);
     });
     return;
@@ -14182,7 +14213,7 @@ document.getElementById('sendGoBtn').onclick=()=>{
     restore();
     capProgress(1);
     closeModal('modal-send');
-    window.__layout.receiveFromMaker(dataURL, metersPerScreenPx/CAPSCALE, specs, wantScale, labels, 1/CAPSCALE);
+    window.__layout.receiveFromMaker(dataURL, metersPerScreenPx/CAPSCALE, specs, wantScale, labels, 1/CAPSCALE, makerSourcesText());
   })().catch(err=>{
     restore();
     status.textContent='Capture failed: '+err.message+'. Try a different basemap (some tile servers block capture).';
@@ -16982,7 +17013,7 @@ document.getElementById('insetAddToLayoutBtn').onclick=()=>{
   fabric.perfLimitSizeTotal=Math.max(fabric.perfLimitSizeTotal||0, 16e6);
   fabric.maxCacheSideLimit=Math.max(fabric.maxCacheSideLimit||0, 8192);
 })();
-function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, labelPlacements, exactScale){
+function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, labelPlacements, exactScale, sourcesText){
   switchModule('layout');
   fabric.Image.fromURL(dataURL, img=>{
     const calibration = metersPerImagePx!=null ? {constant:metersPerImagePx, calibratedAt:Date.now()} : null;
@@ -17052,6 +17083,13 @@ function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, lab
       canvas.add(sb);
       const g=recomputeScaleBar(sb);
       g.set({left:pageW()-260, top:yCursor+6});
+    }
+    /* credits as their own text box, so they never sit on the map or its grid frame */
+    if(sourcesText){
+      const st=new fabric.Textbox(sourcesText, {left:40, top:Math.min(pageH()-60, yCursor+(wantScale&&calibration?46:4)), width:Math.min(pageW()-80, Math.max(260, pageW()*0.55)),
+        fontSize:8, fontFamily:'Arial', fill:'#5a6273', lineHeight:1.25});
+      addObj(st,{type:'text', sources:true});
+      canvas.discardActiveObject();
     }
     canvas.renderAll();
     toast(calibration
@@ -19831,7 +19869,7 @@ function runExport(fmt, name, dpi){
       zip.generateAsync({type:'blob'}).then(blob=>{ downloadBlob(name+'_georef.zip', blob); toast('Georeferenced map exported.'); });
     }).catch(err=>toast('Capture failed: '+err.message+'. Try a different basemap.', 4500));
   } else if(fmt==='embed'){
-    if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer to embed.'); return; }
+    if(!mkLayers.some(l=>l.visible) && document.getElementById('embedBasemap').value==='none'){ toast('Choose a basemap or turn on a layer to embed.'); return; }
     const basemap=document.getElementById('embedBasemap').value;
     const height=parseInt(document.getElementById('embedHeight').value,10)||500;
     const html=buildEmbedHtml({name, basemap, partsUi:true,
@@ -19934,7 +19972,7 @@ function copyToClipboard(text, btn){
   else fallback();
 }
 async function openShareDialog(){
-  if(!mkLayers.some(l=>l.visible)){ toast('Turn on at least one layer to share.'); return; }
+  if(!mkLayers.some(l=>l.visible) && mkBasemapKey==='none'){ toast('Turn on a basemap or a layer to share.'); return; }
   toast('Packing the map…');
   let enc;
   try{ enc=await encodeShare(buildSharePayload()); }
@@ -20251,7 +20289,7 @@ async function galleryDialog(kind){
   const close='<div class="modal-close-row"><button class="btn ghost" onclick="closeModal(\'modal-gallery\')">Close</button></div>';
   openModal('modal-gallery');
   if(kind==='atlas' && (!atlas || !atlas.pages.length)){ body.innerHTML='<p class="kv">Add some pages to the atlas first.</p>'+close; return; }
-  if(kind==='map' && !mkLayers.some(l=>l.visible)){ body.innerHTML='<p class="kv">Turn on at least one layer in Map Maker first.</p>'+close; return; }
+  if(kind==='map' && !mkLayers.some(l=>l.visible) && mkBasemapKey==='none'){ body.innerHTML='<p class="kv">Turn on a basemap or a layer in Map Maker first.</p>'+close; return; }
   if(kind==='layout' && !canvas.getObjects().some(o=>!(o.data&&(o.data.guide||o.data.type==='placeholder')))){ body.innerHTML='<p class="kv">The Composer page is empty. Lay out a map there first.</p>'+close; return; }
   if(!C.relay){ body.innerHTML='<p class="kv">The course gallery isn’t set up on this copy of Map-O-Matic. Use the copy your instructor links to, or export the '+kind+' as a web page and hand it in.</p>'+close; return; }
   body.innerHTML='<p class="kv">Connecting to the gallery…</p>';

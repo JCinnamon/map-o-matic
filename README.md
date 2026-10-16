@@ -1,4 +1,4 @@
-[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33519979/map-o-matic-README_2026.md)
+[map-o-matic-README_2026.md](https://github.com/user-attachments/files/33519988/map-o-matic-README_2026.md)
 # Map-O-Matic
 
 **A free cartography studio that runs in your browser: style your data as a map, compose a print-ready layout, collect field data on phones, and gather your maps into an interactive atlas.**

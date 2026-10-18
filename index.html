@@ -1055,6 +1055,21 @@ html[data-theme=dark] .filt-row .f-del{background-color:#332b29;}
 html[data-theme=dark] .sym-button{background-color:var(--panel);}
 html[data-theme=dark] .sym-button:hover{background-color:#1f2726;}
 html[data-theme=dark] .mk-mapctl a{background-color:var(--panel);}
+/* v74: class-break chart readable in the dark interface; the value shown while dragging a break gets a halo in both themes */
+.hb-val{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;}
+html[data-theme=dark] .hb-val{fill:#f4f7fb !important;stroke:#11161c;}
+html[data-theme=dark] .hb-line{stroke:#c4cfe2 !important;}
+html[data-theme=dark] .hb-knob{stroke:#c4cfe2 !important;}
+html[data-theme=dark] .hb-ax{fill:#b9c3d3 !important;}
+html[data-theme=dark] .hb-input, html[data-theme=dark] .brk-row input{background-color:#14181c !important;color:#eef2f7 !important;border-color:#454c55 !important;}
+
+/* v74: every on-map button bar (flat map, projected view, globe) uses the same dark panels in the dark interface */
+html[data-theme=dark] .leaflet-bar, html[data-theme=dark] .mk-gbar{background-color:#1d2226 !important;border-color:#3a4148 !important;box-shadow:0 1px 5px rgba(0,0,0,.6);}
+html[data-theme=dark] .leaflet-bar a, html[data-theme=dark] .mk-gbar button, html[data-theme=dark] #projZoomCtl button, html[data-theme=dark] .mk-mapctl a{background-color:#1d2226 !important;color:#e4e8ee !important;border-bottom-color:#3a4148 !important;}
+html[data-theme=dark] .leaflet-bar a:hover, html[data-theme=dark] .mk-gbar button:hover, html[data-theme=dark] #projZoomCtl button:hover, html[data-theme=dark] .mk-mapctl a:hover{background-color:#2a3138 !important;}
+html[data-theme=dark] .leaflet-bar a.on, html[data-theme=dark] .mk-gbar button.on, html[data-theme=dark] .mk-mapctl a.on{background-color:var(--teal) !important;color:#fff !important;}
+html[data-theme=dark] .leaflet-bar a.mk-vh.off, html[data-theme=dark] .mk-gbar button.off, html[data-theme=dark] .leaflet-bar a.leaflet-disabled{color:#5f6873 !important;}
+
 html[data-theme=dark] .mk-orient{background-color:var(--panel);color:#d6d6d6;}
 html[data-theme=dark] .mk-orient .mo-row label b{color:#b2b5bb;}
 html[data-theme=dark] .mk-orient .mo-reset{border:1px solid #414549;background-color:#202326;color:#cbcfd6;}
@@ -3277,7 +3292,7 @@ function addMapToolControls(){
     const zc=mkMap.zoomControl && mkMap.zoomControl.getContainer();
     if(zc && !document.getElementById('mkZoomAllBtn')){ const a=L.DomUtil.create('a','mk-zall',zc); a.href='#'; a.id='mkZoomAllBtn'; a.title='Zoom to full extent of the active layer'; a.setAttribute('role','button'); a.textContent='✥';
       L.DomEvent.on(a,'click',ev=>{ L.DomEvent.preventDefault(ev); L.DomEvent.stopPropagation(ev); mkZoomAll(); });
-      [['mk-vh-prev','↶','Previous view',-1],['mk-vh-next','↷','Next view',1]].forEach(([cls,ch,ti,st])=>{ const b=L.DomUtil.create('a','mk-vh '+cls+' off',zc); b.href='#'; b.title=ti; b.setAttribute('role','button'); b.setAttribute('aria-label',ti); b.textContent=ch;
+      [['mk-vh-prev','<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>','Back to the previous view',-1],['mk-vh-next','<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>','Forward to the next view',1]].forEach(([cls,ch,ti,st])=>{ const b=L.DomUtil.create('a','mk-vh '+cls+' off',zc); b.href='#'; b.title=ti; b.setAttribute('role','button'); b.setAttribute('aria-label',ti); b.innerHTML=ch;
         L.DomEvent.on(b,'click',ev=>{ L.DomEvent.preventDefault(ev); L.DomEvent.stopPropagation(ev); vhGo(st); }); });
       vhAttachFlat(); }
     /* the search box lives in the left panel now; this jumps focus to it */
@@ -3964,7 +3979,7 @@ function globeOpen(){
     host=document.createElement('div'); host.id='mk-globe';
     host.innerHTML='<div id="mk-globe-map"></div>'+
       '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
-        '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" class="mk-vh-prev off" id="mkGlobePrev" title="Previous view">↶</button><button type="button" class="mk-vh-next off" id="mkGlobeNext" title="Next view">↷</button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
+        '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" class="mk-vh-prev off" id="mkGlobePrev" title="Back to the previous view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="mk-vh-next off" id="mkGlobeNext" title="Forward to the next view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
         '<div class="mk-gbar"><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
         '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button></div></div>'+
       '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
@@ -4081,6 +4096,13 @@ function toggleGlobeView(){
   if(projActive && !mkGlobe){ const sel=document.getElementById('mkProjection'); sel.value='mercator-edit'; setProjectionMode('mercator-edit'); setTimeout(globeOpen, 90); return; }
   if(mkGlobe) globeClose(); else globeOpen();
 }
+/* v74: the Style panel's '3-D on the globe' section shows only while the globe is open */
+(function(){
+  const re=()=>setTimeout(()=>{ try{ renderMakerPanels(); }catch(_){} }, 60);
+  const _o=globeOpen, _c=globeClose;
+  globeOpen=function(){ const r=_o.apply(this,arguments); re(); return r; };
+  globeClose=function(){ const r=_c.apply(this,arguments); re(); return r; };
+})();
 /* testing hook */
 window.__globeInfo=()=>({open:!!mkGlobe,
   proj: (mkGlobe&&mkGlobe.getProjection)? (mkGlobe.getProjection().type||mkGlobe.getProjection().name) : null,
@@ -7432,7 +7454,7 @@ function renderMakerLayerList(){
         if(act==='ungroup'){ l.group=null; renderMakerLayerList(); mkPushHistory(); markProjectDirty(); }
         if(act==='copystyle') copyLayerStyle(l);
         if(act==='pastestyle') pasteLayerStyle(l);
-        if(act==='rename'){ const n=window.prompt('Layer name:', l.name); if(n){ l.name=n; renderMakerLayerList(); renderMakerPanels(); mkPushHistory(); } }
+        if(act==='rename'){ const n=window.prompt('Layer name (also the legend title):', l.name); if(n){ l.name=n; if(l.style) l.style.legendTitle=''; renderMakerLayerList(); renderMakerPanels(); mkPushHistory(); } }
         if(act==='dup'){
           const nl={id:uid(), name:l.name+' copy', datasetId:l.datasetId, geojson:l.geojson, geom:l.geom,
             visible:true, opacity:l.opacity, style:clone(l.style), labels:clone(l.labels), filter:clone(l.filter), group:l.group||null, leaflet:null};
@@ -7852,11 +7874,7 @@ function renderStyleTab(){
     <div class="field"><label>Style type</label>
       <select id="stMode">${modes.map(m=>'<option value="'+m[0]+'" '+(st.mode===m[0]?'selected':'')+'>'+m[1]+'</option>').join('')}</select>
     </div>`;
-  if(st.mode!=='heat'){
-    const defTitle=(()=>{ const t=st.legendTitle; st.legendTitle=''; const d=legendSpecForLayer(lyr).title; st.legendTitle=t; return d; })();
-    html+=`<div class="field"><label for="stLegendTitle">Legend title</label>
-      <input type="text" id="stLegendTitle" value="${esc(st.legendTitle||'')}" placeholder="${esc(defTitle)}"></div>`;
-  }
+  /* v74: no legend-title box here; the legend title is the layer's name (⋯ → Rename) */
   if(st.mode==='single'){
     html+=colourFieldHtml('stColor', lyr.geom==='line'?'Line colour':'Fill colour', st.color);
   }
@@ -8085,7 +8103,7 @@ function renderStyleTab(){
           <option value="jenks" ${st.method==='jenks'?'selected':''}>Natural breaks (Jenks)</option>
           <option value="manual" ${st.method==='manual'?'selected':''}>Manual breaks</option>
         </select></div>
-      <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.classes}"></div>
+      <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.method==='manual'&&String(st.manualBreaks||'').trim()? (String(st.manualBreaks).split(',').filter(v=>isFinite(parseFloat(v))).length+1) : st.classes}"></div>
     </div>`;
     if(st.method==='manual'){
       html+=`<div class="kv" style="margin:0 0 6px;">On the chart: drag a line to move a break, click to add, drag off to remove, double-click to type a value.</div>
@@ -8126,17 +8144,17 @@ function renderStyleTab(){
       <div class="field"><label>Line width</label><input type="number" id="stStrokeW" value="${st.strokeWeight}" min="0.5" step="0.5"></div>
       <div class="field"><label>Dash (e.g. 6,4)</label><input type="text" id="stDash" value="${esc(st.dash)}"></div></div>`;
   }
-  if(lyr.geom==='polygon' && !['carto','dot','heat','hex'].includes(st.mode)){
+  if(lyr.geom==='polygon' && ['single','cat','grad','chart'].includes(st.mode)){
+    html+=`<div class="divider"></div><h3>Fill pattern</h3><p class="kv" style="margin:-2px 0 6px">Hatching or dots drawn over the fill — for a second variable, a zone, or telling areas apart in greyscale print.${(typeof mkGlobe!=='undefined'&&mkGlobe)?' On the globe a pattern shows only while the areas are not raised in 3-D.':''}</p><div class="row2"><div class="field"><label>Pattern</label><select id="stPat">${PATTERNS.map(o=>'<option value="'+o[0]+'"'+((st.pattern||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')}</select></div>`+
+      (st.pattern?colourFieldHtml('stPatColor','Pattern colour', st.patColor||'#333333')+'</div><div class="field"><label>Pattern spacing: <span id="stPatGapV">'+(st.patGap||8)+'</span> px</label><input type="range" id="stPatGap" min="4" max="30" step="1" value="'+(st.patGap||8)+'"></div>':'</div>')
+  }
+  if(lyr.geom==='polygon' && !['carto','dot','heat','hex'].includes(st.mode) && typeof mkGlobe!=='undefined' && mkGlobe){
     const x=st.extrude||{};
     html+=`<div class="divider"></div><h3>3-D on the globe</h3>
       <div class="checkline"><input type="checkbox" id="stExOn" ${x.on?'checked':''}><label for="stExOn" style="margin:0;color:var(--text);">Raise each area by a value (prism map)</label></div>`+
       (x.on?`<div class="row2"><div class="field"><label>Height from</label><select id="stExField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(x.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
       <div class="field"><label>Tallest (m)</label><input type="number" id="stExMax" min="10" step="100" value="${x.maxH||extrudeDefaultHeight(lyr)}"></div></div>
       <p class="kv">Shows on the globe; tilt it to see the heights.</p>`:'');
-  }
-  if(lyr.geom==='polygon' && ['single','cat','grad','chart'].includes(st.mode)){
-    html+=`<div class="row2"><div class="field"><label>Fill pattern</label><select id="stPat">${PATTERNS.map(o=>'<option value="'+o[0]+'"'+((st.pattern||'')===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')}</select></div>`+
-      (st.pattern?colourFieldHtml('stPatColor','Pattern colour', st.patColor||'#333333')+'</div><div class="field"><label>Pattern spacing: <span id="stPatGapV">'+(st.patGap||8)+'</span> px</label><input type="range" id="stPatGap" min="4" max="30" step="1" value="'+(st.patGap||8)+'"></div>':'</div>');
   }
   html+=`<div class="field"><label>Fill opacity: <span id="stOpVal">${Math.round(st.fillOpacity*100)}%</span></label>
     <input type="range" id="stFillOp" min="0" max="1" step="0.05" value="${st.fillOpacity}"></div>
@@ -8166,6 +8184,31 @@ function renderStyleTab(){
   if(g('stMethod')) g('stMethod').onchange=()=>{ st.method=g('stMethod').value; renderStyleTab(); rerender(); };
   if(g('stClasses')) g('stClasses').onchange=()=>{
     st.classes=Math.max(2,Math.min(12,parseInt(g('stClasses').value)||5));
+    /* v74: with manual breaks, the class count adds or removes breaks while keeping the
+       ones already set — a new break splits the widest class, and removing one merges
+       the two narrowest neighbouring classes */
+    if(st.mode==='grad' && st.method==='manual'){
+      const dv=visibleFeatures(lyr).map(f=>valueOf(lyr,f)).filter(v=>isFinite(v));
+      if(dv.length){
+        const lo=Math.min(...dv), hi=Math.max(...dv);
+        let cur=manualBreakValues(lyr).filter(v=>v>lo&&v<hi);
+        const want=st.classes-1, dp=Math.max(0, 3-Math.floor(Math.log10(Math.max(1e-9,hi-lo))));
+        let guard=0;
+        while(cur.length<want && guard++<50){
+          const e=[lo].concat(cur,[hi]); let bi=0, bw=-1;
+          for(let i=0;i<e.length-1;i++){ const w=e[i+1]-e[i]; if(w>bw){ bw=w; bi=i; } }
+          const m=+((e[bi]+e[bi+1])/2).toFixed(dp); if(m<=e[bi]||m>=e[bi+1]) break;
+          cur.push(m); cur.sort((a,b)=>a-b);
+        }
+        while(cur.length>want && cur.length>1){
+          const e=[lo].concat(cur,[hi]); let bi=1, bw=Infinity;
+          for(let i=1;i<e.length-1;i++){ const w=e[i+1]-e[i-1]; if(w<bw){ bw=w; bi=i; } }
+          cur.splice(bi-1,1);
+        }
+        writeManualBreaks(lyr, cur);
+        st.classes=cur.length+1;
+      }
+    }
     st.classColors=null;                     /* class count changed — overrides no longer line up */
     renderStyleTab(); rerender();
   };
@@ -8421,12 +8464,12 @@ function drawClassHistogram(lyr, host, big){
     });
   }
   svg+='<line x1="'+padL+'" x2="'+(W-padR)+'" y1="'+base+'" y2="'+base+'" stroke="#5a6478" stroke-width="1" pointer-events="none"/>';
-  svg+='<text x="'+padL+'" y="'+(base+Math.round(14*k))+'" font-size="'+Math.round(10*k)+'" fill="#5a6478" pointer-events="none">'+esc(fmtNum(lo))+'</text>';
-  svg+='<text x="'+(W-padR)+'" y="'+(base+Math.round(14*k))+'" font-size="'+Math.round(10*k)+'" fill="#5a6478" text-anchor="end" pointer-events="none">'+esc(fmtNum(hi))+'</text>';
+  svg+='<text x="'+padL+'" y="'+(base+Math.round(14*k))+'" class="hb-ax" font-size="'+Math.round(10*k)+'" fill="#5a6478" pointer-events="none">'+esc(fmtNum(lo))+'</text>';
+  svg+='<text x="'+(W-padR)+'" y="'+(base+Math.round(14*k))+'" class="hb-ax" font-size="'+Math.round(10*k)+'" fill="#5a6478" text-anchor="end" pointer-events="none">'+esc(fmtNum(hi))+'</text>';
   /* class counts */
   const counts=new Array(b.length-1).fill(0); vals.forEach(v=>counts[classOfV(v)]++);
   const cw=(W-padL-padR)/counts.length;
-  counts.forEach((c,i)=>{ svg+='<rect x="'+(padL+i*cw+1).toFixed(1)+'" y="'+(base+Math.round(22*k))+'" width="'+(cw-2).toFixed(1)+'" height="'+Math.round(9*k)+'" fill="'+esc(colOf(i))+'" stroke="#7d8799" stroke-width="0.4" pointer-events="none"/><text x="'+(padL+i*cw+cw/2).toFixed(1)+'" y="'+(base+Math.round(46*k))+'" font-size="'+Math.round(10*k)+'" fill="#22293a" text-anchor="middle" pointer-events="none">'+c+'</text>'; });
+  counts.forEach((c,i)=>{ svg+='<rect x="'+(padL+i*cw+1).toFixed(1)+'" y="'+(base+Math.round(22*k))+'" width="'+(cw-2).toFixed(1)+'" height="'+Math.round(9*k)+'" fill="'+esc(colOf(i))+'" stroke="#7d8799" stroke-width="0.4" pointer-events="none"/><text x="'+(padL+i*cw+cw/2).toFixed(1)+'" y="'+(base+Math.round(46*k))+'" class="hb-ax" font-size="'+Math.round(10*k)+'" fill="#22293a" text-anchor="middle" pointer-events="none">'+c+'</text>'; });
   /* the inner breaks, each with a wide invisible grip for dragging */
   const inner=b.slice(1,-1);
   inner.forEach((v,i)=>{
@@ -8649,6 +8692,10 @@ function manualBreakValues(lyr){
 }
 function writeManualBreaks(lyr, vals){
   lyr.style.manualBreaks=vals.filter(v=>isFinite(v)).sort((a,b)=>a-b).join(',');
+  /* v74: the class count follows the breaks, so the Classes box and ramp stay in step */
+  const n=lyr.style.manualBreaks? lyr.style.manualBreaks.split(',').length : 0;
+  if(n>=1) lyr.style.classes=Math.min(12, n+1);
+  const ci=document.getElementById('stClasses'); if(ci && lyr.style.mode==='grad') ci.value=lyr.style.classes;
 }
 function renderManualBreaks(lyr){
   const host=document.getElementById('stManualRows');
@@ -14025,6 +14072,8 @@ function legendSpecForLayer(lyr){
     title=lyr.name+' — '+(st.cartoField||'') + (st.cartoNormField? ' / '+st.cartoNormField : '');
   } else if(st.mode==='hex'){ title=lyr.name+' — '+(st.hexStat==='count'||!st.hexField?'points per cell':st.hexStat+' of '+st.hexField); }
   else if(st.field && st.mode!=='single'){ title=lyr.name+' — '+st.field + (st.normField? ' / '+st.normField : ''); }
+  /* v74: the legend title is simply the layer's name (rename the layer to change it) */
+  title=lyr.name;
   /* U4: a title the student typed wins over the field-name default */
   if(st.legendTitle && String(st.legendTitle).trim()) title=String(st.legendTitle).trim();
   if(st.mode==='chart' && !st.legendTitle) title=lyr.name;

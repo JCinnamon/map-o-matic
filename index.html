@@ -429,7 +429,7 @@
   #exportMenuList .sm-th{width:38px;height:28px;flex:none;border-radius:3px;overflow:hidden;background:#eef1f4;display:flex;align-items:center;justify-content:center;} #exportMenuList .sm-th img{width:100%;height:100%;object-fit:cover;}
   #exportMenuList .sm-pt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:12px;} #exportMenuList .sm-pt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} #exportMenuList .sm-pt small{color:var(--muted);font-size:10.5px;}
   #exportMenuList .sm-foot{text-align:right;color:var(--teal);font-weight:600;}
-  @media (max-width:1400px){ body.mod-layout #wordmark{font-size:0;gap:0;} body.mod-layout #wordmark svg{margin-right:0;} body.mod-layout .tb-lbl{display:none;} }
+  @media (max-width:1150px){ body.mod-layout #wordmark{font-size:0;gap:0;} body.mod-layout #wordmark svg{margin-right:0;} body.mod-layout .tb-lbl{display:none;} }
   .send-names{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;display:flex;flex-direction:column;gap:6px;}
   .sn-h{font-size:12px;font-weight:700;color:var(--navy);} .sn-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
   .sn-row{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;font-size:12.5px;} .sn-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
@@ -1240,11 +1240,30 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .sp-rail.left .sp-lbl{transform:rotate(180deg);}
   .sp-lbl:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
   /* v72: the top bar stays on one line */
-  #topbar{flex-wrap:nowrap !important;overflow:hidden;}
+  #topbar{flex-wrap:nowrap !important;overflow:visible;}
   #topbar .grp{flex-shrink:1;min-width:0;}
   #topbar #projectSwitcher{width:150px !important;max-width:150px !important;}
   body.mod-layout #topbar #projectSwitcher{width:130px !important;max-width:130px !important;}
   #topbar #pageSetup{max-width:132px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;}
+
+  /* v73: one-line top bar — module pills keep one shape in every module; rarely used controls live under ⚙ */
+  .mod-tabs{flex-shrink:0;}
+  .mod-tabs button, body.mod-layout .mod-tabs button{white-space:nowrap;padding:4px 12px !important;font-size:12.5px !important;line-height:1.35;border-radius:6px;}
+  @media (max-width:1180px){ .mod-tabs button, body.mod-layout .mod-tabs button{padding:4px 9px !important;font-size:12px !important;} }
+  #topbar .grp:last-child{flex-shrink:0;}
+  #topbar #btnSave{white-space:nowrap;}
+  #btnSave .sv-cloud{opacity:.45;}
+  #btnSave.synced .sv-cloud{opacity:1;color:#7fe0d6;}
+  #btnSave.sync-err .sv-cloud{opacity:1;color:#ffb4a8;}
+  .gear-menu{min-width:268px;}
+  .gear-menu button{white-space:nowrap;}
+  .gear-menu .gm-k{float:right;color:var(--muted);font-size:11px;}
+  .gear-menu .gm-sep{border-top:1px solid var(--line);margin:4px 0;}
+  .gear-menu button.on::before{content:'✓ ';color:var(--teal);font-weight:800;}
+  .gear-menu button[data-cvd]:not(.on){padding-left:24px;}
+  body:not(.mod-layout) .gear-menu .gm-cvd{display:none !important;}
+  #gearMenu #syncState{display:inline !important;}
+  #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
   @media (max-width:1280px){ body.mod-layout .mod-tabs button{padding:5px 8px;font-size:12px;} body.mod-layout #topbar #cvdSel{max-width:44px;} }
   /* v72: Basemap-tab sections fold away (click the heading) */
@@ -1297,25 +1316,36 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <button data-z="2">200%</button>
       </div>
     </span>
-    <span class="grp-div"></span>
-    <select id="cvdSel" class="cvd-sel" title="View as — check the page for colour-vision deficiency or greyscale print (preview only)" aria-label="View as">
+    <select id="cvdSel" hidden class="cvd-sel" title="View as — check the page for colour-vision deficiency or greyscale print (preview only)" aria-label="View as">
       <option value="">👁 Normal</option><option value="deut">👁 Deuteranopia</option><option value="prot">👁 Protanopia</option><option value="trit">👁 Tritanopia</option><option value="grey">👁 Greyscale</option>
     </select>
 
   </div>
   <div class="grp tb-mid-last">
     <select id="projectSwitcher" title="Switch project"></select>
-    <button class="btn secondary small" id="btnSave" title="Save this project to browser storage">Save</button>
-    <button class="btn ghost small" id="btnSync" title="Save projects to a synced folder as well as this browser">☁ <span id="syncState">Sync to cloud</span></button>
+    <button class="btn secondary small" id="btnSave" title="Save this project (Ctrl+S)"><span class="sv-cloud" id="saveCloud" aria-hidden="true">☁</span> Save</button>
   </div>
   <div class="tb-spacer"></div>
   <div class="grp">
     <span class="zoom-menu"><button class="btn small" id="btnExportMenu" aria-haspopup="true" aria-expanded="false" title="Send this map to another module, share a link, or export files">Send / Export ▾</button>
       <div id="exportMenuList" class="tools-menu hidden" role="menu"></div></span>
     <button id="btnShareOpen" hidden></button><button id="btnExportOpen" hidden></button>
-    <button class="btn ghost small" id="btnMethods" title="The data steps and design choices behind this map, ready for a report">📝<span class="tb-lbl"> Log</span></button>
-    <button class="btn ghost small" id="btnTheme" title="Dark interface" aria-label="Switch to the dark interface" aria-pressed="false">☾</button>
-    <button class="btn ghost small" id="btnHelp">Help</button>
+    <span class="zoom-menu"><button class="btn ghost small" id="btnGear" aria-haspopup="true" aria-expanded="false" title="Settings: sync, view as, log, dark interface, help" aria-label="Settings">⚙ ▾</button>
+      <div id="gearMenu" class="tools-menu hidden gear-menu" role="menu">
+        <button data-g="save" role="menuitem">💾 Save now <span class="gm-k">Ctrl+S</span></button>
+        <button data-g="sync" role="menuitem">☁ <span id="syncState">Sync to cloud</span>…</button>
+        <div class="tg gm-cvd">View as (preview only)</div>
+        <button data-cvd="" class="gm-cvd" role="menuitemradio">Normal colour vision</button>
+        <button data-cvd="deut" class="gm-cvd" role="menuitemradio">Deuteranopia (green-blind)</button>
+        <button data-cvd="prot" class="gm-cvd" role="menuitemradio">Protanopia (red-blind)</button>
+        <button data-cvd="trit" class="gm-cvd" role="menuitemradio">Tritanopia (blue-blind)</button>
+        <button data-cvd="grey" class="gm-cvd" role="menuitemradio">Greyscale print</button>
+        <div class="gm-sep"></div>
+        <button data-g="log" role="menuitem">📝 Log</button>
+        <button data-g="theme" role="menuitem"><span id="gmTheme">☾ Dark interface</span></button>
+        <button data-g="help" role="menuitem">❓ Help</button>
+      </div></span>
+    <span hidden><button id="btnSync"></button><button id="btnMethods"></button><button id="btnTheme"></button><button id="btnHelp"></button></span>
   </div>
 </div>
 
@@ -1639,7 +1669,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <p>Send the current map to Map Composer or the Atlas, share a live link, or export files: layout PDF/PNG/SVG, an interactive web map, data layers, or a whole project archive.</p>
     </div>
     <div class="help-step"><b>Keeping your work.</b>
-      <p>Projects live only in this browser. <b>☁ Sync to cloud</b> also saves them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>📝 Log</b> lists every step you took, ready for a report.</p>
+      <p>Projects live only in this browser. <b>⚙ → Sync to cloud</b> makes <b>Save</b> also write them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>⚙ → Log</b> lists every step you took, ready for a report.</p>
     </div>
     <div class="help-step"><b>About.</b>
       <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs in your browser; your data stay on your computer.</p>
@@ -4819,7 +4849,7 @@ function toggleSourcesPanel(force){
     (rows.length? rows.map(r=>'<div class="msp-r"><div class="msp-t"><span>'+r.role+'</span> '+esc(r.label)+'</div><div class="msp-c">'+esc(r.credit)+'</div>'+
       ((r.src&&r.src!==r.credit)?'<div class="msp-c">'+esc(r.src)+'</div>':'')+'<div class="msp-l">'+esc(r.lic||'')+(r.url?' · <a href="'+esc(r.url)+'" target="_blank" rel="noopener">terms ↗</a>':'')+'</div></div>').join('')
       : '<div class="msp-c">No basemap is shown.</div>')+
-    '<div class="msp-f">Data layers’ sources are listed in the 📝 Log. Keep these credits on any map you publish.</div>';
+    '<div class="msp-f">Data layers’ sources are listed in the Log (⚙ → Log). Keep these credits on any map you publish.</div>';
   host.appendChild(p);
   L.DomEvent.disableClickPropagation(p); L.DomEvent.disableScrollPropagation(p);
   p.querySelector('.msp-h button').onclick=()=>p.remove();
@@ -17403,6 +17433,7 @@ window.__splitters={
     if(v){ if(!b){ b=document.createElement('div'); b.id='cvdBanner'; b.className='cvd-banner'; wrap.insertBefore(b, stage); } b.innerHTML='Viewing the page as someone with '+names[v]+' would see it. Preview only; exports are unchanged. <a href="#" id="cvdOff">Back to normal</a>'; document.getElementById('cvdOff').onclick=e=>{ e.preventDefault(); sel.value=''; sel.onchange(); }; }
     else if(b) b.remove();
     if(v) mlog('compose','Checked the layout as '+names[v]+'.');
+    if(window.__gearSync) __gearSync();
   };
 })();
 
@@ -18743,6 +18774,56 @@ async function openSyncDialog(){
   openModal('modal-sync');
 }
 document.getElementById('btnSync').onclick=openSyncDialog;
+/* v73: Save and sync are one button — Save writes to this browser and, when a
+   synced folder is set up, to that folder too. The cloud on the button shows the
+   sync state; setting sync up lives under ⚙. */
+(function(){
+  const _u=updateSyncUI;
+  updateSyncUI=function(state){
+    _u(state);
+    const sv=document.getElementById('btnSave'); if(!sv) return;
+    const on=syncSupported()&&syncActive();
+    sv.classList.toggle('synced', on && !syncDir.__needsPermission && state!=='error');
+    sv.classList.toggle('sync-err', on && (!!syncDir.__needsPermission || state==='error'));
+    sv.title = !on ? 'Save this project in this browser (Ctrl+S). Set up cloud sync under ⚙.'
+      : syncDir.__needsPermission ? 'Save (Ctrl+S). Sync to “'+syncDir.name+'” needs permission again: ⚙ → Sync.'
+      : 'Save this project here and to “'+syncDir.name+'” (Ctrl+S)';
+  };
+  try{ updateSyncUI(); }catch(_){}
+  document.addEventListener('keydown', e=>{
+    if((e.ctrlKey||e.metaKey) && !e.shiftKey && !e.altKey && (e.key==='s'||e.key==='S')){
+      e.preventDefault(); if(currentProjectId) saveCurrentProject(true);
+    }
+  }, true);
+})();
+/* ⚙ settings menu: save, sync, view as (Composer), log, dark interface, help */
+(function(){
+  const btn=document.getElementById('btnGear'), menu=document.getElementById('gearMenu'); if(!btn||!menu) return;
+  const cvd=document.getElementById('cvdSel');
+  const sync=()=>{
+    const v=cvd?cvd.value:'';
+    menu.querySelectorAll('[data-cvd]').forEach(b=>{ const on=b.dataset.cvd===v; b.classList.toggle('on',on); b.setAttribute('aria-checked',String(on)); });
+    btn.classList.toggle('cvd-on', !!v && document.body.classList.contains('mod-layout'));
+    const d=document.documentElement.getAttribute('data-theme')==='dark';
+    const t=document.getElementById('gmTheme'); if(t) t.textContent=d?'☀ Light interface':'☾ Dark interface';
+  };
+  const close=()=>{ menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); };
+  btn.onclick=e=>{ e.stopPropagation(); sync(); const h=menu.classList.toggle('hidden'); btn.setAttribute('aria-expanded',String(!h)); };
+  document.addEventListener('click', e=>{ if(!menu.contains(e.target) && e.target!==btn) close(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  menu.addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return; close();
+    if(b.dataset.cvd!==undefined){ if(cvd){ cvd.value=b.dataset.cvd; cvd.onchange&&cvd.onchange(); } sync(); return; }
+    const g=b.dataset.g;
+    if(g==='save'){ if(currentProjectId) saveCurrentProject(true); else toast('No project open.'); }
+    else if(g==='sync') document.getElementById('btnSync').click();
+    else if(g==='log') document.getElementById('btnMethods').click();
+    else if(g==='theme'){ document.getElementById('btnTheme').click(); sync(); }
+    else if(g==='help') document.getElementById('btnHelp').click();
+  });
+  if(cvd) cvd.addEventListener('change', sync);
+  window.__gearSync=sync;
+})();
 document.getElementById('btnMethods').onclick=()=>requireProject(openMethodsLog);
 document.getElementById('mlogCopy').onclick=e=>copyToClipboard(document.getElementById('mlogText').value, e.target);
 document.getElementById('mlogDownload').onclick=()=>{

@@ -1306,6 +1306,25 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .lg-bivrow .biv-ed input{min-width:0;padding:3px 5px;font-size:12px;}
   .lg-bivrow .biv-ed2{display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%;font-size:12px;}
   .lg-bivrow .biv-ed2 label{display:flex;gap:4px;align-items:center;margin-right:auto;}
+
+  /* v78: version label; one-tab guard */
+  .gm-ver{font-size:11px;color:var(--muted);padding:4px 12px 6px;}
+  .mom-ver-tag{font-size:12px;font-weight:600;color:var(--muted);margin-left:6px;}
+  #momTabGuard{position:fixed;inset:0;z-index:99999;background:rgba(20,28,45,.72);display:flex;align-items:center;justify-content:center;padding:16px;}
+  #momTabGuard .tg-box{background:var(--panel,#fff);color:var(--text,#22293a);max-width:460px;border-radius:10px;padding:22px 24px;box-shadow:0 12px 40px rgba(0,0,0,.4);font:14px/1.5 var(--ui,system-ui);}
+  #momTabGuard h2{margin:0 0 8px;font-size:18px;}
+  #momTabGuard .tg-row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap;}
+
+  .mg-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-height:46vh;overflow:auto;}
+  .mg-h{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:4px 0 6px;}
+  .mg-row{display:flex;gap:6px;align-items:baseline;font-size:13px;margin:3px 0;color:var(--text);flex-wrap:wrap;}
+  .mg-row .kv{margin:0;font-size:11px;}
+  .mg-off{opacity:.5;}
+  @media (max-width:640px){ .mg-cols{grid-template-columns:1fr;} }
+
+  .at-vidprev{background:#111;position:relative;min-height:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px;}
+  .at-vidprev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8;}
+  .at-vidtag{position:relative;background:rgba(200,30,30,.92);color:#fff;font-weight:700;padding:8px 14px;border-radius:10px;}
   #gearMenu #syncState{display:inline !important;}
   #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
@@ -1378,6 +1397,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <div id="gearMenu" class="tools-menu hidden gear-menu" role="menu">
         <button data-g="save" role="menuitem">💾 Save now <span class="gm-k">Ctrl+S</span></button>
         <button data-g="sync" role="menuitem">☁ <span id="syncState">Sync to cloud</span>…</button>
+        <button data-g="backup" role="menuitem">⬇ Download project file (backup)</button>
         <div class="tg gm-cvd">View as (preview only)</div>
         <button data-cvd="" class="gm-cvd" role="menuitemradio">Normal colour vision</button>
         <button data-cvd="deut" class="gm-cvd" role="menuitemradio">Deuteranopia (green-blind)</button>
@@ -1388,6 +1408,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <button data-g="log" role="menuitem">📝 Log</button>
         <button data-g="theme" role="menuitem"><span id="gmTheme">☾ Dark interface</span></button>
         <button data-g="help" role="menuitem">❓ Help</button>
+        <div class="gm-sep"></div><div class="gm-ver">Map-O-Matic <span class="mom-ver-tag"></span></div>
       </div></span>
     <span hidden><button id="btnSync"></button><button id="btnMethods"></button><button id="btnTheme"></button><button id="btnHelp"></button></span>
   </div>
@@ -1470,7 +1491,9 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <button data-k="layout">▣ Map layout<small>the finished Map Composer page</small></button>
         <button data-k="image">🖼 Image<small>a photo, scan or figure</small></button>
         <button data-k="text">¶ Text<small>an introduction, essay or notes</small></button>
+        <button data-k="embed">▶ Video or link<small>a YouTube or Vimeo video, or a web page</small></button>
         <button data-k="contents" id="atAddToc">☰ Contents page<small>a list of the pages, made automatically</small></button>
+        <button data-k="merge">⇲ From another project<small>pages from a group member's project file</small></button>
       </div></div>
     <div id="atList"></div>
   </aside>
@@ -1495,6 +1518,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <div class="add-menu-list hidden" id="mkAddMenuList">
           <button id="mkAddUpload">⬆ Upload files…</button>
           <button id="mkAddLibrary">▤ From my library…</button>
+          <button id="mkAddMerge">⇲ From another project…</button>
           <button id="mkAddOnline">🌐 Online sources…</button>
         </div>
       </div>
@@ -1704,7 +1728,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 
 <div class="modal-overlay hidden" id="modal-help">
   <div class="modal">
-    <h2>Quick start</h2>
+    <h2>Quick start <span class="mom-ver-tag"></span></h2>
     <p class="kv" style="margin-top:-4px;">Four modules, in the buttons at the top. Work saves in this browser as you go.</p>
     <div class="help-step"><b>🧭 Map Maker: build the map.</b>
       <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, online sources), then style, filter and label each layer. The Tools tab has the table, calculator and spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more. The left panel’s <b>Basemap</b> tab sets the basemap, its opacity and parts, stacks overlays (hillshade, contours, night lights, an old map) and adds a lat/long or UTM grid; ⓘ on the map lists their sources. ☾ in the top bar switches to the dark interface.</p>
@@ -1816,6 +1840,19 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <h2>Import a colour ramp</h2>
     <div id="rampBody"></div>
     <div class="modal-close-row"><button class="btn light" onclick="closeModal('modal-ramp')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-merge">
+  <div class="modal" style="max-width:620px;">
+    <h2>Bring in work from another project</h2>
+    <p class="kv" style="margin-top:-4px;">For group work: each member downloads their project file (⚙ → Download project file), and one member brings the maps and atlas pages into a shared project here. Layers keep their styling, labels and filters; atlas pages arrive at the end of this atlas. Nothing in this project is replaced.</p>
+    <div class="field"><label for="mgSrc">From</label>
+      <select id="mgSrc"></select>
+      <input type="file" id="mgFile" accept=".json" hidden></div>
+    <div id="mgBody"></div>
+    <div class="kv" id="mgStatus"></div>
+    <div class="modal-close-row"><button class="btn ghost" onclick="closeModal('modal-merge')">Cancel</button><button class="btn" id="mgGo" disabled>Bring in</button></div>
   </div>
 </div>
 
@@ -1966,6 +2003,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
           <option value="embed">Interactive web map — HTML file + embed code</option>
         </optgroup>
         <optgroup label="Everything">
+          <option value="projfile">Project file — the whole project, to back up or give to a group member (.json)</option>
           <option value="archive" id="expArchiveOpt">Project archive — layout PDF/PNG + all layers + project file (zip)</option>
         </optgroup>
       </select>
@@ -2047,7 +2085,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="field"><label>1 · Publish the file (free, no account needed for a basic deploy)</label>
       <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
         <button class="btn small" id="btnNetlifyDrop">Open Netlify Drop ↗</button>
-        <span class="kv" style="margin:0;">Drag the downloaded file onto the page.</span>
+        <span class="kv" style="margin:0;">Drag the downloaded file onto the page, then <b>claim the site</b> with a free account: unclaimed Netlify Drop sites expire. For coursework, the course gallery (Send / Export ▾ → Submit to course gallery) gives a permanent link.</span>
       </div>
     </div>
     <div class="field"><label>2 · Paste the address Netlify gives you (the link to your file)</label>
@@ -5119,6 +5157,7 @@ document.getElementById('mkAddMenuBtn').onclick=(e)=>{
 document.addEventListener('click', ()=>addMenuList.classList.add('hidden'));
 document.getElementById('mkAddUpload').onclick=()=>{ addMenuList.classList.add('hidden'); document.getElementById('fileMakerData').click(); };
 document.getElementById('mkAddLibrary').onclick=()=>{ addMenuList.classList.add('hidden'); openLibPick(); };
+document.getElementById('mkAddMerge').onclick=()=>{ addMenuList.classList.add('hidden'); requireProject(()=>openMergeDialog('maker')); };
 
 /* ---------- data ingestion ---------- */
 document.getElementById('fileMakerData').addEventListener('change', function(e){
@@ -5656,6 +5695,8 @@ function addMakerLayer(gj, name, opts){
   const lyr={id:uid(), name:ds.name, datasetId:ds.id, geojson:ds.geojson, geom, visible:true, opacity:1,
     style:defaultStyle(geom), labels:defaultLabels(),
     filter:{logic:'AND', conds:[]}, leaflet:null};
+  /* v78: thousands of 6 px circles bury the map; big point layers start small and without outlines */
+  if(geom==='point'){ const nP=gj.features.length; if(nP>2000){ lyr.style.radius=nP>10000?2:3; lyr.style.strokeWeight=0; } }
   mkLayers.unshift(lyr);
   mkSelectedId=lyr.id;
   renderAllMakerLayers();
@@ -8071,7 +8112,7 @@ function renderStyleTab(){
     </div>`;
   /* v74: no legend-title box here; the legend title is the layer's name (⋯ → Rename) */
   if(st.mode==='single'){
-    html+=colourFieldHtml('stColor', lyr.geom==='line'?'Line colour':'Fill colour', st.color);
+    html+=colourFieldHtml('stColor', lyr.geom==='line'?'Line colour':lyr.geom==='point'?'Symbol colour':'Fill colour', st.color);
   }
   if(st.mode==='chart'){
     chartDefaults(st);
@@ -12086,14 +12127,30 @@ function atlasViewer(root, D){
     if(inner.length%2===1) inner.push({kind:'blank'});
     return [base[0]].concat(inner).concat([{kind:'back'}]);
   }
-  var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text',contents:'Contents'}[p.kind]||''); };
+  var titleOf=function(p){ return p.title||({map:'Map',layout:'Map',image:'Image',text:'Text',embed:'Video',contents:'Contents'}[p.kind]||''); };
   var pad3=function(n){ n=String(n); while(n.length<3) n='0'+n; return n; };
   var pnum=function(n){ return theme==='retro' ? 'p.'+pad3(n) : String(n); };
   function logo(sz){ return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#2f7d78"/><polygon points="6.5,7.5 11.25,12.25 11.25,25.75 6.5,23.5" fill="#fff"/><polygon points="11.25,12.25 16,17 16,23.5 11.25,25.75" fill="#bfe0db"/><polygon points="16,17 20.75,12.25 20.75,25.75 16,23.5" fill="#fff"/><polygon points="20.75,12.25 25.5,7.5 25.5,23.5 20.75,25.75" fill="#bfe0db"/><circle cx="16" cy="10.2" r="2.1" fill="#f2b84b"/></svg>'; }
   var pdfMode=false;
   /* in a PDF, pictures are drawn as backgrounds: the PDF renderer ignores object-fit */
   function pdfPic(src, fit){ return '<div class="av-pdfpic" style="background-image:url('+src+');background-size:'+fit+'"></div>'; }
+  /* v78: video and web-link pages. Only YouTube and Vimeo are played in the page (from an id
+     rebuilt here, never a pasted address); anything else is a link that opens in a new tab. */
+  var VID=function(u){ u=String(u||'').trim(); if(!/^https:\/\/[^\s<>"'`]{4,500}$/.test(u)) return null; var m;
+    if((m=/^https:\/\/(?:www\.|m\.)?youtube\.com\/(?:watch\?(?:[^#]*&)?v=|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/.exec(u))||(m=/^https:\/\/youtu\.be\/([A-Za-z0-9_-]{11})/.exec(u))) return {k:'yt', id:m[1], url:u};
+    if((m=/^https:\/\/(?:www\.)?vimeo\.com\/(?:video\/)?(\d{5,12})/.exec(u))||(m=/^https:\/\/player\.vimeo\.com\/video\/(\d{5,12})/.exec(u))) return {k:'vm', id:m[1], url:u};
+    return {k:'link', url:u}; };
+  var hostOf=function(u){ var m=/^https:\/\/([^\/?#]+)/.exec(u||''); return m?m[1].replace(/^www\./,''):''; };
+  function embedMedia(p, live){
+    var v=VID(p.vurl); if(!v) return '<div class="av-media av-linkcard"><span>No video or link yet</span></div>';
+    if(pdfMode) return '<div class="av-media av-pdfm av-linkcard"><span>'+(v.k==='link'?'Web page':'Video')+': <a href="'+E(v.url)+'">'+E(v.url)+'</a></span></div>';
+    if(v.k==='link') return '<div class="av-media av-linkcard"><a href="'+E(v.url)+'" target="_blank" rel="noopener noreferrer">🔗 Open '+E(hostOf(v.url))+' ↗</a></div>';
+    var poster=v.k==='yt'?'<img src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="" referrerpolicy="no-referrer">':'';
+    return '<div class="av-media av-vid" data-vk="'+v.k+'" data-vid="'+v.id+'">'+poster+(live?'<button class="av-play" type="button" aria-label="Play video">▶</button>':'<span class="av-play">▶</span>')+
+      '<a class="av-vlink" href="'+E(v.url)+'" target="_blank" rel="noopener noreferrer">Open on '+(v.k==='yt'?'YouTube':'Vimeo')+' ↗</a></div>';
+  }
   function mediaHtml(p, live){
+    if(p.kind==='embed') return embedMedia(p, live);
     if(pdfMode){
       if(p.kind==='map'){ var st=IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:''); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl"><a href="'+E(D.url)+'">View the interactive map ›</a></div>':''); }
       if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media av-pdfm">'+pdfPic(p.src,'contain')+'</div>';
@@ -12249,6 +12306,14 @@ function atlasViewer(root, D){
     });
     el.querySelectorAll('[data-go]').forEach(function(a){ a.onclick=function(e){ e.preventDefault(); go(+a.getAttribute('data-go')); }; });
     el.querySelectorAll('img[data-zoom]').forEach(function(im){ im.onclick=function(){ zoomImg(im.src); }; });
+    el.querySelectorAll('.av-vid .av-play').forEach(function(b){ b.onclick=function(e){ e.stopPropagation();
+      var box=b.parentNode, k=box.getAttribute('data-vk'), id=box.getAttribute('data-vid');
+      if(!/^[A-Za-z0-9_-]{5,12}$/.test(id||'')) return;
+      var f=doc.createElement('iframe');
+      f.src=k==='yt' ? 'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0' : 'https://player.vimeo.com/video/'+id+'?autoplay=1';
+      f.setAttribute('allow','autoplay; fullscreen; picture-in-picture; encrypted-media'); f.setAttribute('allowfullscreen',''); f.setAttribute('title','Video');
+      f.setAttribute('referrerpolicy','strict-origin-when-cross-origin'); f.className='av-vframe';
+      var keep=box.querySelector('.av-vlink'); box.innerHTML=''; box.appendChild(f); if(keep) box.appendChild(keep); }; });
   }
   function zoomImg(src){
     var z=doc.createElement('div'); z.className='av-zoom'; z.innerHTML='<img src="'+src+'" alt=""><button class="av-zx" aria-label="Close">✕</button>';
@@ -12680,6 +12745,13 @@ const ATLAS_CSS=`
 .av-nav button{background:var(--navbtn);border:1px solid var(--navbord);color:var(--navink);border-radius:18px;min-width:36px;height:32px;font-size:18px;cursor:pointer;}
 .av-nav button:hover{filter:brightness(1.15);}
 .av-pn{min-width:150px;text-align:center;}
+.av-vid{background:#111;border-radius:4px;overflow:hidden;min-height:200px;aspect-ratio:16/9;max-height:100%;}
+.av-vid img{width:100%;height:100%;object-fit:cover;opacity:.85;}
+.av-vid .av-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:48px;border-radius:12px;border:none;background:rgba(200,30,30,.92);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.av-vid .av-vframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.av-vid .av-vlink{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;font:12px/1.2 system-ui,sans-serif;padding:4px 8px;border-radius:4px;text-decoration:none;z-index:2;}
+.av-linkcard{border:1px dashed var(--rule,#bbb);border-radius:6px;min-height:120px;}
+.av-linkcard a{font:600 16px/1.3 system-ui,sans-serif;color:var(--accent,#2f6f6b);text-decoration:none;padding:16px;word-break:break-all;}
 .av-zoom{position:fixed;inset:0;background:rgba(10,12,16,.92);display:flex;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;}
 .av-zoom img{max-width:96vw;max-height:94vh;}
 .av-zx{position:absolute;top:14px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
@@ -12882,7 +12954,13 @@ const ATLAS_CSS=`
    from Map Maker, finished layouts from Map Composer, images and text. The same
    viewer code runs the in-app preview and the exported single HTML file. */
 let atlas=null, atSel='cover';
-const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}};
+const AT_KINDS={map:{icon:'🧭',label:'Live map'}, layout:{icon:'▣',label:'Map layout'}, image:{icon:'🖼',label:'Image'}, text:{icon:'¶',label:'Text'}, embed:{icon:'▶',label:'Video or link'}};
+/* v78: the address on a video/link page — https only, no spaces or quotes */
+function atUrlClean(u){ u=String(u||'').trim(); return /^https:\/\/[^\s<>"'`]{4,500}$/.test(u) ? u : ''; }
+function atVidKind(u){ u=atUrlClean(u); if(!u) return '';
+  if(/^https:\/\/((www\.|m\.)?youtube\.com\/(watch\?([^#]*&)?v=|shorts\/|embed\/|live\/)[A-Za-z0-9_-]{11}|youtu\.be\/[A-Za-z0-9_-]{11})/.test(u)) return 'YouTube video';
+  if(/^https:\/\/((www\.)?vimeo\.com\/(video\/)?\d{5,12}|player\.vimeo\.com\/video\/\d{5,12})/.test(u)) return 'Vimeo video';
+  return 'web link'; }
 const AT_IMG=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 function atDefault(){ return {title:'My Atlas', subtitle:'', author:'', coverColor:'#1f3b57', coverImage:'', backText:'', backHtml:'', backImage:'', backCredit:'', mode:'book', contents:true, theme:'classic', contentsTitle:'Contents', contentsText:'', contentsImage:'', custom:atCustomDefault(), pages:[]}; }
 function atCustomDefault(){ return {hfont:'playfair', bfont:'georgia', hbold:false, paper:'#fbf8f1', ink:'#22293a', head:'#1f2f45', accent:'#2f6f6b', backdrop:'#2c2f36',
@@ -12962,7 +13040,8 @@ function atSanitize(a){
       mapHtml:'', snap:p.kind==='map'?atSnapFrom(p):null, legend:p.legend===true, spread:p.spread===true&&!!AT_SPREAD[p.kind], spreadText:['column','box','split'].includes(p.spreadText)?p.spreadText:'column',
       fill:p.fill===true, tOver:['card','banner','halo'].includes(p.tOver)?p.tOver:'', tPos:['tl','tc','bl'].includes(p.tPos)?p.tPos:'tl',
       pageText:p.pageText==='box'?'box':'below', boxStyle:['design','glass','dark'].includes(p.boxStyle)?p.boxStyle:'design',
-      box:(p.box&&typeof p.box==='object')?{x:+p.box.x||0, y:+p.box.y||0, w:+p.box.w||0.5, h:+p.box.h||0.3}:null, basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null};
+      box:(p.box&&typeof p.box==='object')?{x:+p.box.x||0, y:+p.box.y||0, w:+p.box.w||0.5, h:+p.box.h||0.3}:null, basemap:atBmKey(s(p.basemap,40)), captured:+p.captured||null,
+      vurl:p.kind==='embed'?atUrlClean(p.vurl):''};
   }).filter(Boolean);
   return out;
 }
@@ -13020,7 +13099,7 @@ function renderAtlas(){
   if(!atlas){
     document.getElementById('atList').innerHTML='';
     document.getElementById('atBody').innerHTML='<div class="fc-empty"><h3>Make an atlas</h3><p>A book of maps: live maps from Map Maker, layouts from Map Composer, images and text — read with turning pages or as one scrolling page.</p><button class="btn" id="atStart">Start an atlas</button></div>';
-    document.getElementById('atSettings').innerHTML='';
+    document.getElementById('atSettings').innerHTML='<div class="kv" style="padding:12px 4px;line-height:1.5"><b>Atlas settings</b> appear here once the atlas is started: how it reads (turning pages or scrolling), its design, and preview.</div>';
     document.getElementById('atStart').onclick=()=>{ atlas=atDefault(); const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec && rec.name) atlas.title=rec.name; atDirty(); renderAtlas(); mlog('compose','Started the atlas "'+atlas.title+'".'); };
     return;
   }
@@ -13136,6 +13215,8 @@ function renderAtBody(){
   let media='';
   if(p.kind==='map') media=p.snap?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>';
   else if(p.kind==='layout'||p.kind==='image') media=p.src?'<div class="at-media"><img src="'+p.src+'" alt=""></div>':'<div class="at-media at-missing">No image yet.</div>';
+  else if(p.kind==='embed'){ const vk=atVidKind(p.vurl), yt=/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/.exec(p.vurl||'');
+    media=vk ? '<div class="at-media at-vidprev">'+(yt&&vk==='YouTube video'?'<img src="https://i.ytimg.com/vi/'+yt[1]+'/hqdefault.jpg" alt="" referrerpolicy="no-referrer">':'')+'<span class="at-vidtag">▶ '+esc(vk)+'</span></div>' : '<div class="at-media at-missing">Paste a YouTube or Vimeo address, or any web page, below.</div>'; }
   const nL=p.snap?(p.snap.globe?p.snap.gLayers.length:p.snap.proj?p.snap.pLayers.length:p.snap.layers.length):0;
   const vKind=!p.snap?'':p.snap.globe?'globe view · ':p.snap.proj?(p.snap.proj.label||'projected')+' projection · ':'';
   const swTxt=p.snap&&p.snap.swipe?'swipe comparison · ':'';
@@ -13148,6 +13229,9 @@ function renderAtBody(){
       '<p class="kv at-meta2">'+(when?when+' · ':'')+vKind+swTxt+nL+' layer'+(nL===1?'':'s')+'</p>');
   else if(p.kind==='layout') srcCard=atCard('Layout',
       '<div class="at-btnrow"><button class="btn small" id="atRecap">↻ Recapture from Map Composer</button></div><p class="kv at-meta2">'+(when?when+'. ':'')+'Readers can click the layout to enlarge it.</p>');
+  else if(p.kind==='embed') srcCard=atCard('Video or link',
+      '<label class="at-f">Address<input type="url" id="atVurl" placeholder="https://www.youtube.com/watch?v=…" value="'+esc(p.vurl||'')+'"></label>'+
+      '<p class="kv at-meta2">YouTube and Vimeo videos play in the atlas, with an “Open on YouTube” link as a fallback. Any other web page appears as a link that opens in a new tab. In a PDF, the address is printed.</p>');
   else if(p.kind==='image') srcCard=atCard('Image',
       '<div class="at-btnrow"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div><p class="kv at-meta2">Readers can click the image to enlarge it.</p>');
   const media0=AT_SPREAD[p.kind];
@@ -13158,7 +13242,7 @@ function renderAtBody(){
       '<div class="at-ltc">'+
         '<div class="at-swrow"><label class="at-chk at-sw"><input type="checkbox" id="atFill"'+(p.fill?' checked':'')+'><i></i> <b>Fill to margins</b></label>'+
         (media0?'<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b></label>':'')+'</div>'+
-        '<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind)]], p.tOver?'on':'')+'</div>'+
+        '<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind==='embed'?'video':p.kind)]], p.tOver?'on':'')+'</div>'+
         (p.tOver?'<div class="at-f at-sub"><div class="at-2col">'+segH('atTSt',[['card','Card'],['banner','Banner'],['halo','Large']], p.tOver)+
           '<select id="atTPos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="bl">Bottom left</option></select></div></div>':'')+
         '<div class="at-f">Caption and text'+(spreadOn
@@ -13204,6 +13288,9 @@ function renderAtBody(){
   del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; del.classList.add('armed'); setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.classList.remove('armed'); del.textContent='🗑 Delete'; } },3500); return; }
     atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
   const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
+  const vu=document.getElementById('atVurl');
+  if(vu) vu.onchange=()=>{ const v=atUrlClean(vu.value); if(vu.value.trim() && !v){ toast('Paste the full address, starting with https://'); return; }
+    p.vurl=v; if(!p.title||p.title==='Video'||p.title==='Web link') p.title=(atVidKind(v)==='web link')?'Web link':'Video'; atDirty(); renderAtBody(); renderAtList(); };
   const rp=document.getElementById('atReplace'), fi=document.getElementById('atImgIn');
   if(rp){ rp.onclick=()=>fi.click(); fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ p.src=await atReadImage(f, 2200); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } }; }
 }
@@ -13414,6 +13501,7 @@ async function atAddPage(kind){
     p.title=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ');
   }
   if(kind==='text') p.title='';
+  if(kind==='embed'){ p.title='Video'; p.vurl=''; }
   const cur=atCur(); const at=cur?atlas.pages.indexOf(cur)+1:atlas.pages.length;
   atlas.pages.splice(at,0,p); atSel=p.id; atDirty(); renderAtlas();
 }
@@ -13528,6 +13616,7 @@ function atExport(){
   document.addEventListener('click', ()=>menu.classList.add('hidden'));
   menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{ menu.classList.add('hidden');
     if(b.dataset.k==='contents'){ atlas.contents=true; atSel='contents'; atDirty(); renderAtlas(); return; }
+    if(b.dataset.k==='merge'){ openMergeDialog('atlas'); return; }
     atAddPage(b.dataset.k); });
   document.getElementById('atAddBtn').addEventListener('click', ()=>{ const t=document.getElementById('atAddToc'); if(t) t.hidden=!!(atlas&&atlas.contents); }, true);
 })();
@@ -15370,6 +15459,139 @@ function mkFsToggle(){
 document.addEventListener('click', e=>{ const b=e.target.closest && e.target.closest('.mk-fs-btn'); if(!b) return; e.preventDefault(); e.stopPropagation(); mkFsToggle(); }, true);
 setTimeout(mkFsSync, 0);
 new MutationObserver(()=>{ if(document.querySelector('.mk-fs-btn:empty')) mkFsSync(); }).observe(document.body, {childList:true, subtree:true});
+
+
+/* ---------- v78: bring work in from another project (group projects) ----------
+   Source: a project file (from a group member) or another project in this browser.
+   Layers come with their style, labels and filter; atlas pages are appended. */
+let mergeSrc=null;
+function mergeReadFile(file){
+  return file.text().then(text=>{
+    let d; try{ d=JSON.parse(text); }catch(_){ throw new Error('That file could not be read.'); }
+    if(!(d && d.version===4 && d.project)) throw new Error('That is not a Map-O-Matic project file (download one with ⚙ → Download project file).');
+    const ds={}; (d.datasets||[]).forEach(x=>{ if(x&&x.id&&x.geojson&&Array.isArray(x.geojson.features)) ds[x.id]=x; });
+    return {kind:'file', name:file.name.replace(/\.mapomatic-project\.json$|\.json$/i,''), rec:d.project, datasets:ds};
+  });
+}
+function mergeFromBrowser(id){
+  const rec=projectsCache.find(p=>p.id===id); if(!rec) return null;
+  return {kind:'local', name:rec.name, rec, datasets:null};
+}
+function mergeLayersOf(src){
+  return ((src.rec.maker||{}).layers||[]).map((l,i)=>{
+    const d=src.kind==='file' ? src.datasets[l.datasetId] : datasetById(l.datasetId);
+    const n=d&&d.geojson&&d.geojson.features ? d.geojson.features.length : 0;
+    return {i, l, d, n, ok:!!d};
+  });
+}
+function mergePagesOf(src){ const a=src.rec.atlas; return a&&Array.isArray(a.pages) ? a.pages : []; }
+function renderMergeBody(focus){
+  const body=document.getElementById('mgBody'), go=document.getElementById('mgGo');
+  if(!mergeSrc){ body.innerHTML='<p class="kv">Choose a project file or one of your other projects.</p>'; go.disabled=true; return; }
+  const Ls=mergeLayersOf(mergeSrc), Ps=mergePagesOf(mergeSrc);
+  const kindName={map:'Live map', layout:'Map layout', image:'Image', text:'Text', embed:'Video / web page'};
+  body.innerHTML='<div class="mg-cols">'+
+    '<div><div class="mg-h">Map layers ('+Ls.length+')</div>'+(Ls.length? Ls.map(x=>'<label class="mg-row'+(x.ok?'':' mg-off')+'"><input type="checkbox" class="mgL" value="'+x.i+'" '+(x.ok&&focus!=='atlas'?'checked':'')+(x.ok?'':' disabled')+'> '+esc(x.l.name)+' <span class="kv">'+(x.ok? x.n.toLocaleString()+' '+esc(x.l.geom||'')+' features' : 'data missing')+'</span></label>').join('') : '<p class="kv">No layers.</p>')+'</div>'+
+    '<div><div class="mg-h">Atlas pages ('+Ps.length+')</div>'+(Ps.length? Ps.map((p,i)=>'<label class="mg-row"><input type="checkbox" class="mgP" value="'+i+'" '+(focus!=='maker'||!Ls.length?'checked':'')+'> '+esc(p.title||'Untitled')+' <span class="kv">'+esc(kindName[p.kind]||p.kind)+'</span></label>').join('') : '<p class="kv">No atlas in that project.</p>')+'</div></div>'+
+    '<label class="mg-row" style="margin-top:6px"><input type="checkbox" id="mgLog" checked> Add its Log steps to this project\'s Log (marked with the project name)</label>';
+  const upd=()=>{ go.disabled=!body.querySelector('.mgL:checked, .mgP:checked'); };
+  body.querySelectorAll('input').forEach(i=>i.onchange=upd); upd();
+}
+function openMergeDialog(focus){
+  mergeSrc=null;
+  const sel=document.getElementById('mgSrc');
+  const others=projectsCache.filter(p=>p.id!==currentProjectId).sort((a,b)=>(b.modified||0)-(a.modified||0));
+  sel.innerHTML='<option value="">— choose —</option><option value="__file">A project file (from a group member)…</option>'+
+    (others.length?'<optgroup label="My other projects in this browser">'+others.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('')+'</optgroup>':'');
+  document.getElementById('mgStatus').textContent='';
+  const file=document.getElementById('mgFile');
+  sel.onchange=()=>{
+    mergeSrc=null; document.getElementById('mgStatus').textContent='';
+    if(sel.value==='__file'){ file.value=''; file.click(); renderMergeBody(focus); return; }
+    if(sel.value) mergeSrc=mergeFromBrowser(sel.value);
+    renderMergeBody(focus);
+  };
+  file.onchange=()=>{ const f=file.files&&file.files[0]; if(!f) return;
+    mergeReadFile(f).then(src=>{ mergeSrc=src; renderMergeBody(focus); document.getElementById('mgStatus').textContent='Read "'+f.name+'".'; })
+      .catch(e=>{ mergeSrc=null; renderMergeBody(focus); document.getElementById('mgStatus').textContent=e.message; }); };
+  document.getElementById('mgGo').onclick=()=>runMerge(focus);
+  renderMergeBody(focus);
+  openModal('modal-merge');
+}
+function runMerge(focus){
+  const src=mergeSrc; if(!src) return;
+  const body=document.getElementById('mgBody');
+  const li=[...body.querySelectorAll('.mgL:checked')].map(c=>+c.value), pi=[...body.querySelectorAll('.mgP:checked')].map(c=>+c.value);
+  const Ls=mergeLayersOf(src), Ps=mergePagesOf(src);
+  let nL=0, nP=0;
+  /* layers: keep the source's top-to-bottom order, placed above this project's layers */
+  const add=[];
+  li.forEach(i=>{ const x=Ls[i]; if(!x||!x.ok) return;
+    let dsId=x.l.datasetId, gj;
+    if(src.kind==='file'){ const ds=registerDataset(clone(x.d.geojson), x.d.name||x.l.name, x.d.geom||x.l.geom, {derived:x.d.derived}); dsId=ds.id; gj=ds.geojson; }
+    else gj=x.d.geojson;
+    let name=x.l.name; const names=new Set(mkLayers.map(l=>l.name).concat(add.map(l=>l.name))); if(names.has(name)) name=name+' ('+src.name+')';
+    add.push({id:uid(), name, datasetId:dsId, geojson:gj, geom:x.l.geom, visible:x.l.visible!==false, opacity:x.l.opacity==null?1:x.l.opacity,
+      style:clone(x.l.style||defaultStyle(x.l.geom)), labels:clone(x.l.labels||defaultLabels()), filter:clone(x.l.filter||{logic:'AND',conds:[]}), leaflet:null, group:null});
+  });
+  if(add.length){ mkLayers=add.concat(mkLayers); mkSelectedId=add[0].id; nL=add.length;
+    renderAllMakerLayers(); renderMakerLayerList(); renderMakerPanels(); if(typeof updateMkStatus==='function') updateMkStatus(); mkPushHistory(); }
+  if(pi.length){
+    if(!atlas){ atlas=atDefault(); const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec&&rec.name) atlas.title=rec.name; }
+    pi.forEach(i=>{ const p=Ps[i]; if(!p) return; const c=clone(p); c.id=uid(); atlas.pages.push(c); nP++; });
+    atDirty(); if(window.curModule==='atlas') renderAtlas();
+  }
+  if(document.getElementById('mgLog') && document.getElementById('mgLog').checked && Array.isArray(src.rec.methodsLog) && src.rec.methodsLog.length){
+    const rec=projectsCache.find(p=>p.id===currentProjectId);
+    if(rec){ rec.methodsLog=(rec.methodsLog||[]).concat(src.rec.methodsLog.map(e=>Object.assign({}, e, {text:'['+src.name+'] '+(e.text||'')}))); }
+  }
+  mlog('data', 'Brought in '+nL+' layer'+(nL===1?'':'s')+' and '+nP+' atlas page'+(nP===1?'':'s')+' from the project "'+src.name+'".');
+  markProjectDirty();
+  closeModal('modal-merge');
+  toast('Brought in '+nL+' layer'+(nL===1?'':'s')+(nP?' and '+nP+' atlas page'+(nP===1?'':'s'):'')+' from “'+src.name+'”.', 4500);
+  if(nL && mkMap){ try{ let b=null; add.forEach(l=>{ const bb=gjBounds(l.geojson); b=b?b.extend(bb):L.latLngBounds(bb); }); if(b&&b.isValid()) mkMap.fitBounds(b,{padding:[20,20],maxZoom:14}); }catch(_){} }
+}
+/* ---------- v78: version label and one-tab guard ---------- */
+const MOM_VERSION='v78 · Oct 2026';
+window.MOM_VERSION=MOM_VERSION;
+document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
+/* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
+   wins: work done in the other tab is silently overwritten. Only one tab works
+   at a time; another tab shows a notice and can take over (the first tab saves
+   and steps aside). Read-only views (share links, atlases, phone forms) are exempt. */
+let momTabLocked=false;
+(function(){
+  const viewer=()=>{ try{ return isShareMode()||isAtlasShareMode()||isCollectMode()||/[?&]code=/.test(location.search); }catch(_){ return false; } };
+  if(viewer()) return;
+  const me=Math.random().toString(36).slice(2);
+  let bc=null; try{ bc=new BroadcastChannel('map-o-matic-tabs'); }catch(_){}
+  const send=m=>{ m.from=me; if(bc){ try{ bc.postMessage(m); }catch(_){} }
+    try{ localStorage.setItem('mom-tab-msg', JSON.stringify(Object.assign({t:Date.now(), r:Math.random()}, m))); }catch(_){} };
+  const guard=(title, body, btn, act)=>{
+    let g=document.getElementById('momTabGuard');
+    if(!g){ g=document.createElement('div'); g.id='momTabGuard'; document.body.appendChild(g); }
+    g.innerHTML='<div class="tg-box" role="alertdialog" aria-modal="true"><h2>'+title+'</h2><div>'+body+'</div><div class="tg-row"><button class="btn" id="tgUse">'+btn+'</button></div></div>';
+    g.querySelector('#tgUse').onclick=act;
+  };
+  const lock=()=>{ momTabLocked=true; };
+  const unlock=()=>{ momTabLocked=false; const g=document.getElementById('momTabGuard'); if(g) g.remove(); };
+  const takeOver=()=>{ guard('Taking over…', 'The other tab is saving your work. This tab will reload in a moment.', 'Reload now', ()=>location.reload());
+    send({type:'takeover'}); setTimeout(()=>location.reload(), 2500); };
+  const onMsg=m=>{
+    if(!m || m.from===me) return;
+    if(m.type==='hello' && !momTabLocked) send({type:'here'});
+    else if(m.type==='here' && !momTabLocked){ lock();
+      guard('Map-O-Matic is already open', 'Map-O-Matic is open in another tab or window of this browser. Two open copies overwrite each other\'s work, so only one can be used at a time.<br><br>Close this tab, or use this one instead (the other tab saves and steps aside).', 'Use this tab instead', takeOver); }
+    else if(m.type==='takeover' && !momTabLocked){
+      const done=()=>{ lock(); guard('Map-O-Matic moved to another tab', 'Your work was saved, and Map-O-Matic is now being used in another tab. This tab is paused so the two copies can\'t overwrite each other.', 'Use this tab again', takeOver); };
+      try{ const p=(typeof currentProjectId!=='undefined' && currentProjectId) ? saveCurrentProject(false) : null; if(p && p.then) p.then(done, done); else done(); }catch(_){ done(); }
+    }
+  };
+  if(bc) bc.onmessage=e=>onMsg(e.data);
+  window.addEventListener('storage', e=>{ if(e.key==='mom-tab-msg' && e.newValue){ try{ onMsg(JSON.parse(e.newValue)); }catch(_){} } });
+  send({type:'hello'});
+  window.__momTabGuard={unlock, me};
+})();
 /* ================= MAP LAYOUT ================= */
 let canvas, pageState={size:'letter', orientation:'portrait', wIn:8.5, hIn:11};
 let insetMap=null, insetLayers=[], insetDrawState=null, insetLocatorLayer=null;
@@ -18715,10 +18937,25 @@ document.getElementById('osmAddBtn').onclick=()=>{
   if(preset.types.includes('w')) parts.push('way'+preset.f+'('+bbox+');');
   if(preset.area) parts.push('relation'+preset.f+'["type"="multipolygon"]('+bbox+');');
   const OSM_MAX=8000;
+  /* v78: a class sharing one campus address soon fills the main Overpass server's
+     per-address slots; when it is busy, the same query goes to community mirrors */
+  function overpassFetch(q, note){
+    const EP=['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+    let i=0, last='';
+    const next=()=>{
+      if(i>=EP.length) return Promise.reject(new Error('every OpenStreetMap server was busy ('+last+'). Wait a minute and try again, or zoom in to a smaller area.'));
+      const url=EP[i++];
+      if(i>1 && note) note('The main OpenStreetMap server is busy; trying another server ('+i+' of '+EP.length+')…');
+      return fetch(url, {method:'POST', body:'data='+encodeURIComponent(q)})
+        .then(r=>{ if(r.status===429||r.status===504||r.status===503||r.status===502){ last='HTTP '+r.status; return next(); }
+          if(!r.ok) throw new Error('Overpass HTTP '+r.status); return r.json(); },
+          e=>{ last=e.message||'network error'; return next(); });
+    };
+    return next();
+  }
   const query='[out:json][timeout:40];('+parts.join('')+');out geom '+OSM_MAX+';';
   onlineStatus('Querying OpenStreetMap for '+preset.label.toLowerCase()+'… (can take up to ~30 s)');
-  fetch('https://overpass-api.de/api/interpreter', {method:'POST', body:'data='+encodeURIComponent(query)})
-    .then(r=>{ if(!r.ok) throw new Error('Overpass HTTP '+r.status+(r.status===429?' — server busy, try again in a minute':'')); return r.json(); })
+  overpassFetch(query, m=>onlineStatus(m))
     .then(data=>{
       const els=data.elements||[];
       const gj=osmToGeoJSON(els, preset.area);
@@ -19256,6 +19493,7 @@ document.getElementById('btnSync').onclick=openSyncDialog;
     const g=b.dataset.g;
     if(g==='save'){ if(currentProjectId) saveCurrentProject(true); else toast('No project open.'); }
     else if(g==='sync') document.getElementById('btnSync').click();
+    else if(g==='backup'){ if(currentProjectId) exportProjectFile(currentProjectId); else toast('No project open.'); }
     else if(g==='log') document.getElementById('btnMethods').click();
     else if(g==='theme'){ document.getElementById('btnTheme').click(); sync(); }
     else if(g==='help') document.getElementById('btnHelp').click();
@@ -19490,6 +19728,7 @@ function serializeCurrentProject(){
 }
 function saveCurrentProject(showToast){
   if(!currentProjectId||!db) return Promise.resolve();
+  if(typeof momTabLocked!=='undefined' && momTabLocked) return Promise.resolve();   /* v78: a paused second tab never writes */
   const rec=serializeCurrentProject();
   const i=projectsCache.findIndex(p=>p.id===rec.id);
   if(i>=0) projectsCache[i]=rec; else projectsCache.push(rec);
@@ -19991,7 +20230,8 @@ function updateExportUI(){
     png:'Margin guides and live-embed previews are excluded automatically. Live embeds print as placeholders.',
     mapimg:'Captures the current Map Maker view at high resolution. In Web Mercator view it includes a world file (.pgw, EPSG:3857) so the PNG opens georeferenced in GIS software; in a projected view it exports as a plain image.',
     layerszip:'Every layer in this project as a separate valid GeoJSON file, zipped. Calculated fields included.',
-    archive:'One zip with everything: layout PDF + PNG, all layers as GeoJSON, and the portable project file. Ideal for submission or backup.'
+    archive:'One zip with everything: layout PDF + PNG, all layers as GeoJSON, and the portable project file. Ideal for submission or backup.',
+    projfile:'The whole project in one file: layers and their data, styles, the layout, the atlas and the Log. Open it on another computer (Home → Import project file), or bring its maps into a group project (+ Add data ▾ → From another project).'
   };
   document.getElementById('exportNote').textContent=notes[fmt]||notesExtra[fmt]||'';
 }
@@ -20543,6 +20783,8 @@ function runExport(fmt, name, dpi){
     if(typeof renderGhPublishBox==='function') renderGhPublishBox();
     openModal('modal-embedcode');
     toast('Interactive map exported.');
+  } else if(fmt==='projfile'){
+    exportProjectFile(currentProjectId);
   } else if(fmt==='layerszip'){
     if(!mkLayers.length){ toast('This project has no layers.'); return; }
     const zip=new JSZip();

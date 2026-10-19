@@ -1299,6 +1299,13 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   #mk-center:-webkit-full-screen #mk-toolbar{display:none !important;}
   .mkl-tabs button.lt-off{opacity:.4;cursor:not-allowed;}
   #mkBaseRow.lt-off{opacity:.5;pointer-events:none;}
+
+  /* v76: bivariate key editor in the Composer legend panel */
+  .lg-bivrow .biv-ed{display:grid;grid-template-columns:auto 1fr 64px 64px;gap:4px;align-items:center;width:100%;}
+  .lg-bivrow .biv-ed label{font-size:11px;color:var(--muted);}
+  .lg-bivrow .biv-ed input{min-width:0;padding:3px 5px;font-size:12px;}
+  .lg-bivrow .biv-ed2{display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%;font-size:12px;}
+  .lg-bivrow .biv-ed2 label{display:flex;gap:4px;align-items:center;margin-right:auto;}
   #gearMenu #syncState{display:inline !important;}
   #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
@@ -6087,14 +6094,30 @@ const BIV_PALS={
   pinkblue:{name:'Pink – blue', g:[['#e8e8e8','#ace4e4','#5ac8c8'],['#dfb0d6','#a5add3','#5698b9'],['#be64ac','#8c62aa','#3b4994']]},
   greenblue:{name:'Green – blue', g:[['#e8e8e8','#b5c0da','#6c83b5'],['#b8d6be','#90b2b3','#567994'],['#73ae80','#5a9178','#2a5a5b']]},
   tealred:{name:'Teal – red', g:[['#e8e8e8','#e4acac','#c85a5a'],['#b0d5df','#ad9ea5','#985356'],['#64acbe','#627f8c','#574249']]},
-  purplegold:{name:'Purple – gold', g:[['#e8e8e8','#e4d9ac','#c8b35a'],['#cbb8d7','#c8ada0','#af8e53'],['#9972af','#976b82','#804d36']]}
+  purplegold:{name:'Purple – gold', g:[['#e8e8e8','#e4d9ac','#c8b35a'],['#cbb8d7','#c8ada0','#af8e53'],['#9972af','#976b82','#804d36']]},
+  bluered:{name:'Blue – red', mix:['#3a78c2','#d1352f']},
+  yelpur:{name:'Yellow – purple (colour-blind safe)', mix:['#e0a20f','#5e3c99']},
+  custom:{name:'Custom…', mix:null}
 };
+/* two inks laid over each other: each variable fades from pale grey to its own colour,
+   and the cell is the two multiplied, so low–low is light grey and high–high is the dark mix */
+function bivMixGrid(cx, cy, n){
+  const lo='#f3f3f3', out=[];
+  for(let i=0;i<n;i++){ const v=n===1?0:i/(n-1), B=chroma.mix(lo, cy, v, 'lab'), row=[];
+    for(let j=0;j<n;j++){ const u=n===1?0:j/(n-1), A=chroma.mix(lo, cx, u, 'lab'); row.push(chroma.blend(A, B, 'multiply').hex()); }
+    out.push(row); }
+  return out;
+}
 function bivDefaults(st){
   if(!st.biN) st.biN=3; if(!st.biMX) st.biMX='quantile'; if(!st.biMY) st.biMY='quantile'; if(!BIV_PALS[st.biPal]) st.biPal='pinkblue';
+  if(!st.biCX) st.biCX='#2f8f9d'; if(!st.biCY) st.biCY='#d0702c'; if(!st.biShape) st.biShape='square';
 }
 /* cells[row][col]: row = second variable (low → high), col = first variable (low → high) */
-function bivGrid(pal, n){
-  const g=(BIV_PALS[pal]||BIV_PALS.pinkblue).g;
+function bivGrid(pal, n, st){
+  const P=BIV_PALS[pal]||BIV_PALS.pinkblue;
+  if(pal==='custom') return bivMixGrid((st&&st.biCX)||'#2f8f9d', (st&&st.biCY)||'#d0702c', n);
+  if(P.mix) return bivMixGrid(P.mix[0], P.mix[1], n);
+  const g=P.g;
   if(n===3) return g.map(r=>r.slice());
   const rows=g.map(r=>chroma.scale(r).mode('lab'));
   const out=[];
@@ -6119,13 +6142,13 @@ function bivClassOf(b, v){ if(!b||!isFinite(v)) return -1; for(let i=0;i<b.lengt
 function bivCompute(lyr){
   const st=lyr.style; bivDefaults(st);
   const feats=visibleFeatures(lyr);
-  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
+  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,st.biCX,st.biCY,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
   if(lyr._biv && lyr._biv.sig===sig) return lyr._biv;
   const X=f=>toNum((f.properties||{})[st.biX]), Y=f=>toNum((f.properties||{})[st.biY]);
   const bx=st.biX? bivBreaks(feats.map(X), st.biN, st.biMX) : null;
   const by=st.biY? bivBreaks(feats.map(Y), st.biN, st.biMY) : null;
   const n=st.biN;
-  lyr._biv={sig, bx, by, grid:bivGrid(st.biPal, n), n, X, Y};
+  lyr._biv={sig, bx, by, grid:bivGrid(st.biPal, n, st), n, X, Y};
   return lyr._biv;
 }
 function bivColor(lyr, f){
@@ -6140,19 +6163,71 @@ function bivColor(lyr, f){
 function bivLegendItem(lyr){
   const st=lyr.style, B=bivCompute(lyr);
   if(!B.bx||!B.by) return null;
-  return {bivar:{n:B.n, cells:B.grid, xName:st.biX, yName:st.biY,
+  return {bivar:{n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond',
     xr:fmtNum(B.bx[0])+'–'+fmtNum(B.bx[B.bx.length-1]), yr:fmtNum(B.by[0])+'–'+fmtNum(B.by[B.by.length-1])}, label:st.biX+' × '+st.biY};
 }
+/* The bivariate key as drawing primitives, shared by the SVG version (Map Maker,
+   web maps, atlas) and the Composer legend. Square: second variable up the side,
+   first along the bottom. Diamond: the same grid turned 45°, low–low at the bottom
+   corner and high–high at the top. Labels: axis names (editable in the Composer)
+   and optional low/high words at the ends of each axis. */
+function bivKeyGeom(bv, cell, meas, sz){
+  const n=bv.n, c=cell, gs=n*c, S=sz||{lab:10.5, sm:9};
+  const xl=(bv.xLabel!=null&&bv.xLabel!=='')?bv.xLabel:bv.xName, yl=(bv.yLabel!=null&&bv.yLabel!=='')?bv.yLabel:bv.yName;
+  const P=[];
+  /* text: top-left corner at (x,y), optionally turned by rot degrees about that corner */
+  const txt=(t,x,y,anchor,size,rot)=>{ if(t==null||t==='') return; t=String(t); const w=meas(t,size);
+    if(!rot){ const x0=anchor==='end'?x-w:anchor==='middle'?x-w/2:x; P.push({t:'text', s:t, x:x0, y, w, h:size*1.2, size, rot:0}); return; }
+    P.push({t:'text', s:t, x, y, w, h:size*1.2, size, rot}); };
+  const arrow=(a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L0=Math.hypot(dx,dy)||1, ux=dx/L0, uy=dy/L0, hx=-uy, hy=ux, k=4;
+    P.push({t:'line', pts:[a,b]}); P.push({t:'line', pts:[[b[0]-ux*k+hx*k*0.75, b[1]-uy*k+hy*k*0.75], b, [b[0]-ux*k-hx*k*0.75, b[1]-uy*k-hy*k*0.75]]}); };
+  const ends=!!(bv.xLo||bv.xHi||bv.yLo||bv.yHi);
+  if(!bv.diamond){
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const x=j*c, y=(n-1-i)*c; P.push({t:'poly', pts:[[x,y],[x+c,y],[x+c,y+c],[x,y+c]], fill:bv.cells[i][j]}); }
+    arrow([-6, gs], [-6, -5]); arrow([0, gs+6], [gs+5, gs+6]);
+    txt(bv.xLo, 0, gs+10, 'start', S.sm); txt(bv.xHi, gs+9, gs+6-S.sm*0.6, 'start', S.sm);
+    txt(xl, 0, gs+10+((bv.xLo)?S.sm*1.25:0), 'start', S.lab);
+    txt(bv.yHi, -10, -5-S.sm*0.6, 'end', S.sm); txt(bv.yLo, -10, gs-S.sm*1.1, 'end', S.sm);
+    txt(yl, -8, -9-S.lab*1.2-(bv.yHi?S.sm*0.4:0), 'start', S.lab);
+  } else {
+    /* the grid turned 45°: low–low at the bottom corner, high–high at the top */
+    const cd=Math.round(c*1.35), gd=n*cd;      /* a little larger, so the edges can carry their labels */
+    const r=Math.SQRT1_2, D=(u,v)=>[(u-v)*r, -(u+v)*r], h=gd*r, L=gd;
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const u=j*cd, v=i*cd, c=cd; P.push({t:'poly', pts:[D(u,v),D(u+c,v),D(u+c,v+c),D(u,v+c)], fill:bv.cells[i][j]}); }
+    const off=6, o=off*r;
+    arrow([o, o], [h+o+3, -h+o-3]); arrow([-o, o], [-h-o-3, -h+o-3]);
+    /* labels run along the two lower edges, outside the arrows */
+    const dX=[r,-r], nX=[r,r];            /* lower-right edge, bottom → right corner; outward normal */
+    const dY=[r,r],  nY=[-r,r];           /* lower-left edge, left corner → bottom; outward normal */
+    /* positions are distances from the bottom corner along each edge, so the two
+       labels never meet there; a long label simply runs on past the far corner */
+    const wd=(t,size)=>(t==null||t==='')?0:meas(String(t),size);
+    const put=(isX,t,size,dist,a)=>{ if(t==null||t==='') return; const w=wd(t,size);
+      if(isX) txt(t, dX[0]*a+nX[0]*dist, dX[1]*a+nX[1]*dist, 'start', size, -45);
+      else { const b0=a+w; txt(t, -dY[0]*b0+nY[0]*dist, -dY[1]*b0+nY[1]*dist, 'start', size, 45); } };
+    const row1=off+5, row2=row1+(ends?S.sm*1.3:0), gap=8;
+    [[true,bv.xLo,bv.xHi,xl],[false,bv.yLo,bv.yHi,yl]].forEach(([isX,lo,hi,lab])=>{
+      const wl=wd(lo,S.sm), wh=wd(hi,S.sm);
+      put(isX, lo, S.sm, row1, gap); put(isX, hi, S.sm, row1, Math.max(L-wh-2, gap+wl+6));
+      const wa=wd(lab,S.lab); put(isX, lab, S.lab, row2, Math.max(gap, (L-wa)/2)); });
+  }
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  const corners=q=>{ if(q.t!=='text') return q.pts; const a=(q.rot||0)*Math.PI/180, ca=Math.cos(a), sa=Math.sin(a);
+    return [[0,0],[q.w,0],[q.w,q.h],[0,q.h]].map(([u,v])=>[q.x+u*ca-v*sa, q.y+u*sa+v*ca]); };
+  P.forEach(q=>corners(q).forEach(([x,y])=>{ if(x<x0)x0=x; if(y<y0)y0=y; if(x>x1)x1=x; if(y>y1)y1=y; }));
+  return {P, x0, y0, w:x1-x0, h:y1-y0};
+}
+function bivMeasureSvg(t, size){ return String(t).length*size*0.56; }
 /* the legend grid as an SVG string (Map Maker panel, web maps, atlas) */
 function bivLegendSvg(bv, cell){
-  cell=cell||14; const n=bv.n, gs=n*cell, padL=18, padT=16, W=padL+gs+4, H=padT+gs+30;
-  let h='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.max(W,150)+'" height="'+H+'" viewBox="0 0 '+Math.max(W,150)+' '+H+'" style="display:block;overflow:visible">';
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) h+='<rect x="'+(padL+j*cell)+'" y="'+(padT+(n-1-i)*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+bv.cells[i][j]+'" stroke="#fff" stroke-width="0.6"/>';
-  const ax='#5a6478';
-  h+='<path d="M'+(padL-6)+' '+(padT+gs)+'V'+(padT-6)+'M'+(padL-9)+' '+(padT-2)+'L'+(padL-6)+' '+(padT-7)+'L'+(padL-3)+' '+(padT-2)+'" fill="none" stroke="'+ax+'" stroke-width="1.2"/>';
-  h+='<path d="M'+padL+' '+(padT+gs+6)+'H'+(padL+gs+6)+'M'+(padL+gs+2)+' '+(padT+gs+3)+'L'+(padL+gs+7)+' '+(padT+gs+6)+'L'+(padL+gs+2)+' '+(padT+gs+9)+'" fill="none" stroke="'+ax+'" stroke-width="1.2"/>';
-  h+='<text x="'+(padL-8)+'" y="'+(padT-9)+'" font-size="10.5" fill="currentColor" font-family="sans-serif">'+esc(bv.yName)+' ↑</text>';
-  h+='<text x="'+padL+'" y="'+(padT+gs+20)+'" font-size="10.5" fill="currentColor" font-family="sans-serif">'+esc(bv.xName)+' →</text>';
+  const G=bivKeyGeom(bv, cell||14, bivMeasureSvg), pad=2, W=Math.ceil(G.w+pad*2), H=Math.ceil(G.h+pad*2), ox=-G.x0+pad, oy=-G.y0+pad;
+  const pt=([x,y])=>(x+ox).toFixed(1)+','+(y+oy).toFixed(1);
+  let h='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block;overflow:visible">';
+  G.P.forEach(q=>{
+    if(q.t==='poly') h+='<polygon points="'+q.pts.map(pt).join(' ')+'" fill="'+q.fill+'" stroke="#fff" stroke-width="0.6"/>';
+    else if(q.t==='line') h+='<polyline points="'+q.pts.map(pt).join(' ')+'" fill="none" stroke="#5a6478" stroke-width="1.2" stroke-linejoin="round"/>';
+    else h+='<text transform="translate('+(q.x+ox).toFixed(1)+' '+(q.y+oy).toFixed(1)+')'+(q.rot?' rotate('+q.rot+')':'')+'" y="'+(q.size*0.9).toFixed(1)+'" font-size="'+q.size+'" fill="currentColor" font-family="sans-serif">'+esc(q.s)+'</text>';
+  });
   return h+'</svg>';
 }
 /* ---------- rendering ---------- */
@@ -8267,7 +8342,9 @@ function renderStyleTab(){
         <div class="field"><label>Classes by</label><select id="biMY">${mo(st.biMY)}</select></div></div>
       <div class="row2"><div class="field"><label>Grid</label><select id="biN">${[2,3,4].map(k=>'<option value="'+k+'" '+(st.biN===k?'selected':'')+'>'+k+' × '+k+'</option>').join('')}</select></div>
         <div class="field"><label>Colours</label><select id="biPal">${Object.keys(BIV_PALS).map(k=>'<option value="'+k+'" '+(st.biPal===k?'selected':'')+'>'+BIV_PALS[k].name+'</option>').join('')}</select></div></div>
-      <div class="biv-prev">${(B.bx&&B.by)? bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY}, 18) : '<span class="kv">Choose a field for each direction.</span>'}</div>`
+      ${st.biPal==='custom'?'<div class="row2">'+colourFieldHtml('biCX','High across', st.biCX)+colourFieldHtml('biCY','High up', st.biCY)+'</div><p class="kv" style="margin:-2px 0 6px">Each field fades from light grey to its colour; where both are high the two mix, like overlapping inks.</p>':''}
+      <div class="field"><label>Legend key</label><select id="biShape"><option value="square" ${st.biShape!=='diamond'?'selected':''}>Square</option><option value="diamond" ${st.biShape==='diamond'?'selected':''}>Diamond (turned 45°)</option></select></div>
+      <div class="biv-prev">${(B.bx&&B.by)? bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond'}, 18) : '<span class="kv">Choose a field for each direction.</span>'}</div>`
       +((B.bx&&B.by)?'<div class="kv" style="margin-top:4px"><b>'+esc(st.biX)+'</b> breaks: '+B.bx.map(fmtNum).join(' | ')+'<br><b>'+esc(st.biY)+'</b> breaks: '+B.by.map(fmtNum).join(' | ')+'</div>':'');
   }
   html+=`<div class="divider"></div><h3>Stroke & transparency</h3>`;
@@ -8307,6 +8384,12 @@ function renderStyleTab(){
     if(g('biMY')) g('biMY').onchange=()=>bset('biMY', g('biMY').value);
     if(g('biN')) g('biN').onchange=()=>bset('biN', +g('biN').value);
     if(g('biPal')) g('biPal').onchange=()=>bset('biPal', g('biPal').value);
+    if(g('biShape')) g('biShape').onchange=()=>bset('biShape', g('biShape').value);
+    /* while a colour is being dragged only the map and the preview key update; the panel is rebuilt once the picker closes */
+    let bt=null; const live=()=>{ lyr._biv=null; clearTimeout(bt); bt=setTimeout(()=>{ rerender(); const B=bivCompute(lyr), pv=el.querySelector('.biv-prev'); if(pv&&B.bx&&B.by) pv.innerHTML=bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond'}, 18); }, 120); };
+    bindColourField('biCX', ()=>st.biCX, v=>{ st.biCX=v; }, live);
+    bindColourField('biCY', ()=>st.biCY, v=>{ st.biCY=v; }, live);
+    ['biCX','biCY'].forEach(id=>{ if(g(id)) g(id).addEventListener('change', ()=>{ mkTouch(); markProjectDirty(); mkPushHistory(); }); });
   }
   g('stMode').onchange=()=>{
     const was=st.mode;
@@ -15970,9 +16053,12 @@ function buildLegendGroup(title, items, frame, text){
   };
   let widest=measure(title||'Legend', tx.title);
   const bivCell=Math.max(12, swW);
+  const bivMeas=(t,size)=>measure(t, Object.assign({}, tx.label, {size}));
+  const bivSz={lab:tx.label.size, sm:Math.max(7, Math.round(tx.label.size*0.85))};
+  const bivG=it=>it._g||(it._g=bivKeyGeom(it.bivar, bivCell, bivMeas, bivSz));
   items.forEach(it=>{
     const w = it.header ? measure(it.label, tx.heading)
-            : it.bivar ? Math.max(18+it.bivar.n*bivCell+10, 10+measure(it.bivar.xName+' →', tx.label), measure(it.bivar.yName+' ↑', tx.label))
+            : it.bivar ? bivG(it).w+4
                         : swW+10+measure(it.label, tx.label);
     if(w>widest) widest=w;
   });
@@ -15989,7 +16075,7 @@ function buildLegendGroup(title, items, frame, text){
       rows.push({it, y, rowH, size:0});
       y+=rowH;
     } else if(it.bivar){
-      const rowH=tx.label.size+8 + it.bivar.n*bivCell + 12 + tx.label.size+6 + gap;
+      const rowH=bivG(it).h+8+gap;
       rows.push({it, y, rowH, size:0});
       y+=rowH;
     } else {
@@ -16024,13 +16110,13 @@ function buildLegendGroup(title, items, frame, text){
       return;
     }
     if(it.bivar){
-      /* the bivariate key: an n×n grid, second variable up the side, first along the bottom */
-      const bv=it.bivar, n=bv.n, c=bivCell, gx=padding+12, gy=y+tx.label.size+8, gs=n*c, ax='#5a6478';
-      parts.push(new fabric.Text(String(bv.yName)+' ↑', Object.assign({left:padding, top:y}, legendFontOpts(tx.label))));
-      for(let i=0;i<n;i++) for(let j=0;j<n;j++) parts.push(new fabric.Rect({left:gx+j*c, top:gy+(n-1-i)*c, width:c, height:c, fill:bv.cells[i][j], stroke:'#ffffff', strokeWidth:0.6}));
-      parts.push(new fabric.Path('M '+(gx-5)+' '+(gy+gs)+' L '+(gx-5)+' '+(gy-3)+' M '+(gx-8)+' '+(gy+1)+' L '+(gx-5)+' '+(gy-4)+' L '+(gx-2)+' '+(gy+1), {fill:'', stroke:ax, strokeWidth:1.2}));
-      parts.push(new fabric.Path('M '+gx+' '+(gy+gs+5)+' L '+(gx+gs+3)+' '+(gy+gs+5)+' M '+(gx+gs-1)+' '+(gy+gs+2)+' L '+(gx+gs+4)+' '+(gy+gs+5)+' L '+(gx+gs-1)+' '+(gy+gs+8), {fill:'', stroke:ax, strokeWidth:1.2}));
-      parts.push(new fabric.Text(String(bv.xName)+' →', Object.assign({left:gx, top:gy+gs+11}, legendFontOpts(tx.label))));
+      /* the bivariate key (square or diamond), drawn from the shared geometry */
+      const G=bivG(it), ox=padding-G.x0, oy=y-G.y0+3, ax='#5a6478';
+      G.P.forEach(q=>{
+        if(q.t==='poly') parts.push(new fabric.Polygon(q.pts.map(([a,b])=>({x:a+ox, y:b+oy})), {fill:q.fill, stroke:'#ffffff', strokeWidth:0.6, objectCaching:false}));
+        else if(q.t==='line') parts.push(new fabric.Polyline(q.pts.map(([a,b])=>({x:a+ox, y:b+oy})), {fill:'', stroke:ax, strokeWidth:1.2, strokeLineJoin:'round', objectCaching:false}));
+        else parts.push(new fabric.Text(q.s, Object.assign(legendFontOpts(tx.label), {fontSize:q.size, left:q.x+ox, top:q.y+oy, originX:'left', originY:'top', angle:q.rot||0})));
+      });
       return;
     }
     if(it.shape==='circle'){
@@ -16051,6 +16137,7 @@ function buildLegendGroup(title, items, frame, text){
     parts.push(new fabric.Text(String(it.label),
       Object.assign({left:padding+swW+10, top:cy-tx.label.size/2}, legendFontOpts(tx.label))));
   });
+  items.forEach(it=>{ if(it && it._g) delete it._g; });
   return new fabric.Group(parts,{left:600, top:40});
 }
 function rebuildLegendOnCanvas(obj){
@@ -17180,8 +17267,19 @@ function showPropertiesForSelection(e){
 function renderLegendRows(obj){
   const wrap=document.getElementById('legendRows');
   wrap.innerHTML=obj.data.items.map((it,i)=>{
-    if(it.bivar) return `<div class="legend-row" data-i="${i}" data-biv="1"><span class="kv" style="flex:1;margin:0">Bivariate key: ${esc(it.bivar.xName)} × ${esc(it.bivar.yName)}</span>
-      <button data-act="up" title="Move up">↑</button><button data-act="down" title="Move down">↓</button><button data-act="del" title="Remove">✕</button></div>`;
+    if(it.bivar){ const bv=it.bivar, v=k=>esc(bv[k]==null?'':bv[k]);
+      return `<div class="legend-row lg-bivrow" data-i="${i}" data-biv="1" style="flex-wrap:wrap;gap:4px">
+      <span class="kv" style="flex:1;margin:0;font-weight:700">Bivariate key</span>
+      <button data-act="up" title="Move up">↑</button><button data-act="down" title="Move down">↓</button><button data-act="del" title="Remove">✕</button>
+      <div class="biv-ed">
+        <label>Across</label><input type="text" data-k="xLabel" value="${esc(bv.xLabel!=null&&bv.xLabel!==''?bv.xLabel:bv.xName)}">
+        <input type="text" data-k="xLo" placeholder="low" value="${v('xLo')}"><input type="text" data-k="xHi" placeholder="high" value="${v('xHi')}">
+        <label>Up</label><input type="text" data-k="yLabel" value="${esc(bv.yLabel!=null&&bv.yLabel!==''?bv.yLabel:bv.yName)}">
+        <input type="text" data-k="yLo" placeholder="low" value="${v('yLo')}"><input type="text" data-k="yHi" placeholder="high" value="${v('yHi')}">
+      </div>
+      <div class="biv-ed2"><label><input type="checkbox" data-k="diamond" ${bv.diamond?'checked':''}> Diamond (turned 45°)</label>
+        <button type="button" data-act="lohi" class="btn small light">Low / High</button><button type="button" data-act="nolohi" class="btn small light">No end labels</button></div>
+      </div>`; }
     const shapeSel=`<select class="shape-sel">
       <option value="header" ${it.header?'selected':''}>Head</option>
       <option value="rect" ${!it.header&&it.shape==='rect'?'selected':''}>Area</option>
@@ -17201,7 +17299,13 @@ function renderLegendRows(obj){
   wrap.querySelectorAll('.legend-row').forEach(row=>{
     const i=+row.getAttribute('data-i');
     const rebuild=()=>{ const ng=rebuildLegendOnCanvas(obj); showPropertiesForSelection({selected:[ng]}); };
-    if(row.dataset.biv){ row.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ const act=b.getAttribute('data-act'), items=obj.data.items;
+    if(row.dataset.biv){
+      const bv=obj.data.items[i].bivar;
+      row.querySelectorAll('input[type=text]').forEach(inp=>inp.onchange=()=>{ bv[inp.dataset.k]=inp.value.trim(); rebuild(); });
+      const dm=row.querySelector('input[data-k=diamond]'); if(dm) dm.onchange=()=>{ bv.diamond=dm.checked; rebuild(); };
+      row.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ const act=b.getAttribute('data-act'), items=obj.data.items;
+      if(act==='lohi'){ bv.xLo='Low'; bv.xHi='High'; bv.yLo='Low'; bv.yHi='High'; }
+      if(act==='nolohi'){ bv.xLo=bv.xHi=bv.yLo=bv.yHi=''; }
       if(act==='del') items.splice(i,1);
       if(act==='up' && i>0){ const t=items[i]; items[i]=items[i-1]; items[i-1]=t; }
       if(act==='down' && i<items.length-1){ const t=items[i]; items[i]=items[i+1]; items[i+1]=t; }
@@ -20068,7 +20172,7 @@ function embedLegendHtml(){
     parts.push('<div class="lg-title">'+esc(spec.title)+'</div>');
     spec.items.forEach(it=>{
       if(it.header){ parts.push('<div class="lg-title" style="font-weight:600;margin-top:4px">'+esc(it.label)+'</div>'); return; }
-      if(it.bivar){ const bv=it.bivar; parts.push('<div class="lg-row lg-biv" style="display:block;padding:2px 0 4px" data-n="'+bv.n+'" data-c="'+esc(bv.cells.map(r=>r.join(' ')).join(';'))+'" data-x="'+esc(bv.xName)+'" data-y="'+esc(bv.yName)+'">'+bivLegendSvg(bv, 14)+'</div>'); return; }
+      if(it.bivar){ const bv=it.bivar; parts.push('<div class="lg-row lg-biv" style="display:block;padding:2px 0 4px" data-n="'+bv.n+'" data-c="'+esc(bv.cells.map(r=>r.join(' ')).join(';'))+'" data-x="'+esc(bv.xName)+'" data-y="'+esc(bv.yName)+'" data-d="'+(bv.diamond?1:0)+'">'+bivLegendSvg(bv, 14)+'</div>'); return; }
       const col=isNoColour(it.color)?'transparent':it.color;
       let sw;
       if(it.shape==='line') sw='<span class="lg-sw lg-line" style="background:'+col+'"></span>';
@@ -20594,7 +20698,7 @@ function sanitizeLegendHtml(html){
       const k=Math.round(+n.dataset.n); const rows=String(n.dataset.c||'').split(';').map(r=>r.split(' ').map(c=>safeColor(c,'#cccccc')));
       if(k>=2 && k<=4 && rows.length===k && rows.every(r=>r.length===k)){
         d.className='lg-row'; d.style.display='block';
-        d.innerHTML=bivLegendSvg({n:k, cells:rows, xName:String(n.dataset.x||'').slice(0,80), yName:String(n.dataset.y||'').slice(0,80)}, 14);
+        d.innerHTML=bivLegendSvg({n:k, cells:rows, xName:String(n.dataset.x||'').slice(0,80), yName:String(n.dataset.y||'').slice(0,80), diamond:n.dataset.d==='1'}, 14);
         out.appendChild(d);
       }
       return;

@@ -100,7 +100,8 @@
   /* on the landing screen, project-scoped topbar controls aren't relevant */
   body.on-home #btnHome,
   body.on-home #projectSwitcher,
-  body.on-home #btnSave{display:none !important;}
+  body.on-home #btnSave,
+  body.on-home #btnExportMenu{display:none !important;}
 
   /* ---------- Map Maker module ---------- */
   #module-maker{display:flex;}
@@ -1277,6 +1278,27 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .gear-menu button.on::before{content:'✓ ';color:var(--teal);font-weight:800;}
   .gear-menu button[data-cvd]:not(.on){padding-left:24px;}
   body:not(.mod-layout) .gear-menu .gm-cvd{display:none !important;}
+
+  /* v75: projected-view button bars match the flat map; measuring overlay; full screen */
+  #projZoomCtl{box-shadow:none !important;overflow:visible !important;background:transparent;gap:10px !important;}
+  #projZoomCtl .pz-bar{display:flex;flex-direction:column;box-shadow:0 1px 5px rgba(0,0,0,.45);border-radius:4px;overflow:hidden;}
+  #projZoomCtl .pz-bar button{display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;}
+  #projZoomCtl .pz-bar button:last-child{border-bottom:none;}
+  #projZoomCtl button.off{color:#b8bfca;pointer-events:none;}
+  #projZoomCtl button.on{background:var(--teal) !important;color:#fff !important;}
+  #projZoomCtl button svg{display:block;}
+  #projOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;}
+  #projOverlay .pm-line{fill:none;stroke:#e0467c;stroke-width:3;stroke-dasharray:6 4;stroke-linecap:round;}
+  #projOverlay .pm-pt{fill:#fff;stroke:#e0467c;stroke-width:2.5;}
+  #mk-proj .mk-seldraw{position:absolute;inset:0;width:100%;height:100%;z-index:6;}
+  .mk-fs-btn svg{display:block;margin:auto;}
+  .leaflet-bar a.mk-fs-btn{display:flex;align-items:center;justify-content:center;}
+  #mk-center:fullscreen{background:#fff;display:flex;flex-direction:column;}
+  #mk-center:fullscreen #mk-toolbar{display:none !important;}
+  #mk-center:fullscreen > #mk-map, #mk-center:fullscreen > #mk-proj{flex:1 1 auto;height:auto !important;min-height:0;}
+  #mk-center:-webkit-full-screen #mk-toolbar{display:none !important;}
+  .mkl-tabs button.lt-off{opacity:.4;cursor:not-allowed;}
+  #mkBaseRow.lt-off{opacity:.5;pointer-events:none;}
   #gearMenu #syncState{display:inline !important;}
   #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
@@ -1581,10 +1603,19 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <canvas id="projCanvas"></canvas>
       <div id="projMsg"></div>
       <div id="projZoomCtl">
+        <div class="pz-bar">
         <button id="projZoomIn" title="Zoom in">+</button>
         <button id="projZoomOut" title="Zoom out">−</button>
         <button id="projZoomAll" title="Zoom to full extent (all layers)" style="font-size:15px">✥</button>
-        <button id="projCompare" class="pz-gap" title="Compare two layers with a swipe divider" style="font-size:15px">⇆</button>
+        <button id="projPrev" class="mk-vh-prev off" title="Back to the previous view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button id="projNext" class="mk-vh-next off" title="Forward to the next view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div><div class="pz-bar">
+        <button id="projSel" title="Select features by dragging a box or lasso"></button>
+        <button id="projGlobe" title="Globe view" style="font-size:15px">🌐</button>
+        <button id="projMeasure" title="Measure distance (great-circle)" style="font-size:15px">📏</button>
+        <button id="projCompare" title="Compare two layers with a swipe divider" style="font-size:15px">⇆</button>
+        <button class="mk-fs-btn" title="Full screen (map only)"></button>
+        </div>
       </div>
     </div>
   </div>
@@ -1653,7 +1684,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   <aside id="rightpanel">
     <div class="tabs" id="lo-tabs">
       <button class="tab-btn active" data-tab="props">Properties</button>
-      <button class="tab-btn" data-tab="layers">Elements</button>
+      <button class="tab-btn" data-tab="layers">Arrange</button>
     </div>
     <div id="tab-props" class="tabcontent">
       <div class="empty-hint">Select an object on the page to edit it, or use the tools on the left to add a new one.</div>
@@ -3223,9 +3254,10 @@ function initMakerMap(){
 }
 /* ---------- previous / next view (v72) ----------
    Every settled view goes on a short history, like a browser's back and forward. */
-const viewHist={flat:{list:[],i:-1,nav:false}, globe:{list:[],i:-1,nav:false}};
+const viewHist={flat:{list:[],i:-1,nav:false}, globe:{list:[],i:-1,nav:false}, proj:{list:[],i:-1,nav:false}};
+function vhCur(){ return (typeof mkGlobe!=='undefined' && mkGlobe) ? viewHist.globe : (typeof projActive!=='undefined' && projActive) ? viewHist.proj : viewHist.flat; }
 function vhSync(){
-  const g=(typeof mkGlobe!=='undefined' && mkGlobe), H=g?viewHist.globe:viewHist.flat;
+  const H=vhCur();
   document.querySelectorAll('.mk-vh-prev').forEach(a=>a.classList.toggle('off', H.i<=0));
   document.querySelectorAll('.mk-vh-next').forEach(a=>a.classList.toggle('off', H.i>=H.list.length-1));
 }
@@ -3233,13 +3265,16 @@ function vhRecord(kind, v){
   const H=viewHist[kind];
   if(H.nav){ H.nav=false; vhSync(); return; }
   const cur=H.list[H.i];
-  if(cur && Math.abs(cur.z-v.z)<0.01 && Math.abs(cur.c[0]-v.c[0])<1e-6 && Math.abs(cur.c[1]-v.c[1])<1e-6 && (cur.b||0)===(v.b||0) && (cur.p||0)===(v.p||0)) return;
+  if(cur && Math.abs(cur.z-v.z)<0.01 && Math.abs(cur.c[0]-v.c[0])<1e-6 && Math.abs(cur.c[1]-v.c[1])<1e-6 && (cur.b||0)===(v.b||0) && (cur.p||0)===(v.p||0) && Math.abs((cur.tx||0)-(v.tx||0))<0.5 && Math.abs((cur.ty||0)-(v.ty||0))<0.5 && cur.f===v.f) return;
   H.list=H.list.slice(0,H.i+1); H.list.push(v); if(H.list.length>60) H.list.shift(); H.i=H.list.length-1; vhSync();
 }
 function vhGo(step){
-  const g=(typeof mkGlobe!=='undefined' && mkGlobe), H=g?viewHist.globe:viewHist.flat;
+  const g=(typeof mkGlobe!=='undefined' && mkGlobe), H=vhCur();
   const j=H.i+step; if(j<0||j>=H.list.length) return;
   H.i=j; H.nav=true; const v=H.list[j];
+  if(H===viewHist.proj){ projView.k=v.z; projView.tx=v.tx; projView.ty=v.ty; projView.fitTo=v.f; projView.fitBox=v.fb||undefined;
+    const lo=document.getElementById('projLon'), la=document.getElementById('projLat'); if(lo) lo.value=v.c[1]; if(la) la.value=v.c[0];
+    renderProjection(); vhSync(); return; }
   if(g) mkGlobe.easeTo({center:[v.c[1],v.c[0]], zoom:v.z, bearing:v.b||0, pitch:v.p||0, duration:600});
   else mkMap.setView(v.c, v.z);
   vhSync();
@@ -3277,7 +3312,8 @@ function addMapToolControls(){
       '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
       '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
-      '<a href="#" id="mkCompareBtn" title="Compare with a swipe divider — layers, overlays or the basemap">⇆</a>';
+      '<a href="#" id="mkCompareBtn" title="Compare with a swipe divider — layers, overlays or the basemap">⇆</a>'+
+      '<a href="#" class="mk-fs-btn" title="Full screen (map only)"></a>';
     L.DomEvent.disableClickPropagation(c); L.DomEvent.disableScrollPropagation(c);
     return c;
   }});
@@ -3567,8 +3603,8 @@ function glbAddLayer(map, id, col, lbl){
 let selTool=false, selShape='rect', selDrag=null;
 const SEL_ICONS={rect:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/></svg>',
   lasso:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5c3.3 0 5.5 1.6 5.5 3.7S11.3 10 8 10 2.5 8.3 2.5 6.2 4.7 2.5 8 2.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><path d="M5 9.4c-.8 1.3-.6 3 1 4.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'};
-function selTarget(){ return (typeof mkGlobe!=='undefined' && mkGlobe) ? mkGlobe.getCanvasContainer() : document.getElementById('mk-map'); }
-function selButtons(){ return [document.getElementById('mkSelBtn'), document.getElementById('mkGlobeSel')].filter(Boolean); }
+function selTarget(){ return (typeof mkGlobe!=='undefined' && mkGlobe) ? mkGlobe.getCanvasContainer() : (typeof projActive!=='undefined' && projActive) ? document.getElementById('mk-proj') : document.getElementById('mk-map'); }
+function selButtons(){ return [document.getElementById('mkSelBtn'), document.getElementById('mkGlobeSel'), document.getElementById('projSel')].filter(Boolean); }
 function selFlyout(){
   document.querySelectorAll('.mk-selfly').forEach(x=>x.remove());
   if(!selTool) return;
@@ -3596,6 +3632,7 @@ function selToolSet(on){
   if(on){
     if(typeof measureActive!=='undefined' && measureActive) toggleMeasure();
     if(typeof gMeas!=='undefined' && gMeas) globeMeasureToggle(false);
+    if(typeof pMeas!=='undefined' && pMeas) projMeasureToggle(false);
     el.addEventListener('pointerdown', selDown, true);
     if(typeof mkGlobe!=='undefined' && mkGlobe){ try{ mkGlobe.dragPan.disable(); mkGlobe.dragRotate.disable(); mkGlobe.boxZoom.disable(); }catch(_){} }
     else { try{ mkMap.dragging.disable(); mkMap.boxZoom.disable(); }catch(_){} }
@@ -3606,11 +3643,11 @@ function selToolSet(on){
 }
 function selDown(e){
   if(e.button!==0 || selDrag) return;
-  if(e.target.closest && e.target.closest('.leaflet-control,.mk-gctl,.mk-globe-hint,.mk-selfly,.leaflet-popup,.maplibregl-popup,.maplibregl-ctrl,#swipePanel,.swipe-bar')) return;
+  if(e.target.closest && e.target.closest('.leaflet-control,.mk-gctl,.mk-globe-hint,.mk-selfly,.leaflet-popup,.maplibregl-popup,.maplibregl-ctrl,#swipePanel,.swipe-bar,#projZoomCtl,.proj-pop')) return;
   e.preventDefault(); e.stopPropagation();
   const el=selTool.el, r=el.getBoundingClientRect();
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.setAttribute('class','mk-seldraw');
-  svg.innerHTML='<path d=""/>'; (el.id==='mk-map'?el:el.parentNode).appendChild(svg);
+  svg.innerHTML='<path d=""/>'; ((el.id==='mk-map'||el.id==='mk-proj')?el:el.parentNode).appendChild(svg);
   selDrag={r, svg, path:svg.firstChild, pts:[[e.clientX-r.left, e.clientY-r.top]], shape:selShape, pid:e.pointerId};
   const move=ev=>{ if(!selDrag) return; ev.preventDefault();
     const p=[ev.clientX-r.left, ev.clientY-r.top];
@@ -3643,9 +3680,14 @@ function selApply(ring, mode){
   let selPoly; try{ selPoly=turf.polygon([R]); }catch(_){ return; }
   const bx=[Math.min(...ring.map(p=>p[0])), Math.min(...ring.map(p=>p[1])), Math.max(...ring.map(p=>p[0])), Math.max(...ring.map(p=>p[1]))];
   let c0=null; if(globe){ const c=mkGlobe.getCenter(); c0=[c.lng*Math.PI/180, c.lat*Math.PI/180]; }
-  const hidden=(lng,lat)=>{ if(!c0) return false; const l=lng*Math.PI/180, f=lat*Math.PI/180;
+  let hidden=(lng,lat)=>{ if(!c0) return false; const l=lng*Math.PI/180, f=lat*Math.PI/180;
     return Math.sin(c0[1])*Math.sin(f)+Math.cos(c0[1])*Math.cos(f)*Math.cos(l-c0[0]) < 0.02; };   /* far side of the globe */
-  const proj=globe ? (c=>{ const p=mkGlobe.project([c[0],c[1]]); return [p.x,p.y]; }) : (c=>{ const p=mkMap.latLngToContainerPoint([c[1],c[0]]); return [p.x,p.y]; });
+  const pj=(!globe && typeof projActive!=='undefined' && projActive && projLastProjection) ? projLastProjection : null;
+  if(pj && pj.clipAngle && pj.clipAngle()){ const ca=pj.clipAngle()*Math.PI/180, rr=pj.rotate(); const cc=[-rr[0],-rr[1]];
+    const h0=hidden; hidden=(lng,lat)=>d3.geoDistance([lng,lat], cc)>ca-0.01; }
+  const proj=globe ? (c=>{ const p=mkGlobe.project([c[0],c[1]]); return [p.x,p.y]; })
+    : pj ? (c=>{ const p=pj([c[0],c[1]]); return p ? [p[0],p[1]] : [NaN,NaN]; })
+    : (c=>{ const p=mkMap.latLngToContainerPoint([c[1],c[0]]); return [p.x,p.y]; });
   const cand=[];
   const walk=l=>{ if(!l) return; if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
     if(!l.feature || !l.toGeoJSON) return; const i=fidOf(lyr, l.feature); if(i==null) return;
@@ -3981,7 +4023,7 @@ function globeOpen(){
       '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
         '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" class="mk-vh-prev off" id="mkGlobePrev" title="Back to the previous view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="mk-vh-next off" id="mkGlobeNext" title="Forward to the next view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
         '<div class="mk-gbar"><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
-        '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button></div></div>'+
+        '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button><button type="button" class="mk-fs-btn" title="Full screen (map only)"></button></div></div>'+
       '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
     /* mount inside the map area only, so the toolbar row (Layers, Send to
        Composer, Menu) and a docked attribute table stay visible in globe view */
@@ -6036,6 +6078,83 @@ function dotDensityPoints(lyr){
   return dots;
 }
 
+
+/* ---------- v75: bivariate choropleth ----------
+   Two numeric fields, each cut into n classes (2–4), coloured from an n×n grid
+   that blends two sequential schemes. Palettes are Joshua Stevens' 3×3 schemes;
+   other grid sizes are interpolated through them in Lab, so 3×3 is exact. */
+const BIV_PALS={
+  pinkblue:{name:'Pink – blue', g:[['#e8e8e8','#ace4e4','#5ac8c8'],['#dfb0d6','#a5add3','#5698b9'],['#be64ac','#8c62aa','#3b4994']]},
+  greenblue:{name:'Green – blue', g:[['#e8e8e8','#b5c0da','#6c83b5'],['#b8d6be','#90b2b3','#567994'],['#73ae80','#5a9178','#2a5a5b']]},
+  tealred:{name:'Teal – red', g:[['#e8e8e8','#e4acac','#c85a5a'],['#b0d5df','#ad9ea5','#985356'],['#64acbe','#627f8c','#574249']]},
+  purplegold:{name:'Purple – gold', g:[['#e8e8e8','#e4d9ac','#c8b35a'],['#cbb8d7','#c8ada0','#af8e53'],['#9972af','#976b82','#804d36']]}
+};
+function bivDefaults(st){
+  if(!st.biN) st.biN=3; if(!st.biMX) st.biMX='quantile'; if(!st.biMY) st.biMY='quantile'; if(!BIV_PALS[st.biPal]) st.biPal='pinkblue';
+}
+/* cells[row][col]: row = second variable (low → high), col = first variable (low → high) */
+function bivGrid(pal, n){
+  const g=(BIV_PALS[pal]||BIV_PALS.pinkblue).g;
+  if(n===3) return g.map(r=>r.slice());
+  const rows=g.map(r=>chroma.scale(r).mode('lab'));
+  const out=[];
+  for(let i=0;i<n;i++){ const v=n===1?0:i/(n-1), row=[];
+    for(let j=0;j<n;j++){ const u=n===1?0:j/(n-1); row.push(chroma.scale([rows[0](u),rows[1](u),rows[2](u)]).mode('lab')(v).hex()); }
+    out.push(row); }
+  return out;
+}
+function bivBreaks(vals, n, method){
+  vals=vals.filter(v=>isFinite(v)).sort((a,b)=>a-b);
+  if(!vals.length) return null;
+  const min=vals[0], max=vals[vals.length-1]; n=Math.min(n, vals.length);
+  let b=[];
+  if(method==='equal'){ for(let i=0;i<=n;i++) b.push(min+(max-min)*i/n); }
+  else if(method==='jenks'){ try{ const cl=ss.ckmeans(vals, n); b=[cl[0][0], ...cl.map(c=>c[c.length-1])]; }catch(_){ b=[]; } }
+  if(!b.length) b=quantileBreaks(vals, n);
+  b=Array.from(new Set(b)).sort((x,y)=>x-y);
+  if(b.length<2) b=[min, max+(max===min?1:0)];
+  return b;
+}
+function bivClassOf(b, v){ if(!b||!isFinite(v)) return -1; for(let i=0;i<b.length-1;i++) if(v<=b[i+1]) return i; return b.length-2; }
+function bivCompute(lyr){
+  const st=lyr.style; bivDefaults(st);
+  const feats=visibleFeatures(lyr);
+  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
+  if(lyr._biv && lyr._biv.sig===sig) return lyr._biv;
+  const X=f=>toNum((f.properties||{})[st.biX]), Y=f=>toNum((f.properties||{})[st.biY]);
+  const bx=st.biX? bivBreaks(feats.map(X), st.biN, st.biMX) : null;
+  const by=st.biY? bivBreaks(feats.map(Y), st.biN, st.biMY) : null;
+  const n=st.biN;
+  lyr._biv={sig, bx, by, grid:bivGrid(st.biPal, n), n, X, Y};
+  return lyr._biv;
+}
+function bivColor(lyr, f){
+  const B=bivCompute(lyr);
+  if(!B.bx || !B.by) return '#bbbbbb';
+  const i=bivClassOf(B.by, B.Y(f)), j=bivClassOf(B.bx, B.X(f));
+  if(i<0||j<0) return '#bbbbbb';
+  /* a field with fewer distinct values than classes gives fewer breaks; spread them over the grid */
+  const ri=Math.round(i*(B.n-1)/Math.max(1,B.by.length-2)), cj=Math.round(j*(B.n-1)/Math.max(1,B.bx.length-2));
+  return B.grid[Math.min(B.n-1,ri)][Math.min(B.n-1,cj)];
+}
+function bivLegendItem(lyr){
+  const st=lyr.style, B=bivCompute(lyr);
+  if(!B.bx||!B.by) return null;
+  return {bivar:{n:B.n, cells:B.grid, xName:st.biX, yName:st.biY,
+    xr:fmtNum(B.bx[0])+'–'+fmtNum(B.bx[B.bx.length-1]), yr:fmtNum(B.by[0])+'–'+fmtNum(B.by[B.by.length-1])}, label:st.biX+' × '+st.biY};
+}
+/* the legend grid as an SVG string (Map Maker panel, web maps, atlas) */
+function bivLegendSvg(bv, cell){
+  cell=cell||14; const n=bv.n, gs=n*cell, padL=18, padT=16, W=padL+gs+4, H=padT+gs+30;
+  let h='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.max(W,150)+'" height="'+H+'" viewBox="0 0 '+Math.max(W,150)+' '+H+'" style="display:block;overflow:visible">';
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) h+='<rect x="'+(padL+j*cell)+'" y="'+(padT+(n-1-i)*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+bv.cells[i][j]+'" stroke="#fff" stroke-width="0.6"/>';
+  const ax='#5a6478';
+  h+='<path d="M'+(padL-6)+' '+(padT+gs)+'V'+(padT-6)+'M'+(padL-9)+' '+(padT-2)+'L'+(padL-6)+' '+(padT-7)+'L'+(padL-3)+' '+(padT-2)+'" fill="none" stroke="'+ax+'" stroke-width="1.2"/>';
+  h+='<path d="M'+padL+' '+(padT+gs+6)+'H'+(padL+gs+6)+'M'+(padL+gs+2)+' '+(padT+gs+3)+'L'+(padL+gs+7)+' '+(padT+gs+6)+'L'+(padL+gs+2)+' '+(padT+gs+9)+'" fill="none" stroke="'+ax+'" stroke-width="1.2"/>';
+  h+='<text x="'+(padL-8)+'" y="'+(padT-9)+'" font-size="10.5" fill="currentColor" font-family="sans-serif">'+esc(bv.yName)+' ↑</text>';
+  h+='<text x="'+padL+'" y="'+(padT+gs+20)+'" font-size="10.5" fill="currentColor" font-family="sans-serif">'+esc(bv.xName)+' →</text>';
+  return h+'</svg>';
+}
 /* ---------- rendering ---------- */
 /* the colour a feature ends up with, whichever method is in play */
 function featureColor(lyr, f){
@@ -6044,6 +6163,7 @@ function featureColor(lyr, f){
   if(st.mode==='cat') return catColor(lyr,f);
   if(st.mode==='grad') return classColor(lyr, valueOf(lyr,f));
   if(st.mode==='bivariate') return bivariateColor(lyr,f);
+  if(st.mode==='bichoro') return bivColor(lyr,f);
   return st.color;
 }
 /* the radius a point ends up with */
@@ -7868,7 +7988,7 @@ function renderStyleTab(){
        ['heat','Heatmap (density surface)'],['hex','Hexbin (aggregated counts)']]
     : lyr.geom==='polygon'
       ? [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour'],
-         ['dot','Dot density'],['chart','Chart symbols (pie, donut, bar)'],['carto','Cartogram (area by value)']]
+         ['bichoro','Bivariate colour (two variables)'],['dot','Dot density'],['chart','Chart symbols (pie, donut, bar)'],['carto','Cartogram (area by value)']]
       : [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour']];
   let html=`<h3>${esc(lyr.name)} — symbology</h3>
     <div class="field"><label>Style type</label>
@@ -8135,6 +8255,21 @@ function renderStyleTab(){
   } else if(lyr.geom==='point' && st.mode!=='gradSize' && st.mode!=='chart'){
     html+=`<div class="field"><label>Symbol size (radius px)</label><input type="number" id="stRadius" value="${st.radius}" min="1" max="40"></div>`;
   }
+  if(st.mode==='bichoro'){
+    bivDefaults(st);
+    const fo=cur=>'<option value="">— choose —</option>'+numFields.map(f=>'<option value="'+esc(f)+'" '+(cur===f?'selected':'')+'>'+esc(f)+'</option>').join('');
+    const mo=cur=>[['quantile','Quantile'],['equal','Equal interval'],['jenks','Natural breaks']].map(m=>'<option value="'+m[0]+'" '+(cur===m[0]?'selected':'')+'>'+m[1]+'</option>').join('');
+    const B=bivCompute(lyr);
+    html+=`<p class="kv" style="margin:0 0 8px">Colours each area by two fields at once: one runs across the grid, the other up it. Dark corners show where both are high.</p>
+      <div class="row2"><div class="field"><label>Across →</label><select id="biX">${fo(st.biX)}</select></div>
+        <div class="field"><label>Classes by</label><select id="biMX">${mo(st.biMX)}</select></div></div>
+      <div class="row2"><div class="field"><label>Up ↑</label><select id="biY">${fo(st.biY)}</select></div>
+        <div class="field"><label>Classes by</label><select id="biMY">${mo(st.biMY)}</select></div></div>
+      <div class="row2"><div class="field"><label>Grid</label><select id="biN">${[2,3,4].map(k=>'<option value="'+k+'" '+(st.biN===k?'selected':'')+'>'+k+' × '+k+'</option>').join('')}</select></div>
+        <div class="field"><label>Colours</label><select id="biPal">${Object.keys(BIV_PALS).map(k=>'<option value="'+k+'" '+(st.biPal===k?'selected':'')+'>'+BIV_PALS[k].name+'</option>').join('')}</select></div></div>
+      <div class="biv-prev">${(B.bx&&B.by)? bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY}, 18) : '<span class="kv">Choose a field for each direction.</span>'}</div>`
+      +((B.bx&&B.by)?'<div class="kv" style="margin-top:4px"><b>'+esc(st.biX)+'</b> breaks: '+B.bx.map(fmtNum).join(' | ')+'<br><b>'+esc(st.biY)+'</b> breaks: '+B.by.map(fmtNum).join(' | ')+'</div>':'');
+  }
   html+=`<div class="divider"></div><h3>Stroke & transparency</h3>`;
   if(lyr.geom!=='line'){
     html+=`<div class="row2">`+colourFieldHtml('stStrokeColor','Outline colour', st.strokeColor)+
@@ -8164,6 +8299,15 @@ function renderStyleTab(){
 
   const g=id=>document.getElementById(id);
   const rerender=()=>{ renderLayer(lyr); };
+  if(st.mode==='bichoro'){
+    const bset=(k,v)=>{ st[k]=v; lyr._biv=null; renderStyleTab(); rerender(); mkTouch(); markProjectDirty(); mkPushHistory(); };
+    if(g('biX')) g('biX').onchange=()=>bset('biX', g('biX').value||null);
+    if(g('biY')) g('biY').onchange=()=>bset('biY', g('biY').value||null);
+    if(g('biMX')) g('biMX').onchange=()=>bset('biMX', g('biMX').value);
+    if(g('biMY')) g('biMY').onchange=()=>bset('biMY', g('biMY').value);
+    if(g('biN')) g('biN').onchange=()=>bset('biN', +g('biN').value);
+    if(g('biPal')) g('biPal').onchange=()=>bset('biPal', g('biPal').value);
+  }
   g('stMode').onchange=()=>{
     const was=st.mode;
     st.mode=g('stMode').value;
@@ -8173,6 +8317,7 @@ function renderStyleTab(){
     if(was==='carto' && st.mode!=='carto') cartoLeaveBasemap();
     /* bivariate has no "Normalize by" control, so a leftover rate setting would act invisibly */
     if(st.mode==='bivariate') st.normField=null;
+    if(st.mode==='bichoro'){ bivDefaults(st); const nf=numericFieldsOf(lyr); if(!st.biX) st.biX=(st.field&&nf.includes(st.field))?st.field:(nf[0]||null); if(!st.biY) st.biY=nf.find(f=>f!==st.biX)||null; lyr._biv=null; }
     /* a selection drawn for one kind of map would sit in the wrong place on another */
     if((was==='carto'||st.mode==='carto') && selection.layerId===lyr.id && selection.set.size) clearSelection();
     renderStyleTab(); rerender();
@@ -14016,6 +14161,8 @@ function legendSpecForLayer(lyr){
         items.push({color:lyr._cColors[i], label:fmtNum(lyr._cBreaks[i])+' – '+fmtNum(lyr._cBreaks[i+1]), shape:shp_});
       }
     }
+  } else if(st.mode==='bichoro'){
+    const it=bivLegendItem(lyr); if(it) items.push(it);
   } else if(st.mode==='carto'){
     const kind=st.cartoKind||'noncontig';
     if(st.cartoColorMode==='grad'){
@@ -14957,12 +15104,14 @@ if('ResizeObserver' in window){
     if(!projActive || !downAt) return;
     if(Math.hypot(e.clientX-downAt[0], e.clientY-downAt[1])>4) return;   /* that was a drag */
     if(e.target.closest && e.target.closest('#projZoomCtl,.swipe-bar,#swipePanel,.proj-pop')) return;
+    if(typeof pMeas!=='undefined' && pMeas){ projMeasureClick(e); return; }
     projClick(e);
   });
   el.addEventListener('mousedown', e=>{
     if(!projActive) return;
     if(e.target.closest && e.target.closest('#projZoomCtl,.swipe-bar,#swipePanel,.proj-pop')) return;  /* don't drag off the zoom buttons or divider */
     downAt=[e.clientX, e.clientY];
+    if(selTool || (typeof pMeas!=='undefined' && pMeas)) return;
     dragging=true; lastX=e.clientX; lastY=e.clientY;
     projGrab=null;
     { const d0=PROJ_DEFS[projKey]; if(d0 && d0.kind==='rotate' && projLastProjection && projLastProjection.invert){
@@ -15009,6 +15158,7 @@ if('ResizeObserver' in window){
   el.addEventListener('dblclick', e=>{
     if(!projActive) return;
     e.preventDefault();
+    if(typeof pMeas!=='undefined' && pMeas){ projMeasureFinish(); return; }
     const rect=el.getBoundingClientRect();
     const dx=(e.clientX-rect.left)-el.clientWidth/2;
     const dy=(e.clientY-rect.top)-el.clientHeight/2;
@@ -15023,6 +15173,120 @@ if('ResizeObserver' in window){
 
   el.style.cursor='grab';
 })();
+/* ---------- v75: projected views get the flat map's tools ----------
+   back/forward, box or lasso select, great-circle measuring, the globe, swipe and full screen */
+let pMeas=null;
+function projOverlaySvg(){
+  let o=document.getElementById('projOverlay');
+  if(!o){ o=document.createElementNS('http://www.w3.org/2000/svg','svg'); o.id='projOverlay'; document.getElementById('mk-proj').appendChild(o); }
+  return o;
+}
+function projMeasureDraw(extra){
+  const o=projOverlaySvg();
+  if(!pMeas || !projLastProjection){ o.innerHTML=''; return; }
+  const pts=pMeas.pts.slice(); if(extra) pts.push(extra);
+  const gp=d3.geoPath(projLastProjection);
+  let h='';
+  if(pts.length>1){ const d=gp({type:'LineString', coordinates:pts}); if(d) h+='<path d="'+d+'" class="pm-line"/>'; }
+  pMeas.pts.forEach(c=>{ const q=projLastProjection(c); if(q && isFinite(q[0])) h+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4.5" class="pm-pt"/>'; });
+  o.innerHTML=h;
+  let km=0; for(let i=1;i<pts.length;i++) km+=d3.geoDistance(pts[i-1], pts[i])*6371.0088;
+  const box=document.getElementById('projMeasBox');
+  if(box){ box.innerHTML=pMeas.pts.length ? '<b>'+measureFmt(km)+'</b> great-circle distance'+(pMeas.done?'':' · double-click to finish')+' <button type="button" id="projMeasClr">Clear</button>' : 'Click points on the map to measure.';
+    const c=document.getElementById('projMeasClr'); if(c) c.onclick=e=>{ e.stopPropagation(); pMeas.pts=[]; pMeas.done=false; projMeasureDraw(); }; }
+}
+function projGeoAt(e){
+  if(!projLastProjection || !projLastProjection.invert) return null;
+  const r=document.getElementById('mk-proj').getBoundingClientRect();
+  const g=projLastProjection.invert([e.clientX-r.left, e.clientY-r.top]);
+  return (g && isFinite(g[0]) && isFinite(g[1])) ? g : null;
+}
+function projMeasureClick(e){
+  if(!pMeas) return; if(pMeas.done){ pMeas.pts=[]; pMeas.done=false; }
+  const g=projGeoAt(e); if(!g){ toast('That point is off the map.'); return; }
+  const last=pMeas.pts[pMeas.pts.length-1]; if(last && d3.geoDistance(last,g)<1e-7) return;   /* the second click of a double-click */
+  pMeas.pts.push(g); projMeasureDraw();
+}
+function projMeasureFinish(){ if(!pMeas) return; pMeas.done=true; projMeasureDraw(); }
+function projMeasureToggle(force){
+  const on = force==null ? !pMeas : !!force;
+  const btn=document.getElementById('projMeasure'), el=document.getElementById('mk-proj');
+  if(on && !pMeas){
+    if(selTool) selToolSet(false);
+    pMeas={pts:[], done:false};
+    const box=document.createElement('div'); box.id='projMeasBox'; box.className='mk-gmeas';
+    ['pointerdown','mousedown','click','dblclick'].forEach(ev=>box.addEventListener(ev, x=>x.stopPropagation()));
+    el.appendChild(box);
+    if(btn) btn.classList.add('on'); el.style.cursor='crosshair'; projMeasureDraw();
+  } else if(!on && pMeas){
+    pMeas=null; const box=document.getElementById('projMeasBox'); if(box) box.remove();
+    if(btn) btn.classList.remove('on'); el.style.cursor='grab'; projMeasureDraw();
+  }
+}
+(function(){
+  const el=document.getElementById('mk-proj');
+  el.addEventListener('mousemove', e=>{ if(!pMeas || pMeas.done || !pMeas.pts.length) return; const g=projGeoAt(e); if(g) projMeasureDraw(g); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && pMeas){ const t=e.target; if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName)) return; projMeasureToggle(false); } });
+  /* redraw the overlay and remember the view after every redraw */
+  const _rp=renderProjection; let vt=null;
+  renderProjection=function(){
+    const r=_rp.apply(this, arguments);
+    if(projActive){
+      if(pMeas) projMeasureDraw();
+      clearTimeout(vt); vt=setTimeout(()=>{ if(!projActive) return;
+        vhRecord('proj', {c:[parseFloat(document.getElementById('projLat').value)||0, parseFloat(document.getElementById('projLon').value)||0], z:projView.k, tx:projView.tx, ty:projView.ty, f:projView.fitTo, fb:projView.fitBox}); }, 350);
+    }
+    return r;
+  };
+  /* switching projection starts a fresh history; the Basemap tab is greyed out while projected */
+  const _sp=setProjectionMode;
+  setProjectionMode=function(key){
+    if(selTool) selToolSet(false);
+    if(pMeas) projMeasureToggle(false);
+    if(typeof measureActive!=='undefined' && measureActive && key!=='mercator-edit') toggleMeasure();
+    viewHist.proj={list:[],i:-1,nav:false};
+    const r=_sp.apply(this, arguments);
+    projBaseTabSync(); vhSync();
+    return r;
+  };
+  const q=id=>document.getElementById(id);
+  q('projPrev').onclick=e=>{ e.stopPropagation(); vhGo(-1); };
+  q('projNext').onclick=e=>{ e.stopPropagation(); vhGo(1); };
+  q('projSel').innerHTML=SEL_ICONS[selShape];
+  q('projSel').onclick=e=>{ e.stopPropagation(); if(pMeas) projMeasureToggle(false); selToolSet(!selTool); };
+  q('projGlobe').onclick=e=>{ e.stopPropagation(); toggleGlobeView(); };
+  q('projMeasure').onclick=e=>{ e.stopPropagation(); projMeasureToggle(); };
+})();
+function projBaseTabSync(){
+  const t=document.getElementById('mklTabBase'); if(!t) return;
+  const off=!!projActive;
+  t.disabled=off; t.classList.toggle('lt-off', off);
+  t.title=off?'Basemaps, overlays and grids work on Web Mercator and the globe. Projected views draw their own land, sphere and graticule (options under Projection).':'';
+  if(off){ const on=document.querySelector('.mkl-tabs button.on'); if(on && on.dataset.lt==='base') openLeftTab('layers'); }
+  const row=document.getElementById('mkBaseRow'); if(row) row.classList.toggle('lt-off', off);
+}
+/* ---------- v75: full screen — just the map and its on-map buttons ---------- */
+const FS_ICON_IN='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const FS_ICON_OUT='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function mkFsOn(){ return document.fullscreenElement===document.getElementById('mk-center') || document.webkitFullscreenElement===document.getElementById('mk-center'); }
+function mkFsSync(){
+  const on=mkFsOn();
+  document.querySelectorAll('.mk-fs-btn').forEach(b=>{ b.innerHTML=on?FS_ICON_OUT:FS_ICON_IN; b.title=on?'Exit full screen (Esc)':'Full screen (map only)'; b.setAttribute('aria-label', b.title); b.classList.toggle('on', on); });
+}
+function mkFsToggle(){
+  const el=document.getElementById('mk-center');
+  if(mkFsOn()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
+  const req=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(!req){ toast('This browser cannot show the map full screen.'); return; }
+  try{ const pr=req.call(el); if(pr && pr.catch) pr.catch(()=>toast('Full screen was blocked by the browser.')); }catch(_){ toast('Full screen was blocked by the browser.'); }
+}
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev, ()=>{
+  mkFsSync();
+  setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} try{ if(typeof mkGlobe!=='undefined' && mkGlobe) mkGlobe.resize(); }catch(_){} if(projActive) renderProjection(); if(typeof swipe!=='undefined' && swipe) try{ swipeClip(); }catch(_){} }, 120);
+}));
+document.addEventListener('click', e=>{ const b=e.target.closest && e.target.closest('.mk-fs-btn'); if(!b) return; e.preventDefault(); e.stopPropagation(); mkFsToggle(); }, true);
+setTimeout(mkFsSync, 0);
+new MutationObserver(()=>{ if(document.querySelector('.mk-fs-btn:empty')) mkFsSync(); }).observe(document.body, {childList:true, subtree:true});
 /* ================= MAP LAYOUT ================= */
 let canvas, pageState={size:'letter', orientation:'portrait', wIn:8.5, hIn:11};
 let insetMap=null, insetLayers=[], insetDrawState=null, insetLocatorLayer=null;
@@ -15438,7 +15702,7 @@ function toggleLockSelection(){
   canvas.discardActiveObject();
   clearProperties();
   pushHistory();
-  toast(lock ? 'Locked — unlock it from the Elements tab.' : 'Unlocked.');
+  toast(lock ? 'Locked — unlock it from the Arrange tab.' : 'Unlocked.');
 }
 /* locking is stored in data, so it has to be re-applied after a load */
 function applyLocksFromData(){
@@ -15705,8 +15969,10 @@ function buildLegendGroup(title, items, frame, text){
     return t.width;
   };
   let widest=measure(title||'Legend', tx.title);
+  const bivCell=Math.max(12, swW);
   items.forEach(it=>{
     const w = it.header ? measure(it.label, tx.heading)
+            : it.bivar ? Math.max(18+it.bivar.n*bivCell+10, 10+measure(it.bivar.xName+' →', tx.label), measure(it.bivar.yName+' ↑', tx.label))
                         : swW+10+measure(it.label, tx.label);
     if(w>widest) widest=w;
   });
@@ -15720,6 +15986,10 @@ function buildLegendGroup(title, items, frame, text){
   items.forEach((it,idx)=>{
     if(it.header){
       const rowH=(idx===0 ? tx.heading.size+8 : tx.heading.size+14)+gap;
+      rows.push({it, y, rowH, size:0});
+      y+=rowH;
+    } else if(it.bivar){
+      const rowH=tx.label.size+8 + it.bivar.n*bivCell + 12 + tx.label.size+6 + gap;
       rows.push({it, y, rowH, size:0});
       y+=rowH;
     } else {
@@ -15751,6 +16021,16 @@ function buildLegendGroup(title, items, frame, text){
     if(it.header){
       parts.push(new fabric.Text(String(it.label),
         Object.assign({left:padding, top:cy-tx.heading.size/2}, legendFontOpts(tx.heading))));
+      return;
+    }
+    if(it.bivar){
+      /* the bivariate key: an n×n grid, second variable up the side, first along the bottom */
+      const bv=it.bivar, n=bv.n, c=bivCell, gx=padding+12, gy=y+tx.label.size+8, gs=n*c, ax='#5a6478';
+      parts.push(new fabric.Text(String(bv.yName)+' ↑', Object.assign({left:padding, top:y}, legendFontOpts(tx.label))));
+      for(let i=0;i<n;i++) for(let j=0;j<n;j++) parts.push(new fabric.Rect({left:gx+j*c, top:gy+(n-1-i)*c, width:c, height:c, fill:bv.cells[i][j], stroke:'#ffffff', strokeWidth:0.6}));
+      parts.push(new fabric.Path('M '+(gx-5)+' '+(gy+gs)+' L '+(gx-5)+' '+(gy-3)+' M '+(gx-8)+' '+(gy+1)+' L '+(gx-5)+' '+(gy-4)+' L '+(gx-2)+' '+(gy+1), {fill:'', stroke:ax, strokeWidth:1.2}));
+      parts.push(new fabric.Path('M '+gx+' '+(gy+gs+5)+' L '+(gx+gs+3)+' '+(gy+gs+5)+' M '+(gx+gs-1)+' '+(gy+gs+2)+' L '+(gx+gs+4)+' '+(gy+gs+5)+' L '+(gx+gs-1)+' '+(gy+gs+8), {fill:'', stroke:ax, strokeWidth:1.2}));
+      parts.push(new fabric.Text(String(bv.xName)+' →', Object.assign({left:gx, top:gy+gs+11}, legendFontOpts(tx.label))));
       return;
     }
     if(it.shape==='circle'){
@@ -16900,6 +17180,8 @@ function showPropertiesForSelection(e){
 function renderLegendRows(obj){
   const wrap=document.getElementById('legendRows');
   wrap.innerHTML=obj.data.items.map((it,i)=>{
+    if(it.bivar) return `<div class="legend-row" data-i="${i}" data-biv="1"><span class="kv" style="flex:1;margin:0">Bivariate key: ${esc(it.bivar.xName)} × ${esc(it.bivar.yName)}</span>
+      <button data-act="up" title="Move up">↑</button><button data-act="down" title="Move down">↓</button><button data-act="del" title="Remove">✕</button></div>`;
     const shapeSel=`<select class="shape-sel">
       <option value="header" ${it.header?'selected':''}>Head</option>
       <option value="rect" ${!it.header&&it.shape==='rect'?'selected':''}>Area</option>
@@ -16919,6 +17201,11 @@ function renderLegendRows(obj){
   wrap.querySelectorAll('.legend-row').forEach(row=>{
     const i=+row.getAttribute('data-i');
     const rebuild=()=>{ const ng=rebuildLegendOnCanvas(obj); showPropertiesForSelection({selected:[ng]}); };
+    if(row.dataset.biv){ row.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ const act=b.getAttribute('data-act'), items=obj.data.items;
+      if(act==='del') items.splice(i,1);
+      if(act==='up' && i>0){ const t=items[i]; items[i]=items[i-1]; items[i-1]=t; }
+      if(act==='down' && i<items.length-1){ const t=items[i]; items[i]=items[i+1]; items[i+1]=t; }
+      rebuild(); }; }); return; }
     row.querySelector('.shape-sel').onchange=ev=>{
       const v=ev.target.value;
       const it=obj.data.items[i];
@@ -17462,7 +17749,7 @@ window.__splitters={
   const S=window.__splitters, click=sel=>()=>{ const b=document.querySelector(sel); if(b) b.click(); };
   S.mkLeft.setLabels([{label:'Layers', go:()=>openLeftTab('layers')},{label:'Basemap', go:()=>openLeftTab('base')}]);
   S.mkRight.setLabels([{label:'Style', go:click('#mk-tabs [data-tab="style"]')},{label:'Data', go:click('#mk-tabs [data-tab="data"]')},{label:'Tools', go:click('#mk-tabs [data-tab="tools"]')}]);
-  S.loRight.setLabels([{label:'Properties', go:click('#lo-tabs [data-tab="props"]')},{label:'Elements', go:click('#lo-tabs [data-tab="layers"]')}]);
+  S.loRight.setLabels([{label:'Properties', go:click('#lo-tabs [data-tab="props"]')},{label:'Arrange', go:click('#lo-tabs [data-tab="layers"]')}]);
   S.fcLeft.setLabels([{label:'Forms'}]);
   S.fcRight.setLabels([{label:'Share to phones'}]);
   S.atLeft.setLabels([{label:'Pages'}]);
@@ -19781,6 +20068,7 @@ function embedLegendHtml(){
     parts.push('<div class="lg-title">'+esc(spec.title)+'</div>');
     spec.items.forEach(it=>{
       if(it.header){ parts.push('<div class="lg-title" style="font-weight:600;margin-top:4px">'+esc(it.label)+'</div>'); return; }
+      if(it.bivar){ const bv=it.bivar; parts.push('<div class="lg-row lg-biv" style="display:block;padding:2px 0 4px" data-n="'+bv.n+'" data-c="'+esc(bv.cells.map(r=>r.join(' ')).join(';'))+'" data-x="'+esc(bv.xName)+'" data-y="'+esc(bv.yName)+'">'+bivLegendSvg(bv, 14)+'</div>'); return; }
       const col=isNoColour(it.color)?'transparent':it.color;
       let sw;
       if(it.shape==='line') sw='<span class="lg-sw lg-line" style="background:'+col+'"></span>';
@@ -20302,6 +20590,15 @@ function sanitizeLegendHtml(html){
   tpl.content.querySelectorAll('.lg-title, .lg-row').forEach(n=>{
     const d=document.createElement('div');
     if(n.classList.contains('lg-title')){ d.className='lg-title'; d.textContent=n.textContent; out.appendChild(d); return; }
+    if(n.classList.contains('lg-biv')){
+      const k=Math.round(+n.dataset.n); const rows=String(n.dataset.c||'').split(';').map(r=>r.split(' ').map(c=>safeColor(c,'#cccccc')));
+      if(k>=2 && k<=4 && rows.length===k && rows.every(r=>r.length===k)){
+        d.className='lg-row'; d.style.display='block';
+        d.innerHTML=bivLegendSvg({n:k, cells:rows, xName:String(n.dataset.x||'').slice(0,80), yName:String(n.dataset.y||'').slice(0,80)}, 14);
+        out.appendChild(d);
+      }
+      return;
+    }
     d.className='lg-row';
     const sw0=n.querySelector('.lg-sw');
     if(sw0){

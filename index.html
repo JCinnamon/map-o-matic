@@ -17277,8 +17277,7 @@ function renderLegendRows(obj){
         <label>Up</label><input type="text" data-k="yLabel" value="${esc(bv.yLabel!=null&&bv.yLabel!==''?bv.yLabel:bv.yName)}">
         <input type="text" data-k="yLo" placeholder="low" value="${v('yLo')}"><input type="text" data-k="yHi" placeholder="high" value="${v('yHi')}">
       </div>
-      <div class="biv-ed2"><label><input type="checkbox" data-k="diamond" ${bv.diamond?'checked':''}> Diamond (turned 45°)</label>
-        <button type="button" data-act="lohi" class="btn small light">Low / High</button><button type="button" data-act="nolohi" class="btn small light">No end labels</button></div>
+      <div class="biv-ed2"><label><input type="checkbox" data-k="diamond" ${bv.diamond?'checked':''}> Diamond (turned 45°)</label></div>
       </div>`; }
     const shapeSel=`<select class="shape-sel">
       <option value="header" ${it.header?'selected':''}>Head</option>

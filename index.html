@@ -1325,6 +1325,47 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .at-vidprev{background:#111;position:relative;min-height:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px;}
   .at-vidprev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8;}
   .at-vidtag{position:relative;background:rgba(200,30,30,.92);color:#fff;font-weight:700;padding:8px 14px;border-radius:10px;}
+
+  /* v79: attribute pop-ups — a readable table in both themes, with long records folded */
+  .mk-pop table{border-collapse:collapse;font-size:12px;line-height:1.35;width:100%;table-layout:fixed;}
+  .mk-pop th{width:44%;}
+  .mk-pop th{font-weight:600;text-align:left;color:#5a6478;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;}
+  .mk-pop td{color:#1d2433;padding:2px 0;word-break:break-word;}
+  .mk-pop tr+tr th,.mk-pop tr+tr td{border-top:1px solid #edf0f4;}
+  .mk-pop .mk-pop-nil{color:#a0a8b6;}
+  .mk-pop-more summary{cursor:pointer;color:var(--teal);font-weight:600;font-size:12px;margin:5px 0 3px;}
+  .mk-pop-more[open] summary{margin-bottom:4px;}
+  .leaflet-popup-content{max-height:300px !important;overflow:auto;}
+  .maplibregl-popup-content{max-height:300px;overflow:auto;}
+  html[data-theme=dark] .leaflet-popup-content-wrapper, html[data-theme=dark] .leaflet-popup-tip,
+  html[data-theme=dark] .maplibregl-popup-content, html[data-theme=dark] .proj-pop{background:#1d2226 !important;color:#e6eaf0 !important;box-shadow:0 3px 14px rgba(0,0,0,.6);}
+  html[data-theme=dark] .maplibregl-popup-tip{border-top-color:#1d2226 !important;border-bottom-color:#1d2226 !important;}
+  html[data-theme=dark] .leaflet-container a.leaflet-popup-close-button, html[data-theme=dark] .maplibregl-popup-close-button, html[data-theme=dark] .proj-pop-x{color:#c8ced8 !important;}
+  html[data-theme=dark] .mk-pop th{color:#9fb0c6;}
+  html[data-theme=dark] .mk-pop td{color:#eef2f7;}
+  html[data-theme=dark] .mk-pop tr+tr th, html[data-theme=dark] .mk-pop tr+tr td{border-top-color:#30373f;}
+  html[data-theme=dark] .mk-pop-more summary{color:#7fd3c9;}
+
+  /* v79: several map layouts per project, as tabs above the page */
+  #stage-wrap{flex-direction:column;align-items:center;justify-content:flex-start;}
+  #loTabs{position:sticky;top:-36px;z-index:6;align-self:stretch;margin:-30px -24px 18px;padding:6px 12px 0;display:flex;align-items:flex-end;gap:4px;flex-wrap:wrap;
+    background:linear-gradient(var(--bg,#eef1f6) 80%, transparent);}
+  #loTabs .lt{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-bottom:none;background:#e4e9f0;color:#3a4660;font:600 12.5px var(--ui,system-ui);
+    padding:6px 10px;border-radius:7px 7px 0 0;cursor:pointer;max-width:220px;}
+  #loTabs .lt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #loTabs .lt.on{background:#fff;color:#1f3a5f;box-shadow:0 -1px 3px rgba(20,30,60,.12);}
+  #loTabs .lt .lt-m{border:none;background:none;color:inherit;font-size:13px;padding:0 2px;cursor:pointer;opacity:.7;}
+  #loTabs .lt .lt-m:hover{opacity:1;}
+  #loTabs .lt-add{border:1px dashed #9aa6ba;background:transparent;color:#3a4660;font:600 12px var(--ui,system-ui);padding:5px 10px;border-radius:7px 7px 0 0;cursor:pointer;}
+  #loTabMenu{position:fixed;z-index:3000;}
+  html[data-theme=dark] #loTabs{background:linear-gradient(var(--bg,#14181c) 80%, transparent);}
+  html[data-theme=dark] #loTabs .lt{background:#232a31;color:#c9d2de;border-color:#3a4148;}
+  html[data-theme=dark] #loTabs .lt.on{background:#2f3842;color:#fff;}
+  html[data-theme=dark] #loTabs .lt-add{color:#c9d2de;border-color:#56606c;}
+  .send-target{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0 10px;background:#f7f9fb;}
+  .send-target .st-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:3px 0;font-size:12.5px;color:var(--text);}
+  .send-target select,.send-target input[type=text]{padding:5px 7px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;min-width:0;flex:1;}
+  html[data-theme=dark] .send-target{background-color:#1d2226;}
   #gearMenu #syncState{display:inline !important;}
   #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
@@ -1699,6 +1740,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   </aside>
 
   <main id="stage-wrap">
+    <div id="loTabs" role="tablist" aria-label="Map layouts in this project"></div>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
       <filter id="cvd-deut"><feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/></filter>
       <filter id="cvd-prot"><feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/></filter>
@@ -1944,6 +1986,11 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   <div class="modal">
     <h2>Send map to Layout</h2>
     <p class="kv">Captures the current map view at high resolution, with a calibrated scale.</p>
+    <div class="send-target">
+      <div class="st-row"><label for="sendTarget" style="font-weight:700;">Put it on</label><select id="sendTarget"></select></div>
+      <div class="st-row" id="sendNewRow"><label for="sendNewName">Layout name</label><input type="text" id="sendNewName" maxlength="60"></div>
+      <div class="st-row" id="sendReplRow"><label><input type="checkbox" id="sendReplace" checked> Replace the map, legend, scale bar and sources already on that layout (keeps the title and anything you added)</label></div>
+    </div>
     <div class="checkline"><input type="checkbox" id="sendLegend" checked><label for="sendLegend" style="margin:0;font-size:12.5px;color:var(--text);">Add legend built from my symbology</label></div>
     <div class="checkline"><input type="checkbox" id="sendScale" checked><label for="sendScale" style="margin:0;font-size:12.5px;color:var(--text);">Add a calibrated scale bar</label></div>
     <div class="checkline"><input type="checkbox" id="sendLabels"><label for="sendLabels" style="margin:0;font-size:12.5px;color:var(--text);">Bring labels as editable text (so they can be moved on the page)</label></div>
@@ -4123,7 +4170,7 @@ function globeOpen(){
     const f=lyr.geojson.features[i]; if(!f) return;
     const oe=e.originalEvent||{};
     mkSelectedId=lyr.id; setSelection(lyr, [i], (oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i);
-    new maplibregl.Popup({maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
+    new maplibregl.Popup({maxWidth:'340px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
   });
   mkGlobe.on('mousemove', e=>{ if(selTool || gMeas) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
   if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
@@ -6294,9 +6341,15 @@ function featureStyle(lyr, f){
   const color=featureColor(lyr,f);
   const strokeOff=isNoColour(st.strokeColor);
   const fillOff=isNoColour(color);
-  return {color: lyr.geom==='line'? paintValue(color) : paintValue(st.strokeColor),
-    weight: strokeOff? 0 : st.strokeWeight,
-    opacity: strokeOff? 0 : lyr.opacity,
+  /* v79: with no outline, neighbouring polygons show a hairline gap where their
+     anti-aliased edges meet; a hair-thin outline in the fill's own colour closes it */
+  const seam = lyr.geom==='polygon' && (strokeOff || !(+st.strokeWeight>0)) && !fillOff;
+  /* a see-through fill would darken where the two neighbours' outlines overlap, so the
+     seam outline is fainter there: just enough to fill the gap without drawing a line */
+  const fo=st.fillOpacity*lyr.opacity, seamOp = fo>=0.95 ? fo : fo*0.35;
+  return {color: lyr.geom==='line'? paintValue(color) : (seam ? paintValue(color) : paintValue(st.strokeColor)),
+    weight: seam ? 0.75 : (strokeOff? 0 : st.strokeWeight),
+    opacity: seam ? seamOp : (strokeOff? 0 : lyr.opacity),
     fillColor: paintValue(color),
     fillOpacity: fillOff? 0 : st.fillOpacity*lyr.opacity,
     dashArray: st.dash||null};
@@ -7432,7 +7485,7 @@ function renderLayer(lyr){
       const ms=[];
       visibleFeatures(lyr).forEach(f=>{ const c=chartAnchor(f); if(!c) return; const m=chartMarker(lyr, f, L.latLng(c[1],c[0])); if(!m) return;
         const p=f.properties||{};
-        m.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:280});
+        m.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
         m.on('click', ev=>{ const oe=ev.originalEvent||{}; const i=fidOf(lyr,f); if(i==null) return; mkSelectedId=lyr.id; setSelection(lyr,[i],(oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i); });
         ms.push(m); });
       lyr.dotLayer=L.layerGroup(ms).addTo(mkMap);
@@ -7472,7 +7525,7 @@ function renderLayer(lyr){
           offset:a.offset, className:'cs-maplabel mk-label-'+lyr.id, opacity:1});
       }
       /* built when opened, not for every feature up front */
-      layer.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:280});
+      layer.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
       /* click selects; Ctrl/Cmd or Shift adds to the selection */
       layer.on('click', ev=>{
         const oe=ev.originalEvent||{};
@@ -10886,13 +10939,19 @@ const AUDIO_RE=/^data:audio\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[a-z0-9=.+-]+)*;
 function isAudioVal(v){ return typeof v==='string' && v.length>30 && v.length<1.2e7 && v.charCodeAt(0)===100 && AUDIO_RE.test(v); }
 function isMediaVal(v){ return isPhotoVal(v)||isAudioVal(v); }
 const MEDIA_LEFT='(on phone, not sent)';
+/* v79: every field, as a two-column table; long records show the first ten and
+   fold the rest under "Show all N fields" (a <details>, so it works in every popup) */
 function makerPopupHtml(p){
-  return Object.keys(p).slice(0,14).map(k=>{
-    const v=p[k];
-    if(isPhotoVal(v)) return '<b>'+esc(k)+':</b><br><img class="mk-pop-photo" src="'+v+'" alt="Photo: '+esc(k)+'">';
-    if(isAudioVal(v)) return '<b>'+esc(k)+':</b><br><audio class="mk-pop-audio" controls preload="none" src="'+v+'"></audio>';
-    return '<b>'+esc(k)+':</b> '+esc(v);
-  }).join('<br>');
+  const keys=Object.keys(p||{}).filter(k=>!/^__/.test(k));
+  if(!keys.length) return '';
+  const row=k=>{ const v=p[k];
+    if(isPhotoVal(v)) return '<tr><th>'+esc(k)+'</th><td><img class="mk-pop-photo" src="'+v+'" alt="Photo: '+esc(k)+'"></td></tr>';
+    if(isAudioVal(v)) return '<tr><th>'+esc(k)+'</th><td><audio class="mk-pop-audio" controls preload="none" src="'+v+'"></audio></td></tr>';
+    const t=(v==null||v==='')?'<span class="mk-pop-nil">–</span>':esc(typeof v==='number'?(Number.isInteger(v)?v:+v.toFixed(6)):(typeof v==='object'?JSON.stringify(v):v));
+    return '<tr><th>'+esc(k)+'</th><td>'+t+'</td></tr>'; };
+  const N=10, first=keys.slice(0,N), rest=keys.slice(N);
+  return '<div class="mk-pop"><table>'+first.map(row).join('')+'</table>'+
+    (rest.length?'<details class="mk-pop-more"><summary>Show all '+keys.length+' fields</summary><table>'+rest.map(row).join('')+'</table></details>':'')+'</div>';
 }
 let fcForms=[], fcData=[], fcSel=null, fcTab='design', fcView=null, fcChecked=new Set();
 function fcSlug(s){ return String(s||'').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'_').replace(/^_+|_+$/g,'').slice(0,40); }
@@ -14509,6 +14568,7 @@ function renderSendNames(){
 }
 document.getElementById('mkSendBtn').onclick=()=>{
   renderSendNames();
+  renderSendTarget();
   openModal('modal-send');
   document.getElementById('sendStatus').textContent='';
 };
@@ -14651,7 +14711,11 @@ function hideLabelsForCapture(on){
     else if(el.dataset.saved!=null){ el.textContent=el.dataset.saved; delete el.dataset.saved; }
   });
 }
-document.getElementById('sendGoBtn').onclick=()=>{
+document.getElementById('sendGoBtn').onclick=async ()=>{
+  /* v79: open (or start) the layout the map is going to before measuring its frame */
+  const gb=document.getElementById('sendGoBtn'); if(gb.disabled) return; gb.disabled=true;
+  try{ await prepareSendTarget(); }catch(_){}
+  gb.disabled=false;
   if(typeof swipe!=='undefined' && swipe){ closeCompare(); toast('Compare was switched off so the whole map is captured.', 3500); }
   try{ const pj=document.getElementById('mkProjection'), bm=document.getElementById('mkBasemap');
     mlog('compose', 'Sent the map to Map Composer ('+(mkGlobe?'globe view':pj.options[pj.selectedIndex].text)+', basemap '+bm.options[bm.selectedIndex].text+').'); }catch(_){}
@@ -15080,9 +15144,12 @@ function renderProjection(){
           const ps=patSpec(lyr,f0);
           if(ps){ ctx.save(); ctx.globalAlpha=st.fillOpacity*lyr.opacity; ctx.fillStyle=momPattern(ps.k, ps.bg, ps.c, ps.g); ctx.fill(); ctx.restore(); }
           else { ctx.fillStyle=chroma(color).alpha(st.fillOpacity*lyr.opacity).css(); ctx.fill(); }
-          if(st.strokeWeight>0){
+          if(st.strokeWeight>0 && !isNoColour(st.strokeColor)){
             ctx.strokeStyle=chroma(st.strokeColor).alpha(lyr.opacity).css();
             ctx.lineWidth=st.strokeWeight; ctx.stroke();
+          } else if(!ps && !isNoColour(color)){
+            /* v79: no outline — close the hairline seams between neighbours with the fill colour */
+            const fo=st.fillOpacity*lyr.opacity; ctx.strokeStyle=chroma(color).alpha(fo>=0.95?fo:fo*0.35).css(); ctx.lineWidth=0.75; ctx.stroke();
           }
         } else {
           ctx.beginPath(); path(f);
@@ -15485,16 +15552,21 @@ function mergeLayersOf(src){
   });
 }
 function mergePagesOf(src){ const a=src.rec.atlas; return a&&Array.isArray(a.pages) ? a.pages : []; }
+function mergeLayoutsOf(src){
+  const r=src.rec; if(Array.isArray(r.layouts)&&r.layouts.length) return r.layouts.filter(L=>L&&L.canvasJSON);
+  const objs=(r.canvasJSON&&r.canvasJSON.objects)||[]; return objs.length?[{id:'l0', name:'Layout', page:r.page, canvasJSON:r.canvasJSON}]:[];
+}
 function renderMergeBody(focus){
   const body=document.getElementById('mgBody'), go=document.getElementById('mgGo');
   if(!mergeSrc){ body.innerHTML='<p class="kv">Choose a project file or one of your other projects.</p>'; go.disabled=true; return; }
-  const Ls=mergeLayersOf(mergeSrc), Ps=mergePagesOf(mergeSrc);
+  const Ls=mergeLayersOf(mergeSrc), Ps=mergePagesOf(mergeSrc), Ys=mergeLayoutsOf(mergeSrc);
   const kindName={map:'Live map', layout:'Map layout', image:'Image', text:'Text', embed:'Video / web page'};
   body.innerHTML='<div class="mg-cols">'+
     '<div><div class="mg-h">Map layers ('+Ls.length+')</div>'+(Ls.length? Ls.map(x=>'<label class="mg-row'+(x.ok?'':' mg-off')+'"><input type="checkbox" class="mgL" value="'+x.i+'" '+(x.ok&&focus!=='atlas'?'checked':'')+(x.ok?'':' disabled')+'> '+esc(x.l.name)+' <span class="kv">'+(x.ok? x.n.toLocaleString()+' '+esc(x.l.geom||'')+' features' : 'data missing')+'</span></label>').join('') : '<p class="kv">No layers.</p>')+'</div>'+
-    '<div><div class="mg-h">Atlas pages ('+Ps.length+')</div>'+(Ps.length? Ps.map((p,i)=>'<label class="mg-row"><input type="checkbox" class="mgP" value="'+i+'" '+(focus!=='maker'||!Ls.length?'checked':'')+'> '+esc(p.title||'Untitled')+' <span class="kv">'+esc(kindName[p.kind]||p.kind)+'</span></label>').join('') : '<p class="kv">No atlas in that project.</p>')+'</div></div>'+
+    '<div><div class="mg-h">Atlas pages ('+Ps.length+')</div>'+(Ps.length? Ps.map((p,i)=>'<label class="mg-row"><input type="checkbox" class="mgP" value="'+i+'" '+(focus!=='maker'||!Ls.length?'checked':'')+'> '+esc(p.title||'Untitled')+' <span class="kv">'+esc(kindName[p.kind]||p.kind)+'</span></label>').join('') : '<p class="kv">No atlas in that project.</p>')+
+    (Ys.length?'<div class="mg-h" style="margin-top:10px">Map layouts ('+Ys.length+')</div>'+Ys.map((L,i)=>'<label class="mg-row"><input type="checkbox" class="mgY" value="'+i+'"> '+esc(L.name||'Layout')+' <span class="kv">'+(((L.canvasJSON||{}).objects||[]).length)+' elements</span></label>').join(''):'')+'</div></div>'+
     '<label class="mg-row" style="margin-top:6px"><input type="checkbox" id="mgLog" checked> Add its Log steps to this project\'s Log (marked with the project name)</label>';
-  const upd=()=>{ go.disabled=!body.querySelector('.mgL:checked, .mgP:checked'); };
+  const upd=()=>{ go.disabled=!body.querySelector('.mgL:checked, .mgP:checked, .mgY:checked'); };
   body.querySelectorAll('input').forEach(i=>i.onchange=upd); upd();
 }
 function openMergeDialog(focus){
@@ -15521,7 +15593,10 @@ function openMergeDialog(focus){
 function runMerge(focus){
   const src=mergeSrc; if(!src) return;
   const body=document.getElementById('mgBody');
-  const li=[...body.querySelectorAll('.mgL:checked')].map(c=>+c.value), pi=[...body.querySelectorAll('.mgP:checked')].map(c=>+c.value);
+  const li=[...body.querySelectorAll('.mgL:checked')].map(c=>+c.value), pi=[...body.querySelectorAll('.mgP:checked')].map(c=>+c.value), yi=[...body.querySelectorAll('.mgY:checked')].map(c=>+c.value);
+  const Ys=mergeLayoutsOf(src); let nY=0;
+  yi.forEach(i=>{ const Y=Ys[i]; if(!Y) return; loSnapshot(); const L=loBlank(loUniqueName((Y.name||'Layout')+(src.name?' ('+src.name+')':'')), Y.page); L.canvasJSON=clone(Y.canvasJSON); loLayouts.push(L); nY++; });
+  if(nY) renderLoTabs();
   const Ls=mergeLayersOf(src), Ps=mergePagesOf(src);
   let nL=0, nP=0;
   /* layers: keep the source's top-to-bottom order, placed above this project's layers */
@@ -15548,11 +15623,148 @@ function runMerge(focus){
   mlog('data', 'Brought in '+nL+' layer'+(nL===1?'':'s')+' and '+nP+' atlas page'+(nP===1?'':'s')+' from the project "'+src.name+'".');
   markProjectDirty();
   closeModal('modal-merge');
-  toast('Brought in '+nL+' layer'+(nL===1?'':'s')+(nP?' and '+nP+' atlas page'+(nP===1?'':'s'):'')+' from “'+src.name+'”.', 4500);
+  toast('Brought in '+nL+' layer'+(nL===1?'':'s')+(nP?', '+nP+' atlas page'+(nP===1?'':'s'):'')+(nY?', '+nY+' map layout'+(nY===1?'':'s')+' (tabs above the Composer page)':'')+' from “'+src.name+'”.', 5000);
   if(nL && mkMap){ try{ let b=null; add.forEach(l=>{ const bb=gjBounds(l.geojson); b=b?b.extend(bb):L.latLngBounds(bb); }); if(b&&b.isValid()) mkMap.fitBounds(b,{padding:[20,20],maxZoom:14}); }catch(_){} }
 }
+
+/* ---------- v79: several map layouts per project ----------
+   Each layout has a name, a page setup and its own page content; the Composer shows
+   one at a time, with tabs above the page. Send to Composer can start a new layout
+   or update an existing one. Projects saved before v79 open with one layout. */
+let loLayouts=[], loCur=null, loReplace=null;
+function loBlank(name, page){ return {id:uid(), name:name||'Layout', page:Object.assign({size:'letter', orientation:'portrait'}, page||{}), canvasJSON:{version:'5.3.0', objects:[]}}; }
+function loNextName(){ let i=loLayouts.length+1; while(loLayouts.some(L=>L.name==='Layout '+i)) i++; return 'Layout '+i; }
+function loUniqueName(n){ n=String(n||'').trim().slice(0,60)||loNextName(); let m=n, i=2; while(loLayouts.some(L=>L.name===m)) m=n+' ('+(i++)+')'; return m; }
+function loEnsure(){ if(!loLayouts.length){ const L=loBlank('Layout 1', {size:pageState.size, orientation:pageState.orientation}); loLayouts=[L]; loCur=L.id; } }
+function loCurrent(){ loEnsure(); return loLayouts.find(L=>L.id===loCur)||null; }
+function loSnapshot(){ const L=loCurrent(); if(L && typeof canvas!=='undefined' && canvas){ L.canvasJSON=layoutJSON(); L.page={size:pageState.size, orientation:pageState.orientation}; } }
+function loInitFrom(data){
+  const list=Array.isArray(data.layouts)?data.layouts.filter(L=>L&&L.id&&L.canvasJSON):[];
+  if(list.length){ loLayouts=list.map(L=>({id:String(L.id), name:String(L.name||'Layout').slice(0,60), page:Object.assign({size:'letter',orientation:'portrait'}, L.page||{}), canvasJSON:L.canvasJSON}));
+    loCur=loLayouts.some(L=>L.id===data.curLayout)?data.curLayout:loLayouts[0].id;
+    const c=loCurrent(); data.page=c.page; data.canvasJSON=c.canvasJSON; }
+  else { const L=loBlank('Layout 1', data.page); if(data.canvasJSON) L.canvasJSON=data.canvasJSON; loLayouts=[L]; loCur=L.id; }
+  renderLoTabs();
+}
+/* show another layout: the open one is stored first, then the other is drawn */
+function loSwitch(id, cb){
+  if(id===loCur){ if(cb) cb(); return; }
+  const T=loLayouts.find(L=>L.id===id); if(!T) return;
+  if(typeof cropState!=='undefined' && cropState) try{ finishCrop(true); }catch(_){}
+  loSnapshot(); loCur=id;
+  restoring=true; canvas.discardActiveObject();
+  pageState.size=T.page.size||'letter'; pageState.orientation=T.page.orientation||'portrait';
+  document.getElementById('pageSize').value=pageState.size; document.getElementById('pageOrientation').value=pageState.orientation;
+  applyPageSize();
+  canvas.loadFromJSON(T.canvasJSON, ()=>{
+    applyLocksFromData();
+    canvas.getObjects().forEach(o=>o.set({cornerStyle:'circle', cornerColor:'#2f7d78', borderColor:'#2f7d78'}));
+    canvas.renderAll(); clearProperties(); syncEmbedFrames();
+    restoring=false;
+    history.stack=[]; history.idx=-1; pushHistory();
+    if(typeof refreshLayersTab==='function') refreshLayersTab();
+    if(cb) cb();
+  });
+  renderLoTabs(); markProjectDirty();
+}
+function loNew(name, opts){
+  opts=opts||{};
+  const c=loCurrent();
+  const L=loBlank(loUniqueName(name), c?{size:pageState.size, orientation:pageState.orientation}:null);
+  if(opts.copyOf){ loSnapshot(); L.canvasJSON=JSON.parse(JSON.stringify(opts.copyOf.canvasJSON)); L.page=Object.assign({}, opts.copyOf.page); }
+  loLayouts.push(L); mlog('compose','Started the map layout "'+L.name+'".');
+  return L;
+}
+function loRename(id){
+  const L=loLayouts.find(x=>x.id===id); if(!L) return;
+  const n=window.prompt('Name this layout:', L.name); if(n==null) return;
+  const t=String(n).trim().slice(0,60); if(!t) return;
+  L.name=loLayouts.some(x=>x!==L&&x.name===t)?loUniqueName(t):t; renderLoTabs(); markProjectDirty();
+}
+function loDelete(id){
+  if(loLayouts.length<2){ toast('A project keeps at least one layout.'); return; }
+  const L=loLayouts.find(x=>x.id===id); if(!L) return;
+  if(!window.confirm('Delete the layout "'+L.name+'"? Its page and everything on it are removed. Undo cannot bring it back.')) return;
+  const i=loLayouts.indexOf(L);
+  const go=()=>{ loLayouts=loLayouts.filter(x=>x!==L); renderLoTabs(); markProjectDirty(); mlog('compose','Deleted the map layout "'+L.name+'".'); };
+  if(id===loCur) loSwitch(loLayouts[i+1]?loLayouts[i+1].id:loLayouts[i-1].id, go); else go();
+}
+function renderLoTabs(){
+  const host=document.getElementById('loTabs'); if(!host) return;
+  loEnsure();
+  host.innerHTML=loLayouts.map(L=>'<div class="lt'+(L.id===loCur?' on':'')+'" role="tab" aria-selected="'+(L.id===loCur)+'" data-id="'+esc(L.id)+'" title="'+esc(L.name)+(L.id===loCur?' (double-click to rename)':'')+'"><span>'+esc(L.name)+'</span>'+
+    (L.id===loCur?'<button class="lt-m" type="button" aria-label="Layout options" title="Rename, duplicate or delete">⋯</button>':'')+'</div>').join('')+
+    '<button class="lt-add" type="button" id="loAdd" title="Start another layout in this project">＋ New layout</button>';
+  host.querySelectorAll('.lt').forEach(t=>{
+    t.onclick=e=>{ if(e.target.closest('.lt-m')) return; loSwitch(t.dataset.id); };
+    t.ondblclick=()=>{ if(t.dataset.id===loCur) loRename(loCur); };
+  });
+  const m=host.querySelector('.lt-m');
+  if(m) m.onclick=e=>{ e.stopPropagation();
+    document.querySelectorAll('#loTabMenu').forEach(x=>x.remove());
+    const r=m.getBoundingClientRect(), menu=document.createElement('div'); menu.id='loTabMenu'; menu.className='tools-menu';
+    menu.style.left=Math.min(r.left, innerWidth-220)+'px'; menu.style.top=(r.bottom+4)+'px';
+    menu.innerHTML='<button data-a="ren">✏️ Rename…</button><button data-a="dup">⧉ Duplicate</button><button data-a="del">🗑 Delete…</button>';
+    document.body.appendChild(menu);
+    menu.onclick=ev=>{ const b=ev.target.closest('button'); if(!b) return; menu.remove();
+      if(b.dataset.a==='ren') loRename(loCur);
+      if(b.dataset.a==='dup'){ const c=loCurrent(); const L=loNew(c.name+' copy', {copyOf:c}); loSwitch(L.id); }
+      if(b.dataset.a==='del') loDelete(loCur); };
+    setTimeout(()=>document.addEventListener('click', function off(){ menu.remove(); document.removeEventListener('click', off); }), 0);
+  };
+  const add=document.getElementById('loAdd');
+  if(add) add.onclick=()=>{ const n=window.prompt('Name for the new layout:', loNextName()); if(n==null) return; const L=loNew(n); loSwitch(L.id); toast('New layout “'+L.name+'”. Send a map to it from Map Maker, or add elements with the tools on the left.', 4500); };
+}
+/* the send dialog's choice of layout */
+function renderSendTarget(){
+  const sel=document.getElementById('sendTarget'); if(!sel) return;
+  const cur=loCurrent();
+  const hasMap=L=>{ const objs=(L.id===loCur&&canvas)?canvas.getObjects().map(o=>o.data||{}):((L.canvasJSON&&L.canvasJSON.objects)||[]).map(o=>o.data||{}); return objs.some(d=>d.type==='mapFrame'); };
+  const empty=cur && !hasMap(cur) && !((cur.id===loCur?canvas.getObjects():cur.canvasJSON.objects||[]).filter(o=>!(o.data&&o.data.guide)).length);
+  sel.innerHTML='<option value="__new">A new layout</option>'+loLayouts.map(L=>'<option value="'+esc(L.id)+'">'+esc(L.name)+(L.id===loCur?' (open now)':'')+(hasMap(L)?'':' — empty')+'</option>').join('');
+  sel.value = empty ? loCur : (loLayouts.length===1 && !hasMap(cur) ? loCur : '__new');
+  if(!loLayouts.some(L=>hasMap(L))) sel.value=loCur;
+  const sync=()=>{ const nw=sel.value==='__new';
+    document.getElementById('sendNewRow').hidden=!nw;
+    const T=loLayouts.find(L=>L.id===sel.value);
+    document.getElementById('sendReplRow').hidden=nw || !T || !hasMap(T);
+    if(nw && !document.getElementById('sendNewName').value){ const t=(document.getElementById('sendTitle')||{}).value; document.getElementById('sendNewName').value=loUniqueName(t||loNextName()); } };
+  document.getElementById('sendNewName').value='';
+  sel.onchange=sync; sync();
+}
+/* before the capture: open the chosen layout, and clear the old map from it if asked */
+function prepareSendTarget(){
+  return new Promise(res=>{
+    const sel=document.getElementById('sendTarget'); if(!sel){ res(); return; }
+    const done=()=>{
+      loReplace=null;
+      const T=loCurrent(), rep=document.getElementById('sendReplace');
+      if(sel.value!=='__new' && rep && rep.checked && !document.getElementById('sendReplRow').hidden){
+        const objs=canvas.getObjects();
+        const frames=objs.filter(o=>o.data&&o.data.type==='mapFrame'&&o.data.fromMaker);
+        if(frames.length){
+          const F=frames[0];
+          const ids=new Set(frames.map(f=>f.data.id));
+          const old=objs.filter(o=>o.data && ((o.data.type==='mapFrame'&&o.data.fromMaker) || o.data.type==='legend' || (o.data.type==='scaleBar'&&ids.has(o.data.mapFrameId)) || o.data.fromMakerLabel || o.data.sources));
+          const lg=old.find(o=>o.data.type==='legend'), sb=old.find(o=>o.data.type==='scaleBar'), so=old.find(o=>o.data.sources);
+          const box=(o)=>({left:o.left, top:o.top, width:o.width*(o.scaleX||1), height:o.height*(o.scaleY||1)});
+          const ph=(b,role)=>{ const r=new fabric.Rect({left:b.left, top:b.top, width:b.width, height:b.height, fill:'rgba(0,0,0,0)', strokeWidth:0, selectable:false, evented:false}); r.data={id:uid(), type:'placeholder', role}; return r; };
+          loReplace={scale:sb?{left:sb.left, top:sb.top}:null, sources:so?{left:so.left, top:so.top, width:so.width}:null};
+          const fbx=box(F), lbx=lg?box(lg):null;
+          restoring=true; old.forEach(o=>canvas.remove(o)); restoring=false;
+          canvas.add(ph(fbx,'mapframe')); if(lbx) canvas.add(ph(lbx,'legend'));
+          mlog('compose','Replaced the map on the layout "'+(T?T.name:'')+'".');
+        }
+      }
+      res();
+    };
+    if(sel.value==='__new'){ const L=loNew(document.getElementById('sendNewName').value); loSwitch(L.id, done); }
+    else if(sel.value && sel.value!==loCur) loSwitch(sel.value, done);
+    else done();
+  });
+}
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v78 · Oct 2026';
+const MOM_VERSION='v79 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -17903,16 +18115,19 @@ function receiveFromMaker(dataURL, metersPerImagePx, legendSpecs, wantScale, lab
       sb.data=Object.assign({id:uid()}, data);
       canvas.add(sb);
       const g=recomputeScaleBar(sb);
-      g.set({left:pageW()-260, top:yCursor+6});
+      g.set((loReplace&&loReplace.scale)?{left:loReplace.scale.left, top:loReplace.scale.top}:{left:pageW()-260, top:yCursor+6});
     }
     /* credits as their own text box, so they never sit on the map or its grid frame */
     if(sourcesText){
       const st=new fabric.Textbox(sourcesText, {left:40, top:Math.min(pageH()-60, yCursor+(wantScale&&calibration?46:4)), width:Math.min(pageW()-80, Math.max(260, pageW()*0.55)),
         fontSize:8, fontFamily:'Arial', fill:'#5a6273', lineHeight:1.25});
+      if(loReplace&&loReplace.sources) st.set(loReplace.sources);
       addObj(st,{type:'text', sources:true});
       canvas.discardActiveObject();
     }
+    loReplace=null;
     canvas.renderAll();
+    { const L=loCurrent(); if(L && loLayouts.length>1) setTimeout(()=>toast('Map placed on the layout “'+L.name+'”.', 3200), 4300); }
     toast(calibration
       ? 'Map placed on the layout — scale calibrated automatically. Add a title and arrange your elements.'
       : 'Projected map placed on the layout. Add a title and arrange your elements.', 4200);
@@ -17925,6 +18140,7 @@ window.__layout={receiveFromMaker, canvas:()=>canvas, fabric:()=>fabric};
 /* ---------- apply project data to UI (storage handled by project manager) ---------- */
 function loadProjectData(data){
   restoring=true;
+  loInitFrom(data);    /* v79: picks the open layout and points page/canvasJSON at it */
   fcLoad(data);
   atLoad(data);
   if(data.page){
@@ -19713,6 +19929,8 @@ function serializeCurrentProject(){
     thumbnail: canvas.getObjects().length ? atFullSize(()=>canvas.toDataURL({format:'jpeg', quality:0.6, multiplier:0.12})) : (rec?rec.thumbnail:null),
     page:{size:pageState.size, orientation:pageState.orientation},
     canvasJSON:layoutJSON(),
+    layouts:(()=>{ loSnapshot(); return loLayouts.map(L=>({id:L.id, name:L.name, page:L.page, canvasJSON:L.canvasJSON})); })(),
+    curLayout:loCur,
     maker:{
       basemap:document.getElementById('mkBasemap').value,
       view: mkMap? {center:[mkMap.getCenter().lat, mkMap.getCenter().lng], zoom:mkMap.getZoom()} : null,
@@ -19755,7 +19973,7 @@ function applyProjectRecord(rec){
     if(!ds){ missing++; return null; }
     return Object.assign({}, sl, {geojson:ds.geojson});
   }).filter(Boolean);
-  const data={page:rec.page, canvasJSON:rec.canvasJSON, collector:rec.collector, atlas:rec.atlas,
+  const data={page:rec.page, canvasJSON:rec.canvasJSON, layouts:rec.layouts, curLayout:rec.curLayout, collector:rec.collector, atlas:rec.atlas,
     maker:Object.assign({}, rec.maker, {layers})};
   loadProjectData(data);
   history.stack=[]; history.idx=-1; histImages.length=0; histImageIdx.clear();

@@ -1366,6 +1366,25 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .send-target .st-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:3px 0;font-size:12.5px;color:var(--text);}
   .send-target select,.send-target input[type=text]{padding:5px 7px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;min-width:0;flex:1;}
   html[data-theme=dark] .send-target{background-color:#1d2226;}
+
+  /* v80: the ⓘ button left at a clicked feature */
+  .mk-ichip-wrap{background:none;border:none;}
+  .mk-ichip{width:24px;height:24px;border-radius:50%;border:1px solid #2f7d78;background:#fff;color:#2f7d78;font:700 14px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.35);padding:0;display:flex;align-items:center;justify-content:center;}
+  .mk-ichip:hover{background:#2f7d78;color:#fff;}
+  .proj-chip{position:absolute;z-index:31;}
+  html[data-theme=dark] .mk-ichip{background:#1d2226;color:#7fd3c9;border-color:#7fd3c9;}
+  #gearMenu #gmPopups:not(.on){padding-left:24px;}
+
+  /* v80: basemap and labels rows in the layer list */
+  .mk-pseudo{background:#eef3f6;border-style:dashed;}
+  .mk-pseudo .top{display:flex;align-items:center;gap:6px;}
+  .mk-pseudo .ps-ic{font-size:14px;}
+  .mk-pseudo .nm{flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mk-pseudo .ps-mv{border:1px solid var(--line);background:#fff;border-radius:4px;width:22px;height:22px;padding:0;cursor:pointer;font-size:12px;line-height:1;}
+  .mk-pseudo .ps-sub{border:none;background:none;color:var(--teal);font-size:11.5px;padding:3px 0 0 22px;cursor:pointer;text-align:left;}
+  .mk-pseudo .ps-sub2{color:var(--muted);font-size:11px;padding:3px 0 0 22px;}
+  html[data-theme=dark] .mk-pseudo{background-color:#1c2328;}
+  html[data-theme=dark] .mk-pseudo .ps-mv{background-color:#262d33;color:#dfe5ec;}
   #gearMenu #syncState{display:inline !important;}
   #btnGear.cvd-on{background:rgba(95,179,171,.25);}
   #topbar #cvdSel{width:auto;max-width:118px;padding:3px 4px;border-radius:4px;border:1px solid #465a86;background:#2a3b64;color:#fff;font-size:12px;margin:0;}
@@ -1447,6 +1466,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <button data-cvd="grey" class="gm-cvd" role="menuitemradio">Greyscale print</button>
         <div class="gm-sep"></div>
         <button data-g="log" role="menuitem">📝 Log</button>
+        <button data-g="popups" role="menuitem" id="gmPopups">Pop-ups open on click</button>
         <button data-g="theme" role="menuitem"><span id="gmTheme">☾ Dark interface</span></button>
         <button data-g="help" role="menuitem">❓ Help</button>
         <div class="gm-sep"></div><div class="gm-ver">Map-O-Matic <span class="mom-ver-tag"></span></div>
@@ -3439,6 +3459,7 @@ function addMapToolControls(){
 let swipe=null;     /* {left:id|null, right:id|null, x:fraction, el, ...} */
 const swipeRenderers={};
 function swipePaneOpts(lyr){
+  if(!swipe && lyr && lyr._segPane) return segPaneOpts(lyr);
   if(!swipe || !lyr) return {};
   const pane = lyr.id===swipe.left ? 'swipeL' : lyr.id===swipe.right ? 'swipeR' : null;
   if(!pane) return {};
@@ -3893,12 +3914,12 @@ function partsEmbedJs(off, getter, ui){
   const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
   return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
 function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=ly['source-layer'];if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
-var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
+var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);if(window.momPartsHook)window.momPartsHook(ON,G);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
 var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
 var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
 document.body.appendChild(box);['mousedown','pointerdown','click','dblclick','wheel','touchstart'].forEach(function(ev){box.addEventListener(ev,function(e){e.stopPropagation();});});
 var b=box.firstChild,l=box.lastChild;b.onclick=function(){l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));};
-box.querySelectorAll('input').forEach(function(c){c.onchange=function(){ON[c.getAttribute('data-k')]=c.checked;ap(getGL());};});})();`;
+box.querySelectorAll('input').forEach(function(c){c.onchange=function(){ON[c.getAttribute('data-k')]=c.checked;ap(getGL());if(window.momPartsHook)window.momPartsHook(ON,G);};});})();`;
 }
 /* --- globe view (MapLibre GL v5 native globe) ---
    Rather than reprojecting to a flat orthographic canvas, this wraps the actual
@@ -3958,12 +3979,13 @@ function globeAddUserLayers(map){
   globeClearUserLayers(map);
   glbAttachImages(map);
   /* draw bottom layer first so the list's top layer stays on top, matching Leaflet */
-  const ids=[];
+  const ids=[], T=(typeof stackTierSpec==='function')?stackTierSpec():null, groups=[];
   mkLayers.slice().reverse().forEach(lyr=>{
     if(!lyr.visible) return;
     const col=glbCollect([lyr.densityLayer, lyr.leaflet, lyr.dotLayer], {id:lyr.id, fid:f=>fidOf(lyr,f), lbl:(lyr.labels&&lyr.labels.enabled)?lyr.labels.field:null, h:extrudeFn(lyr)});
-    try{ ids.push(...glbAddLayer(map, lyr.id, col, labelSpecFor(lyr))); }catch(_){}
+    try{ const got=glbAddLayer(map, lyr.id, col, labelSpecFor(lyr)); ids.push(...got); groups.push({sg:tierOfLayer(lyr,T), ids:got}); }catch(_){}
   });
+  if(T) momGlobeTiers(map, T, groups);
   map.__clickIds=ids;
   globeSyncSelection();
 }
@@ -4169,9 +4191,14 @@ function globeOpen(){
     const lyr=mkLayers.find(l=>l.id===h.properties._li), i=+h.properties._fi; if(!lyr) return;
     const f=lyr.geojson.features[i]; if(!f) return;
     const oe=e.originalEvent||{};
-    mkSelectedId=lyr.id; setSelection(lyr, [i], (oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i);
-    new maplibregl.Popup({maxWidth:'340px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
+    mkSelectedId=lyr.id; if(!(oe.detail>=2)){ selNextVia='click'; setSelection(lyr, [i], (oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i); }
+    if(mkPopupsOn()) new maplibregl.Popup({maxWidth:'340px'}).setLngLat(e.lngLat).setHTML(makerPopupHtml(f.properties||{})||'(no attributes)').addTo(mkGlobe);
+    else mkInfoChip(e.lngLat, ()=>makerPopupHtml(f.properties||{})||'(no attributes)', 'globe');
   });
+  /* v80: a click on empty globe clears a selection made by clicking */
+  mkGlobe.on('click', e=>{ if(selTool || gMeas) return; if(hitAt(e.point)) return; mkInfoChipClear();
+    const oe=e.originalEvent||{}; if(oe.shiftKey||oe.ctrlKey||oe.metaKey) return;
+    if(selection.via==='click' && selection.set && selection.set.size) clearSelection(); });
   mkGlobe.on('mousemove', e=>{ if(selTool || gMeas) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
   if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   /* apply the projection, parts and user layers once ready. 'style.load' alone is
@@ -4322,6 +4349,7 @@ function applyBasemapParts(){
         }
       }
     });
+    if(typeof labelsGlSetVis==='function' && typeof mkLabelsGL!=='undefined' && mkLabelsGL) labelsGlSetVis();
   };
   if(gl.isStyleLoaded && gl.isStyleLoaded()) run(); else gl.once('idle', run);
 }
@@ -4465,6 +4493,7 @@ function glMapsForRoot(root){
   if(typeof mkBasemapLayers!=='undefined') fromLayers(mkBasemapLayers);
   if(typeof insetBasemapLayers!=='undefined') fromLayers(insetBasemapLayers);
   if(typeof mkStackLayers!=='undefined') fromLayers(mkStackLayers);
+  if(typeof mkLabelsGL!=='undefined' && mkLabelsGL) fromLayers([mkLabelsGL]);
   if(typeof mkGlobe!=='undefined' && mkGlobe) push(mkGlobe);
   return out;
 }
@@ -7525,17 +7554,21 @@ function renderLayer(lyr){
           offset:a.offset, className:'cs-maplabel mk-label-'+lyr.id, opacity:1});
       }
       /* built when opened, not for every feature up front */
-      layer.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
-      /* click selects; Ctrl/Cmd or Shift adds to the selection */
+      if(mkPopupsOn()) layer.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
+      /* click selects; Ctrl/Cmd or Shift adds to the selection. v80: pop-ups are off by
+         default; a small ⓘ button at the click opens the attributes instead */
       layer.on('click', ev=>{
+        mkFeatClickAt=Date.now();
         const oe=ev.originalEvent||{};
         const additive = oe.ctrlKey||oe.metaKey||oe.shiftKey;
         const i=fidOf(lyr, f);
         if(i==null) return;
+        const second = oe.detail>=2;          /* the second click of a double-click: keep the selection, zoom happens */
         mkSelectedId=lyr.id;
-        setSelection(lyr, [i], additive?'toggle':'set');
-        scrollTableToFeature(i);
+        if(!second){ selNextVia='click'; setSelection(lyr, [i], additive?'toggle':'set'); scrollTableToFeature(i); }
+        if(!mkPopupsOn()) mkInfoChip(ev.latlng, ()=>makerPopupHtml(p)||'(no attributes)');
       });
+      /* double-clicking a feature zooms in one step about that point (the map's own double-click zoom); the selection stays */
     }
   });
   lyr.leaflet=L.geoJSON(drawFC, opts).addTo(mkMap);
@@ -7604,6 +7637,7 @@ function restackMakerLayers(){
     if(l.leaflet && l.geom==='point' && l.style && l.style.symbol && l.style.symbol!=='circle' && l.leaflet.eachLayer) l.leaflet.eachLayer(m=>{ if(m.setZIndexOffset) m.setZIndexOffset(k*1000); });
   });
   if(selHighlight && selHighlight.bringToFront) selHighlight.bringToFront();
+  if(typeof applyStackPanes==='function') applyStackPanes();
 }
 /* one place that changes which layer is active */
 /* unsaved attribute edits belong to one layer: settle them before switching */
@@ -7634,10 +7668,12 @@ function renderMakerLayerList(){
   const el=document.getElementById('mk-layerlist');
   if(typeof cartoUpdateProjectionLock==='function') try{ cartoUpdateProjectionLock(); }catch(_){}
   if(typeof autoActivateLayer==='function') autoActivateLayer();
-  if(!mkLayers.length){ el.innerHTML='<div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div>'; return; }
+  if(!mkLayers.length){ el.innerHTML='<div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div>'; { const br=document.getElementById('mkBaseRow'); if(br) br.style.display=''; } return; }
   let prevG=null;
+  const SP=stackPositions(), nL=mkLayers.length;
+  const rowsAt=pos=>(bmHasLabelsRow()&&SP.lp===pos?stackRowHtml('labels'):'')+(SP.bp===pos?stackRowHtml('base'):'');
   el.innerHTML=mkLayers.map((l,li)=>{
-    let head='';
+    let head=rowsAt(nL-li);
     if(l.group && l.group!==prevG){
       const mem=mkLayers.filter(x=>x.group===l.group), on=mem.filter(x=>x.visible).length, gs=mkGroupState(l.group);
       const op=Math.round(100*mem.reduce((a,x)=>a+x.opacity,0)/mem.length);
@@ -7671,9 +7707,11 @@ function renderMakerLayerList(){
           <button data-act="dup">⧉ Duplicate</button><button data-act="del">✕ Remove</button>
         </span>
       </div>
-    </div>`; }).join('');
+    </div>`; }).join('')+rowsAt(0);
   bindLayerGroups(el);
-  el.querySelectorAll('.mk-layer').forEach(item=>{
+  bindStackRows(el);
+  { const br=document.getElementById('mkBaseRow'); if(br) br.style.display='none'; }
+  el.querySelectorAll('.mk-layer:not(.mk-pseudo)').forEach(item=>{
     const id=item.getAttribute('data-id');
     bindLayerDrag(item);
     /* click anywhere on the card's top row (not a control) to make it active */
@@ -7696,6 +7734,8 @@ function renderMakerLayerList(){
       const l=mkLayers.find(x=>x.id===id);
       l.visible=ev.target.checked;
       renderLayer(l);
+      /* v80: switching a layer on makes it the active layer */
+      if(l.visible && mkSelectedId!==id){ settlePendingAttrEdits(); mkSelectedId=id; }
       /* a hidden layer can't be the active one — hand over to the next visible */
       if(!l.visible && mkSelectedId===id){
         const next=mkLayers.find(x=>x.visible);
@@ -7854,6 +7894,7 @@ function clearSelection(){
 function setSelection(lyr, idxs, mode){
   if(!lyr) return;
   if(selection.layerId!==lyr.id){ selection={layerId:lyr.id, set:new Set()}; }
+  selection.via=selNextVia||'other'; selNextVia=null;   /* v80: how it was made — a click on empty map clears only click selections */
   if(mode==='add'){ idxs.forEach(i=>selection.set.add(i)); }
   else if(mode==='toggle'){ idxs.forEach(i=>{ if(selection.set.has(i)) selection.set.delete(i); else selection.set.add(i); }); }
   else { selection.set=new Set(idxs); }
@@ -13116,13 +13157,13 @@ function atSnapFrom(p){
   const ok=sn=>sn && Array.isArray(sn.layers) && sn.view && Array.isArray(sn.view.c);
   const clean=sn=>({globe:(sn.globe&&Array.isArray(sn.globe.c))?{c:[+sn.globe.c[0]||0,+sn.globe.c[1]||0], z:+sn.globe.z||1.5, br:+sn.globe.br||0, pt:+sn.globe.pt||0}:null,
     gLayers:Array.isArray(sn.gLayers)?sn.gLayers.slice(0,50).map(d=>{
-        if(d && d.col && d.col.fc && Array.isArray(d.col.fc.features)) return {id:String(d.id||'').slice(0,40), lbl:(d.lbl&&typeof d.lbl==='object')?d.lbl:null,
+        if(d && d.col && d.col.fc && Array.isArray(d.col.fc.features)) return {sg:[0,1,2].includes(d.sg)?d.sg:null, id:String(d.id||'').slice(0,40), lbl:(d.lbl&&typeof d.lbl==='object')?d.lbl:null,
           col:{fc:d.col.fc, heats:Array.isArray(d.col.heats)?d.col.heats.slice(0,20):[], dash:typeof d.col.dash==='string'?d.col.dash.slice(0,40):null}};
-        if(d && d.fc && Array.isArray(d.fc.features)) return {geom:['polygon','line','point'].includes(d.geom)?d.geom:'point', fc:d.fc};
+        if(d && d.fc && Array.isArray(d.fc.features)) return {sg:[0,1,2].includes(d.sg)?d.sg:null, geom:['polygon','line','point'].includes(d.geom)?d.geom:'point', fc:d.fc};
         return null; }).filter(Boolean):[],
     gIcons:(sn.gIcons&&typeof sn.gIcons==='object')?Object.fromEntries(Object.entries(sn.gIcons).filter(([k,v])=>/^momi\d+$/.test(k)&&/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(v)).slice(0,500)):{},
     partsOff:Array.isArray(sn.partsOff)?sn.partsOff.filter(k=>BM_PART_GROUPS.hasOwnProperty(k)):[],
-    stack:stackClean(sn.stack), bmo:bmoClean(sn.bmo),
+    stack:stackClean(sn.stack), bmo:bmoClean(sn.bmo), tiers:tierClean(sn.tiers),
     proj:(sn.proj&&typeof sn.proj.key==='string'&&Array.isArray(sn.proj.translate))?sn.proj:null,
     pLayers:Array.isArray(sn.pLayers)?sn.pLayers.slice(0,50):[],
     swipe:(sn.swipe&&sn.swipe.left)?{left:String(sn.swipe.left).slice(0,40), right:sn.swipe.right?String(sn.swipe.right).slice(0,40):null, x:Math.max(0.02,Math.min(0.98,+sn.swipe.x||0.5)), ln:String(sn.swipe.ln||'').slice(0,120), rn:String(sn.swipe.rn||'').slice(0,120)}:null,
@@ -15017,11 +15058,22 @@ function projClick(e){
   const host=document.getElementById('mk-proj'), r=host.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
   document.querySelectorAll('.proj-pop').forEach(p=>p.remove());
   const h=projFeatureAt(x, y);
-  if(!h){ if(!(e.shiftKey||e.ctrlKey||e.metaKey)) clearSelection(); return; }
+  document.querySelectorAll('.proj-chip').forEach(c=>c.remove());
+  if(!h){ if(!(e.shiftKey||e.ctrlKey||e.metaKey) && selection.via==='click') clearSelection(); return; }
   const i=fidOf(h.lyr, h.f0);
-  if(i!=null){ const changed=mkSelectedId!==h.lyr.id; mkSelectedId=h.lyr.id; setSelection(h.lyr, [i], (e.shiftKey||e.ctrlKey||e.metaKey)?'toggle':'set'); scrollTableToFeature(i);
+  if(i!=null){ const changed=mkSelectedId!==h.lyr.id; mkSelectedId=h.lyr.id; selNextVia='click'; setSelection(h.lyr, [i], (e.shiftKey||e.ctrlKey||e.metaKey)?'toggle':'set'); scrollTableToFeature(i);
     if(changed){ renderMakerLayerList(); if(typeof renderMakerPanels==='function') renderMakerPanels(); } }
   const props=(i!=null && h.lyr.geojson.features[i]) ? h.lyr.geojson.features[i].properties : h.f0.properties;
+  if(!mkPopupsOn()){
+    const c=document.createElement('button'); c.type='button'; c.className='proj-chip mk-ichip'; c.textContent='ⓘ'; c.title='Show this feature\'s attributes';
+    c.style.left=(x+8)+'px'; c.style.top=(y-26)+'px'; host.appendChild(c);
+    ['mousedown','wheel','dblclick'].forEach(t=>c.addEventListener(t, ev=>ev.stopPropagation()));
+    c.onclick=ev=>{ ev.stopPropagation(); c.remove(); projShowPop(host, x, y, props); };
+    return;
+  }
+  projShowPop(host, x, y, props);
+}
+function projShowPop(host, x, y, props){
   const pop=document.createElement('div'); pop.className='proj-pop';
   pop.innerHTML='<button type="button" class="proj-pop-x" aria-label="Close">×</button><div class="proj-pop-b">'+(makerPopupHtml(props||{})||'(no attributes)')+'</div>';
   host.appendChild(pop);
@@ -15763,8 +15815,226 @@ function prepareSendTarget(){
     else done();
   });
 }
+
+/* ---------- v80: attribute pop-ups on request ----------
+   Clicking a feature selects it. Its attributes open from a small ⓘ button at the
+   click (or straight away, when "Pop-ups open on click" is ticked in ⚙). A click on
+   empty map clears a selection made by clicking; box, lasso and table selections stay. */
+let selNextVia=null, mkFeatClickAt=0, mkChip=null;
+function mkPopupsOn(){ try{ return localStorage.getItem('mom-popups')==='1'; }catch(_){ return false; } }
+function mkInfoChipClear(){ if(mkChip){ try{ mkChip.remove(); }catch(_){} mkChip=null; } }
+function mkInfoChip(at, html, where){
+  mkInfoChipClear();
+  const btn=document.createElement('button'); btn.type='button'; btn.className='mk-ichip'; btn.textContent='ⓘ'; btn.title='Show this feature\'s attributes'; btn.setAttribute('aria-label','Show attributes');
+  if(where==='globe' && typeof mkGlobe!=='undefined' && mkGlobe){
+    const m=new maplibregl.Marker({element:btn, anchor:'bottom-left', offset:[6,-4]}).setLngLat(at).addTo(mkGlobe);
+    btn.onclick=e=>{ e.stopPropagation(); mkInfoChipClear(); new maplibregl.Popup({maxWidth:'340px'}).setLngLat(at).setHTML(html()).addTo(mkGlobe); };
+    mkChip={remove:()=>m.remove()}; return;
+  }
+  const icon=L.divIcon({className:'mk-ichip-wrap', html:'', iconSize:[24,24], iconAnchor:[-6,30]});
+  const mk=L.marker(at, {icon, keyboard:false, zIndexOffset:5000}).addTo(mkMap);
+  const el=mk.getElement(); if(el){ el.appendChild(btn); L.DomEvent.disableClickPropagation(el); }
+  btn.onclick=e=>{ e.stopPropagation(); mkInfoChipClear(); L.popup({maxWidth:340, minWidth:200}).setLatLng(at).setContent(html()).openOn(mkMap); };
+  mkChip={remove:()=>{ try{ mkMap.removeLayer(mk); }catch(_){} }};
+}
+function mkPopupsSet(on){
+  try{ localStorage.setItem('mom-popups', on?'1':'0'); }catch(_){}
+  mkInfoChipClear(); try{ mkMap.closePopup(); }catch(_){}
+  mkLayers.forEach(l=>{ if(l.visible) renderLayer(l); });
+  toast(on?'Pop-ups now open when you click a feature.':'Clicking a feature selects it; its ⓘ button shows the attributes.', 3500);
+}
+(function(){
+  const wait=()=>{ if(typeof mkMap==='undefined' || !mkMap){ setTimeout(wait, 300); return; }
+    mkMap.on('click', e=>{
+      if(Date.now()-mkFeatClickAt<60) return;                  /* that click was on a feature */
+      mkInfoChipClear();
+      const oe=e.originalEvent||{};
+      if(oe.shiftKey||oe.ctrlKey||oe.metaKey) return;
+      if((typeof measureActive!=='undefined'&&measureActive) || selTool) return;
+      try{ if(mkMap.pm && (mkMap.pm.globalDrawModeEnabled() || mkMap.pm.globalEditModeEnabled())) return; }catch(_){}
+      if(selection.via==='click' && selection.set && selection.set.size) clearSelection();
+    });
+    mkMap.on('zoomstart movestart', ()=>{ /* the chip follows its marker; nothing to do */ });
+  };
+  wait();
+})();
+
+/* ---------- v80: the basemap and its labels as rows in the layer stack ----------
+   The basemap row (with its overlays) and, for vector basemaps, a "Basemap labels"
+   row can sit anywhere among the data layers. Positions are counted from the bottom
+   (how many data layers are below each row). On the flat map each run of data
+   layers between them gets its own pane and canvas, so the drawing order matches
+   the list; labels moved off the basemap are drawn by a second, labels-only copy of
+   the vector style. Captures for the Composer composite these panes in order. */
+let mkBasePos=0, mkLblPos=0, mkLabelsGL=null, mkLabelsKey=null;
+const SEG_RENDER={};
+function bmHasLabelsRow(){ const bm=BASEMAPS[mkBasemapKey]; return !!(bm && bm.kind==='vector'); }
+function stackPositions(){
+  const n=mkLayers.length, bp=Math.max(0, Math.min(n, mkBasePos|0)), lp=bmHasLabelsRow()? Math.max(0, Math.min(n, mkLblPos|0)) : bp;
+  return {n, bp, lp, split:(bp>0 || lp!==bp)};
+}
+function segPaneOpts(lyr){
+  if(!lyr || !lyr._segPane) return {};
+  const pane=lyr._segPane;
+  if(!mkMap.getPane(pane)){ const pp=mkMap.createPane(pane); pp.classList.add('mom-ov-pane','mom-seg-pane'); }
+  if(!SEG_RENDER[pane]) SEG_RENDER[pane]=L.canvas({pane, padding:0.5});
+  return {pane, renderer:SEG_RENDER[pane]};
+}
+function labelsGlSetVis(){
+  const base=currentGlMap(), lab=mkLabelsGL && mkLabelsGL.getMaplibreMap && mkLabelsGL.getMaplibreMap();
+  const apply=(gl, keepSymbols)=>momWhenStyle(gl, m=>{ let st; try{ st=m.getStyle(); }catch(_){ return; }
+    (st.layers||[]).forEach(ly=>{ const isSym=ly.type==='symbol';
+      let vis = keepSymbols ? isSym : !isSym;
+      const sl=ly['source-layer']; if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
+      try{ m.setLayoutProperty(ly.id,'visibility', vis?'visible':'none'); }catch(_){} }); });
+  const P=stackPositions(), sep=P.lp!==P.bp;
+  if(base && sep) apply(base, false);
+  if(lab) apply(lab, true);
+}
+function applyStackPanes(){
+  if(typeof mkMap==='undefined' || !mkMap) return;
+  const P=stackPositions(), n=P.n;
+  const tp=mkMap.getPane('tilePane'), op=mkMap.getPane('overlayPane');
+  let changed=false;
+  const setSeg=(l,v)=>{ if((l._segPane||null)!==(v||null)){ l._segPane=v||null; changed=true; } };
+  if(!P.split){
+    mkLayers.forEach(l=>setSeg(l,null));
+    if(tp) tp.style.zIndex=''; if(op) op.style.zIndex='';
+    for(let j=0;j<12;j++){ const pp=mkMap.getPane('momov'+j); if(pp) pp.style.zIndex=String(210+j); }
+    labelsGlRemove();
+  } else {
+    /* two markers, bottom-up; ties put the labels above the basemap */
+    const marks=[{k:'base', p:P.bp, t:0},{k:'labels', p:P.lp, t:1}].sort((a,b)=>a.p-b.p||a.t-b.t);
+    const Z={seg0:120, m0:200, seg1:320, m1:400, seg2:460};
+    mkLayers.forEach((l,i)=>{ const k=n-1-i; setSeg(l, k<marks[0].p?'momSeg0':k<marks[1].p?'momSeg1':'momSeg2'); });
+    ['momSeg0','momSeg1','momSeg2'].forEach((nm,i)=>{ if(!mkMap.getPane(nm)){ const pp=mkMap.createPane(nm); pp.classList.add('mom-ov-pane','mom-seg-pane'); } mkMap.getPane(nm).style.zIndex=String([Z.seg0,Z.seg1,Z.seg2][i]); });
+    const zBase=marks[0].k==='base'?Z.m0:Z.m1, zLab=marks[0].k==='labels'?Z.m0:Z.m1;
+    if(tp) tp.style.zIndex=String(zBase);
+    for(let j=0;j<12;j++){ const pp=mkMap.getPane('momov'+j); if(pp) pp.style.zIndex=String(zBase+1+j); }
+    if(op) op.style.zIndex='480';     /* heatmaps, selection outline and editing handles stay on top */
+    if(bmHasLabelsRow() && P.lp!==P.bp){ labelsGlEnsure(); const lp=mkMap.getPane('momLbl'); if(lp) lp.style.zIndex=String(zLab+(zLab===zBase?13:0)); }
+    else labelsGlRemove();
+  }
+  /* a swipe comparison draws its two layers in their own panes: keep each at its layer's place in the stack */
+  if(typeof swipe!=='undefined' && swipe){ const Zs={momSeg0:120, momSeg1:320, momSeg2:460};
+    [['swipeL',swipe.left],['swipeR',swipe.right]].forEach(([pn,id])=>{ const pp=mkMap.getPane(pn); if(!pp) return; const l=mkLayers.find(x=>x.id===id);
+      pp.style.zIndex = (P.split && l && l._segPane) ? String(Zs[l._segPane]+5) : '410'; }); }
+  labelsGlSetVis();
+  if(changed) setTimeout(()=>{ mkLayers.forEach(l=>{ if(l.leaflet){ try{ mkMap.removeLayer(l.leaflet); }catch(_){} l.leaflet=null; } if(l.dotLayer){ try{ mkMap.removeLayer(l.dotLayer); }catch(_){} l.dotLayer=null; } }); renderAllMakerLayers(); }, 0);
+}
+function labelsGlEnsure(){
+  if(mkLabelsGL && mkLabelsKey===mkBasemapKey) return;
+  labelsGlRemove();
+  const bm=BASEMAPS[mkBasemapKey]; if(!bm || bm.kind!=='vector') return;
+  if(!mkMap.getPane('momLbl')){ const pp=mkMap.createPane('momLbl'); pp.classList.add('mom-ov-pane'); pp.style.pointerEvents='none'; }
+  try{ mkLabelsGL=L.maplibreGL({style:bm.style, pane:'momLbl', interactive:false, preserveDrawingBuffer:true, antialias:true, attributionControl:false, glOptions:{preserveDrawingBuffer:true, antialias:true}}).addTo(mkMap); mkLabelsKey=mkBasemapKey;
+    if(bm.ohm) momWhenStyle(mkLabelsGL.getMaplibreMap(), m=>momOhmYear(m, mkBmo.year)); }catch(_){ mkLabelsGL=null; }
+}
+function labelsGlRemove(){
+  if(mkLabelsGL){ try{ mkMap.removeLayer(mkLabelsGL); }catch(_){} mkLabelsGL=null; mkLabelsKey=null;
+    const base=currentGlMap(); if(base && typeof applyBasemapParts==='function') applyBasemapParts(); }
+}
+function stackMove(which, d){
+  const P=stackPositions();
+  if(which==='base') mkBasePos=Math.max(0, Math.min(P.n, P.bp+d)); else mkLblPos=Math.max(0, Math.min(P.n, P.lp+d));
+  stackChanged();
+}
+function stackChanged(){
+  applyStackPanes(); renderMakerLayerList(); markProjectDirty(); mkPushHistory();
+  const P=stackPositions();
+  if(P.bp>0 && mkBmo.bop>=1) setTimeout(()=>toast('The basemap now covers the layers below it. Lower its opacity (Basemap tab) to see them through it.', 5000), 300);
+}
+function stackRowHtml(which){
+  const bm=BASEMAPS[mkBasemapKey];
+  if(which==='base'){
+    const on=mkBmStack.filter(i=>i.on!==false).length;
+    return '<div class="mk-layer mk-pseudo mk-ps-base" data-pseudo="base" draggable="true"><div class="top"><span class="drag-grip" title="Drag to move the basemap in the stack">⠿</span><span class="ps-ic" aria-hidden="true">🗺</span>'+
+      '<span class="nm" title="Basemap">Basemap: '+esc(BM_LABELS[mkBasemapKey]||mkBasemapKey)+'</span><button type="button" class="ps-mv" data-mv="1" title="Move the basemap up (it then covers the layer below)">↑</button><button type="button" class="ps-mv" data-mv="-1" title="Move the basemap down">↓</button></div>'+
+      '<button type="button" class="ps-sub">'+(on?on+' overlay'+(on===1?'':'s')+' · ':'')+'Overlays, grid, opacity ›</button></div>';
+  }
+  return '<div class="mk-layer mk-pseudo mk-ps-lbl" data-pseudo="labels" draggable="true"><div class="top"><span class="drag-grip" title="Drag to put the basemap\'s labels above or below your layers">⠿</span><span class="ps-ic" aria-hidden="true">🏷</span>'+
+    '<span class="nm">Basemap labels</span><button type="button" class="ps-mv" data-mv="1" title="Move the labels up">↑</button><button type="button" class="ps-mv" data-mv="-1" title="Move the labels down">↓</button></div>'+
+    '<div class="ps-sub2">Place, road and water names'+(stackPositions().lp!==stackPositions().bp?' · drawn separately from the basemap':'')+'</div></div>';
+}
+function bindStackRows(el){
+  el.querySelectorAll('.mk-pseudo').forEach(row=>{
+    const which=row.dataset.pseudo;
+    row.querySelectorAll('.ps-mv').forEach(b=>b.onclick=e=>{ e.stopPropagation(); stackMove(which, +b.dataset.mv); });
+    const sub=row.querySelector('.ps-sub'); if(sub) sub.onclick=()=>openLeftTab('base');
+    row.addEventListener('dragstart', e=>{ dragPseudo=which; row.classList.add('dragging'); try{ e.dataTransfer.setData('text/plain','pseudo:'+which); }catch(_){} e.dataTransfer.effectAllowed='move'; });
+    row.addEventListener('dragend', ()=>{ dragPseudo=null; el.querySelectorAll('.mk-layer').forEach(x=>x.classList.remove('dragging','drop-above','drop-below')); });
+  });
+  /* dropping a basemap row on a data layer card puts it just above or below that layer */
+  el.querySelectorAll('.mk-layer:not(.mk-pseudo)').forEach(card=>{
+    card.addEventListener('dragover', e=>{ if(!dragPseudo) return; e.preventDefault(); const r=card.getBoundingClientRect(), above=(e.clientY-r.top)<r.height/2;
+      card.classList.toggle('drop-above', above); card.classList.toggle('drop-below', !above); });
+    card.addEventListener('dragleave', ()=>{ card.classList.remove('drop-above','drop-below'); });
+    card.addEventListener('drop', e=>{ if(!dragPseudo) return; e.preventDefault(); e.stopPropagation();
+      const i=mkLayers.findIndex(l=>l.id===card.dataset.id); if(i<0) return;
+      const r=card.getBoundingClientRect(), above=(e.clientY-r.top)<r.height/2, k=mkLayers.length-1-i;
+      const pos=above?k+1:k; if(dragPseudo==='base') mkBasePos=pos; else mkLblPos=pos; dragPseudo=null; stackChanged(); });
+  });
+}
+let dragPseudo=null;
+
+/* ---------- v81: one stack order everywhere ----------
+   stackTierSpec() describes where the basemap and its labels sit among the data
+   layers; each data layer carries its tier (sg: 0 below both markers, 1 between,
+   2 above). The two runtimes below are self-contained so exported maps, atlas
+   pages and share links copy them: momTiers for Leaflet maps, momGlobeTiers for
+   MapLibre globes. */
+function momTierVis(m, keepSym, off){
+  var go=function(){ var st; try{ st=m.getStyle(); }catch(e){ return; } if(!st||!st.layers) return;
+    st.layers.forEach(function(ly){ if(/^u|^s\d|^m_|^g_/.test(ly.id)&&ly.source&&/^u|^s\d/.test(String(ly.source))) return;
+      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ly['source-layer'] && off.indexOf(ly['source-layer'])>=0) vis=false;
+      if(!keepSym && sym===false) return;          /* the basemap keeps its other layers as they are */
+      try{ m.setLayoutProperty(ly.id,'visibility',vis?'visible':'none'); }catch(e){} }); };
+  var n=0, t=setInterval(function(){ var ok=false; try{ ok=!!(m.style&&m.style._loaded); }catch(e){} if(ok){ clearInterval(t); go(); setTimeout(go,1500); } else if(++n>160) clearInterval(t); },150);
+}
+function momTiers(L, map, T, vecStyle, baseGL){
+  if(!T || !T.split) return function(){ return {}; };
+  map.__momT=T; var R={};
+  [0,1,2].forEach(function(i){ var nm='momSeg'+i, p=map.getPane(nm)||map.createPane(nm); p.classList.add('mom-ov-pane'); p.style.zIndex=String(T.zs[i]); R[i]=L.canvas({pane:nm, padding:0.5}); });
+  map.getPane('tilePane').style.zIndex=String(T.zb);
+  for(var j=0;j<12;j++){ var pp=map.getPane('momov'+j); if(pp) pp.style.zIndex=String(T.zb+1+j); }
+  map.getPane('overlayPane').style.zIndex='480';
+  if(T.sep && vecStyle && L.maplibreGL){
+    var lp=map.getPane('momLbl')||map.createPane('momLbl'); lp.classList.add('mom-ov-pane'); lp.style.zIndex=String(T.zl); lp.style.pointerEvents='none';
+    try{ var LG=L.maplibreGL({style:vecStyle, pane:'momLbl', interactive:false, attributionControl:false, preserveDrawingBuffer:true}).addTo(map); map.__momLG=LG; momTierVis(LG.getMaplibreMap(), true, T.off); }catch(e){}
+    if(baseGL) momTierVis(baseGL, false, T.off);
+  }
+  return function(sg){ return (sg==null||!R[sg]) ? {} : {pane:'momSeg'+sg, renderer:R[sg]}; };
+}
+function momGlobeTiers(map, T, groups){
+  if(!T || !T.split || !map) return;
+  var st; try{ st=map.getStyle(); }catch(e){ return; } if(!st||!st.layers) return;
+  var user={}; groups.forEach(function(g){ g.ids.forEach(function(id){ user[id]=1; }); });
+  var base=st.layers.filter(function(l){ return !user[l.id] && !/^u_sel|^m_meas/.test(l.id); });
+  var firstBase=base.length?base[0].id:null, firstSym=null;
+  for(var i=0;i<base.length;i++){ if(base[i].type==='symbol'){ firstSym=base[i].id; break; } }
+  var before=function(sg){ if(T.order==='bl') return sg===0?firstBase:(sg===1?(T.sep?firstSym:null):null); return sg<2?firstBase:null; };
+  groups.forEach(function(g){ var b=before(g.sg); g.ids.forEach(function(id){ try{ var ly=map.getLayer(id); if(ly && ly.type!=='heatmap'){ if(b && map.getLayer(b)) map.moveLayer(id, b); else map.moveLayer(id); } }catch(e){} }); });
+}
+function stackTierSpec(){
+  const n=mkLayers.length, bp=Math.max(0, Math.min(n, mkBasePos|0)), lp=bmHasLabelsRow()? Math.max(0, Math.min(n, mkLblPos|0)) : bp;
+  if(!(bp>0 || lp!==bp)) return null;
+  const marks=[{k:'base', p:bp, t:0},{k:'labels', p:lp, t:1}].sort((a,b)=>a.p-b.p||a.t-b.t);
+  const zb=marks[0].k==='base'?200:400, zl=marks[0].k==='labels'?200:400;
+  const off=[]; Object.keys(BM_PART_GROUPS).forEach(k=>{ if(basemapParts[k]===false) off.push(...BM_PART_GROUPS[k].src); });
+  return {split:true, sep:lp!==bp, order:marks[0].k==='base'?'bl':'lb', zs:[120,320,460], zb, zl:zl+(zl===zb?13:0), off, m0:marks[0].p, m1:marks[1].p};
+}
+function tierOfLayer(lyr, T){
+  if(!T) return null; const i=mkLayers.indexOf(lyr); if(i<0) return null; const k=mkLayers.length-1-i;
+  return k<T.m0?0:k<T.m1?1:2;
+}
+function tierClean(T){
+  if(!T || typeof T!=='object' || T.split!==true) return null;
+  const z=v=>Math.max(100, Math.min(470, Math.round(+v)||200));
+  return {split:true, sep:T.sep===true, order:T.order==='lb'?'lb':'bl', zs:(Array.isArray(T.zs)?T.zs:[120,320,460]).slice(0,3).map(z), zb:z(T.zb), zl:z(T.zl),
+    off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
+}
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v79 · Oct 2026';
+const MOM_VERSION='v81 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -18170,6 +18440,7 @@ function loadProjectData(data){
     mkGroups=(data.maker.groups&&typeof data.maker.groups==='object')?data.maker.groups:{};
     setGrid(data.maker.grid||null);
     mkBmo=bmoClean(data.maker.bmo); setBmStack(data.maker.bmStack||[], null);
+    mkBasePos=Math.max(0, +data.maker.basePos||0); mkLblPos=Math.max(0, +data.maker.lblPos||0);
     if(data.maker.basemap) setBasemap(data.maker.basemap);
     if(data.maker.view&&mkMap) mkMap.setView(data.maker.view.center, data.maker.view.zoom);
     renderAllMakerLayers(); renderMakerLayerList(); renderMakerPanels(); updateMkStatus();
@@ -19698,6 +19969,7 @@ document.getElementById('btnSync').onclick=openSyncDialog;
     btn.classList.toggle('cvd-on', !!v && document.body.classList.contains('mod-layout'));
     const d=document.documentElement.getAttribute('data-theme')==='dark';
     const t=document.getElementById('gmTheme'); if(t) t.textContent=d?'☀ Light interface':'☾ Dark interface';
+    const pu=document.getElementById('gmPopups'); if(pu) pu.classList.toggle('on', mkPopupsOn());
   };
   const close=()=>{ menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); };
   btn.onclick=e=>{ e.stopPropagation(); sync(); const h=menu.classList.toggle('hidden'); btn.setAttribute('aria-expanded',String(!h)); };
@@ -19713,6 +19985,7 @@ document.getElementById('btnSync').onclick=openSyncDialog;
     else if(g==='log') document.getElementById('btnMethods').click();
     else if(g==='theme'){ document.getElementById('btnTheme').click(); sync(); }
     else if(g==='help') document.getElementById('btnHelp').click();
+    else if(g==='popups') mkPopupsSet(!mkPopupsOn());
   });
   if(cvd) cvd.addEventListener('change', sync);
   window.__gearSync=sync;
@@ -19938,7 +20211,8 @@ function serializeCurrentProject(){
         style:l.style, labels:l.labels, filter:l.filter, datasetId:l.datasetId, group:l.group||null})),
       groups: clone(mkGroups), grid: clone(mkGrid),
       overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit})),
-      bmStack: clone(mkBmStack), bmo: Object.assign({}, mkBmo)
+      bmStack: clone(mkBmStack), bmo: Object.assign({}, mkBmo),
+      basePos: mkBasePos|0, lblPos: mkLblPos|0
     },
     collector: fcSerialize(),
     atlas: atlas
@@ -20647,17 +20921,19 @@ function embedSnapshot(){
   if(mkGlobe){
     /* globe view: keep the camera and the layers with the globe's own baked styling */
     const c=mkGlobe.getCenter();
-    const gLayers=mkLayers.slice().reverse().filter(l=>l.visible).map(l=>({id:l.id, lbl:labelSpecFor(l),
+    const T0=stackTierSpec();
+    const gLayers=mkLayers.slice().reverse().filter(l=>l.visible).map(l=>({id:l.id, sg:tierOfLayer(l,T0), lbl:labelSpecFor(l),
       col:glbCollect([l.densityLayer, l.leaflet, l.dotLayer], {id:l.id, props:f=>Object.assign({}, (f&&f.properties)||{}), lbl:(l.labels&&l.labels.enabled)?l.labels.field:null, h:extrudeFn(l)})}))
       .filter(d=>d.col.fc.features.length||d.col.heats.length);
     return {globe:{c:[c.lng,c.lat], z:mkGlobe.getZoom(), br:mkGlobe.getBearing(), pt:mkGlobe.getPitch()}, gLayers, gIcons:glbIconUrls(gLayers), partsOff:partsOff(), layers:[], view:{c:[c.lat,c.lng], z:mkGlobe.getZoom(), b:null},
-      legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), stack:clone(mkBmStack), bmo:Object.assign({}, mkBmo)};
+      legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), stack:clone(mkBmStack), bmo:Object.assign({}, mkBmo), tiers:T0};
   }
   if(projActive) return projSnapshot();
-  const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l); d.lbl=labelSpecFor(l); d.id=l.id; return d; }).filter(d=>d.fc.features.length);
+  const T1=stackTierSpec();
+  const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l); d.lbl=labelSpecFor(l); d.id=l.id; d.sg=tierOfLayer(l,T1); return d; }).filter(d=>d.fc.features.length);
   let view={c:[20,0], z:2, b:null};
   if(mkMap){ const c=mkMap.getCenter(), b=mkMap.getBounds(); view={c:[c.lat,c.lng], z:mkMap.getZoom(), b:[[b.getSouth(),b.getWest()],[b.getNorth(),b.getEast()]]}; }
-  return {layers, view, legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), swipe:swipeSnap(), partsOff:partsOff(), stack:clone(mkBmStack), bmo:Object.assign({}, mkBmo)};
+  return {layers, view, legendHtml:embedLegendHtml(), layerIds:mkLayers.filter(l=>l.visible).map(l=>l.id), swipe:swipeSnap(), partsOff:partsOff(), stack:clone(mkBmStack), bmo:Object.assign({}, mkBmo), tiers:T1};
 }
 function swipeSnap(){
   if(typeof swipe==='undefined' || !swipe || !swipe.left) return null;
@@ -20784,6 +21060,7 @@ ${lgHtml?'<div class="cs-lgwrap"><div class="cs-legend" hidden></div><button typ
 var LAYERS=${data}, ICONS=${JSON.stringify(snap.gIcons||{}).replace(/<\//g,'<\\/')};
 ${glbColor.toString()}
 ${glbAddLayer.toString()}
+${snap.tiers ? momGlobeTiers.toString()+'\nvar TIERS='+JSON.stringify(snap.tiers)+';' : 'var TIERS=null;'}
 function ready(){document.body.classList.remove('ld');if(window.__rd)return;window.__rd=1;try{parent.postMessage({momMapReady:1},'*');}catch(e){}}
 setTimeout(ready,3000);
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -20798,13 +21075,17 @@ function add(){ if(added||!(map.style&&map.style._loaded))return; added=true;
   var ids=[];
   var keys=Object.keys(ICONS), left=keys.length;
   var build=function(){
-  LAYERS.forEach(function(L2,i){var src='u'+i;
-    if(L2.col){ try{ ids=ids.concat(glbAddLayer(map, String(i), L2.col, L2.lbl)); }catch(e){} return; }
+  var TG=[];
+  LAYERS.forEach(function(L2,i){var src='u'+i, n0=map.getStyle().layers.length;
+    var grp=function(){ var all=map.getStyle().layers.slice(n0).map(function(l){return l.id;}); TG.push({sg:L2.sg, ids:all}); };
+    if(L2.col){ try{ ids=ids.concat(glbAddLayer(map, String(i), L2.col, L2.lbl)); }catch(e){} grp(); return; }
     map.addSource(src,{type:'geojson',data:L2.fc});
     if(L2.geom==='polygon'){map.addLayer({id:src+'f',type:'fill',source:src,paint:{'fill-color':['get','_fill'],'fill-opacity':['get','_fo']}});map.addLayer({id:src+'l',type:'line',source:src,paint:{'line-color':['get','_stroke'],'line-width':['get','_sw'],'line-opacity':['get','_so']}});ids.push(src+'f');}
     else if(L2.geom==='line'){map.addLayer({id:src+'l',type:'line',source:src,paint:{'line-color':['get','_stroke'],'line-width':['coalesce',['get','_sw'],2],'line-opacity':['get','_so']}});ids.push(src+'l');}
     else {map.addLayer({id:src+'c',type:'circle',source:src,paint:{'circle-radius':['get','_r'],'circle-color':['get','_fill'],'circle-opacity':['get','_fo'],'circle-stroke-color':['get','_stroke'],'circle-stroke-width':['get','_sw'],'circle-stroke-opacity':['get','_so']}});ids.push(src+'c');}
+    grp();
   });
+  if(TIERS){ try{ momGlobeTiers(map, TIERS, TG); }catch(e){} }
   map.on('click',function(e){var f=map.queryRenderedFeatures(e.point,{layers:ids})[0];if(!f)return;var p=f.properties||{},r='';
     for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class="k">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src="'+v+'" alt="" style="max-width:220px;max-height:200px;display:block">':E(v))+'</td></tr>';}
     if(r)new maplibregl.Popup().setLngLat(e.lngLat).setHTML('<div class="cs-embed-popup"><table>'+r+'</table></div>').addTo(map);});
@@ -20876,6 +21157,7 @@ ${stSpec.length||(vecDef&&vecDef.ohm) ? MOM_STACK_RT : ''}
 ${vecDef ? `try{var BM=L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},attributionControl:{customAttribution:${JSON.stringify(vecDef.attr)}},interactive:false}).addTo(map);var GM=BM.getMaplibreMap&&BM.getMaplibreMap();if(GM){GM.once('idle',ready);${vecDef.ohm?'momWhenStyle(GM,function(m){momOhmYear(m,'+bmo.year+');});':''}}else ready();}catch(e){ready();}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}})${i===0?".on('load',ready)":''}.addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');setTimeout(ready,50);`}
 ${bmHasParts(basemap) ? partsEmbedJs(snap.partsOff||[], "function(){return (typeof GM!=='undefined')?GM:null;}", !!opts.partsUi) : ''}
 ${stSpec.length ? 'momStackLeaflet(L,map,'+JSON.stringify(stSpec).replace(/<\//g,'<\\/')+');' : ''}
+${snap.tiers ? momTierVis.toString()+'\n'+momTiers.toString()+'\nvar TIERS='+JSON.stringify(snap.tiers)+';var TO=momTiers(L,map,TIERS,'+(vecDef?JSON.stringify(vecDef.style):'null')+',(typeof GM!==\'undefined\')?GM:null);if(TIERS.sep)window.momPartsHook=function(ON,G){var off=[];for(var k in G){if(!ON[k])off=off.concat(G[k].src);}if(map.__momLG)momTierVis(map.__momLG.getMaplibreMap(),true,off);if(typeof GM!==\'undefined\'&&GM)momTierVis(GM,false,off);};' : 'var TIERS=null;function TO(){return {};}'}
 ${(bmo.bop<1||basemap==='none') ? "map.getPane('tilePane').style.opacity='"+bmo.bop+"';map.getContainer().style.background='"+bmo.paper+"';" : ''}
 ${opts.zoomPos==='bottomleft' ? "try{map.zoomControl.setPosition('bottomleft');}catch(e){}" : ''}
 ${layers.some(L2=>L2.fc.features.some(f=>f.properties&&f.properties._cs&&f.properties._cs.pat)) ? momPatTile.toString()+'\n'+momPattern.toString() : 'function momPattern(){return null;}'}
@@ -20883,14 +21165,14 @@ ${layers.some(L2=>L2.fc.features.some(f=>f.properties&&f.properties._cs&&f.prope
 function styleFn(f){var s=f.properties._cs||{};var o={color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};if(s.pat){var pp=momPattern(s.pat.k,(s.fill&&s.fill!=='rgba(0,0,0,0)')?s.fill:'',s.pat.c,s.pat.g);if(pp)o.fillColor=pp;}return o;}
 function ptLayer(f,ll,o){o=o||{};var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]}),pane:o.pane||'markerPane'});}return L.circleMarker(ll,Object.assign({radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo},o));}
 var SW=${JSON.stringify(SW)},PO={};
-if(SW){['swL','swR'].forEach(function(n){var p=map.createPane(n);p.style.zIndex=410;PO[n]={pane:n,renderer:L.canvas({pane:n,padding:0.5})};});}
-function po(id){return !SW?{}:id===SW.left?PO.swL:id===SW.right?PO.swR:{};}
+if(SW){['swL','swR'].forEach(function(n){var p=map.createPane(n),id=n==='swL'?SW.left:SW.right,z=410;if(TIERS&&TIERS.split){LAYERS.forEach(function(x){if(x.id===id&&x.sg!=null)z=TIERS.zs[x.sg]+5;});}p.style.zIndex=z;PO[n]={pane:n,renderer:L.canvas({pane:n,padding:0.5})};});}
+function po(L2){return (SW&&L2.id===SW.left)?PO.swL:(SW&&L2.id===SW.right)?PO.swR:TO(L2.sg);}
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src=\"'+v+'\" alt=\"\" style=\"max-width:220px;max-height:200px;display:block\">':(typeof v==='string'&&/^data:audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[a-z0-9=.+-]+)*;base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<audio controls preload=\"none\" src=\"'+v+'\" style=\"width:220px;height:34px;display:block\"></audio>':E(v))+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
 function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,0],n:['top',0,-d],s:['bottom',0,d],e:['right',d,0],w:['left',-d,0],ne:['right',d,-d],se:['right',d,d],nw:['left',-d,-d],sw:['left',-d,d]};var p=P[lb.p]||P.ne;return{direction:p[0],offset:[p[1],p[2]]};}
 function label(f,layer,lb,li){if(!lb||!lb.f)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
-LAYERS.forEach(function(L2,li){var o=po(L2.id);var gj=L.geoJSON(L2.fc,Object.assign({style:styleFn,pointToLayer:function(f,ll){return ptLayer(f,ll,o);},onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}},o));gj.addTo(group);});
+LAYERS.forEach(function(L2,li){var o=po(L2);var gj=L.geoJSON(L2.fc,Object.assign({style:styleFn,pointToLayer:function(f,ll){return ptLayer(f,ll,o);},onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}},o));gj.addTo(group);});
 if(SW){(function(){var mc=map.getContainer(),bar=document.createElement('div');bar.className='cs-swbar';bar.innerHTML='<div class="cs-swh" role="slider" tabindex="0" aria-label="Compare divider">⇆</div>';mc.appendChild(bar);
 [['l',SW.ln],['r',SW.rn]].forEach(function(t){if(!t[1])return;var d=document.createElement('div');d.className='cs-swtag '+t[0];d.textContent=t[0]==='l'?'◀ '+t[1]:t[1]+' ▶';mc.appendChild(d);});
 function clip(){var s=map.getSize(),x=Math.round(s.x*SW.x),nw=map.containerPointToLayerPoint([0,0]),se=map.containerPointToLayerPoint(s),cx=map.containerPointToLayerPoint([x,0]).x;map.getPane('swL').style.clip='rect('+nw.y+'px,'+cx+'px,'+se.y+'px,'+nw.x+'px)';map.getPane('swR').style.clip='rect('+nw.y+'px,'+se.x+'px,'+se.y+'px,'+cx+'px)';bar.style.left=x+'px';}
@@ -21063,11 +21345,12 @@ function labelSpecFor(lyr){
           h:lb.halo?1:0, p:lb.position||'ne', o:lb.offset==null?8:lb.offset};
 }
 function buildSharePayload(){
-  const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l, true); d.lbl=labelSpecFor(l); return d; }).filter(d=>d.fc.features.length);
+  const TS=stackTierSpec(); const layers=mkLayers.filter(l=>l.visible).map(l=>{ const d=embedLayerData(l, true); d.lbl=labelSpecFor(l); if(TS) d.sg=tierOfLayer(l,TS); return d; }).filter(d=>d.fc.features.length);
   const view = mkMap ? {c:[+mkMap.getCenter().lat.toFixed(5), +mkMap.getCenter().lng.toFixed(5)], z:mkMap.getZoom()} : {c:[20,0], z:2};
   const rec=projectsCache.find(p=>p.id===currentProjectId);
   const out={v:21, title:(rec?rec.name:'Map'), basemap:mkBasemapKey, view, legend:embedLegendHtml(), layers, partsOff:partsOff()};
   if(mkBmStack.length) out.stack=clone(mkBmStack);
+  if(TS) out.tiers=TS;
   if(bmStackNeeds().date||bmStackNeeds().year||mkBmo.bop<1||mkBmo.paper!=='#ffffff') out.bmo=Object.assign({}, mkBmo);
   if(typeof mkGlobe!=='undefined' && mkGlobe){ const c=mkGlobe.getCenter(); out.globe={c:[+c.lng.toFixed(5), +c.lat.toFixed(5)], z:+mkGlobe.getZoom().toFixed(2), br:+mkGlobe.getBearing().toFixed(1), pt:+mkGlobe.getPitch().toFixed(1)}; }
   return out;
@@ -21182,16 +21465,16 @@ function svStyleFn(f){ const s=f.properties._cs||{}; const o={color:safeColor(s.
   opacity:svNum(s.so,1,0,1), fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.6,0,1), dashArray:/^[\d\s,.]*$/.test(s.dash||'')?(s.dash||null):null};
   if(s.pat && typeof s.pat==='object' && PAT_KEYS.includes(s.pat.k)){ const bg0=isNoColour(s.fill)?'':safeColor(s.fill,''), bg=bg0==='rgba(0,0,0,0)'?'':bg0; o._pat={k:s.pat.k, bg, c:safeColor(s.pat.c,'#333333'), g:svNum(s.pat.g,8,4,40)}; o.fillColor=momPattern(o._pat.k, bg, o._pat.c, o._pat.g); }
   return o; }
-function svPtLayer(f,ll){ const s=f.properties._cs||{};
+function svPtLayer(f,ll,o){ const s=f.properties._cs||{};
   if(s.t==='i'){
     /* a compact share stores the symbol name; rebuild its SVG here */
     const fill=safeColor(s.fill,'#3388ff'), stroke=isNoColour(s.stroke)?null:safeColor(s.stroke,'#333');
     const html = (s.sym && typeof s.sym==='string' && !/^custom:/.test(s.sym)) ? symbolSvg(s.sym, paintValue(fill), stroke, svNum(s.sw,1,0,20)) : sanitizeSvg(s.svg||'');
     const size=svNum(s.size,14,2,120);
-    return L.marker(ll,{icon:L.divIcon({className:'sv-mk',html:html,iconSize:[size,size],iconAnchor:[size/2,size/2]})});
+    return L.marker(ll,{icon:L.divIcon({className:'sv-mk',html:html,iconSize:[size,size],iconAnchor:[size/2,size/2]}), pane:(o&&o.pane)||'markerPane'});
   }
-  return L.circleMarker(ll,{radius:svNum(s.r,5,0.5,200), color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40), opacity:svNum(s.so,1,0,1),
-    fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.8,0,1)}); }
+  return L.circleMarker(ll,Object.assign({radius:svNum(s.r,5,0.5,200), color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40), opacity:svNum(s.so,1,0,1),
+    fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.8,0,1)}, o||{})); }
 function svPopup(f,layer){ const p=f.properties||{}; let r='';
   for(const k in p){ if(k.charAt(0)==='_') continue; r+='<tr><td class="k">'+esc(k)+'</td><td>'+(isPhotoVal(p[k])?'<img src="'+p[k]+'" alt="" style="max-width:220px;max-height:200px;display:block;">':isAudioVal(p[k])?'<audio controls preload="none" src="'+p[k]+'" style="width:220px;height:34px;display:block;"></audio>':(p[k]==null?'':esc(String(p[k]))))+'</td></tr>'; }
   if(r) layer.bindPopup('<div class="sv-popup"><table>'+r+'</table></div>'); }
@@ -21242,6 +21525,21 @@ function svApplyParts(){
   if(!svParts) return;
   svBmLayers.forEach(l=>{ const m=l.getMaplibreMap && l.getMaplibreMap(); if(m) applyPartsTo(m, svParts); });
   if(window.__svGlobe && window.__svGlobe.map) applyPartsTo(window.__svGlobe.map, svParts);
+  svTierRefresh();
+}
+/* v81: the layer stack order (basemap and labels between data layers) in a share link */
+function svTierRefresh(){
+  const T=svMap && svMap.__momT; if(!T || !T.sep) return;
+  const off=[]; Object.keys(BM_PART_GROUPS).forEach(k=>{ if(svParts && svParts[k]===false) off.push(...BM_PART_GROUPS[k].src); });
+  const LG=svMap.__momLG; if(LG && LG.getMaplibreMap) momTierVis(LG.getMaplibreMap(), true, off);
+  svBmLayers.forEach(l=>{ const m=l.getMaplibreMap && l.getMaplibreMap(); if(m) momTierVis(m, false, off); });
+}
+function svTierBasemap(key){
+  const T=svMap && svMap.__momT; if(!T || !T.sep) return;
+  if(svMap.__momLG){ try{ svMap.removeLayer(svMap.__momLG); }catch(_){} svMap.__momLG=null; }
+  const bm=BASEMAPS[key];
+  if(bm && bm.kind==='vector' && L.maplibreGL){ try{ svMap.__momLG=L.maplibreGL({style:bm.style, pane:'momLbl', interactive:false, attributionControl:false, preserveDrawingBuffer:true}).addTo(svMap); }catch(_){} }
+  svTierRefresh();
 }
 /* a shared globe view: the same layers, drawn on a MapLibre globe over the flat viewer */
 function svOpenGlobe(mapDiv, payload, groups){
@@ -21264,7 +21562,8 @@ function svOpenGlobe(mapDiv, payload, groups){
     const k=map.__bk||bk; if(BASEMAPS[k]&&BASEMAPS[k].ohm) momOhmYear(map, svBmo.year);
     momStackGlobe(map, svStack.filter(x=>x.t==='tiles'||x.t==='hill'));
     if(svBmo.bop<1) momGlobeFade(map, svBmo.bop, svBmo.paper);
-    ids=[]; cols.forEach(d=>{ try{ ids.push(...glbAddLayer(map, 's'+d.i, d.col, d.lbl)); }catch(_){} }); if(svParts) applyPartsTo(map, svParts); };
+    ids=[]; const TG=[]; cols.forEach(d=>{ try{ const got=glbAddLayer(map, 's'+d.i, d.col, d.lbl); ids.push(...got); TG.push({sg:(payload.layers[d.i]||{}).sg, ids:got}); }catch(_){} }); if(svParts) applyPartsTo(map, svParts);
+    try{ momGlobeTiers(map, tierClean(payload.tiers), TG); }catch(_){} };
   let done=false; const tryAdd=()=>{ if(done||!glbStyleReady(map)) return; done=true; addAll(); };
   map.on('load', tryAdd); map.on('styledata', tryAdd); const poll=setInterval(()=>{ if(done) clearInterval(poll); else tryAdd(); }, 200);
   map.on('rotate', ()=>{ const n=host.querySelector('.svn'); if(n) n.style.transform='rotate('+(-map.getBearing())+'deg)'; });
@@ -21294,12 +21593,16 @@ async function enterShareViewer(){
   svBmo=bmoClean(payload.bmo); svStack=stackSpec(stackClean(payload.stack), svBmo);
   svSetBasemap(BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron');
   try{ momStackLeaflet(L, svMap, svStack); }catch(_){}
+  let svTO=()=>({});
+  try{ const k0=BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron', bm0=BASEMAPS[k0], gl0=svBmLayers[0]&&svBmLayers[0].getMaplibreMap ? svBmLayers[0].getMaplibreMap() : null;
+    svTO=momTiers(L, svMap, tierClean(payload.tiers), (bm0&&bm0.kind==='vector'&&gl0)?bm0.style:null, gl0); svTierRefresh(); }catch(_){}
   if(svBmo.bop<1){ svMap.getPane('tilePane').style.opacity=String(svBmo.bop); } if(svBmo.bop<1||!BASEMAPS[payload.basemap]) svMap.getContainer().style.background=svBmo.paper;
   const group=L.featureGroup().addTo(svMap), svGroups=[];
   (payload.layers||[]).forEach((L2,li)=>{
     if(L2.lbl) svInjectLabelCss(li, L2.lbl);
-    const g=L.geoJSON(L2.fc,{style:svStyleFn, pointToLayer:svPtLayer,
-      onEachFeature:(f,layer)=>{ svPopup(f,layer); svBindLabel(f,layer,L2.lbl,li); }}).addTo(group);
+    const o=svTO([0,1,2].includes(L2.sg)?L2.sg:null);
+    const g=L.geoJSON(L2.fc,Object.assign({style:svStyleFn, pointToLayer:(f,ll)=>svPtLayer(f,ll,o),
+      onEachFeature:(f,layer)=>{ svPopup(f,layer); svBindLabel(f,layer,L2.lbl,li); }}, o)).addTo(group);
     svGroups.push({g, lbl:L2.lbl});
   });
   try{ const b=group.getBounds(); if(b.isValid()) svMap.fitBounds(b,{padding:[24,24]}); }catch(_){}
@@ -21309,7 +21612,7 @@ async function enterShareViewer(){
     const d=L.DomUtil.create('div','sv-basemap');
     d.innerHTML='<select title="Basemap">'+Object.keys(BASEMAPS).map(k=>'<option value="'+k+'"'+(k===payload.basemap?' selected':'')+'>'+(SV_BM_LABELS[k]||k)+'</option>').join('')+'</select>';
     L.DomEvent.disableClickPropagation(d);
-    d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); svPartsSync(e.target.value); };
+    d.querySelector('select').onchange=e=>{ svSetBasemap(e.target.value); svTierBasemap(e.target.value); if(window.__svGlobe) window.__svGlobe.basemap(e.target.value); svPartsSync(e.target.value); };
     return d;
   }; bmCtl.addTo(svMap);
   const ptCtl=L.control({position:'topright'}); ptCtl.onAdd=()=>{

@@ -136,6 +136,20 @@
   #fieldsList td{padding:5px 9px;border-bottom:1px solid #eef1f6;}
   #fieldsList td.ftype{color:var(--muted);font-size:11px;}
   /* the place search sits in the left panel, above + Add data */
+  #geoPop{position:fixed;z-index:2500;width:320px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 26px rgba(20,30,60,.22);padding:8px;}
+  #geoPop .gp-foot{font-size:10px;color:var(--muted);margin-top:6px;text-align:right;}
+  #geoPop #geoResults{position:static;width:auto;box-shadow:none;border:none;margin-top:4px;max-height:300px;}
+  #geoResults button{line-height:1.3;}
+  #geoResults button b{font-weight:700;}
+  #geoResults button small{display:block;color:var(--muted);font-size:11px;margin-top:1px;}
+  #geoResults button .gp-k{font-size:10px;color:#2f7d78;background:#e3f1ef;border-radius:8px;padding:0 6px;margin-left:4px;}
+  #geoResults button.hi{background:#eef4f3;}
+  #geoResults .gp-msg{padding:8px 10px;font-size:12px;color:var(--muted);}
+  #geoResults .gp-msg.err{color:var(--danger);}
+  .geo-find.on{background:#e3f1ef !important;color:#2f7d78 !important;}
+  html[data-theme=dark] #geoPop{background:var(--panel);border-color:#3a4148;}
+  html[data-theme=dark] #geoResults button.hi{background:#252a2a;}
+  html[data-theme=dark] #geoResults button .gp-k{background:#1f3533;color:#8fd0c7;}
   #geoSearchWrap{position:relative;display:block;width:100%;}
   #geoSearchInput{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:12px;}
   #geoSearchInput.flash{border-color:var(--teal);box-shadow:0 0 0 3px rgba(47,125,120,.22);}
@@ -1363,6 +1377,13 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   #loTabs .lt-add{border:1px dashed #7fa9a4;background:transparent;color:#2f6f6a;font:600 12px var(--ui,system-ui);padding:5px 12px;border-radius:999px;cursor:pointer;}
   #loTabs .lt-add:hover{background:#fff;border-style:solid;}
   #loTabMenu{position:fixed;z-index:3000;}
+  .biv-prev .biv-corner{position:absolute;margin:0;padding:0;min-width:0;border-radius:0;background:transparent !important;border:2px solid transparent;box-shadow:none;cursor:pointer;}
+  .biv-prev .biv-corner:hover,.biv-prev .biv-corner:focus-visible{border-color:#1f2a3c;box-shadow:0 0 0 1px #fff inset;}
+  .biv-prev .biv-corner.biv-dia{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border:none;}
+  .biv-prev .biv-corner.biv-dia:hover{background:rgba(255,255,255,.35) !important;}
+  .biv-prev .biv-ax:hover{stroke:rgba(47,125,120,.25);}
+  .biv-hint{margin:2px 0 6px;font-size:11px;}
+  html[data-theme=dark] .biv-prev .biv-corner:hover{border-color:#fff;box-shadow:0 0 0 1px #000 inset;}
   html[data-theme=dark] #loTabs{background:#1c2a2a;border-color:#2e4442;}
   html[data-theme=dark] #loTabs .lt-lbl{color:#8fb3ae;}
   html[data-theme=dark] #loTabs .lt{background:#232a31;color:#c9d2de;border-color:#3e5552;}
@@ -1384,6 +1405,8 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 
   /* v80: basemap and labels rows in the layer list */
   .mk-pseudo{background:#eef3f6;border-style:dashed;}
+  .mk-pseudo.ps-off{opacity:.45;filter:grayscale(1);cursor:not-allowed;}
+  .mk-pseudo.ps-off .drag-grip{visibility:hidden;}
   .mk-pseudo .top{display:flex;align-items:center;gap:6px;}
   .mk-pseudo .ps-ic{font-size:14px;}
   .mk-pseudo .nm{flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -1570,16 +1593,14 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 </div>
 
 <!-- ================= MAP MAKER ================= -->
+<div id="geoPop" class="hidden" role="dialog" aria-label="Go to place">
+  <span id="geoSearchWrap"><input type="search" id="geoSearchInput" placeholder="Search for a place…" autocomplete="off" spellcheck="false"><div id="geoResults" class="hidden" role="listbox"></div></span>
+  <div class="gp-foot">Place search: Photon · © OpenStreetMap contributors</div>
+</div>
 <div id="module-maker" class="module hidden">
   <aside id="mk-left">
     <div class="mkl-tabs" role="tablist" aria-label="Left panel"><button type="button" role="tab" id="mklTabLayers" data-lt="layers" class="on" aria-selected="true">Layers</button><button type="button" role="tab" id="mklTabBase" data-lt="base" aria-selected="false">Basemap</button></div>
     <div class="mkl-pane" data-lp="layers" role="tabpanel" aria-labelledby="mklTabLayers">
-    <div class="sec">
-      <span id="geoSearchWrap">
-        <input type="text" id="geoSearchInput" placeholder="🔍 Go to place… (press Enter)" autocomplete="off">
-        <div id="geoResults" class="hidden"></div>
-      </span>
-    </div>
     <div class="sec">
       <div class="add-menu">
         <button class="btn" id="mkAddMenuBtn" style="width:100%;justify-content:center;" title="Upload GeoJSON, CSV, or a zipped shapefile — or fetch from online sources. Drag &amp; drop onto the map also works.">+ Add data ▾</button>
@@ -1709,6 +1730,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
         <button id="projPrev" class="mk-vh-prev off" title="Back to the previous view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button id="projNext" class="mk-vh-next off" title="Forward to the next view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div><div class="pz-bar">
+        <button id="projFind" class="geo-find" title="Go to place" aria-haspopup="dialog"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><circle cx="6.8" cy="6.8" r="4.3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M10.1 10.1 14 14" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></button>
         <button id="projSel" title="Select features by dragging a box or lasso"></button>
         <button id="projGlobe" title="Globe view" style="font-size:15px">🌐</button>
         <button id="projMeasure" title="Measure distance (great-circle)" style="font-size:15px">📏</button>
@@ -3428,6 +3450,7 @@ function addMapToolControls(){
   const Ctl=L.Control.extend({options:{position:'topleft'}, onAdd(){
     const c=L.DomUtil.create('div','leaflet-bar mk-mapctl');
     c.innerHTML=
+      '<a href="#" id="mkFindBtn" class="geo-find" title="Go to place" aria-haspopup="dialog">'+GEO_FIND_ICON+'</a>'+
       '<a href="#" id="mkSelBtn" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</a>'+
       '<a href="#" id="mkGlobeBtn" title="Globe view">🌐</a>'+
       '<a href="#" id="mkMeasureBtn" title="Measure distance">📏</a>'+
@@ -3450,12 +3473,7 @@ function addMapToolControls(){
       [['mk-vh-prev','<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>','Back to the previous view',-1],['mk-vh-next','<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>','Forward to the next view',1]].forEach(([cls,ch,ti,st])=>{ const b=L.DomUtil.create('a','mk-vh '+cls+' off',zc); b.href='#'; b.title=ti; b.setAttribute('role','button'); b.setAttribute('aria-label',ti); b.innerHTML=ch;
         L.DomEvent.on(b,'click',ev=>{ L.DomEvent.preventDefault(ev); L.DomEvent.stopPropagation(ev); vhGo(st); }); });
       vhAttachFlat(); }
-    /* the search box lives in the left panel now; this jumps focus to it */
-    const fb=document.getElementById('mkFindBtn'); if(fb) fb.onclick=e=>{
-      e.preventDefault();
-      const inp=document.getElementById('geoSearchInput');
-      if(inp){ inp.focus(); inp.select(); inp.classList.add('flash'); setTimeout(()=>inp.classList.remove('flash'), 1200); }
-    };
+    const fb=document.getElementById('mkFindBtn'); if(fb) fb.onclick=e=>{ e.preventDefault(); geoPopToggle(fb); };
   }, 0);
 }
 /* ================= COMPARE (swipe) — F10, v42 =================
@@ -3721,6 +3739,7 @@ function glbAddLayer(map, id, col, lbl){
 }
 /* ---- v59: drag to select (box or lasso) on the flat map and the globe ---- */
 let selTool=false, selShape='rect', selDrag=null;
+const GEO_FIND_ICON='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><circle cx="6.8" cy="6.8" r="4.3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M10.1 10.1 14 14" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>';
 const SEL_ICONS={rect:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/></svg>',
   lasso:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5c3.3 0 5.5 1.6 5.5 3.7S11.3 10 8 10 2.5 8.3 2.5 6.2 4.7 2.5 8 2.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><path d="M5 9.4c-.8 1.3-.6 3 1 4.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'};
 function selTarget(){ return (typeof mkGlobe!=='undefined' && mkGlobe) ? mkGlobe.getCanvasContainer() : (typeof projActive!=='undefined' && projActive) ? document.getElementById('mk-proj') : document.getElementById('mk-map'); }
@@ -3912,7 +3931,7 @@ function partsOff(){ return Object.keys(BM_PART_GROUPS).filter(k=>basemapParts[k
 function partsGroupsLite(){ const o={}; Object.keys(BM_PART_GROUPS).forEach(k=>o[k]={label:BM_PART_GROUPS[k].label, src:BM_PART_GROUPS[k].src.slice()}); return o; }
 function applyPartsTo(gl, on){
   if(!gl) return;
-  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
     for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl)){ try{ gl.setLayoutProperty(ly.id,'visibility', on[k]===false?'none':'visible'); }catch(_){} } }); };
   if(glbStyleReady(gl)) run(); else { let n=0; const t=setInterval(()=>{ if(glbStyleReady(gl)){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
 }
@@ -3920,7 +3939,7 @@ function applyPartsTo(gl, on){
 function partsEmbedJs(off, getter, ui){
   const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
   return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
-function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']);if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
+function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']);if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
 var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);if(window.momPartsHook)window.momPartsHook(ON,G);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
 var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
 var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
@@ -4018,7 +4037,7 @@ function globeApplyParts(map){
   try{
     const style=map.getStyle(); if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ map.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -4143,7 +4162,7 @@ function globeOpen(){
     host.innerHTML='<div id="mk-globe-map"></div>'+
       '<div class="mk-gctl"><div class="mk-gbar"><button type="button" id="mkGlobeZin" title="Zoom in">+</button><button type="button" id="mkGlobeZout" title="Zoom out">−</button>'+
         '<button type="button" id="mkGlobeWorld" title="Zoom to full extent (whole globe)">✥</button><button type="button" class="mk-vh-prev off" id="mkGlobePrev" title="Back to the previous view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="mk-vh-next off" id="mkGlobeNext" title="Forward to the next view"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" id="mkGlobeNorth" title="Tilt and rotate"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 11 8H5z" fill="#d23c3c"/><path d="M8 14.5 5 8h6z" fill="#8a94a3"/></svg></i></button></div>'+
-        '<div class="mk-gbar"><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
+        '<div class="mk-gbar"><button type="button" id="mkGlobeFind" class="geo-find" title="Go to place" aria-haspopup="dialog">'+GEO_FIND_ICON+'</button><button type="button" id="mkGlobeSel" title="Select features by dragging a box or lasso">'+SEL_ICONS[selShape]+'</button><button type="button" id="mkGlobeFlat" class="on" title="Back to the flat map">🌐</button>'+
         '<button type="button" id="mkGlobeMeasure" title="Measure distance (great-circle)">📏</button><button type="button" class="mk-fs-btn" title="Full screen (map only)"></button></div></div>'+
       '<div class="mk-globe-hint"><button id="mkGlobeFit" title="Zoom the globe to your data">Fit to data</button><button id="mkGlobeClose">Back to flat map</button></div>';
     /* mount inside the map area only, so the toolbar row (Layers, Send to
@@ -4160,6 +4179,7 @@ function globeOpen(){
     host.querySelector('#mkGlobeNorth').onclick=e=>{ if(mkGlobe) glbOrientPanel(mkGlobe, e.currentTarget); };
     host.querySelector('#mkGlobeMeasure').onclick=()=>globeMeasureToggle();
     host.querySelector('#mkGlobeSel').onclick=()=>selToolSet(!selTool);
+    host.querySelector('#mkGlobeFind').onclick=e=>{ e.stopPropagation(); geoPopToggle(e.currentTarget); };
   }
   host.style.display='block';
   document.getElementById('mk-center').classList.add('globe-open');
@@ -4350,7 +4370,7 @@ function applyBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -4359,7 +4379,7 @@ function applyBasemapParts(){
     });
     if(typeof labelsGlSetVis==='function' && typeof mkLabelsGL!=='undefined' && mkLabelsGL) labelsGlSetVis();
   };
-  if(gl.isStyleLoaded && gl.isStyleLoaded()) run(); else gl.once('idle', run);
+  if(glbStyleReady(gl)) run(); else momWhenStyle(gl, run);
 }
 function toggleBasemapPanel(){
   let panel=document.getElementById('mkBasemapPanel');
@@ -4745,7 +4765,13 @@ function setBasemap(key){
     } else if(bm.ohm){
       try{ momWhenStyle(gl.getMaplibreMap(), m=>{ if(mkBasemapKey===key) momOhmYear(m, mkBmo.year); }); }catch(_){}
     } else if(typeof applyBasemapParts==='function'){
-      setTimeout(applyBasemapParts, 1200);   /* re-apply any part toggles once the style loads */
+      /* v83: with parts switched off, keep the new basemap hidden until its style has
+         loaded and the parts are applied, so it never flashes in full (or opaque) */
+      const c=gl.getContainer&&gl.getContainer(), anyOff=Object.keys(basemapParts).some(k=>basemapParts[k]===false);
+      if(c && anyOff){ c.style.transition='opacity .25s'; c.style.opacity='0'; }
+      const reveal=()=>{ if(c) c.style.opacity=''; };
+      try{ momWhenStyle(gl.getMaplibreMap(), m=>{ if(mkBasemapKey!==key) return; applyPartsTo(m, basemapParts); applyBasemapParts(); setTimeout(reveal, 150); }); }catch(_){ reveal(); }
+      setTimeout(()=>{ if(mkBasemapKey===key){ applyBasemapParts(); reveal(); } }, 8000);
     }
     const bp=document.getElementById('mkBasemapPanel'); if(bp) bp.remove();   /* stale for the new basemap */
   } else if(bm && bm.kind==='raster'){
@@ -6222,7 +6248,7 @@ const BIV_PALS={
   purplegold:{name:'Purple – gold', g:[['#e8e8e8','#e4d9ac','#c8b35a'],['#cbb8d7','#c8ada0','#af8e53'],['#9972af','#976b82','#804d36']]},
   bluered:{name:'Blue – red', mix:['#3a78c2','#d1352f']},
   yelpur:{name:'Yellow – purple (colour-blind safe)', mix:['#e0a20f','#5e3c99']},
-  custom:{name:'Custom…', mix:null}
+  custom:{name:'Your colours', mix:null}
 };
 /* two inks laid over each other: each variable fades from pale grey to its own colour,
    and the cell is the two multiplied, so low–low is light grey and high–high is the dark mix */
@@ -6237,10 +6263,32 @@ function bivDefaults(st){
   if(!st.biN) st.biN=3; if(!st.biMX) st.biMX='quantile'; if(!st.biMY) st.biMY='quantile'; if(!BIV_PALS[st.biPal]) st.biPal='pinkblue';
   if(!st.biCX) st.biCX='#2f8f9d'; if(!st.biCY) st.biCY='#d0702c'; if(!st.biShape) st.biShape='square';
 }
-/* cells[row][col]: row = second variable (low → high), col = first variable (low → high) */
+/* v83: the four corners picked by clicking the preview. Each field fades from the
+   low–low colour to its own; the cells are the two layered (like inks, relative to
+   the low–low colour). A high–high colour, once picked, is honoured exactly and the
+   rest of the grid is blended across the four corners. */
+function bivCornerGrid(lo, cx, cy, hh, n){
+  if(hh){ const out=[]; for(let i=0;i<n;i++){ const v=n===1?0:i/(n-1), a=chroma.mix(lo,cy,v,'lab'), b=chroma.mix(cx,hh,v,'lab'), row=[];
+      for(let j=0;j<n;j++){ const u=n===1?0:j/(n-1); row.push(chroma.mix(a,b,u,'lab').hex()); } out.push(row); } return out; }
+  const lin=c=>chroma(c).gl().slice(0,3), L0=lin(lo), out=[];
+  for(let i=0;i<n;i++){ const v=n===1?0:i/(n-1), B=lin(chroma.mix(lo, cy, v, 'lab')), row=[];
+    for(let j=0;j<n;j++){ const u=n===1?0:j/(n-1), A=lin(chroma.mix(lo, cx, u, 'lab'));
+      row.push(chroma.gl(...A.map((x,k)=>Math.max(0,Math.min(1, L0[k]>0.001? x*B[k]/L0[k] : x*B[k]))), 1).hex()); }
+    out.push(row); }
+  return out;
+}
+/* cells[row][col]: row = second variable (low → high), col = first variable (low → high).
+   biRX / biRY flip a variable's ramp (the arrows on the preview) */
 function bivGrid(pal, n, st){
+  const g=bivGrid0(pal, n, st);
+  if(st && st.biRY) g.reverse();
+  if(st && st.biRX) g.forEach(r=>r.reverse());
+  return g;
+}
+function bivGrid0(pal, n, st){
   const P=BIV_PALS[pal]||BIV_PALS.pinkblue;
-  if(pal==='custom') return bivMixGrid((st&&st.biCX)||'#2f8f9d', (st&&st.biCY)||'#d0702c', n);
+  if(pal==='custom'){ if(st && st.biLo) return bivCornerGrid(st.biLo, st.biCX||'#2f8f9d', st.biCY||'#d0702c', st.biHH||null, n);
+    return bivMixGrid((st&&st.biCX)||'#2f8f9d', (st&&st.biCY)||'#d0702c', n); }
   if(P.mix) return bivMixGrid(P.mix[0], P.mix[1], n);
   const g=P.g;
   if(n===3) return g.map(r=>r.slice());
@@ -6267,7 +6315,7 @@ function bivClassOf(b, v){ if(!b||!isFinite(v)) return -1; for(let i=0;i<b.lengt
 function bivCompute(lyr){
   const st=lyr.style; bivDefaults(st);
   const feats=visibleFeatures(lyr);
-  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,st.biCX,st.biCY,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
+  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,st.biCX,st.biCY,st.biLo,st.biHH,st.biRX,st.biRY,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
   if(lyr._biv && lyr._biv.sig===sig) return lyr._biv;
   const X=f=>toNum((f.properties||{})[st.biX]), Y=f=>toNum((f.properties||{})[st.biY]);
   const bx=st.biX? bivBreaks(feats.map(X), st.biN, st.biMX) : null;
@@ -6304,12 +6352,12 @@ function bivKeyGeom(bv, cell, meas, sz){
   const txt=(t,x,y,anchor,size,rot)=>{ if(t==null||t==='') return; t=String(t); const w=meas(t,size);
     if(!rot){ const x0=anchor==='end'?x-w:anchor==='middle'?x-w/2:x; P.push({t:'text', s:t, x:x0, y, w, h:size*1.2, size, rot:0}); return; }
     P.push({t:'text', s:t, x, y, w, h:size*1.2, size, rot}); };
-  const arrow=(a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L0=Math.hypot(dx,dy)||1, ux=dx/L0, uy=dy/L0, hx=-uy, hy=ux, k=4;
-    P.push({t:'line', pts:[a,b]}); P.push({t:'line', pts:[[b[0]-ux*k+hx*k*0.75, b[1]-uy*k+hy*k*0.75], b, [b[0]-ux*k-hx*k*0.75, b[1]-uy*k-hy*k*0.75]]}); };
+  const arrow=(a,b,ax)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L0=Math.hypot(dx,dy)||1, ux=dx/L0, uy=dy/L0, hx=-uy, hy=ux, k=4;
+    P.push({t:'line', pts:[a,b], ax}); P.push({t:'line', pts:[[b[0]-ux*k+hx*k*0.75, b[1]-uy*k+hy*k*0.75], b, [b[0]-ux*k-hx*k*0.75, b[1]-uy*k-hy*k*0.75]]}); };
   const ends=!!(bv.xLo||bv.xHi||bv.yLo||bv.yHi);
   if(!bv.diamond){
-    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const x=j*c, y=(n-1-i)*c; P.push({t:'poly', pts:[[x,y],[x+c,y],[x+c,y+c],[x,y+c]], fill:bv.cells[i][j]}); }
-    arrow([-6, gs], [-6, -5]); arrow([0, gs+6], [gs+5, gs+6]);
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const x=j*c, y=(n-1-i)*c; P.push({t:'poly', pts:[[x,y],[x+c,y],[x+c,y+c],[x,y+c]], fill:bv.cells[i][j], i, j}); }
+    arrow([-6, gs], [-6, -5], 'y'); arrow([0, gs+6], [gs+5, gs+6], 'x');
     txt(bv.xLo, 0, gs+10, 'start', S.sm); txt(bv.xHi, gs+9, gs+6-S.sm*0.6, 'start', S.sm);
     txt(xl, 0, gs+10+((bv.xLo)?S.sm*1.25:0), 'start', S.lab);
     txt(bv.yHi, -10, -5-S.sm*0.6, 'end', S.sm); txt(bv.yLo, -10, gs-S.sm*1.1, 'end', S.sm);
@@ -6318,9 +6366,9 @@ function bivKeyGeom(bv, cell, meas, sz){
     /* the grid turned 45°: low–low at the bottom corner, high–high at the top */
     const cd=Math.round(c*1.35), gd=n*cd;      /* a little larger, so the edges can carry their labels */
     const r=Math.SQRT1_2, D=(u,v)=>[(u-v)*r, -(u+v)*r], h=gd*r, L=gd;
-    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const u=j*cd, v=i*cd, c=cd; P.push({t:'poly', pts:[D(u,v),D(u+c,v),D(u+c,v+c),D(u,v+c)], fill:bv.cells[i][j]}); }
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const u=j*cd, v=i*cd, c=cd; P.push({t:'poly', pts:[D(u,v),D(u+c,v),D(u+c,v+c),D(u,v+c)], fill:bv.cells[i][j], i, j}); }
     const off=6, o=off*r;
-    arrow([o, o], [h+o+3, -h+o-3]); arrow([-o, o], [-h-o-3, -h+o-3]);
+    arrow([o, o], [h+o+3, -h+o-3], 'x'); arrow([-o, o], [-h-o-3, -h+o-3], 'y');
     /* labels run along the two lower edges, outside the arrows */
     const dX=[r,-r], nX=[r,r];            /* lower-right edge, bottom → right corner; outward normal */
     const dY=[r,r],  nY=[-r,r];           /* lower-left edge, left corner → bottom; outward normal */
@@ -6342,15 +6390,50 @@ function bivKeyGeom(bv, cell, meas, sz){
   P.forEach(q=>corners(q).forEach(([x,y])=>{ if(x<x0)x0=x; if(y<y0)y0=y; if(x>x1)x1=x; if(y>y1)y1=y; }));
   return {P, x0, y0, w:x1-x0, h:y1-y0};
 }
+/* v83: the preview key in the Style panel is the editor. Its four corner squares
+   take a colour (turning a preset into "Your colours"), its arrows flip a ramp. */
+function bivBindPreview(el, lyr, live, done){
+  const st=lyr.style, pv=el.querySelector('.biv-prev'); if(!pv) return;
+  const svg=pv.querySelector('svg'); if(!svg) return;
+  pv.style.position='relative';
+  const n=st.biN;
+  /* turn whatever is showing into four stored corners, with the flips folded in */
+  const toCustom=()=>{ if(st.biPal==='custom' && st.biLo) return;
+    const G=bivGrid(st.biPal, n, st);
+    const mixPal=(BIV_PALS[st.biPal]||{}).mix || (st.biPal==='custom');
+    st.biLo=G[0][0]; st.biCX=G[0][n-1]; st.biCY=G[n-1][0]; st.biHH=(mixPal && !st.biRX && !st.biRY)?null:G[n-1][n-1];
+    st.biPal='custom'; st.biRX=false; st.biRY=false; };
+  const key=(i,j)=> i===0&&j===0?'biLo' : i===0?'biCX' : j===0?'biCY' : 'biHH';
+  const names={biLo:'Low on both', biCX:'High across, low up', biCY:'High up, low across', biHH:'High on both'};
+  const G=bivGrid(st.biPal, n, st);
+  [[0,0],[0,n-1],[n-1,0],[n-1,n-1]].forEach(([i,j])=>{
+    const pg=svg.querySelector('polygon[data-i="'+i+'"][data-j="'+j+'"]'); if(!pg) return;
+    const inp=document.createElement('input'); inp.type='color'; inp.className='biv-cin'; inp.value=toHex(G[i][j]); pv.appendChild(inp); csUpgrade(inp);
+    const b=inp._csBtn; b.classList.add('biv-corner'); if(st.biShape==='diamond') b.classList.add('biv-dia'); b.setAttribute('aria-label', names[key(i,j)]+': choose a colour'); 
+    const place=()=>{ const r=pg.getBoundingClientRect(), R=pv.getBoundingClientRect(); b.style.left=(r.left-R.left)+'px'; b.style.top=(r.top-R.top)+'px'; b.style.width=r.width+'px'; b.style.height=r.height+'px'; };
+    place(); requestAnimationFrame(place);
+    b.title=names[key(i,j)]+' — click to change';
+    b.addEventListener('click', ()=>{ toCustom(); }, true);
+    inp.oninput=()=>{ toCustom(); if(isNoColour(inp.value)) return; st[key(i,j)]=inp.value; live(); csPaint(inp); };
+    inp.onchange=()=>{ mkTouch(); markProjectDirty(); mkPushHistory(); };
+  });
+  svg.querySelectorAll('.biv-ax').forEach(a=>a.addEventListener('click', ()=>{
+    if(st.biPal==='custom' && st.biLo){ /* swap the stored corners */
+      if(a.dataset.ax==='x'){ const hh=st.biHH||bivGrid(st.biPal,n,st)[n-1][n-1]; [st.biLo, st.biCX]=[st.biCX, st.biLo]; const cy=st.biCY; st.biCY=hh; st.biHH=cy; }
+      else { const hh=st.biHH||bivGrid(st.biPal,n,st)[n-1][n-1]; [st.biLo, st.biCY]=[st.biCY, st.biLo]; const cx=st.biCX; st.biCX=hh; st.biHH=cx; }
+    } else { if(a.dataset.ax==='x') st.biRX=!st.biRX; else st.biRY=!st.biRY; }
+    done(); }));
+}
 function bivMeasureSvg(t, size){ return String(t).length*size*0.56; }
 /* the legend grid as an SVG string (Map Maker panel, web maps, atlas) */
-function bivLegendSvg(bv, cell){
+function bivLegendSvg(bv, cell, live){
   const G=bivKeyGeom(bv, cell||14, bivMeasureSvg), pad=2, W=Math.ceil(G.w+pad*2), H=Math.ceil(G.h+pad*2), ox=-G.x0+pad, oy=-G.y0+pad;
   const pt=([x,y])=>(x+ox).toFixed(1)+','+(y+oy).toFixed(1);
   let h='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block;overflow:visible">';
   G.P.forEach(q=>{
-    if(q.t==='poly') h+='<polygon points="'+q.pts.map(pt).join(' ')+'" fill="'+q.fill+'" stroke="#fff" stroke-width="0.6"/>';
-    else if(q.t==='line') h+='<polyline points="'+q.pts.map(pt).join(' ')+'" fill="none" stroke="#5a6478" stroke-width="1.2" stroke-linejoin="round"/>';
+    if(q.t==='poly') h+='<polygon points="'+q.pts.map(pt).join(' ')+'" fill="'+q.fill+'" stroke="#fff" stroke-width="0.6"'+(live&&q.i!=null?' data-i="'+q.i+'" data-j="'+q.j+'"':'')+'/>';
+    else if(q.t==='line'){ h+='<polyline points="'+q.pts.map(pt).join(' ')+'" fill="none" stroke="#5a6478" stroke-width="1.2" stroke-linejoin="round"/>';
+      if(live && q.ax) h+='<polyline class="biv-ax" data-ax="'+q.ax+'" points="'+q.pts.map(pt).join(' ')+'" fill="none" stroke="transparent" stroke-width="12" style="cursor:pointer;pointer-events:stroke"><title>Reverse the colours for this variable</title></polyline>'; }
     else h+='<text transform="translate('+(q.x+ox).toFixed(1)+' '+(q.y+oy).toFixed(1)+')'+(q.rot?' rotate('+q.rot+')':'')+'" y="'+(q.size*0.9).toFixed(1)+'" font-size="'+q.size+'" fill="currentColor" font-family="sans-serif">'+esc(q.s)+'</text>';
   });
   return h+'</svg>';
@@ -7769,7 +7852,7 @@ function renderMakerLayerList(){
       });
       document.body.appendChild(m);
       const r=more.getBoundingClientRect();
-      m.style.left=Math.min(r.left, window.innerWidth-m.offsetWidth-8)+'px'; m.style.top=(r.bottom+4)+'px';
+      placeMenu(m, r);
       const first=m.querySelector('button'); if(first) first.focus();
       setTimeout(()=>document.addEventListener('click', ()=>m.remove(), {once:true}), 0);
       m.addEventListener('keydown', e=>{ if(e.key==='Escape'){ m.remove(); more.focus(); } });
@@ -8484,10 +8567,10 @@ function renderStyleTab(){
       <div class="row2"><div class="field"><label>Up ↑</label><select id="biY">${fo(st.biY)}</select></div>
         <div class="field"><label>Classes by</label><select id="biMY">${mo(st.biMY)}</select></div></div>
       <div class="row2"><div class="field"><label>Grid</label><select id="biN">${[2,3,4].map(k=>'<option value="'+k+'" '+(st.biN===k?'selected':'')+'>'+k+' × '+k+'</option>').join('')}</select></div>
-        <div class="field"><label>Colours</label><select id="biPal">${Object.keys(BIV_PALS).map(k=>'<option value="'+k+'" '+(st.biPal===k?'selected':'')+'>'+BIV_PALS[k].name+'</option>').join('')}</select></div></div>
-      ${st.biPal==='custom'?'<div class="row2">'+colourFieldHtml('biCX','High across', st.biCX)+colourFieldHtml('biCY','High up', st.biCY)+'</div><p class="kv" style="margin:-2px 0 6px">Each field fades from light grey to its colour; where both are high the two mix, like overlapping inks.</p>':''}
+        <div class="field"><label>Colours</label><select id="biPal">${Object.keys(BIV_PALS).filter(k=>k!=='custom'||st.biPal==='custom').map(k=>'<option value="'+k+'" '+(st.biPal===k?'selected':'')+'>'+BIV_PALS[k].name+'</option>').join('')}</select></div></div>
       <div class="field"><label>Legend key</label><select id="biShape"><option value="square" ${st.biShape!=='diamond'?'selected':''}>Square</option><option value="diamond" ${st.biShape==='diamond'?'selected':''}>Diamond (turned 45°)</option></select></div>
-      <div class="biv-prev">${(B.bx&&B.by)? bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond'}, 18) : '<span class="kv">Choose a field for each direction.</span>'}</div>`
+      <div class="biv-prev">${(B.bx&&B.by)? bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond'}, 24, true) : '<span class="kv">Choose a field for each direction.</span>'}</div>
+      ${(B.bx&&B.by)?'<p class="kv biv-hint">Click a corner square to change its colour. Click an arrow to reverse that field\'s colours.</p>':''}`
       +((B.bx&&B.by)?'<div class="kv" style="margin-top:4px"><b>'+esc(st.biX)+'</b> breaks: '+B.bx.map(fmtNum).join(' | ')+'<br><b>'+esc(st.biY)+'</b> breaks: '+B.by.map(fmtNum).join(' | ')+'</div>':'');
   }
   html+=`<div class="divider"></div><h3>Stroke & transparency</h3>`;
@@ -8526,13 +8609,11 @@ function renderStyleTab(){
     if(g('biMX')) g('biMX').onchange=()=>bset('biMX', g('biMX').value);
     if(g('biMY')) g('biMY').onchange=()=>bset('biMY', g('biMY').value);
     if(g('biN')) g('biN').onchange=()=>bset('biN', +g('biN').value);
-    if(g('biPal')) g('biPal').onchange=()=>bset('biPal', g('biPal').value);
+    if(g('biPal')) g('biPal').onchange=()=>{ st.biRX=false; st.biRY=false; bset('biPal', g('biPal').value); };
     if(g('biShape')) g('biShape').onchange=()=>bset('biShape', g('biShape').value);
     /* while a colour is being dragged only the map and the preview key update; the panel is rebuilt once the picker closes */
-    let bt=null; const live=()=>{ lyr._biv=null; clearTimeout(bt); bt=setTimeout(()=>{ rerender(); const B=bivCompute(lyr), pv=el.querySelector('.biv-prev'); if(pv&&B.bx&&B.by) pv.innerHTML=bivLegendSvg({n:B.n, cells:B.grid, xName:st.biX, yName:st.biY, diamond:st.biShape==='diamond'}, 18); }, 120); };
-    bindColourField('biCX', ()=>st.biCX, v=>{ st.biCX=v; }, live);
-    bindColourField('biCY', ()=>st.biCY, v=>{ st.biCY=v; }, live);
-    ['biCX','biCY'].forEach(id=>{ if(g(id)) g(id).addEventListener('change', ()=>{ mkTouch(); markProjectDirty(); mkPushHistory(); }); });
+    let bt=null; const live=()=>{ lyr._biv=null; clearTimeout(bt); bt=setTimeout(()=>{ rerender(); const B=bivCompute(lyr), pv=el.querySelector('.biv-prev'); if(pv&&B.bx&&B.by){ [...pv.querySelectorAll('polygon[data-i]')].forEach(pg=>{ const c=B.grid[+pg.dataset.i]&&B.grid[+pg.dataset.i][+pg.dataset.j]; if(c) pg.setAttribute('fill', c); }); } }, 120); };
+    bivBindPreview(el, lyr, live, ()=>bset('biPal', st.biPal));
   }
   g('stMode').onchange=()=>{
     const was=st.mode;
@@ -14516,43 +14597,82 @@ const geoInput=document.getElementById('geoSearchInput');
 const geoResults=document.getElementById('geoResults');
 let geoTimer=null;
 function hideGeoResults(){ geoResults.classList.add('hidden'); }
-/* search runs on Enter only: OpenStreetMap's Nominatim service does not allow
-   search-as-you-type against its free public server */
+/* v83: search as you type with Photon (komoot's OpenStreetMap search, which is
+   built for autocomplete), nudged towards the area on screen. If Photon cannot be
+   reached, Enter falls back to Nominatim, which allows one search per request only. */
 const geoCache=new Map();
-geoInput.setAttribute('aria-label','Go to place (press Enter to search)');
+let geoReq=0, geoList=[], geoHi=-1, geoAbort=null;
+geoInput.setAttribute('aria-label','Go to place');
+function geoPopOpen(){ return !document.getElementById('geoPop').classList.contains('hidden'); }
+function geoPopClose(){ const p=document.getElementById('geoPop'); p.classList.add('hidden'); hideGeoResults(); document.querySelectorAll('.geo-find.on').forEach(b=>b.classList.remove('on')); }
+function geoPopToggle(btn){
+  const p=document.getElementById('geoPop');
+  if(geoPopOpen() && p._btn===btn){ geoPopClose(); return; }
+  document.querySelectorAll('.geo-find.on').forEach(b=>b.classList.remove('on'));
+  p._btn=btn; btn.classList.add('on'); p.classList.remove('hidden');
+  const r=btn.getBoundingClientRect(), w=p.offsetWidth;
+  p.style.left=Math.min(innerWidth-w-8, r.right+8)+'px'; p.style.top=Math.max(8, r.top-4)+'px';
+  geoInput.focus(); geoInput.select();
+  if(geoInput.value.trim().length>=3 && geoList.length) geoShow(geoList);
+}
+function geoCentre(){
+  try{ if(typeof mkGlobe!=='undefined' && mkGlobe){ const c=mkGlobe.getCenter(); return [c.lat, c.lng, mkGlobe.getZoom()]; } }catch(_){}
+  try{ if(projActive){ return [+document.getElementById('projLat').value||0, +document.getElementById('projLon').value||0, 3]; } }catch(_){}
+  try{ const c=mkMap.getCenter(); return [c.lat, c.lng, mkMap.getZoom()]; }catch(_){ return null; }
+}
+function photonToPlace(f){
+  const p=f.properties||{}, c=(f.geometry&&f.geometry.coordinates)||[0,0];
+  const parts=[p.name, p.housenumber&&p.street?p.housenumber+' '+p.street:p.street, p.district, p.city, p.county, p.state, p.country].filter(Boolean);
+  const name=parts.filter((x,i)=>parts.indexOf(x)===i).join(', ');
+  const e=p.extent; /* [west, north, east, south] */
+  return {lat:c[1], lon:c[0], display_name:name||'Unnamed place', kind:(p.osm_value||p.type||'').replace(/_/g,' '),
+    boundingbox: Array.isArray(e)&&e.length===4 ? [Math.min(e[1],e[3]), Math.max(e[1],e[3]), Math.min(e[0],e[2]), Math.max(e[0],e[2])] : null};
+}
+function geoMsg(t, err){ geoResults.innerHTML='<div class="gp-msg'+(err?' err':'')+'">'+esc(t)+'</div>'; geoResults.classList.remove('hidden'); }
+function geoShow(list){
+  geoList=list; geoHi=list.length?0:-1;
+  if(!list.length){ geoMsg('No places found.'); return; }
+  geoResults.innerHTML=list.map((r,i)=>{ const nm=String(r.display_name).split(', '), head=nm[0], rest=nm.slice(1).join(', ');
+    return '<button type="button" role="option" data-i="'+i+'"'+(i===geoHi?' class="hi"':'')+'><b>'+esc(head)+'</b>'+(r.kind?' <span class="gp-k">'+esc(r.kind)+'</span>':'')+(rest?'<small>'+esc(rest)+'</small>':'')+'</button>'; }).join('');
+  geoResults.classList.remove('hidden');
+  geoResults.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>geoPick(+btn.dataset.i); btn.onmousemove=()=>geoHilite(+btn.dataset.i); });
+}
+function geoHilite(i){ geoHi=i; geoResults.querySelectorAll('button').forEach(b=>b.classList.toggle('hi', +b.dataset.i===i)); const b=geoResults.querySelector('button.hi'); if(b) b.scrollIntoView({block:'nearest'}); }
+function geoPick(i){ const r=geoList[i]; if(!r) return; goToPlace(r); geoPopClose(); }
+function runGeoSearch(q, fallback){
+  const key=(fallback?'n:':'p:')+q.toLowerCase(), id=++geoReq;
+  if(geoCache.has(key)){ geoShow(geoCache.get(key)); return; }
+  if(geoAbort) try{ geoAbort.abort(); }catch(_){}
+  geoAbort=(typeof AbortController==='function')? new AbortController() : null;
+  if(!geoResults.querySelector('button')) geoMsg('Searching…');
+  let url;
+  if(fallback) url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q='+encodeURIComponent(q);
+  else { const c=geoCentre(); url='https://photon.komoot.io/api/?limit=8&lang=en&q='+encodeURIComponent(q)+(c?'&lat='+c[0].toFixed(3)+'&lon='+c[1].toFixed(3)+'&zoom='+Math.max(3,Math.min(14,Math.round(c[2]||3)))+'&location_bias_scale=0.3':''); }
+  fetch(url, geoAbort?{signal:geoAbort.signal}:{})
+    .then(r=>{ if(r.status===429) throw new Error('the place-search service is busy; wait a minute and try again'); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(j=>{ const list=fallback ? (j||[]).map(r=>({lat:r.lat, lon:r.lon, display_name:r.display_name, kind:(r.type||'').replace(/_/g,' '), boundingbox:r.boundingbox})) : ((j&&j.features)||[]).map(photonToPlace);
+      geoCache.set(key, list); if(id===geoReq) geoShow(list); })
+    .catch(err=>{ if(err && err.name==='AbortError') return; if(id!==geoReq) return;
+      if(!fallback){ geoPhotonDown=true; geoMsg('Live search is unavailable. Press Enter to search.', true); }
+      else geoMsg('Search failed: '+err.message, true); });
+}
+let geoPhotonDown=false;
 geoInput.addEventListener('input', ()=>{
-  if(geoInput.value.trim().length<2) hideGeoResults();
+  clearTimeout(geoTimer); const q=geoInput.value.trim();
+  if(q.length<3){ geoReq++; geoList=[]; hideGeoResults(); return; }
+  if(!geoPhotonDown) geoTimer=setTimeout(()=>runGeoSearch(q), 300);
 });
 geoInput.addEventListener('keydown', e=>{
-  if(e.key==='Enter'){ clearTimeout(geoTimer); const q=geoInput.value.trim(); if(q.length>=2) runGeoSearch(q); }
-  if(e.key==='Escape') hideGeoResults();
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){ if(geoList.length){ e.preventDefault(); geoHilite((geoHi+(e.key==='ArrowDown'?1:-1)+geoList.length)%geoList.length); } return; }
+  if(e.key==='Enter'){ e.preventDefault(); clearTimeout(geoTimer); const q=geoInput.value.trim();
+    if(geoList.length && geoHi>=0 && geoResults.querySelector('button')){ geoPick(geoHi); return; }
+    if(q.length>=2) runGeoSearch(q, geoPhotonDown); }
+  if(e.key==='Escape'){ e.stopPropagation(); geoPopClose(); }
 });
-document.addEventListener('click', e=>{
-  if(!document.getElementById('geoSearchWrap').contains(e.target)) hideGeoResults();
-});
-function runGeoSearch(q){
-  geoResults.innerHTML='<div style="padding:8px 10px;font-size:12px;color:var(--muted);">Searching…</div>';
-  geoResults.classList.remove('hidden');
-  const cached=geoCache.get(q.toLowerCase());
-  (cached ? Promise.resolve(cached) :
-  fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q='+encodeURIComponent(q))
-    .then(r=>{ if(r.status===429) throw new Error('the place-search service is busy; wait a minute and try again'); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(list=>{ geoCache.set(q.toLowerCase(), list); return list; }))
-    .then(list=>{
-      if(!list.length){ geoResults.innerHTML='<div style="padding:8px 10px;font-size:12px;color:var(--muted);">No places found.</div>'; return; }
-      geoResults.innerHTML=list.map((r,i)=>'<button data-i="'+i+'">'+esc(r.display_name)+'</button>').join('');
-      geoResults.querySelectorAll('button').forEach(btn=>{
-        btn.onclick=()=>{
-          const r=list[+btn.getAttribute('data-i')];
-          goToPlace(r);
-          hideGeoResults();
-        };
-      });
-    })
-    .catch(err=>{
-      geoResults.innerHTML='<div style="padding:8px 10px;font-size:12px;color:var(--danger);">Search failed: '+esc(err.message)+'</div>';
-    });
-}
+document.addEventListener('pointerdown', e=>{
+  if(!geoPopOpen()) return; const p=document.getElementById('geoPop');
+  if(!p.contains(e.target) && !(e.target.closest && e.target.closest('.geo-find'))) geoPopClose();
+}, true);
 let geoMarker=null;
 function clearGeoMarker(){
   if(geoMarker){ try{ mkMap.removeLayer(geoMarker); }catch(_){} geoMarker=null; }
@@ -14582,6 +14702,13 @@ function goToPlace(r){
                        lon+Math.max(0.5,(bb[3]-bb[2])/2), lat+Math.max(0.5,(bb[1]-bb[0])/2)]);
     } else renderProjection();
     toast('Centred on '+String(r.display_name).split(',')[0]+'.');
+    return;
+  }
+  if(typeof mkGlobe!=='undefined' && mkGlobe){
+    try{ if(r.boundingbox){ const bb=r.boundingbox.map(Number); mkGlobe.fitBounds([[bb[2],bb[0]],[bb[3],bb[1]]], {padding:40, maxZoom:14, duration:1200}); }
+      else mkGlobe.flyTo({center:[lon,lat], zoom:12}); }catch(_){}
+    try{ mkMap.setView([lat,lon], 12, {animate:false}); }catch(_){}
+    toast('Moved to '+String(r.display_name).split(',')[0]+'.');
     return;
   }
   if(r.boundingbox){
@@ -15551,6 +15678,7 @@ function projMeasureToggle(force){
   const q=id=>document.getElementById(id);
   q('projPrev').onclick=e=>{ e.stopPropagation(); vhGo(-1); };
   q('projNext').onclick=e=>{ e.stopPropagation(); vhGo(1); };
+  q('projFind').onclick=e=>{ e.stopPropagation(); geoPopToggle(q('projFind')); };
   q('projSel').innerHTML=SEL_ICONS[selShape];
   q('projSel').onclick=e=>{ e.stopPropagation(); if(pMeas) projMeasureToggle(false); selToolSet(!selTool); };
   q('projGlobe').onclick=e=>{ e.stopPropagation(); toggleGlobeView(); };
@@ -15563,7 +15691,11 @@ function projBaseTabSync(){
   t.title=off?'Basemaps, overlays and grids work on Web Mercator and the globe. Projected views draw their own land, sphere and graticule (options under Projection).':'';
   if(off){ const on=document.querySelector('.mkl-tabs button.on'); if(on && on.dataset.lt==='base') openLeftTab('layers'); }
   const row=document.getElementById('mkBaseRow'); if(row) row.classList.toggle('lt-off', off);
+  document.querySelectorAll('.mk-pseudo').forEach(r=>psOffSet(r, off));
 }
+const PS_OFF_TIP='Projected views draw their own land and graticule, so the basemap and its labels are not shown. Switch back to Web Mercator or the globe to use them.';
+function psOffSet(r, off){ r.classList.toggle('ps-off', off); r.setAttribute('draggable', off?'false':'true'); if(off){ r.title=PS_OFF_TIP; r.setAttribute('aria-disabled','true'); } else { r.removeAttribute('title'); r.removeAttribute('aria-disabled'); }
+  r.querySelectorAll('button').forEach(b=>b.disabled=off); }
 /* ---------- v75: full screen — just the map and its on-map buttons ---------- */
 const FS_ICON_IN='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const FS_ICON_OUT='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:middle"><path d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -15893,7 +16025,7 @@ function labelsGlSetVis(){
   const apply=(gl, keepSymbols)=>momWhenStyle(gl, m=>{ let st; try{ st=m.getStyle(); }catch(_){ return; }
     (st.layers||[]).forEach(ly=>{ const isSym=ly.type==='symbol';
       let vis = keepSymbols ? isSym : !isSym;
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
       try{ m.setLayoutProperty(ly.id,'visibility', vis?'visible':'none'); }catch(_){} }); });
   const P=stackPositions(), sep=P.lp!==P.bp;
   if(base && sep) apply(base, false);
@@ -15967,9 +16099,10 @@ function stackRowHtml(which){
 function bindStackRows(el){
   el.querySelectorAll('.mk-pseudo').forEach(row=>{
     const which=row.dataset.pseudo;
+    psOffSet(row, !!(typeof projActive!=='undefined' && projActive));
     row.querySelectorAll('.ps-mv').forEach(b=>b.onclick=e=>{ e.stopPropagation(); stackMove(which, +b.dataset.mv); });
     const sub=row.querySelector('.ps-sub'); if(sub) sub.onclick=()=>openLeftTab('base');
-    row.addEventListener('dragstart', e=>{ dragPseudo=which; row.classList.add('dragging'); try{ e.dataTransfer.setData('text/plain','pseudo:'+which); }catch(_){} e.dataTransfer.effectAllowed='move'; });
+    row.addEventListener('dragstart', e=>{ if(row.classList.contains('ps-off')){ e.preventDefault(); return; } dragPseudo=which; row.classList.add('dragging'); try{ e.dataTransfer.setData('text/plain','pseudo:'+which); }catch(_){} e.dataTransfer.effectAllowed='move'; });
     row.addEventListener('dragend', ()=>{ dragPseudo=null; el.querySelectorAll('.mk-layer').forEach(x=>x.classList.remove('dragging','drop-above','drop-below')); });
   });
   /* dropping a basemap row on a data layer card puts it just above or below that layer */
@@ -15994,10 +16127,21 @@ let dragPseudo=null;
 function momTierVis(m, keepSym, off){
   var go=function(){ var st; try{ st=m.getStyle(); }catch(e){ return; } if(!st||!st.layers) return;
     st.layers.forEach(function(ly){ if(/^u|^s\d|^m_|^g_/.test(ly.id)&&ly.source&&/^u|^s\d/.test(String(ly.source))) return;
-      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']) && off.indexOf(((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']))>=0) vis=false;
+      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']) && off.indexOf(((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']))>=0) vis=false;
       if(!keepSym && sym===false) return;          /* the basemap keeps its other layers as they are */
       try{ m.setLayoutProperty(ly.id,'visibility',vis?'visible':'none'); }catch(e){} }); };
   var n=0, t=setInterval(function(){ var ok=false; try{ ok=!!(m.style&&m.style._loaded); }catch(e){} if(ok){ clearInterval(t); go(); setTimeout(go,1500); } else if(++n>160) clearInterval(t); },150);
+}
+/* v83: a pop-up menu opens below its button when it fits, otherwise beside it
+   (shifted up to stay in the window), otherwise above */
+function placeMenu(m, r){
+  const W=innerWidth, H=innerHeight, w=m.offsetWidth, h=m.offsetHeight, pad=8;
+  let left, top;
+  if(r.bottom+4+h <= H-pad){ left=Math.min(r.left, W-w-pad); top=r.bottom+4; }
+  else if(r.right+6+w <= W-pad){ left=r.right+6; top=Math.max(pad, Math.min(r.top, H-h-pad)); }
+  else { left=Math.min(r.left, W-w-pad); top=Math.max(pad, r.top-4-h); }
+  m.style.left=Math.max(pad,left)+'px'; m.style.top=top+'px';
+  if(h > H-2*pad){ m.style.maxHeight=(H-2*pad)+'px'; m.style.overflowY='auto'; m.style.top=pad+'px'; }
 }
 /* v82: several canvas renderers in stacked panes (layers split around the
    basemap or labels, or a swipe) each cover the whole map, so the top canvas
@@ -16065,7 +16209,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v82 · Oct 2026';
+const MOM_VERSION='v83 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -18190,7 +18334,7 @@ function applyInsetBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', insetBasemapParts[k]?'visible':'none'); }catch(_){}
@@ -18472,7 +18616,10 @@ function loadProjectData(data){
     setGrid(data.maker.grid||null);
     mkBmo=bmoClean(data.maker.bmo); setBmStack(data.maker.bmStack||[], null);
     mkBasePos=Math.max(0, +data.maker.basePos||0); mkLblPos=Math.max(0, +data.maker.lblPos||0);
+    { const off=Array.isArray(data.maker.partsOff)?data.maker.partsOff:[]; Object.keys(BM_PART_GROUPS).forEach(k=>basemapParts[k]=!off.includes(k)); }
     if(data.maker.basemap) setBasemap(data.maker.basemap);
+    applyBasemapParts(); applyBaseOpacity(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe);
+    { const bp=document.getElementById('mkBasemapPanel'); if(bp) bp.remove(); if(typeof renderBaseOpts==='function') try{ renderBaseOpts(); }catch(_){} }
     if(data.maker.view&&mkMap) mkMap.setView(data.maker.view.center, data.maker.view.zoom);
     renderAllMakerLayers(); renderMakerLayerList(); renderMakerPanels(); updateMkStatus();
     renderOverlays();
@@ -20243,7 +20390,7 @@ function serializeCurrentProject(){
       groups: clone(mkGroups), grid: clone(mkGrid),
       overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit})),
       bmStack: clone(mkBmStack), bmo: Object.assign({}, mkBmo),
-      basePos: mkBasePos|0, lblPos: mkLblPos|0
+      basePos: mkBasePos|0, lblPos: mkLblPos|0, partsOff: partsOff()
     },
     collector: fcSerialize(),
     atlas: atlas

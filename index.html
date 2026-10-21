@@ -1348,20 +1348,27 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 
   /* v79: several map layouts per project, as tabs above the page */
   #stage-wrap{flex-direction:column;align-items:center;justify-content:flex-start;}
-  #loTabs{position:sticky;top:-36px;z-index:6;align-self:stretch;margin:-30px -24px 18px;padding:6px 12px 0;display:flex;align-items:flex-end;gap:4px;flex-wrap:wrap;
-    background:linear-gradient(var(--bg,#eef1f6) 80%, transparent);}
-  #loTabs .lt{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-bottom:none;background:#e4e9f0;color:#3a4660;font:600 12.5px var(--ui,system-ui);
-    padding:6px 10px;border-radius:7px 7px 0 0;cursor:pointer;max-width:220px;}
+  #loTabs{position:sticky;top:-36px;z-index:6;align-self:stretch;margin:-30px -24px 18px;padding:8px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    background:#e3eeec;border-bottom:1px solid #c6dcd8;box-shadow:0 1px 4px rgba(20,40,60,.08);}
+  #loTabs .lt-lbl{font:700 10.5px var(--ui,system-ui);letter-spacing:.08em;text-transform:uppercase;color:#4f6f6b;margin-right:4px;}
+  #loTabs .lt{display:flex;align-items:center;gap:6px;border:1px solid #b9d2ce;background:#fff;color:#2c4a47;font:600 12.5px var(--ui,system-ui);
+    padding:5px 12px;border-radius:999px;cursor:pointer;max-width:240px;transition:background .15s,border-color .15s,box-shadow .15s;}
+  #loTabs .lt:hover{border-color:var(--teal);box-shadow:0 1px 4px rgba(47,125,120,.25);}
+  #loTabs .lt .lt-ic{width:10px;height:13px;border:1.5px solid currentColor;border-radius:2px;flex-shrink:0;opacity:.7;}
   #loTabs .lt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #loTabs .lt.on{background:#fff;color:#1f3a5f;box-shadow:0 -1px 3px rgba(20,30,60,.12);}
-  #loTabs .lt .lt-m{border:none;background:none;color:inherit;font-size:13px;padding:0 2px;cursor:pointer;opacity:.7;}
-  #loTabs .lt .lt-m:hover{opacity:1;}
-  #loTabs .lt-add{border:1px dashed #9aa6ba;background:transparent;color:#3a4660;font:600 12px var(--ui,system-ui);padding:5px 10px;border-radius:7px 7px 0 0;cursor:pointer;}
+  #loTabs .lt.on{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 2px 6px rgba(47,125,120,.35);}
+  #loTabs .lt.on .lt-ic{opacity:1;background:rgba(255,255,255,.25);}
+  #loTabs .lt .lt-m{border:none;background:rgba(255,255,255,.18);color:inherit;font-size:13px;line-height:1;padding:1px 5px;border-radius:999px;cursor:pointer;margin-right:-6px;}
+  #loTabs .lt .lt-m:hover{background:rgba(255,255,255,.35);}
+  #loTabs .lt-add{border:1px dashed #7fa9a4;background:transparent;color:#2f6f6a;font:600 12px var(--ui,system-ui);padding:5px 12px;border-radius:999px;cursor:pointer;}
+  #loTabs .lt-add:hover{background:#fff;border-style:solid;}
   #loTabMenu{position:fixed;z-index:3000;}
-  html[data-theme=dark] #loTabs{background:linear-gradient(var(--bg,#14181c) 80%, transparent);}
-  html[data-theme=dark] #loTabs .lt{background:#232a31;color:#c9d2de;border-color:#3a4148;}
-  html[data-theme=dark] #loTabs .lt.on{background:#2f3842;color:#fff;}
-  html[data-theme=dark] #loTabs .lt-add{color:#c9d2de;border-color:#56606c;}
+  html[data-theme=dark] #loTabs{background:#1c2a2a;border-color:#2e4442;}
+  html[data-theme=dark] #loTabs .lt-lbl{color:#8fb3ae;}
+  html[data-theme=dark] #loTabs .lt{background:#232a31;color:#c9d2de;border-color:#3e5552;}
+  html[data-theme=dark] #loTabs .lt.on{background:var(--teal2);border-color:var(--teal2);color:#fff;}
+  html[data-theme=dark] #loTabs .lt-add{color:#9fd0c9;border-color:#4d6f6b;}
+  html[data-theme=dark] #loTabs .lt-add:hover{background:#232a31;}
   .send-target{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0 10px;background:#f7f9fb;}
   .send-target .st-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:3px 0;font-size:12.5px;color:var(--text);}
   .send-target select,.send-target input[type=text]{padding:5px 7px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;min-width:0;flex:1;}
@@ -3905,7 +3912,7 @@ function partsOff(){ return Object.keys(BM_PART_GROUPS).filter(k=>basemapParts[k
 function partsGroupsLite(){ const o={}; Object.keys(BM_PART_GROUPS).forEach(k=>o[k]={label:BM_PART_GROUPS[k].label, src:BM_PART_GROUPS[k].src.slice()}); return o; }
 function applyPartsTo(gl, on){
   if(!gl) return;
-  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=ly['source-layer']; if(!sl) return;
+  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
     for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl)){ try{ gl.setLayoutProperty(ly.id,'visibility', on[k]===false?'none':'visible'); }catch(_){} } }); };
   if(glbStyleReady(gl)) run(); else { let n=0; const t=setInterval(()=>{ if(glbStyleReady(gl)){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
 }
@@ -3913,7 +3920,7 @@ function applyPartsTo(gl, on){
 function partsEmbedJs(off, getter, ui){
   const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
   return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
-function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=ly['source-layer'];if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
+function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']);if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
 var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);if(window.momPartsHook)window.momPartsHook(ON,G);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
 var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
 var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
@@ -4011,7 +4018,7 @@ function globeApplyParts(map){
   try{
     const style=map.getStyle(); if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=ly['source-layer']; if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ map.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -4323,13 +4330,14 @@ function measureFinish(){ /* keep the finished line; stop adding */ mkMap.off('m
 /* --- basemap layer toggles --- */
 const BM_PARTS_ICON='<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3 2 8l10 5 10-5z" fill="#2f7d78"/><path d="m2 12 10 5 10-5M2 16l10 5 10-5" fill="none" stroke="#2f7d78" stroke-width="2" stroke-linejoin="round"/></svg>';
 const BM_PART_GROUPS={
+  background:{label:'Land & background', src:['__bg']},
   boundary:{label:'Borders', src:['boundary']},
   place:{label:'Place names', src:['place']},
-  transportation:{label:'Roads & rail', src:['transportation','transportation_name']},
+  transportation:{label:'Roads & rail', src:['transportation','transportation_name','aeroway']},
   water:{label:'Water', src:['water','waterway']},
-  building:{label:'Buildings', src:['building']},
+  building:{label:'Buildings', src:['building','housenumber']},
   landuse:{label:'Land use & parks', src:['landuse','landcover','park']},
-  poi:{label:'Points of interest', src:['poi']}
+  poi:{label:'Points of interest', src:['poi','aerodrome_label','mountain_peak']}
 };
 let basemapParts=Object.keys(BM_PART_GROUPS).reduce((o,k)=>(o[k]=true,o),{});
 function currentGlMap(){
@@ -4342,7 +4350,7 @@ function applyBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=ly['source-layer']; if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -4370,7 +4378,7 @@ function toggleBasemapPanel(){
   if(onGlobe){ const b=document.getElementById('mkGlobeParts'); if(b){ panel.style.left=(b.getBoundingClientRect().right-panel.parentNode.getBoundingClientRect().left+8)+'px'; panel.style.top=(b.getBoundingClientRect().top-panel.parentNode.getBoundingClientRect().top)+'px'; } }
   L.DomEvent.disableClickPropagation(panel); L.DomEvent.disableScrollPropagation(panel);
   panel.querySelectorAll('input[data-part]').forEach(cb=>{
-    cb.onchange=()=>{ basemapParts[cb.getAttribute('data-part')]=cb.checked; applyBasemapParts(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty&&markProjectDirty(); };
+    cb.onchange=()=>{ basemapParts[cb.getAttribute('data-part')]=cb.checked; applyBasemapParts(); applyBaseOpacity(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty&&markProjectDirty(); };
   });
 }
 /* v56: canvas-drawn layers can be redrawn at a higher pixel density for print-quality
@@ -4974,7 +4982,7 @@ function applyBaseOpacity(){
   if(!mkMap) return;
   const tp=mkMap.getPane('tilePane'); if(tp) tp.style.opacity=mkBmo.bop<1?String(mkBmo.bop):'';
   const el=document.getElementById('mk-map');
-  el.style.background = (mkBasemapKey==='none'||mkBmo.bop<1) ? mkBmo.paper : '#dde3ea';
+  el.style.background = (mkBasemapKey==='none'||mkBmo.bop<1||(basemapParts.background===false&&bmHasParts(mkBasemapKey))) ? mkBmo.paper : '#dde3ea';
 }
 function renderBaseOpts(){
   const box=document.getElementById('mkBaseOpts'); if(!box) return;
@@ -4992,7 +5000,7 @@ function renderBmParts(){
   const box=document.getElementById('mkBmParts'); if(!box) return;
   const on=bmHasParts(mkBasemapKey);
   box.innerHTML='<div class="bt-sub'+(on?'':' off')+'" title="'+(on?'':'Only the OpenFreeMap vector basemaps have separate parts')+'"><div class="bt-lbl">Show</div><div class="bmp-list">'+Object.keys(BM_PART_GROUPS).map(k=>'<label><input type="checkbox" data-part="'+k+'"'+(basemapParts[k]?' checked':'')+(on?'':' disabled')+'> '+esc(BM_PART_GROUPS[k].label)+'</label>').join('')+'</div></div>';
-  box.querySelectorAll('input[data-part]').forEach(cb=>cb.onchange=()=>{ basemapParts[cb.dataset.part]=cb.checked; applyBasemapParts(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty(); mkTouch(); });
+  box.querySelectorAll('input[data-part]').forEach(cb=>cb.onchange=()=>{ basemapParts[cb.dataset.part]=cb.checked; applyBasemapParts(); applyBaseOpacity(); if(typeof mkGlobe!=='undefined' && mkGlobe) globeApplyParts(mkGlobe); markProjectDirty(); mkTouch(); });
 }
 
 /* ---------- ⓘ Sources: who made the basemap and overlays (v68) ---------- */
@@ -8503,9 +8511,9 @@ function renderStyleTab(){
       <div class="field"><label>Tallest (m)</label><input type="number" id="stExMax" min="10" step="100" value="${x.maxH||extrudeDefaultHeight(lyr)}"></div></div>
       <p class="kv">Shows on the globe; tilt it to see the heights.</p>`:'');
   }
-  html+=`<div class="field"><label>Fill opacity: <span id="stOpVal">${Math.round(st.fillOpacity*100)}%</span></label>
+  html+=`<div class="field" title="See-through of the fill only. Outlines stay solid."><label>Fill opacity: <span id="stOpVal">${Math.round(st.fillOpacity*100)}%</span></label>
     <input type="range" id="stFillOp" min="0" max="1" step="0.05" value="${st.fillOpacity}"></div>
-    <div class="field"><label>Layer opacity: <span id="stLOpVal">${Math.round(lyr.opacity*100)}%</span></label>
+    <div class="field" title="Fades the whole layer: fill, outlines and symbols together. It multiplies with fill opacity."><label>Layer opacity: <span id="stLOpVal">${Math.round(lyr.opacity*100)}%</span></label>
     <input type="range" id="stLayerOp" min="0.1" max="1" step="0.05" value="${lyr.opacity}"></div>`;
   el.innerHTML=html;
 
@@ -15744,9 +15752,9 @@ function loDelete(id){
 function renderLoTabs(){
   const host=document.getElementById('loTabs'); if(!host) return;
   loEnsure();
-  host.innerHTML=loLayouts.map(L=>'<div class="lt'+(L.id===loCur?' on':'')+'" role="tab" aria-selected="'+(L.id===loCur)+'" data-id="'+esc(L.id)+'" title="'+esc(L.name)+(L.id===loCur?' (double-click to rename)':'')+'"><span>'+esc(L.name)+'</span>'+
+  host.innerHTML='<span class="lt-lbl">Layouts</span>'+loLayouts.map(L=>'<div class="lt'+(L.id===loCur?' on':'')+'" role="tab" aria-selected="'+(L.id===loCur)+'" data-id="'+esc(L.id)+'" title="'+esc(L.name)+(L.id===loCur?' (double-click to rename)':'')+'"><i class="lt-ic" aria-hidden="true"></i><span>'+esc(L.name)+'</span>'+
     (L.id===loCur?'<button class="lt-m" type="button" aria-label="Layout options" title="Rename, duplicate or delete">⋯</button>':'')+'</div>').join('')+
-    '<button class="lt-add" type="button" id="loAdd" title="Start another layout in this project">＋ New layout</button>';
+    '<button class="lt-add" type="button" id="loAdd" title="Start another layout in this project">＋ New</button>';
   host.querySelectorAll('.lt').forEach(t=>{
     t.onclick=e=>{ if(e.target.closest('.lt-m')) return; loSwitch(t.dataset.id); };
     t.ondblclick=()=>{ if(t.dataset.id===loCur) loRename(loCur); };
@@ -15885,7 +15893,7 @@ function labelsGlSetVis(){
   const apply=(gl, keepSymbols)=>momWhenStyle(gl, m=>{ let st; try{ st=m.getStyle(); }catch(_){ return; }
     (st.layers||[]).forEach(ly=>{ const isSym=ly.type==='symbol';
       let vis = keepSymbols ? isSym : !isSym;
-      const sl=ly['source-layer']; if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
       try{ m.setLayoutProperty(ly.id,'visibility', vis?'visible':'none'); }catch(_){} }); });
   const P=stackPositions(), sep=P.lp!==P.bp;
   if(base && sep) apply(base, false);
@@ -15942,7 +15950,7 @@ function stackMove(which, d){
 function stackChanged(){
   applyStackPanes(); renderMakerLayerList(); markProjectDirty(); mkPushHistory();
   const P=stackPositions();
-  if(P.bp>0 && mkBmo.bop>=1) setTimeout(()=>toast('The basemap now covers the layers below it. Lower its opacity (Basemap tab) to see them through it.', 5000), 300);
+  if(P.bp>0 && mkBmo.bop>=1) setTimeout(()=>toast(bmHasParts(mkBasemapKey)?'The basemap now covers the layers below it. In the Basemap tab, lower its opacity, or untick Land & background and keep only the parts you want on top (Water, say).':'The basemap now covers the layers below it. Lower its opacity (Basemap tab) to see them through it.', 6500), 300);
 }
 function stackRowHtml(which){
   const bm=BASEMAPS[mkBasemapKey];
@@ -15986,11 +15994,34 @@ let dragPseudo=null;
 function momTierVis(m, keepSym, off){
   var go=function(){ var st; try{ st=m.getStyle(); }catch(e){ return; } if(!st||!st.layers) return;
     st.layers.forEach(function(ly){ if(/^u|^s\d|^m_|^g_/.test(ly.id)&&ly.source&&/^u|^s\d/.test(String(ly.source))) return;
-      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ly['source-layer'] && off.indexOf(ly['source-layer'])>=0) vis=false;
+      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']) && off.indexOf(((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']))>=0) vis=false;
       if(!keepSym && sym===false) return;          /* the basemap keeps its other layers as they are */
       try{ m.setLayoutProperty(ly.id,'visibility',vis?'visible':'none'); }catch(e){} }); };
   var n=0, t=setInterval(function(){ var ok=false; try{ ok=!!(m.style&&m.style._loaded); }catch(e){} if(ok){ clearInterval(t); go(); setTimeout(go,1500); } else if(++n>160) clearInterval(t); },150);
 }
+/* v82: several canvas renderers in stacked panes (layers split around the
+   basemap or labels, or a swipe) each cover the whole map, so the top canvas
+   took every click even where it drew nothing. Pass clicks and hover down to
+   the highest canvas that has a feature under the pointer. */
+function momCanvasStack(L){
+  if(!L || !L.Canvas || L.Canvas.prototype.__momStack) return;
+  var P=L.Canvas.prototype; P.__momStack=1;
+  var oClick=P._onClick;
+  var zOf=function(r){ var p=r._container&&r._container.parentElement; if(!p) return 0; var z=parseInt(p.style.zIndex||getComputedStyle(p).zIndex,10); return isNaN(z)?0:z; };
+  var list=function(r){ var m=r._map, a=[]; if(!m) return [r];
+    for(var k in m._layers){ var l=m._layers[k]; if(l instanceof L.Canvas && l._map===m && l._container){ var pp=l._container.parentElement; if(l===r || !(pp && pp.style.clip)) a.push(l); } }
+    if(a.indexOf(r)<0) a.push(r); return a.sort(function(x,y){ return zOf(y)-zOf(x); }); };
+  var hit=function(r,pt){ for(var o=r._drawFirst;o;o=o.next){ var l=o.layer; if(l.options.interactive && l._containsPoint(pt)) return true; } return false; };
+  P._onClick=function(e){ var m=this._map; if(!m) return; var pt=m.mouseEventToLayerPoint(e), rs=list(this);
+    for(var i=0;i<rs.length;i++){ if(hit(rs[i],pt)) return oClick.call(rs[i],e); } return oClick.call(this,e); };
+  P._onMouseMove=function(e){ var m=this._map; if(!m || (m.dragging&&m.dragging.moving()) || m._animatingZoom) return;
+    var pt=m.mouseEventToLayerPoint(e), rs=list(this), win=null;
+    for(var i=0;i<rs.length;i++){ if(hit(rs[i],pt)){ win=rs[i]; break; } }
+    for(var j=0;j<rs.length;j++){ if(rs[j]!==win && rs[j]._hoveredLayer) rs[j]._handleMouseOut(e); }
+    if(win){ win._handleMouseHover(e,pt); if(win!==this) L.DomUtil.addClass(this._container,'leaflet-interactive'); }
+    else this._handleMouseHover(e,pt); };
+}
+try{ momCanvasStack(L); }catch(_){}
 function momTiers(L, map, T, vecStyle, baseGL){
   if(!T || !T.split) return function(){ return {}; };
   map.__momT=T; var R={};
@@ -16034,7 +16065,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v81 · Oct 2026';
+const MOM_VERSION='v82 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -18159,7 +18190,7 @@ function applyInsetBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=ly['source-layer']; if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', insetBasemapParts[k]?'visible':'none'); }catch(_){}
@@ -21157,8 +21188,9 @@ ${stSpec.length||(vecDef&&vecDef.ohm) ? MOM_STACK_RT : ''}
 ${vecDef ? `try{var BM=L.maplibreGL({style:${JSON.stringify(vecDef.style)},attribution:${JSON.stringify(vecDef.attr)},attributionControl:{customAttribution:${JSON.stringify(vecDef.attr)}},interactive:false}).addTo(map);var GM=BM.getMaplibreMap&&BM.getMaplibreMap();if(GM){GM.once('idle',ready);${vecDef.ohm?'momWhenStyle(GM,function(m){momOhmYear(m,'+bmo.year+');});':''}}else ready();}catch(e){ready();}` : bmSpec ? bmSpec.urls.map((u,i)=>`L.tileLayer(${JSON.stringify(u)},{maxZoom:${bmSpec.max},maxNativeZoom:${bmSpec.maxNative},attribution:${i===0?JSON.stringify(bmSpec.attr):'""'}})${i===0?".on('load',ready)":''}.addTo(map);`).join('\n') : `map.attributionControl.addAttribution('Map-O-Matic');setTimeout(ready,50);`}
 ${bmHasParts(basemap) ? partsEmbedJs(snap.partsOff||[], "function(){return (typeof GM!=='undefined')?GM:null;}", !!opts.partsUi) : ''}
 ${stSpec.length ? 'momStackLeaflet(L,map,'+JSON.stringify(stSpec).replace(/<\//g,'<\\/')+');' : ''}
+${(snap.tiers||SW) ? momCanvasStack.toString()+'\nmomCanvasStack(L);' : ''}
 ${snap.tiers ? momTierVis.toString()+'\n'+momTiers.toString()+'\nvar TIERS='+JSON.stringify(snap.tiers)+';var TO=momTiers(L,map,TIERS,'+(vecDef?JSON.stringify(vecDef.style):'null')+',(typeof GM!==\'undefined\')?GM:null);if(TIERS.sep)window.momPartsHook=function(ON,G){var off=[];for(var k in G){if(!ON[k])off=off.concat(G[k].src);}if(map.__momLG)momTierVis(map.__momLG.getMaplibreMap(),true,off);if(typeof GM!==\'undefined\'&&GM)momTierVis(GM,false,off);};' : 'var TIERS=null;function TO(){return {};}'}
-${(bmo.bop<1||basemap==='none') ? "map.getPane('tilePane').style.opacity='"+bmo.bop+"';map.getContainer().style.background='"+bmo.paper+"';" : ''}
+${(bmo.bop<1||basemap==='none'||(bmHasParts(basemap)&&(snap.partsOff||[]).includes('background'))) ? "map.getPane('tilePane').style.opacity='"+bmo.bop+"';map.getContainer().style.background='"+bmo.paper+"';" : ''}
 ${opts.zoomPos==='bottomleft' ? "try{map.zoomControl.setPosition('bottomleft');}catch(e){}" : ''}
 ${layers.some(L2=>L2.fc.features.some(f=>f.properties&&f.properties._cs&&f.properties._cs.pat)) ? momPatTile.toString()+'\n'+momPattern.toString() : 'function momPattern(){return null;}'}
 (function(){var cz=L.GridLayer.prototype._clampZoom;L.GridLayer.prototype._clampZoom=function(z){var m=this._map;if(m&&this instanceof L.TileLayer&&!m._animatingZoom){var f=m.getZoom();if(isFinite(f)&&f-Math.floor(f)>0.02)z=Math.ceil(f);}return cz.call(this,z);};})();
@@ -21596,7 +21628,7 @@ async function enterShareViewer(){
   let svTO=()=>({});
   try{ const k0=BASEMAPS[payload.basemap]?payload.basemap:'ofm-positron', bm0=BASEMAPS[k0], gl0=svBmLayers[0]&&svBmLayers[0].getMaplibreMap ? svBmLayers[0].getMaplibreMap() : null;
     svTO=momTiers(L, svMap, tierClean(payload.tiers), (bm0&&bm0.kind==='vector'&&gl0)?bm0.style:null, gl0); svTierRefresh(); }catch(_){}
-  if(svBmo.bop<1){ svMap.getPane('tilePane').style.opacity=String(svBmo.bop); } if(svBmo.bop<1||!BASEMAPS[payload.basemap]) svMap.getContainer().style.background=svBmo.paper;
+  if(svBmo.bop<1){ svMap.getPane('tilePane').style.opacity=String(svBmo.bop); } if(svBmo.bop<1||!BASEMAPS[payload.basemap]||svParts.background===false) svMap.getContainer().style.background=svBmo.paper;
   const group=L.featureGroup().addTo(svMap), svGroups=[];
   (payload.layers||[]).forEach((L2,li)=>{
     if(L2.lbl) svInjectLabelCss(li, L2.lbl);

@@ -1383,6 +1383,18 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .biv-prev .biv-corner.biv-dia:hover{background:rgba(255,255,255,.35) !important;}
   .biv-prev .biv-ax:hover{stroke:rgba(47,125,120,.25);}
   .biv-hint{margin:2px 0 6px;font-size:11px;}
+  #mk-tab-style .st-sec{border-top:1px solid var(--line);padding-top:4px;margin-top:8px;}
+  #mk-tab-style .st-sec:first-child{border-top:none;margin-top:0;padding-top:0;}
+  #mk-tab-style .st-sec > h3{cursor:pointer;user-select:none;}
+  #mk-tab-style .st-sec > h3::before{content:"▾";display:inline-block;width:12px;font-size:10px;color:var(--muted);transition:transform .15s;}
+  #mk-tab-style .st-sec.st-fold > h3::before{transform:rotate(-90deg);}
+  #mk-tab-style .st-sec.st-fold > :not(h3){display:none !important;}
+  #mk-tab-style .row2.st-mc>div:first-child{flex:1 1 auto;} #mk-tab-style .row2.st-mc>div:last-child{flex:0 0 64px;}
+  .st-ramprow{display:flex;align-items:center;gap:8px;} .st-ramprow select{flex:1;min-width:0;}
+  .st-ramprow .st-rev{display:flex;align-items:center;gap:4px;margin:0;font-size:12px;color:var(--text);white-space:nowrap;cursor:pointer;}
+  .st-ramprow .st-rev input{margin:0;}
+  #stClassList .cat-row,#stCatList .cat-row,#mk-tab-style .ramp-preview>div{cursor:default;}
+  #stClassList .cat-row:hover,#stCatList .cat-row:hover{background:rgba(47,125,120,.1);}
   html[data-theme=dark] .biv-prev .biv-corner:hover{border-color:#fff;box-shadow:0 0 0 1px #000 inset;}
   html[data-theme=dark] #loTabs{background:#1c2a2a;border-color:#2e4442;}
   html[data-theme=dark] #loTabs .lt-lbl{color:#8fb3ae;}
@@ -8180,12 +8192,18 @@ document.addEventListener('click', e=>{
 function renderMakerPanels(){ renderStyleTab(); renderFilterTab(); renderLabelsTab();
   if(typeof renderEditPanel==='function') renderEditPanel(); }
 
-function rampOptions(sel, geom, mode){
+function rampOptions(sel, geom, mode, st){
   let groups = mode==='cat' ? {qualitative:RAMPS.qualitative} : {sequential:RAMPS.sequential, diverging:RAMPS.diverging};
   let html='';
+  /* v85: a ramp whose colours were changed by hand (or an imported one) shows as its own
+     entry, so choosing a ramp from the list, even the same one, starts its colours afresh */
+  const edited = st && (mode==='cat' ? !!st.catEdited : !!(st.classColors && st.classColors.some(c=>c)));
+  if(st && st.customRamp && mode!=='cat'){ html+='<option value="__custom" selected>Imported ramp'+(edited?' (edited)':'')+'</option>'; sel=null; }
+  else if(edited){ html+='<option value="__edited" selected>'+esc(sel)+' (edited)</option>'; sel=null; }
   Object.keys(groups).forEach(g=>{
     html+='<optgroup label="'+g+'">'+groups[g].map(r=>'<option value="'+r+'" '+(sel===r?'selected':'')+'>'+r+'</option>').join('')+'</optgroup>';
   });
+  if(st && mode==='grad') html+='<option value="__import">Import…</option>';
   return html;
 }
 function rampPreviewHtml(ramp, n, reverse, st){
@@ -8322,13 +8340,12 @@ function renderStyleTab(){
     html+=`<div class="field"><label>Category field</label>
       <select id="stField"><option value="">— choose —</option>${fields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
       <div class="row2">
-        <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'cat')}</select></div>
+        <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'cat',st)}</select></div>
         <div class="field" style="max-width:96px;"><label>Show top</label><input type="number" id="stTopN" min="1" max="40" value="${st.topN||12}" ${st.showAll?'disabled':''}></div>
       </div>
       <button class="btn small ${st.showAll?'':'light'}" id="stShowAll" style="margin-bottom:6px;">Show all</button>
       <div class="kv" id="stCatInfo"></div>
-      <div id="stCatList" style="max-height:280px;overflow-y:auto;margin-top:6px;"></div>
-      <button class="btn small secondary" id="stCatReset">Re-assign colours</button>`;
+      <div id="stCatList" style="max-height:280px;overflow-y:auto;margin-top:6px;"></div>`;
   }
   if(st.mode==='dot'){
     html+=`<div class="field"><label>Count field (numeric — the quantity being mapped)</label>
@@ -8384,7 +8401,7 @@ function renderStyleTab(){
       <div class="checkline"><input type="checkbox" id="stHexShowCells" ${st.hexShowCells!==false?'checked':''}><label for="stHexShowCells">Show the cell outlines</label></div>`;
     } else {
     html+=`<div class="row2">
-        <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,'polygon','grad')}</select></div>
+        <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,'polygon','grad',st)}</select></div>
         <div class="field" style="max-width:96px;"><label>Classes</label>
           <input type="number" id="stClasses" min="2" max="12" value="${st.classes||5}"></div>
       </div>
@@ -8447,7 +8464,7 @@ function renderStyleTab(){
         <select id="stField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
         <div class="field"><label>Normalize the colour field by (optional)</label>
         <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
-        <div class="row2">
+        <div class="row2 st-mc">
           <div class="field"><label>Method</label>
             <select id="stMethod">
               <option value="quantile" ${st.method==='quantile'?'selected':''}>Quantile</option>
@@ -8456,9 +8473,7 @@ function renderStyleTab(){
             </select></div>
           <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.classes}"></div>
         </div>
-        <div class="field"><label>Colour ramp</label><select id="stRamp">${rampOptions(st.ramp,'polygon','grad')}</select>
-          ${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
-        <div class="checkline"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}><label for="stReverse" style="margin:0;color:var(--text);">Reverse ramp</label></div>
+        <div class="field"><label>Colour ramp</label><div class="st-ramprow"><select id="stRamp">${rampOptions(st.ramp,'polygon','grad',st)}</select><label class="st-rev" title="Reverse the ramp"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}> Reverse</label></div>${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
         <div id="stClassList"></div>
         <div id="stBreaksInfo" class="kv"></div>
         <div id="stHisto" class="histo"></div>
@@ -8467,13 +8482,12 @@ function renderStyleTab(){
       html+=`<div class="field"><label>Category field</label>
         <select id="stField"><option value="">— choose —</option>${fields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
         <div class="row2">
-          <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,'polygon','cat')}</select></div>
+          <div class="field"><label>Colour scheme</label><select id="stRamp">${rampOptions(st.ramp,'polygon','cat',st)}</select></div>
           <div class="field" style="max-width:96px;"><label>Show top</label><input type="number" id="stTopN" min="1" max="40" value="${st.topN||12}" ${st.showAll?'disabled':''}></div>
         </div>
         <button class="btn small ${st.showAll?'':'light'}" id="stShowAll" style="margin-bottom:6px;">Show all</button>
         <div class="kv" id="stCatInfo"></div>
-        <div id="stCatList" style="max-height:240px;overflow-y:auto;margin-top:6px;"></div>
-        <button class="btn small secondary" id="stCatReset">Re-assign colours</button>`;
+        <div id="stCatList" style="max-height:240px;overflow-y:auto;margin-top:6px;"></div>`;
     } else {
       html+=colourFieldHtml('stColor','Fill colour', st.color);
     }
@@ -8495,9 +8509,7 @@ function renderStyleTab(){
         <div class="field"><label>Largest symbol</label><input type="number" id="stMaxR" value="${st.maxR}" min="4"></div>
         <div class="field"><label>Colour classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.classes}"></div>
       </div>
-      <div class="field"><label>Colour ramp</label><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'grad')}</select>
-        ${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
-      <div class="checkline"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}><label for="stReverse" style="margin:0;color:var(--text);">Reverse ramp</label></div>`;
+      <div class="field"><label>Colour ramp</label><div class="st-ramprow"><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'grad',st)}</select><label class="st-rev" title="Reverse the ramp"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}> Reverse</label></div>${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>`;
   }
   if(st.mode==='prop'){
     html+=`<div class="field"><label>Value field (numeric)</label>
@@ -8517,7 +8529,7 @@ function renderStyleTab(){
       <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>`;
   }
   if(st.mode==='grad'){
-    html+=`<div class="row2">
+    html+=`<div class="row2 st-mc">
       <div class="field"><label>Method</label>
         <select id="stMethod">
           <option value="quantile" ${st.method==='quantile'?'selected':''}>Quantile</option>
@@ -8531,13 +8543,7 @@ function renderStyleTab(){
       html+=`<div class="kv" style="margin:0 0 6px;">On the chart: drag a line to move a break, click to add, drag off to remove, double-click to type a value.</div>
         <div class="legend-add-row"><button class="btn small light" id="stManualEven">Space evenly</button></div>`;
     }
-    html+=`<div class="field"><label>Colour ramp</label><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'grad')}</select>
-      ${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
-      <div class="checkline"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}><label for="stReverse" style="margin:0;color:var(--text);">Reverse ramp</label></div>
-      <div class="legend-add-row" style="margin-bottom:6px;">
-        <button class="btn small light" id="stRampImport">Import a ramp…</button>
-        <button class="btn small light" id="stRampReset">Reset colours</button>
-      </div>
+    html+=`<div class="field"><label>Colour ramp</label><div class="st-ramprow"><select id="stRamp">${rampOptions(st.ramp,lyr.geom,'grad',st)}</select><label class="st-rev" title="Reverse the ramp"><input type="checkbox" id="stReverse" ${st.reverse?'checked':''}> Reverse</label></div>${rampPreviewHtml(st.ramp, st.classes, st.reverse, st)}</div>
       <div id="stClassList"></div>
       <div id="stBreaksInfo" class="kv"></div>
         <div id="stHisto" class="histo"></div>`;
@@ -8600,6 +8606,7 @@ function renderStyleTab(){
     <div class="field" title="Fades the whole layer: fill, outlines and symbols together. It multiplies with fill opacity."><label>Layer opacity: <span id="stLOpVal">${Math.round(lyr.opacity*100)}%</span></label>
     <input type="range" id="stLayerOp" min="0.1" max="1" step="0.05" value="${lyr.opacity}"></div>`;
   el.innerHTML=html;
+  stFoldify(el); stHoverBind(el, lyr);
 
   const g=id=>document.getElementById(id);
   const rerender=()=>{ renderLayer(lyr); };
@@ -8672,7 +8679,12 @@ function renderStyleTab(){
     for(let i=1;i<n;i++) out.push(+(lo+(hi-lo)*i/n).toFixed(Math.min(6, lyr._labelDec!=null?lyr._labelDec:2)));
     writeManualBreaks(lyr, out); st.classColors=null; renderLayer(lyr); renderStyleTab(); mkTouch(); markProjectDirty();
   };
-  if(g('stRamp')) g('stRamp').onchange=()=>{ st.ramp=g('stRamp').value; if(st.mode==='cat'){st.catMap={};} renderStyleTab(); rerender(); };
+  if(g('stRamp')) g('stRamp').onchange=()=>{ const v=g('stRamp').value;
+    if(v==='__import'){ renderStyleTab(); openRampImport(lyr); return; }
+    if(v==='__edited'||v==='__custom') return;
+    /* choosing a ramp, even the one in use, starts its colours afresh */
+    st.ramp=v; st.classColors=null; st.customRamp=null; st.catMap={}; st.catEdited=false; st.otherColor='#bdc3cc';
+    renderStyleTab(); rerender(); };
   if(g('stReverse')) g('stReverse').onchange=()=>{ st.reverse=g('stReverse').checked; renderStyleTab(); rerender(); };
   if(g('stMinR')) g('stMinR').onchange=()=>{ st.minR=+g('stMinR').value||4; rerender(); };
   if(g('stMaxR')) g('stMaxR').onchange=()=>{ st.maxR=+g('stMaxR').value||22; rerender(); };
@@ -8828,10 +8840,6 @@ function renderStyleTab(){
   if(g('stColorField')) g('stColorField').onchange=()=>{ st.colorField=g('stColorField').value||null; renderStyleTab(); rerender(); };
 
   /* ---- colour ramp: per-class editing and import ---- */
-  if(g('stRampImport')) g('stRampImport').onclick=()=>openRampImport(lyr);
-  if(g('stRampReset')) g('stRampReset').onclick=()=>{
-    st.classColors=null; st.customRamp=null; renderStyleTab(); rerender();
-  };
   if(g('stClassList')) renderClassColorList(lyr);
 
   /* Top N updates the category list only — rebuilding the whole tab would destroy
@@ -9041,8 +9049,9 @@ function refreshCatList(lyr){
   list.querySelectorAll('input[type=color]').forEach(inp=>{
     inp.oninput=()=>{
       const k=inp.getAttribute('data-v');
-      st.catMap[k]=inp.value;
+      st.catMap[k]=inp.value; st.catEdited=true;
       if(k===OTHER_KEY) st.otherColor=inp.value;
+      const rs=g('stRamp'); if(rs && rs.value!=='__edited'){ const o=document.createElement('option'); o.value='__edited'; o.textContent=st.ramp+' (edited)'; rs.insertBefore(o, rs.firstChild); rs.value='__edited'; }
       renderLayer(lyr);
     };
     inp.onclick=e=>e.stopPropagation();   /* don't trigger row selection */
@@ -9223,6 +9232,85 @@ function fmtFixed(v,d){
   return (+v).toLocaleString(undefined,{minimumFractionDigits:d, maximumFractionDigits:d});
 }
 /* editable colour per class, highest class first (as it reads on a legend) */
+/* ---------- v85: Style-panel sections fold away (click the heading), remembered ---------- */
+function stFoldKey(h){ const t=(h.textContent||'').toLowerCase(); return /symbology/.test(t)?'sym':/stroke/.test(t)?'stroke':/pattern/.test(t)?'pattern':/3-d|globe/.test(t)?'globe':t.slice(0,20); }
+function stFoldify(el){
+  let st={}; try{ st=JSON.parse(localStorage.getItem('mom-stfold')||'{}'); }catch(_){}
+  const kids=[...el.children]; let sec=null;
+  kids.forEach(n=>{
+    if(n.classList.contains('divider')){ n.remove(); return; }
+    if(n.tagName==='H3'){ sec=document.createElement('div'); sec.className='st-sec'; const k=stFoldKey(n); sec.dataset.k=k; if(st[k]) sec.classList.add('st-fold');
+      el.insertBefore(sec, n); sec.appendChild(n); n.setAttribute('role','button'); n.tabIndex=0; n.setAttribute('aria-expanded', String(!st[k]));
+      const me=sec, tog=()=>{ me.classList.toggle('st-fold'); const f=me.classList.contains('st-fold'); n.setAttribute('aria-expanded', String(!f)); st[me.dataset.k]=f; try{ localStorage.setItem('mom-stfold', JSON.stringify(st)); }catch(_){} };
+      n.onclick=tog; n.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tog(); } };
+      return; }
+    if(sec) sec.appendChild(n);
+  });
+}
+/* ---------- v85: hovering a legend colour in the Style panel picks out its features ---------- */
+let mkHlLayer=null, mkHlOverlay=null, mkHlKey=null;
+function stSwatchColour(t){
+  if(!t || !t.closest) return null;
+  const corner=t.closest('.biv-corner'); if(corner && corner._csInput) return corner._csInput.value;
+  if(t.tagName==='polygon' && t.closest('.biv-prev')) return t.getAttribute('fill');
+  const row=t.closest('#stClassList .cat-row, #stCatList .cat-row'); if(row){ const i=row.querySelector('input[type=color]'); return i? i.value : null; }
+  const sw=t.closest('.ramp-preview > div'); if(sw){ const bg=getComputedStyle(sw).backgroundColor; if(!bg || /rgba\(0, 0, 0, 0\)|transparent/.test(bg)) return NO_COLOUR; try{ return chroma(bg).hex(); }catch(_){ return null; } }
+  return null;
+}
+function colourKey(c){ if(c==null) return null; if(isNoColour(c)) return 'none'; try{ return chroma(paintValue(c)).hex().toLowerCase(); }catch(_){ return String(c).toLowerCase(); } }
+function legendHoverOn(lyr, colour){
+  const key=colourKey(colour); if(key==null) return;
+  if(mkHlLayer===lyr && mkHlKey===key) return;
+  legendHoverOff();
+  if(!lyr || !lyr.leaflet || !lyr.visible || typeof mkMap==='undefined') return;
+  if(!mkMap.getPane('momHl')){ const p=mkMap.createPane('momHl'); p.style.zIndex=640; p.style.pointerEvents='none'; }
+  const R=L.canvas({pane:'momHl', padding:0.5});
+  mkHlLayer=lyr; mkHlKey=key; mkHlOverlay=L.layerGroup().addTo(mkMap);
+  let hits=0;
+  lyr.leaflet.eachLayer(l=>{
+    const f=l.feature; if(!f) return;
+    let m=false; try{ m=colourKey(featureColor(lyr,f))===key; }catch(_){}
+    if(m){ hits++;
+      const halo=(o)=>Object.assign({pane:'momHl', renderer:R, interactive:false}, o);
+      if(l instanceof L.CircleMarker){ const ll=l.getLatLng(), r=l.getRadius()+1.5;
+        L.circleMarker(ll, halo({radius:r, color:'#111827', weight:4, fill:false})).addTo(mkHlOverlay);
+        L.circleMarker(ll, halo({radius:r, color:'#ffffff', weight:1.6, fill:false})).addTo(mkHlOverlay); }
+      else if(l instanceof L.Marker){ const ic=l.options.icon&&l.options.icon.options, sz=ic&&ic.iconSize?Math.max(...[].concat(ic.iconSize)):14;
+        L.circleMarker(l.getLatLng(), halo({radius:sz/2+2, color:'#111827', weight:3.5, fill:false})).addTo(mkHlOverlay); }
+      else if(l.toGeoJSON){ const gj=l.toGeoJSON();
+        L.geoJSON(gj, halo({style:()=>({color:'#111827', weight:4, opacity:0.9, fill:false})})).addTo(mkHlOverlay);
+        L.geoJSON(gj, halo({style:()=>({color:'#ffffff', weight:1.6, opacity:1, fill:false})})).addTo(mkHlOverlay); }
+    } else {
+      if(l.setStyle){ l.setStyle({fillOpacity:(l.options.fillOpacity||0)*0.4, opacity:(l.options.opacity||0)*0.4}); }
+      else if(l.setOpacity) l.setOpacity(0.35);
+    }
+  });
+  if(!hits) legendHoverOff();
+}
+function legendHoverOff(){
+  const lyr=mkHlLayer; mkHlLayer=null; mkHlKey=null;
+  if(mkHlOverlay){ try{ mkMap.removeLayer(mkHlOverlay); }catch(_){} mkHlOverlay=null; }
+  if(!lyr || !lyr.leaflet) return;
+  const st=lyr.style;
+  lyr.leaflet.eachLayer(l=>{
+    const f=l.feature; if(!f) return;
+    try{
+      if(l instanceof L.CircleMarker){
+        if(st.mode==='chart'){ l.setStyle({fillOpacity:0.6, opacity:1}); return; }
+        const color=featureColor(lyr,f), strokeOff=isNoColour(st.strokeColor), fillOff=isNoColour(color);
+        l.setStyle({fillColor:paintValue(color), color:paintValue(st.strokeColor), weight:strokeOff?0:st.strokeWeight,
+          fillOpacity:fillOff?0:st.fillOpacity*lyr.opacity, opacity:strokeOff?0:lyr.opacity});
+      } else if(l.setStyle){
+        if(st.mode==='dot') l.setStyle({color:st.strokeColor, weight:st.strokeWeight, opacity:lyr.opacity, fillColor:'#ffffff', fillOpacity:0.05*lyr.opacity, dashArray:st.dash||null});
+        else l.setStyle(featureStyleL(lyr,f));
+      } else if(l.setOpacity) l.setOpacity(1);
+    }catch(_){}
+  });
+}
+function stHoverBind(el, lyr){
+  el.addEventListener('mouseover', e=>{ const c=stSwatchColour(e.target); if(c!=null) legendHoverOn(lyr, c); else if(mkHlLayer) legendHoverOff(); });
+  el.addEventListener('mouseleave', ()=>legendHoverOff());
+}
 function renderClassColorList(lyr){
   const host=document.getElementById('stClassList');
   if(!host) return;
@@ -9246,6 +9334,7 @@ function renderClassColorList(lyr){
   const setClass=(i,val)=>{
     st.classColors=st.classColors? st.classColors.slice() : [];
     st.classColors[i]=val;
+    const rs=document.getElementById('stRamp'); if(rs && rs.value!=='__edited' && rs.value!=='__custom'){ const o=document.createElement('option'); o.value='__edited'; o.textContent=st.ramp+' (edited)'; rs.insertBefore(o, rs.firstChild); rs.value='__edited'; }
     computeClassification(lyr);
     refresh();
   };
@@ -16210,7 +16299,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v84 · Oct 2026';
+const MOM_VERSION='v85 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last

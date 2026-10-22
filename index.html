@@ -5723,14 +5723,47 @@ function typeRows(rows){
 const mkHistory={stack:[], idx:-1, max:30};
 let mkRestoring=false, mkBulk=false, mkTouchTimer=null;
 const MK_SNAP_CAP=20000;
+/* v86: undo steps share their copy of the data. A fingerprint of each layer's features
+   (attributes and coordinates) is taken at every step; when it matches a copy already
+   held in the history, that copy is reused, so a style change no longer stores the whole
+   dataset again. Large city files with several layers used to grow by tens of MB per step. */
+function mkStrHash(h, v){
+  const n=v.length; h=Math.imul(h^n, 16777619);
+  if(n<=256){ for(let i=0;i<n;i++) h=Math.imul(h^v.charCodeAt(i), 16777619); }
+  else { const st=Math.floor(n/128); for(let i=0;i<n;i+=st) h=Math.imul(h^v.charCodeAt(i), 16777619); for(let i=n-32;i<n;i++) h=Math.imul(h^v.charCodeAt(i), 16777619); }
+  return h;
+}
+function mkValHash(h, v){
+  if(v==null) return Math.imul(h^7, 16777619);
+  const t=typeof v;
+  if(t==='number') return Math.imul(h^((v*1000)|0)^((v*1e7)%1e9|0), 16777619);
+  if(t==='string') return mkStrHash(Math.imul(h^3,16777619), v);
+  if(t==='boolean') return Math.imul(h^(v?11:13), 16777619);
+  if(Array.isArray(v)){ h=Math.imul(h^(v.length+17), 16777619); for(let i=0;i<v.length;i++) h=mkValHash(h, v[i]); return h; }
+  if(t==='object'){ for(const k in v){ h=mkStrHash(h, k); h=mkValHash(h, v[k]); } return Math.imul(h^19, 16777619); }
+  return mkStrHash(h, String(v));
+}
+function mkDataPrint(gj){
+  const fs=(gj&&gj.features)||[]; let h=2166136261|0, h2=fs.length|0;
+  for(let i=0;i<fs.length;i++){ const f=fs[i]; if(!f){ h=Math.imul(h^1,16777619); continue; }
+    h=mkValHash(h, f.properties); const g=f.geometry; h=mkValHash(h, g?g.type:null); h=mkValHash(h, g?g.coordinates:null); h2=(h2+h)|0; }
+  return fs.length+':'+(h>>>0).toString(36)+':'+(h2>>>0).toString(36);
+}
+function mkSnapGeo(gj, pr){
+  pr=pr||mkDataPrint(gj);
+  for(let k=mkHistory.stack.length-1;k>=0;k--){ const sn=mkHistory.stack[k];
+    for(const sl of sn.layers){ if(sl.gprint===pr && sl.geojson) return {geojson:sl.geojson, gprint:pr}; } }
+  return {geojson:clone(gj), gprint:pr};
+}
 function mkSnapshot(){
   let total=0; mkLayers.forEach(l=>total+=(l.geojson&&l.geojson.features?l.geojson.features.length:0));
   const withData=total<=MK_SNAP_CAP;
+  const seen={};
   return {sel:mkSelectedId, basemap:mkBasemapKey, partsOff:partsOff(), withData, bm:bmStackState(),
     groups:clone(mkGroups),
     layers:mkLayers.map(l=>({id:l.id, datasetId:l.datasetId, name:l.name, geom:l.geom, group:l.group||null,
       visible:l.visible, opacity:l.opacity, style:clone(l.style), labels:clone(l.labels), filter:clone(l.filter),
-      geojson: withData? clone(l.geojson) : null}))};
+      ...(withData ? (()=>{ const pr0=mkDataPrint(l.geojson); if(seen[pr0]) return seen[pr0]; const r=mkSnapGeo(l.geojson, pr0); seen[r.gprint]=r; return r; })() : {geojson:null})}))};
 }
 function updateMkUndoButtons(){
   const u=document.getElementById('mkUndo'), r=document.getElementById('mkRedo');
@@ -5770,9 +5803,18 @@ function restoreMkSnapshot(s){
   /* staged attribute edits refer to rows that may no longer exist */
   if(typeof attrPendingCount==='function' && attrPendingCount()) settlePendingAttrEdits('discard');
   try{
+  const liveById={}; mkLayers.forEach(l=>{ liveById[l.id]=l; });
   mkLayers.forEach(removeLayerGraphics);
   mkLayers=s.layers.map(sl=>{
     const ds=(typeof datasetById==='function')?datasetById(sl.datasetId):null;
+    /* when the layer's data is unchanged since that step, keep it as it is (no copy, no re-save) */
+    const live=liveById[sl.id];
+    if(sl.geojson && live && live.geojson && sl.gprint && mkDataPrint(live.geojson)===sl.gprint){
+      if(ds && ds.geojson!==live.geojson){ ds.geojson=live.geojson; ds.featureCount=live.geojson.features.length; }
+      return {id:sl.id, name:sl.name, datasetId:sl.datasetId, geojson:live.geojson, geom:sl.geom, group:sl.group||null,
+        visible:sl.visible, opacity:sl.opacity, style:clone(sl.style), labels:clone(sl.labels), filter:clone(sl.filter),
+        leaflet:null, _fieldsCache:null, _fieldsCacheN:-1};
+    }
     /* copy the snapshot's data: using it directly would let later edits rewrite history */
     const gj=sl.geojson ? clone(sl.geojson) : (ds? ds.geojson : {type:'FeatureCollection',features:[]});
     if(sl.geojson && ds){ ds.geojson=gj; ds.featureCount=gj.features.length; if(typeof persistDataset==='function') persistDataset(ds.id); }
@@ -13700,7 +13742,7 @@ async function atCaptureMap(p, basemap, quiet){
   /* a still for page thumbnails and the page-turn animation */
   try{
     if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
-    const url= await withHiRes(3, async ()=> projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement((typeof mkGlobe!=='undefined' && mkGlobe) ? document.getElementById('mk-globe') : document.getElementById('mk-map'), 3, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint'))));
+    const url= await withHiRes(capWant(2), async ()=> projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement((typeof mkGlobe!=='undefined' && mkGlobe) ? document.getElementById('mk-globe') : document.getElementById('mk-map'), 3, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint'))));
     p.thumb=await atToJpeg(url, 900, 0.8);
     p.still=await atToJpeg(url, 2800, 0.9);   /* sharper copy for the PDF */
   }catch(_){ p.thumb=''; }
@@ -15065,8 +15107,13 @@ document.getElementById('sendGoBtn').onclick=async ()=>{
   });
 };
 /* the biggest capture density up to `want` that keeps the image under ~14 megapixels */
+/* v86: laptops that report 4 GB of memory or less (Chrome and Edge report this; other
+   browsers don't) capture at twice screen sharpness instead of three to four times:
+   quicker, and a fraction of the memory, still sharp on screen and in slides */
+function capLowMem(){ try{ const m=navigator.deviceMemory; return !!(m && m<=4); }catch(_){ return false; } }
+function capWant(k){ return capLowMem() ? Math.min(k, 2) : k; }
 function capScaleFor(w, h, want){
-  const maxPx=14e6; let k=want||3;
+  const low=capLowMem(), maxPx=low?6e6:14e6; let k=capWant(want||3);
   if(w*h*k*k>maxPx) k=Math.sqrt(maxPx/(w*h));
   return Math.max(1, k);
 }
@@ -16299,7 +16346,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v85 · Oct 2026';
+const MOM_VERSION='v86 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -18321,6 +18368,7 @@ function initComposerContextMenu(){
     const sel=canvas.getActiveObject();
     const items=[];
     if(sel) items.push(['Save selected element as PNG', ()=>saveSelectionPng()]);
+    if(sel) items.push(['Save selected element as JPG', ()=>saveSelectionJpg()]);
     items.push(['Save whole page as PNG', ()=>savePagePng()]);
     if(sel) items.push(['Bring to front', ()=>{ canvas.bringToFront(sel); canvas.requestRenderAll(); }]);
     if(sel) items.push(['Send to back', ()=>{ canvas.sendToBack(sel); canvas.requestRenderAll(); }]);
@@ -18355,6 +18403,31 @@ function saveSelectionPng(){
     toast('Element saved as PNG.');
   }catch(err){ toast('Could not save that element: '+err.message, 4000); }
 }
+/* v86: a small JPEG of the selected element (about 1600 px on its long side), sized for
+   slides and shared decks: a fraction of the PNG's size, on a white background */
+function saveSelectionJpg(){
+  const sel=canvas.getActiveObject();
+  if(!sel){ toast('Nothing selected.'); return; }
+  try{
+    const LONG=1600, w=sel.getScaledWidth()||1, h=sel.getScaledHeight()||1;
+    const m=Math.max(0.25, Math.min(4, LONG/Math.max(w,h)));
+    const url=sel.toDataURL({format:'png', multiplier:m});
+    const im=new Image();
+    im.onload=()=>{
+      const k=Math.min(1, LONG/Math.max(im.naturalWidth, im.naturalHeight));
+      const cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*k)); cv.height=Math.max(1,Math.round(im.naturalHeight*k));
+      const g=cv.getContext('2d'); g.fillStyle='#ffffff'; g.fillRect(0,0,cv.width,cv.height);
+      g.imageSmoothingQuality='high'; g.drawImage(im, 0, 0, cv.width, cv.height);
+      const jpg=cv.toDataURL('image/jpeg', 0.85);
+      downloadDataURL(jpg, 'map-element.jpg');
+      const kb=Math.round(jpg.length*0.75/1024);
+      toast('Element saved as JPG ('+cv.width+' × '+cv.height+' px, about '+(kb>1024?(kb/1024).toFixed(1)+' MB':kb+' KB')+').');
+    };
+    im.onerror=()=>toast('Could not save that element as JPG.', 4000);
+    im.src=url;
+  }catch(err){ toast('Could not save that element: '+err.message, 4000); }
+}
+window.__saveSelectionJpg=()=>saveSelectionJpg();
 window.__savePagePng=()=>savePagePng();          /* automated-testing hooks */
 window.__saveSelectionPng=()=>saveSelectionPng();
 function downloadDataURL(url, name){

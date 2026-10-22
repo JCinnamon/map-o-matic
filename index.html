@@ -3931,7 +3931,7 @@ function partsOff(){ return Object.keys(BM_PART_GROUPS).filter(k=>basemapParts[k
 function partsGroupsLite(){ const o={}; Object.keys(BM_PART_GROUPS).forEach(k=>o[k]={label:BM_PART_GROUPS[k].label, src:BM_PART_GROUPS[k].src.slice()}); return o; }
 function applyPartsTo(gl, on){
   if(!gl) return;
-  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+  const run=()=>{ let st; try{ st=gl.getStyle(); }catch(_){ return; } (st&&st.layers||[]).forEach(ly=>{ const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
     for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl)){ try{ gl.setLayoutProperty(ly.id,'visibility', on[k]===false?'none':'visible'); }catch(_){} } }); };
   if(glbStyleReady(gl)) run(); else { let n=0; const t=setInterval(()=>{ if(glbStyleReady(gl)){ clearInterval(t); run(); } else if(++n>60) clearInterval(t); }, 200); }
 }
@@ -3939,7 +3939,7 @@ function applyPartsTo(gl, on){
 function partsEmbedJs(off, getter, ui){
   const G=partsGroupsLite(), ON={}; Object.keys(G).forEach(k=>ON[k]=!off.includes(k));
   return `(function(){var G=${JSON.stringify(G)},ON=${JSON.stringify(ON)};var getGL=${getter};
-function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']);if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
+function ap(gl){if(!gl)return;try{var st=gl.getStyle();(st.layers||[]).forEach(function(ly){var sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']);if(!sl)return;for(var k in G){if(G[k].src.indexOf(sl)>=0){try{gl.setLayoutProperty(ly.id,'visibility',ON[k]?'visible':'none');}catch(e){}}}});}catch(e){}}
 var n=0,t=setInterval(function(){var g=getGL();if(g&&g.style&&g.style._loaded){ap(g);clearInterval(t);if(window.momPartsHook)window.momPartsHook(ON,G);}if(++n>80)clearInterval(t);},250);${ui?'':'return;'}
 var st=document.createElement('style');st.textContent='.mom-parts{position:absolute;top:10px;right:10px;z-index:1000;font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;text-align:right;}.mom-parts>button{font:600 12px inherit;font-family:inherit;background:#fff;color:#1f2a3c;border:1px solid rgba(0,0,0,.25);border-radius:5px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.2);cursor:pointer;}.mom-parts .mp-list{margin-top:6px;background:rgba(255,255,255,.96);border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.25);padding:6px 10px;text-align:left;}.mom-parts label{display:flex;gap:6px;align-items:center;padding:2px 0;cursor:pointer;white-space:nowrap;}';document.head.appendChild(st);
 var box=document.createElement('div');box.className='mom-parts';box.innerHTML='<button type="button" aria-expanded="false">Basemap ▾</button><div class="mp-list" hidden>'+Object.keys(G).map(function(k){return '<label><input type="checkbox" data-k="'+k+'"'+(ON[k]?' checked':'')+'> '+G[k].label+'</label>';}).join('')+'</div>';
@@ -4034,10 +4034,11 @@ function globeSyncSelection(){
   }catch(_){}
 }
 function globeApplyParts(map){
+  if(!bmHasParts(mkBasemapKey)) return;   /* raster basemaps have no parts to switch */
   try{
     const style=map.getStyle(); if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ map.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -4370,7 +4371,7 @@ function applyBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', basemapParts[k]?'visible':'none'); }catch(_){}
@@ -16025,7 +16026,7 @@ function labelsGlSetVis(){
   const apply=(gl, keepSymbols)=>momWhenStyle(gl, m=>{ let st; try{ st=m.getStyle(); }catch(_){ return; }
     (st.layers||[]).forEach(ly=>{ const isSym=ly.type==='symbol';
       let vis = keepSymbols ? isSym : !isSym;
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']); if(vis && sl){ for(const k in BM_PART_GROUPS) if(BM_PART_GROUPS[k].src.includes(sl) && basemapParts[k]===false) vis=false; }
       try{ m.setLayoutProperty(ly.id,'visibility', vis?'visible':'none'); }catch(_){} }); });
   const P=stackPositions(), sep=P.lp!==P.bp;
   if(base && sep) apply(base, false);
@@ -16127,7 +16128,7 @@ let dragPseudo=null;
 function momTierVis(m, keepSym, off){
   var go=function(){ var st; try{ st=m.getStyle(); }catch(e){ return; } if(!st||!st.layers) return;
     st.layers.forEach(function(ly){ if(/^u|^s\d|^m_|^g_/.test(ly.id)&&ly.source&&/^u|^s\d/.test(String(ly.source))) return;
-      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']) && off.indexOf(((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']))>=0) vis=false;
+      var sym=ly.type==='symbol', vis=keepSym?sym:!sym; if(vis && off && ((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']) && off.indexOf(((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']))>=0) vis=false;
       if(!keepSym && sym===false) return;          /* the basemap keeps its other layers as they are */
       try{ m.setLayoutProperty(ly.id,'visibility',vis?'visible':'none'); }catch(e){} }); };
   var n=0, t=setInterval(function(){ var ok=false; try{ ok=!!(m.style&&m.style._loaded); }catch(e){} if(ok){ clearInterval(t); go(); setTimeout(go,1500); } else if(++n>160) clearInterval(t); },150);
@@ -16209,7 +16210,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v83 · Oct 2026';
+const MOM_VERSION='v84 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -18334,7 +18335,7 @@ function applyInsetBasemapParts(){
     let style; try{ style=gl.getStyle(); }catch(_){ return; }
     if(!style||!style.layers) return;
     style.layers.forEach(ly=>{
-      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
+      const sl=((ly.type==='background'||((ly.type==='raster'||ly.type==='hillshade')&&!/^momov|^u|^r[0-9]*$/.test(ly.id)))?'__bg':ly['source-layer']); if(!sl) return;
       for(const k in BM_PART_GROUPS){
         if(BM_PART_GROUPS[k].src.includes(sl)){
           try{ gl.setLayoutProperty(ly.id,'visibility', insetBasemapParts[k]?'visible':'none'); }catch(_){}

@@ -537,6 +537,18 @@
   .at-cgrp[open]>summary{color:var(--teal);}
   .at-cgin{display:flex;flex-direction:column;gap:8px;padding:0 1px 10px;}
   .at-cg label.at-chk{flex-direction:row;align-items:center;font-size:12px;color:var(--text);gap:5px;}
+  /* v88: style first, folded options */
+  .at-stylebar{display:flex;align-items:center;gap:8px;margin:8px 0 6px;} .at-sbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap;} .at-stylebar .at-seg{flex:1;} .at-stylebar .at-seg button{padding:5px 4px;}
+  .at-start{max-width:660px;margin:28px auto;padding:0 12px;} .at-start h3{margin:0 0 6px;font-size:20px;} .at-start h4{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+  .at-sgroup{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px;}
+  .at-scard{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;color:var(--text);cursor:pointer;font:inherit;}
+  .at-scard b{font-size:15px;} .at-scard span{font-size:12.5px;color:var(--muted);line-height:1.4;} .at-scard .at-sic{font-size:22px;color:inherit;} .at-scard:hover{border-color:#9bb8b3;} .at-scard.on{border-color:var(--teal);background:#eef7f5;box-shadow:0 0 0 1px var(--teal);}
+  .at-start .at-go{margin-top:20px;}
+  .at-adv{border:1px solid var(--line);border-radius:10px;background:#fff;} .at-adv>summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:13px;list-style:none;} .at-adv>summary::-webkit-details-marker{display:none;} .at-adv>summary::before{content:"▸";display:inline-block;width:1.1em;color:var(--muted);} .at-adv[open]>summary::before{content:"▾";}
+  .at-adv .kv{font-weight:400;} .at-advin{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;}
+  .at-unltog{display:block;width:100%;margin:4px 0;padding:6px 8px;border:1px dashed var(--line);border-radius:6px;background:none;color:var(--muted);font-size:12px;cursor:pointer;} .at-hide-unl .at-unl:not(.active){display:none;}
+  .at-addgrp{padding:7px 9px 2px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);} .at-addmenu{max-height:72vh;overflow:auto;}
+  .at-sul{margin:6px 0 10px 18px;padding:0;font-size:13px;line-height:1.5;} .at-rad{display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13px;cursor:pointer;}
   /* v87: multi-map pages, stories, sections */
   .at-tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:4px;}
   .at-tpl{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font:600 11px/1.2 inherit;color:var(--text);text-align:center;}
@@ -1137,6 +1149,7 @@ html[data-theme=dark] .at-x:hover{color:#cea29f;border-color:#604846;}
 html[data-theme=dark] .at-item.active{background-color:#262e2d;}
 html[data-theme=dark] .at-th{background-color:#2d2b25;border:1px solid #4f4b43;}
 html[data-theme=dark] .at-addmenu{background-color:var(--panel);}
+html[data-theme=dark] .at-scard,html[data-theme=dark] .at-adv{background-color:var(--panel);} html[data-theme=dark] .at-scard.on{background-color:#1d3532;}
 html[data-theme=dark] .at-addmenu button:hover{background-color:#23272b;}
 html[data-theme=dark] .at-right{background-color:var(--panel);}
 html[data-theme=dark] .at-modes label:has(input:checked){background-color:#262e2d;}
@@ -1601,20 +1614,8 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   <aside class="at-left">
     <h3 class="fc-h" style="margin-top:0;">Pages</h3>
     <div class="at-addwrap"><button class="btn small" id="atAddBtn" style="width:100%;justify-content:center;">+ Add page ▾</button>
-      <div class="at-addmenu hidden" id="atAddMenu">
-        <button data-k="map">🧭 Live map<small>the layers on in Map Maker, interactive</small></button>
-        <button data-k="layout">▣ Map layout<small>the finished Map Composer page</small></button>
-        <button data-k="image">🖼 Image<small>a photo, scan or figure</small></button>
-        <button data-k="text">¶ Text<small>an introduction, essay or notes</small></button>
-        <button data-k="embed">▶ Video or link<small>a YouTube or Vimeo video, or a web page</small></button>
-        <button data-k="section">§ Section<small>a chapter opener that groups the pages after it</small></button>
-        <button data-k="panels">▦ Multi-map page<small>several maps, images and text on one page, or a swipe comparison</small></button>
-        <button data-k="story">⇅ Scrolling story<small>a pinned map that changes as the reader scrolls</small></button>
-        <button data-k="locator">⌖ Locator map &amp; index<small>a clickable key map of where every map lies</small></button>
-        <button data-k="sources">✎ Sources &amp; notes<small>layers, basemaps and sources, listed automatically</small></button>
-        <button data-k="contents" id="atAddToc">☰ Contents page<small>a list of the pages, made automatically</small></button>
-        <button data-k="merge">⇲ From another project<small>pages from a group member's project file</small></button>
-      </div></div>
+      <div class="at-addmenu hidden" id="atAddMenu"></div></div>
+    <div id="atStyleBar"></div>
     <div id="atList"></div>
   </aside>
   <main class="at-main"><div class="at-body" id="atBody"></div></main>
@@ -1860,7 +1861,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <p>Design a form, share it by link or QR code, and record points, lines and areas with photos and audio. Collected data come back to the laptop and become Map Maker layers.</p>
     </div>
     <div class="help-step"><b>📖 Atlas: a book of maps.</b>
-      <p>Gather live maps, layouts, images and text into an atlas with a cover and contents page, in one of five designs. Arrange several maps on one page, group pages into sections, tell a story with a map that changes as readers scroll, and add a clickable locator map. It reads as a flip-book or a scrolling page, and exports as a web page or a PDF.</p>
+      <p>Gather live maps, layouts, images and text into an atlas with a cover and contents page, in one of five designs. Arrange several maps on one page, group pages into sections, tell a story with a map that changes as readers scroll, and add a clickable locator map. Choose how it reads when you start: <b>Book</b> (turning pages and spreads) or <b>Scrolling</b> (one long page, with stories that pin a map); you can change it any time. Either exports as a web page or a PDF.</p>
     </div>
     <div class="help-step"><b>Send / Export ▾</b> (top right).
       <p>Send the current map to Map Composer or the Atlas, share a live link, or export files: layout PDF/PNG/SVG, an interactive web map, data layers, or a whole project archive.</p>
@@ -1873,6 +1874,14 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. Check your results, respect data and basemap terms, and take responsibility for what you publish.</p>
     </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-atstyle">
+  <div class="modal">
+    <h2 id="atStyleTitle">Change the reading style</h2>
+    <div id="atStyleBody"></div>
+    <div class="modal-close-row"><button class="btn ghost" id="atStyleNo">Cancel</button> <button class="btn" id="atStyleYes">Change style</button></div>
   </div>
 </div>
 
@@ -12429,7 +12438,7 @@ function atlasViewer(root, D){
   var theme=THEMES[D.theme]?D.theme:'classic';
   var allPages=D.pages||[], mode=D.mode==='scroll'?'scroll':'book';
   /* v87: some map pages are "unlisted": they never appear in the sequence, only inside multi-map pages and stories */
-  var pages=allPages.filter(function(p){ return !p.hidden; });
+  var pages=allPages.filter(function(p){ return !p.hidden && !(mode==='book' && p.kind==='story'); });
   var byId={}; allPages.forEach(function(p){ byId[p.id]=p; });
   var RM=!!(win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var deep=!!D.deepLink;
@@ -12495,16 +12504,18 @@ function atlasViewer(root, D){
     return '<div class="av-media av-vid" data-vk="'+v.k+'" data-vid="'+v.id+'">'+poster+(live?'<button class="av-play" type="button" aria-label="Play video">▶</button>':'<span class="av-play">▶</span>')+
       '<a class="av-vlink" href="'+E(v.url)+'" target="_blank" rel="noopener noreferrer">Open on '+(v.k==='yt'?'YouTube':'Vimeo')+' ↗</a></div>';
   }
-  function mediaHtml(p, live){
+  var vwOk=function(v){ return v && v.c && v.c.length===2 && isFinite(v.c[0]) && isFinite(v.c[1]) && isFinite(v.z); };
+  function mediaHtml(p, live, ov){
     if(p.kind==='embed') return embedMedia(p, live);
     if(pdfMode){
-      if(p.kind==='map'){ var st=IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:''); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl"><a href="'+E(D.url)+'">View the interactive map ›</a></div>':''); }
+      if(p.kind==='map'){ var st=(ov&&IMG.test(ov.still||''))?ov.still:(IMG.test(p.still||'')?p.still:(IMG.test(p.thumb||'')?p.thumb:'')); return '<div class="av-media av-map av-pdfm">'+(st?pdfPic(st,'cover'):'')+'</div>'+(D.url?'<div class="av-pdfurl"><a href="'+E(D.url)+'">View the interactive map ›</a></div>':''); }
       if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media av-pdfm">'+pdfPic(p.src,'contain')+'</div>';
       return '';
     }
     if(p.kind==='map'){
-      if(live && p.mapHtml) return '<div class="av-media av-map" role="group" aria-label="'+E(p.alt||p.title||'Interactive map')+'" data-map="'+E(p.id)+'">'+(IMG.test(p.thumb||'')?'<img class="av-mstill" src="'+p.thumb+'" alt="">':'')+'</div>';
-      return '<div class="av-media av-map av-still">'+(IMG.test(p.thumb||'')?'<img src="'+p.thumb+'" alt="">':'')+'<span>Interactive map</span></div>';
+      var th=(ov&&IMG.test(ov.thumb||''))?ov.thumb:p.thumb, vw=(ov&&vwOk(ov.view))?' data-view="'+E(JSON.stringify(ov.view))+'"':'';
+      if(live && p.mapHtml) return '<div class="av-media av-map" role="group" aria-label="'+E(p.alt||p.title||'Interactive map')+'" data-map="'+E(p.id)+'"'+vw+'>'+(IMG.test(th||'')?'<img class="av-mstill" src="'+th+'" alt="">':'')+'</div>';
+      return '<div class="av-media av-map av-still">'+(IMG.test(th||'')?'<img src="'+th+'" alt="">':'')+'<span>Interactive map</span></div>';
     }
     if((p.kind==='layout'||p.kind==='image') && IMG.test(p.src||'')) return '<div class="av-media"><img src="'+p.src+'" alt="'+E(p.alt||p.caption||p.title||'')+'"'+(live?' data-zoom="1"':'')+'></div>';
     return '';
@@ -12564,7 +12575,7 @@ function atlasViewer(root, D){
       if(ip && !IMG.test(sl.src||'')) apx=apxHtml(ip);
     } else {
       mp=byId[sl.ref];
-      inner=(mp && mp.kind==='map') ? mediaHtml(mp, live) : '<div class="av-media av-slotempty"><span>No map chosen</span></div>';
+      inner=(mp && mp.kind==='map') ? mediaHtml(mp, live, sl) : '<div class="av-media av-slotempty"><span>No map chosen</span></div>';
       if(mp && mp.kind==='map') apx=apxHtml(mp);
     }
     if(bare) return inner;
@@ -12594,7 +12605,7 @@ function atlasViewer(root, D){
   /* a page of a story, when the atlas is read as a book or printed: the map of one step, with its words */
   function stepPage(sp, i, live, foot){
     var st=sp.step||{}, of=sp.of, mp=byId[st.ref];
-    var media=(mp && mp.kind==='map') ? mediaHtml(mp, live) : '<div class="av-media av-slotempty"><span>No map chosen</span></div>';
+    var media=(mp && mp.kind==='map') ? mediaHtml(mp, live, st) : '<div class="av-media av-slotempty"><span>No map chosen</span></div>';
     var txt=st.text?'<div class="av-text av-nodc">'+st.text+'</div>':'';
     return '<div class="av-pg av-inner av-k-map'+(txt?' av-split':'')+'">'+winBar(of,i)+((sp.k===0 && of.title)?'<h2 class="av-h">'+E(of.title)+'</h2>':'')+media+
       (sp.n>1?'<div class="av-stepn">Step '+(sp.k+1)+' of '+sp.n+'</div>':'')+((mp&&mp.kind==='map')?apxHtml(mp):'')+txt+foot+'</div>';
@@ -12835,19 +12846,29 @@ function atlasViewer(root, D){
         root.querySelectorAll('.av-spb-box[data-i="'+b.getAttribute('data-i')+'"]').forEach(function(x){ x.classList.toggle('av-open', o); var mm=x.querySelector('.av-spb-more'); if(mm) mm.textContent=o?'Show less ▴':'Read more ▾'; }); };
     });
   }
+  /* one live map: a sandboxed frame made on demand and removed again when it is far off-screen, so a long atlas never holds many maps in memory at once */
+  var sendView=function(f, v, fly){ if(!f || !f.contentWindow || !vwOk(v)) return; try{ f.contentWindow.postMessage({momView:{c:v.c, z:v.z, a:fly?1:0}},'*'); }catch(e){} };
+  function mountOne(m){
+    if(m.querySelector('iframe')) return;
+    var p=byId[m.getAttribute('data-map')]; if(!p) return;
+    var mh=(p.kind==='locator') ? locHtml(p) : p.mapHtml; if(!mh) return;
+    var f=doc.createElement('iframe'); f.setAttribute('sandbox','allow-scripts allow-popups'); f.setAttribute('title', p.alt||titleOf(p));
+    f._grp=m.closest ? m.closest('[data-sync]') : null;
+    if(m._pv===undefined){ try{ m._pv=m.getAttribute('data-view') ? JSON.parse(m.getAttribute('data-view')) : null; }catch(e){ m._pv=null; } }
+    f._pv=m._pv;
+    var shown=false, show=function(){ if(shown) return; shown=true; f.classList.add('av-on'); };
+    f.addEventListener('load', function(){ setTimeout(show, 3000); });
+    f._show=show; frames=frames.filter(function(x){ return x.isConnected; }); frames.push(f);
+    f.srcdoc=mh; m.appendChild(f);
+  }
+  function unmountOne(m){
+    var f=m.querySelector('iframe'); if(!f) return;
+    frames=frames.filter(function(x){ return x!==f; });
+    try{ f.srcdoc=''; }catch(e){} f.remove();
+  }
   function mountMaps(el){
     fitBoxes(el);
-    el.querySelectorAll('.av-map[data-map]').forEach(function(m){
-      if(m.querySelector('iframe')) return;
-      var p=byId[m.getAttribute('data-map')]; if(!p) return;
-      var mh=(p.kind==='locator') ? locHtml(p) : p.mapHtml; if(!mh) return;
-      var f=doc.createElement('iframe'); f.setAttribute('sandbox','allow-scripts allow-popups'); f.setAttribute('title', p.alt||titleOf(p));
-      f._grp=m.closest ? m.closest('[data-sync]') : null;
-      var shown=false, show=function(){ if(shown) return; shown=true; f.classList.add('av-on'); };
-      f.addEventListener('load', function(){ setTimeout(show, 3000); });
-      f._show=show; frames.push(f);
-      f.srcdoc=mh; m.appendChild(f);
-    });
+    el.querySelectorAll('.av-map[data-map]').forEach(function(m){ if(m.closest('.av-st-maps')) return; mountOne(m); });
     el.querySelectorAll('.av-cmp').forEach(function(c){
       if(c._w) return; c._w=1; var bar=c.querySelector('.av-cmp-bar'); if(!bar) return;
       var setX=function(v){ v=Math.max(2,Math.min(98,v)); c.style.setProperty('--x', v+'%'); bar.setAttribute('aria-valuenow', Math.round(v)); };
@@ -12867,6 +12888,7 @@ function atlasViewer(root, D){
       f.setAttribute('referrerpolicy','strict-origin-when-cross-origin'); f.className='av-vframe';
       var keep=box.querySelector('.av-vlink'); box.innerHTML=''; box.appendChild(f); if(keep) box.appendChild(keep); }; });
   }
+  function unmountMaps(el){ el.querySelectorAll('.av-map[data-map]').forEach(unmountOne); }
   function zoomImg(src){
     var z=doc.createElement('div'); z.className='av-zoom'; z.innerHTML='<img src="'+src+'" alt=""><button class="av-zx" aria-label="Close">✕</button>';
     z.onclick=function(){ z.remove(); }; root.appendChild(z);
@@ -12978,7 +13000,7 @@ function atlasViewer(root, D){
   /* a live map says when its basemap has drawn; only then does it replace the still */
   win.addEventListener('message', function(e){ var d=e.data; if(!d) return;
     frames=frames.filter(function(f){ return f.isConnected; });
-    if(d.momMapReady){ frames.forEach(function(f){ if(f.contentWindow===e.source) f._show(); }); return; }
+    if(d.momMapReady){ frames.forEach(function(f){ if(f.contentWindow===e.source){ f._show(); f._ready=1; if(f._pv) sendView(f, f._pv, false); } }); return; }
     /* linked maps: a move in one frame is passed to the others on the same page */
     if(d.momMove){ var src=null; frames.forEach(function(f){ if(f.contentWindow===e.source) src=f; });
       if(src && src._grp) frames.forEach(function(f){ if(f!==src && f._grp===src._grp && f.contentWindow) try{ f.contentWindow.postMessage({momView:d.momMove},'*'); }catch(_){} }); return; }
@@ -12998,7 +13020,7 @@ function atlasViewer(root, D){
       var refs=[], st=q.steps||[];
       st.forEach(function(s0){ var mp=byId[s0.ref]; if(mp && mp.kind==='map' && refs.indexOf(mp.id)<0){ refs.push(mp.id); stCap[mp.id]='<span class="av-st-capt">'+E(titleOf(mp))+'</span>'+apxHtml(mp); } });
       var stage=refs.map(function(r){ return '<div class="av-stwrap" data-ref="'+E(r)+'">'+mediaHtml(byId[r], true)+'</div>'; }).join('') || '<div class="av-media av-slotempty"><span>No map chosen</span></div>';
-      var steps=st.map(function(s0,k){ return '<div class="av-st-step" data-ref="'+E(s0.ref||'')+'"><div class="av-st-card"><div class="av-st-n">'+(k+1)+'</div>'+(s0.text?'<div class="av-text av-nodc">'+s0.text+'</div>':'')+'</div></div>'; }).join('');
+      var steps=st.map(function(s0,k){ return '<div class="av-st-step" data-ref="'+E(s0.ref||'')+'"'+(vwOk(s0.view)?' data-view="'+E(JSON.stringify(s0.view))+'"':'')+'><div class="av-st-card"><div class="av-st-n">'+(k+1)+'</div>'+(s0.text?'<div class="av-text av-nodc">'+s0.text+'</div>':'')+'</div></div>'; }).join('');
       return '<section class="av-s av-k-story av-sfull" id="av-s'+j+'">'+winBar(q,j)+(q.title?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+'<div class="av-story"><div class="av-st-stage"><div class="av-st-maps">'+stage+'</div><div class="av-st-cap"></div></div><div class="av-st-steps">'+steps+'</div></div></section>';
     };
     seq.forEach(function(q,j){
@@ -13042,15 +13064,28 @@ function atlasViewer(root, D){
     doc.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('input,textarea,select,.av-cmp-bar')) return;
       if(e.key==='PageDown'||(e.key==='ArrowDown'&&e.altKey)){ e.preventDefault(); root.querySelector('.av-sdn').click(); }
       if(e.key==='PageUp'||(e.key==='ArrowUp'&&e.altKey)){ e.preventDefault(); root.querySelector('.av-sup').click(); } });
-    var io=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mountMaps(e.target); io.unobserve(e.target); } }); },{root:root, rootMargin:'300px'}) : null;
-    root.querySelectorAll('.av-s').forEach(function(s){ if(io) io.observe(s); else mountMaps(s); });
+    var io=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mountMaps(e.target); if(e.target._stm) e.target._stm(true); } }); },{root:root, rootMargin:'300px'}) : null;
+    var far=('IntersectionObserver' in win)? new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(!e.isIntersecting){ unmountMaps(e.target); if(e.target._stm) e.target._stm(false); } }); },{root:root, rootMargin:'1600px'}) : null;
+    root.querySelectorAll('.av-s').forEach(function(s){ if(io){ io.observe(s); far.observe(s); } else mountMaps(s); });
     mountMaps(root.querySelector('.av-scover'));
     root.querySelectorAll('.av-story').forEach(function(sty){
       var wraps=[].slice.call(sty.querySelectorAll('.av-stwrap')), stp=[].slice.call(sty.querySelectorAll('.av-st-step')), capEl=sty.querySelector('.av-st-cap');
-      var act=function(step){ var ref=step.getAttribute('data-ref');
+      var secEl=sty.closest('.av-s'), nearNow=false, curStep=null;
+      var vwOf=function(step){ var v=null; try{ v=step.getAttribute('data-view') ? JSON.parse(step.getAttribute('data-view')) : null; }catch(e){} return vwOk(v) ? v : null; };
+      var wrapMap=function(ref){ for(var q=0;q<wraps.length;q++){ if(wraps[q].getAttribute('data-ref')===ref) return wraps[q].querySelector('.av-map[data-map]'); } return null; };
+      var live=function(){ /* the current map, and the next step's if it is a different one; the rest are released */
+        var keep={}, ix=stp.indexOf(curStep);
+        if(curStep && nearNow){ keep[curStep.getAttribute('data-ref')]=1; if(stp[ix+1]) keep[stp[ix+1].getAttribute('data-ref')]=1; }
+        wraps.forEach(function(w){ var m=w.querySelector('.av-map[data-map]'); if(!m) return; if(keep[w.getAttribute('data-ref')]) mountOne(m); else unmountOne(m); }); };
+      var act=function(step){ var ref=step.getAttribute('data-ref'); curStep=step;
         wraps.forEach(function(w){ w.classList.toggle('on', w.getAttribute('data-ref')===ref); });
         stp.forEach(function(x){ x.classList.toggle('on', x===step); });
-        if(capEl) capEl.innerHTML=stCap[ref]||''; };
+        if(capEl) capEl.innerHTML=stCap[ref]||'';
+        var m=wrapMap(ref), v=vwOf(step);
+        if(m){ var mp1=byId[ref]; if(!v && m._moved && mp1 && vwOk(mp1.view0)) v=mp1.view0;   /* back to where the map started */
+          m._moved=!!vwOf(step); m._pv=v; var f=m.querySelector('iframe'); if(f){ f._pv=v; if(f._ready && v) sendView(f, v, true); } }
+        live(); };
+      secEl._stm=function(on){ nearNow=on; live(); };
       if(stp.length) act(stp[0]);
       if('IntersectionObserver' in win){ var sio=new win.IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) act(e.target); }); },{root:root, rootMargin:'-45% 0px -45% 0px', threshold:0}); stp.forEach(function(x){ sio.observe(x); }); }
       else stp.forEach(function(x){ x.addEventListener('click', function(){ act(x); }); });
@@ -13768,22 +13803,24 @@ const AT_FONTS={retro:'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:it
 /* page numbers as the book reader will show them (spreads start on a left page) */
 function atNumbers(){
   const m={}; if(!atlas) return m;
-  const vis=atlas.pages.filter(p=>!p.hidden);
-  let n=(atlas.contents&&vis.length)?1:0; const book=atlas.mode!=='scroll';
+  const book=atlas.mode!=='scroll';
+  const vis=atlas.pages.filter(p=>!p.hidden && !(book && p.kind==='story'));
+  let n=(atlas.contents&&vis.length)?1:0;
   vis.forEach(p=>{
-    if(p.kind==='story' && book){ const k=Math.max(1,(p.steps||[]).length); m[p.id]=Array.from({length:k},(_,x)=>n+1+x); n+=k; return; }
     const sp=book && p.spread && AT_SPREAD[p.kind]; if(sp && (n+1)%2===0) n++; n++; m[p.id]=sp?[n,n+1]:[n]; if(sp) n++;
   });
   return m;
 }
 function atPageLabel(p){ if(p.hidden) return 'unlisted'; const n=atNumbers()[p.id]; return n ? (n.length>1?'pages '+n[0]+'–'+n[n.length-1]:'page '+n[0]) : ''; }
+const atUseCountOf=p=>atlas.pages.some(q=>(q.slots||[]).some(z=>z&&z.ref===p.id)||(q.steps||[]).some(z=>z&&z.ref===p.id));
 /* how many other pages use this (unlisted) map in a panel or a story step */
 function atUseCount(id){ let c=0; atlas.pages.forEach(q=>{ if(q.id===id) return; if((q.slots||[]).some(s=>s&&s.ref===id) || (q.steps||[]).some(s=>s&&s.ref===id)) c++; }); return c; }
 function atListSub(p,nums){
-  const k=AT_KINDS[p.kind].label, n=nums[p.id];
+  const k=AT_KINDS[p.kind].label, n=nums[p.id], scroll=atlas.mode==='scroll';
   if(p.hidden){ const u=atUseCount(p.id); return 'unlisted · '+k+(u?' · used in '+u:''); }
-  if(!n) return k;
-  return (n.length>1 ? 'pages '+n[0]+'–'+n[n.length-1]+(p.kind==='story'?'':' · spread') : 'page '+n[0])+' · '+k;
+  if(p.kind==='story' && !scroll) return 'Scrolling only · skipped in Book';
+  if(scroll || !n) return k;
+  return (n.length>1 ? 'pages '+n[0]+'–'+n[n.length-1]+' · spread' : 'page '+n[0])+' · '+k;
 }
 /* rich text: keep a small set of tags and safe links only */
 function sanitizeRich(html){
@@ -13834,14 +13871,24 @@ function atSanitize(a){
   return out;
 }
 const atIdClean=v=>String(v||'').slice(0,40).replace(/[^A-Za-z0-9_-]/g,'');
+const atViewClean=v=>{ if(!v||!Array.isArray(v.c)||v.c.length!==2) return null; const a=+v.c[0], b=+v.c[1], z=+v.z; if(![a,b,z].every(isFinite)||Math.abs(a)>90||Math.abs(b)>360||z<0||z>24) return null; return {c:[a,b], z:z}; };
+const atImgOr=v=>AT_IMG.test(v||'')?v:'';
 function atSlotsClean(a){
   return (Array.isArray(a)?a:[]).slice(0,6).map(x=>{ x=(x&&typeof x==='object')?x:{};
-    return {t:['map','image','text'].includes(x.t)?x.t:'map', ref:atIdClean(x.ref), src:AT_IMG.test(x.src||'')?x.src:'', text:sanitizeRich(x.text), cap:atS(x.cap,300), alt:atS(x.alt,300)}; });
+    return {t:['map','image','text'].includes(x.t)?x.t:'map', ref:atIdClean(x.ref), src:AT_IMG.test(x.src||'')?x.src:'', text:sanitizeRich(x.text), cap:atS(x.cap,300), alt:atS(x.alt,300), view:atViewClean(x.view), thumb:atImgOr(x.thumb), still:atImgOr(x.still)}; });
 }
 function atStepsClean(a){
-  return (Array.isArray(a)?a:[]).slice(0,12).map(x=>{ x=(x&&typeof x==='object')?x:{}; return {ref:atIdClean(x.ref), text:sanitizeRich(x.text)}; });
+  return (Array.isArray(a)?a:[]).slice(0,12).map(x=>{ x=(x&&typeof x==='object')?x:{}; return {ref:atIdClean(x.ref), text:sanitizeRich(x.text), view:atViewClean(x.view), thumb:atImgOr(x.thumb), still:atImgOr(x.still)}; });
 }
 function atBmLabel(k){ const b=AT_BMS.find(x=>x[0]===k); return b?b[1].replace(/\s*\(.*\)$/,''):''; }
+/* roughly how much map data the atlas holds: each live map page keeps its own copy of its layers */
+const atWt=new WeakMap();
+function atWeight(p){
+  if(p.kind!=='map'||!p.snap) return 0;
+  let w=atWt.get(p.snap); if(w==null){ try{ w=JSON.stringify(p.snap.layers||p.snap.gLayers||p.snap.pLayers||[]).length; }catch(_){ w=0; } atWt.set(p.snap,w); }
+  return w;
+}
+function atTotalMB(){ return atlas ? atlas.pages.reduce((t,p)=>t+atWeight(p),0)/1048576 : 0; }
 /* what the tool knows about a map page, for the caption details and the sources page */
 function atMetaFor(p){
   const m={layers:Array.isArray(p.layerNames)?p.layerNames.slice(0,40):[], bm:'', proj:'', date:p.captured||null};
@@ -13866,7 +13913,7 @@ function atFootprint(p){
 }
 /* the pages as the reader sees them: details attached, raw snapshots dropped, finished interactive maps when asked for */
 function atViewPages(a, maps){
-  return a.pages.map(p=>{ const q=Object.assign({}, p, {meta:atMetaFor(p), fp:atFootprint(p)}); delete q.snap; q.mapHtml=(maps && p.kind==='map')?atMapHtml(p):''; return q; });
+  return a.pages.map(p=>{ const q=Object.assign({}, p, {meta:atMetaFor(p), fp:atFootprint(p), view0:(p.kind==='map'&&p.snap&&p.snap.view&&!p.snap.proj&&!p.snap.globe&&p.snap.view.c)?{c:[p.snap.view.c[0],p.snap.view.c[1]],z:p.snap.view.z}:null}); delete q.snap; q.mapHtml=(maps && p.kind==='map')?atMapHtml(p):''; return q; });
 }
 function atLocBase(){
   const o={}; AT_LOC_BMS.forEach(([k])=>{ const d=BASEMAPS[k]; if(d && d.kind==='raster') o[k]={u:d.urls[0], a:String(d.attr||''), m:d.max||18, n:d.maxNative||d.max||18}; });
@@ -13925,25 +13972,96 @@ function atThumbHtml(p){
   if(!AT_IMG.test(src||'') && p.kind==='story') for(const s0 of (p.steps||[])){ const t=th(atlas.pages.find(q=>q.id===s0.ref)); if(AT_IMG.test(t||'')){ src=t; break; } }
   return AT_IMG.test(src||'') ? '<img src="'+src+'" alt="">' : '<span>'+AT_KINDS[p.kind].icon+'</span>';
 }
+const atStub=(kind,extra)=>Object.assign({id:uid(), kind, title:'', caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null}, extra||{});
+async function atStartNew(mode, tpl){
+  atlas=atDefault(); atlas.mode=mode==='scroll'?'scroll':'book';
+  const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec && rec.name) atlas.title=rec.name;
+  if(tpl==='series'){
+    const s1=atStub('section',{title:'Introduction', text:'<p>Say what this atlas is about, who it is for and what readers will find.</p>'});
+    const s2=atStub('section',{title:'Maps', text:'<p>Introduce the maps in this part.</p>'});
+    const s3=atStub('sources',{title:'Sources & notes', srcLayers:true});
+    atlas.pages=[s1,s2,s3]; atSel=s2.id;
+  }
+  atDirty(); renderAtlas(); mlog('compose','Started the atlas "'+atlas.title+'" ('+(atlas.mode==='scroll'?'scrolling':'book')+' style).');
+  if(tpl==='series' && mkLayers.some(l=>l.visible)) await atAddPage('map');
+}
+/* the reading style: always visible above the page list */
+function renderAtStyleBar(){
+  const b=document.getElementById('atStyleBar'); if(!b) return; if(!atlas){ b.innerHTML=''; return; }
+  const m=atlas.mode==='scroll'?'scroll':'book';
+  b.innerHTML='<div class="at-stylebar"><span class="at-sbl">Reads as</span><div class="at-seg" role="radiogroup" aria-label="Reading style">'+
+    '<button type="button" data-m="book" role="radio" aria-checked="'+(m==='book')+'"'+(m==='book'?' class="on"':'')+' title="Pages turn in two-page spreads">📖 Book</button>'+
+    '<button type="button" data-m="scroll" role="radio" aria-checked="'+(m==='scroll')+'"'+(m==='scroll'?' class="on"':'')+' title="One long page with section tabs">⇅ Scrolling</button></div></div>';
+  b.querySelectorAll('button').forEach(x=>x.onclick=()=>{ if(x.dataset.m!==m) atAskStyle(x.dataset.m); });
+}
+function atAskStyle(to){
+  const stories=atlas.pages.filter(p=>p.kind==='story'), body=document.getElementById('atStyleBody');
+  document.getElementById('atStyleTitle').textContent= to==='book' ? 'Change to Book?' : 'Change to Scrolling?';
+  const li=a=>'<ul class="at-sul">'+a.map(t=>'<li>'+t+'</li>').join('')+'</ul>';
+  let h;
+  if(to==='book'){
+    h='<p>Pages will turn in two-page spreads, with page numbers and a contents page.</p>'+li(['Pages you marked <b>Full spread</b> will fill both facing pages.','Sections stay as chapter pages and are indented in the contents.','Nothing else is removed. You can change back at any time.']);
+    if(stories.length) h+='<p><b>'+stories.length+' scrolling stor'+(stories.length>1?'ies':'y')+'</b> can’t be shown in a book. What should happen?</p>'+
+      '<label class="at-rad"><input type="radio" name="atStoryAct" value="keep" checked> <span><b>Keep them, but skip them in the book</b><br><span class="kv">They stay in the list, greyed, and come back if you change to Scrolling.</span></span></label>'+
+      '<label class="at-rad"><input type="radio" name="atStoryAct" value="convert"> <span><b>Turn each step into a map-and-text page</b><br><span class="kv">The story is replaced by ordinary pages. This can’t be undone by changing back.</span></span></label>';
+  } else {
+    h='<p>The atlas becomes one long page with a tab bar. It can still be saved as a PDF.</p>'+li(['<b>Scrolling stories</b> become available: a pinned map that changes as readers scroll.','Sections become tabs; page numbers and spreads are not used (your spread settings are kept in case you change back).','Maps and pages keep their content.']);
+    if(stories.length) h+='<p class="kv">Your '+stories.length+' scrolling stor'+(stories.length>1?'ies':'y')+' will show again.</p>';
+  }
+  body.innerHTML=h; openModal('modal-atstyle');
+  document.getElementById('atStyleNo').onclick=()=>closeModal('modal-atstyle');
+  document.getElementById('atStyleYes').onclick=()=>{
+    const act=(body.querySelector('input[name=atStoryAct]:checked')||{}).value;
+    if(to==='book' && act==='convert') atConvertStories();
+    atlas.mode=to; atDirty(); closeModal('modal-atstyle');
+    if(atSel!=='cover'&&atSel!=='back'&&atSel!=='contents' && !atCur()) atSel='cover';
+    renderAtlas(); mlog('compose','Changed the atlas to '+(to==='scroll'?'scrolling':'book')+' style.');
+  };
+}
+function atConvertStories(){
+  const out=[];
+  atlas.pages.forEach(p=>{
+    if(p.kind!=='story'){ out.push(p); return; }
+    const n=(p.steps||[]).length;
+    (p.steps||[]).forEach((st,k)=>out.push(atStub('panels',{title:(p.title||'Story')+(n>1?' ('+(k+1)+')':''), tpl:'one-text', sync:false, spread:false,
+      slots:[{t:'map', ref:st.ref, src:'', text:'', cap:'', alt:'', view:st.view||null, thumb:st.thumb||'', still:st.still||''},{t:'text', ref:'', src:'', text:st.text||'', cap:'', alt:''}]})));
+  });
+  atlas.pages=out;
+}
 function renderAtlas(){
   const host=document.getElementById('module-atlas'); if(!host) return;
   if(!atlas){
     document.getElementById('atList').innerHTML='';
-    document.getElementById('atBody').innerHTML='<div class="fc-empty"><h3>Make an atlas</h3><p>A book of maps: live maps from Map Maker, layouts from Map Composer, images and text — read with turning pages or as one scrolling page.</p><button class="btn" id="atStart">Start an atlas</button></div>';
-    document.getElementById('atSettings').innerHTML='<div class="kv" style="padding:12px 4px;line-height:1.5"><b>Atlas settings</b> appear here once the atlas is started: how it reads (turning pages or scrolling), its design, and preview.</div>';
-    document.getElementById('atStart').onclick=()=>{ atlas=atDefault(); const rec=projectsCache.find(p=>p.id===currentProjectId); if(rec && rec.name) atlas.title=rec.name; atDirty(); renderAtlas(); mlog('compose','Started the atlas "'+atlas.title+'".'); };
+    document.getElementById('atStyleBar').innerHTML='';
+    atEnsureCss();
+    document.getElementById('atBody').innerHTML='<div class="at-start"><h3>Make an atlas</h3><p class="kv">A collection of live maps, layouts, images and text, with a cover and contents. First choose how it will be read; you can change this at any time.</p>'+
+      '<div class="at-sgroup" role="radiogroup" aria-label="Reading style">'+
+        '<button type="button" class="at-scard on" data-m="book" role="radio" aria-checked="true"><span class="at-sic">📖</span><b>Book</b><span>Pages turn in two-page spreads, like a printed atlas. Page numbers, a contents page, full-spread maps, and a PDF.</span></button>'+
+        '<button type="button" class="at-scard" data-m="scroll" role="radio" aria-checked="false"><span class="at-sic">⇅</span><b>Scrolling</b><span>One long page with section tabs. Adds scrolling stories where a pinned map changes as readers scroll. Works well on phones, and still makes a PDF.</span></button></div>'+
+      '<h4>Start from</h4><div class="at-sgroup" role="radiogroup" aria-label="Starting point">'+
+        '<button type="button" class="at-scard on" data-t="blank" role="radio" aria-checked="true"><b>Blank</b><span>Just the cover and contents. Add pages as you go.</span></button>'+
+        '<button type="button" class="at-scard" data-t="series" role="radio" aria-checked="false"><b>Map series</b><span>An introduction section, a maps section (with the Map Maker view if layers are on), and a sources page.</span></button></div>'+
+      '<div class="at-go"><button class="btn" id="atStart">Start the atlas</button></div></div>';
+    const pick=(attr)=>{ const bs=[...document.querySelectorAll('.at-scard['+attr+']')]; bs.forEach(b=>b.onclick=()=>bs.forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-checked',x===b?'true':'false'); })); };
+    pick('data-m'); pick('data-t');
+    document.getElementById('atSettings').innerHTML='<div class="kv" style="padding:12px 4px;line-height:1.5"><b>Atlas settings</b> appear here once the atlas is started: its design, captions and a preview.</div>';
+    document.getElementById('atStart').onclick=()=>atStartNew(document.querySelector('.at-scard[data-m].on').dataset.m, document.querySelector('.at-scard[data-t].on').dataset.t);
     return;
   }
-  renderAtList(); renderAtBody(); renderAtSettings();
+  renderAtStyleBar(); renderAtList(); renderAtBody(); renderAtSettings();
 }
+let atShowUnl=false;
 function renderAtList(){
   const box=document.getElementById('atList');
+  box.classList.toggle('at-hide-unl', !atShowUnl);
   const nums=atNumbers();
   box.innerHTML='<div class="at-item'+(atSel==='cover'?' active':'')+'" data-id="cover" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+(atlas.coverImage?' url('+atlas.coverImage+') center/cover':'')+'"></div><div class="at-meta"><b>Cover</b><span>'+esc(atlas.title)+'</span></div></div>'+
     (atlas.contents&&atlas.pages.length?'<div class="at-item'+(atSel==='contents'?' active':'')+'" data-id="contents" role="button" tabindex="0"><div class="at-th">'+(atlas.contentsImage?'<img src="'+atlas.contentsImage+'" alt="">':'<span>☰</span>')+'</div><div class="at-meta"><b>'+esc(atlas.contentsTitle||'Contents')+'</b><span>page 1 · list made automatically</span></div><button class="at-x at-xc" data-delc="1" title="Remove the contents page" aria-label="Remove contents page">×</button></div>':'')+
     atlas.pages.map((p,i)=>'<div class="at-item at-pg'+(atSel===p.id?' active':'')+(p.hidden?' at-unl':'')+(p.kind==='section'?' at-secrow':'')+'" data-id="'+esc(p.id)+'" data-i="'+i+'" role="button" tabindex="0" title="Drag to move this page"><span class="at-grip" aria-hidden="true">⠿</span><div class="at-th">'+atThumbHtml(p)+'</div><div class="at-meta"><b>'+esc(p.title||AT_KINDS[p.kind].label)+'</b><span>'+atListSub(p,nums)+'</span></div><button class="at-x" data-del="'+esc(p.id)+'" title="Remove this page" aria-label="Remove page">×</button></div>').join('')+
+    (atlas.pages.some(p=>p.hidden)?'<button type="button" class="at-unltog" id="atUnlTog">'+(atShowUnl?'Hide':'Show')+' unlisted maps ('+atlas.pages.filter(p=>p.hidden).length+')</button>':'')+
     (atlas.pages.length?'':'<p class="kv">No pages yet. Use + Add page above, or Send / Export ▾ in Map Maker or Map Composer.</p>')+
     '<div class="at-item'+(atSel==='back'?' active':'')+'" data-id="back" role="button" tabindex="0"><div class="at-th at-cvth" style="background:'+atlas.coverColor+'"></div><div class="at-meta"><b>Back cover</b><span>'+esc(((atlas.backHtml||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()||atlas.backText||'').slice(0,40)||'no text yet')+'</span></div></div>';
+  const ut=document.getElementById('atUnlTog'); if(ut) ut.onclick=()=>{ atShowUnl=!atShowUnl; renderAtList(); };
   const pick=id=>{ atSel=id; renderAtList(); renderAtBody(); };
   box.querySelectorAll('.at-item[data-id]').forEach(it=>{
     it.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(it.dataset.id); } };
@@ -13956,9 +14074,10 @@ function renderAtList(){
         if(!drag){ if(Math.abs(ev.clientY-y0)<6) return; drag=true; it.classList.add('dragging'); line=document.createElement('div'); line.className='at-dropline'; box.appendChild(line); try{ it.setPointerCapture(e.pointerId); }catch(_){} }
         ev.preventDefault();
         to=items.length;
-        for(let k=0;k<items.length;k++){ const r=items[k].getBoundingClientRect(); if(ev.clientY<r.top+r.height/2){ to=k; break; } }
-        const ref= to<items.length ? items[to].getBoundingClientRect() : items[items.length-1].getBoundingClientRect(), br=box.getBoundingClientRect();
-        line.style.top=((to<items.length?ref.top-4:ref.bottom+2)-br.top+box.scrollTop)+'px';
+        for(let k=0;k<items.length;k++){ const r=items[k].getBoundingClientRect(); if(!r.height) continue; if(ev.clientY<r.top+r.height/2){ to=k; break; } }
+        const vis=items.filter(x=>x.getBoundingClientRect().height), nx=items.slice(to).find(x=>x.getBoundingClientRect().height);
+        const ref= nx ? nx.getBoundingClientRect() : vis[vis.length-1].getBoundingClientRect(), br=box.getBoundingClientRect();
+        line.style.top=((nx?ref.top-4:ref.bottom+2)-br.top+box.scrollTop)+'px';
         const lr=box.parentNode.getBoundingClientRect();   /* scroll the list while dragging near its edges */
         if(ev.clientY<lr.top+40) box.parentNode.scrollTop-=10; else if(ev.clientY>lr.bottom-40) box.parentNode.scrollTop+=10;
       };
@@ -13979,9 +14098,10 @@ function renderAtList(){
     x.onpointerdown=e=>e.stopPropagation();
     x.onclick=e=>{
       e.stopPropagation();
-      if(!x._armed){ x._armed=true; x.classList.add('armed'); x.textContent='Remove?'; setTimeout(()=>{ if(x.isConnected){ x._armed=false; x.classList.remove('armed'); x.textContent='×'; } }, 3000); return; }
+      if(!x._armed){ x._armed=true; x.classList.add('armed'); x.textContent='Remove?'; const u0=atUseCount(x.dataset.del); if(u0) toast('This map is used in '+u0+' other page'+(u0>1?'s':'')+'. Removing it leaves those panels empty.', 5000); setTimeout(()=>{ if(x.isConnected){ x._armed=false; x.classList.remove('armed'); x.textContent='×'; } }, 3000); return; }
       const i=atlas.pages.findIndex(p=>p.id===x.dataset.del); if(i<0) return;
       const gone=atlas.pages.splice(i,1)[0];
+      { const u=atlas.pages.filter(q=>(q.slots||[]).some(z=>z&&z.ref===gone.id)||(q.steps||[]).some(z=>z&&z.ref===gone.id)).length; if(u) setTimeout(()=>toast('That map was used in '+u+' other page'+(u>1?'s':'')+'; those panels are now empty. Undo puts it back.', 7000), 50); }
       if(atSel===gone.id) atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover');
       atDirty(); renderAtlas();
       mlog('compose','Removed the atlas page "'+(gone.title||'Untitled')+'".');
@@ -14021,6 +14141,7 @@ function atBindImg(id, max, set){
   fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ set(await atReadImage(f, max)); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } };
   const x=document.getElementById(id+'X'); if(x) x.onclick=()=>{ set(''); atDirty(); renderAtlas(); };
 }
+let atAdvOpen=false;
 function renderAtBody(){
   const body=document.getElementById('atBody');
   if(atSel==='back'){ renderAtBack(body); return; }
@@ -14070,32 +14191,37 @@ function renderAtBody(){
       '<p class="kv at-meta2">YouTube and Vimeo videos play in the atlas, with an “Open on YouTube” link as a fallback. Any other web page appears as a link that opens in a new tab. In a PDF, the address is printed.</p>');
   else if(p.kind==='image') srcCard=atCard('Image',
       '<div class="at-btnrow"><button class="btn small" id="atReplace">⬆ Replace image</button><input type="file" id="atImgIn" accept="image/*" hidden></div><p class="kv at-meta2">Readers can click the image to enlarge it.</p>');
-  const media0=AT_SPREAD[p.kind];
+  const media0=AT_SPREAD[p.kind], book=atlas.mode!=='scroll';
   const segH=(id,opts,v,dis)=>'<div class="at-seg at-segs" id="'+id+'">'+opts.map(o=>'<button type="button" data-v="'+o[0]+'"'+(v===o[0]?' class="on"':'')+(dis?' disabled':'')+(o[2]?' title="'+o[2]+'"':'')+'>'+o[1]+'</button>').join('')+'</div>';
-  const spreadOn=!!(p.spread&&media0), boxOn=spreadOn ? (p.spreadText==='box') : (p.pageText==='box');
-  const layCard= p.kind==='text' ? atCard('Text','<div id="atRich"></div>','at-card-wide') : atCard('Page layout and text',
-    '<div class="at-lt">'+
-      '<div class="at-ltc">'+
-        '<div class="at-swrow"><label class="at-chk at-sw"><input type="checkbox" id="atFill"'+(p.fill?' checked':'')+'><i></i> <b>Fill to margins</b></label>'+
-        (media0?'<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b></label>':'')+'</div>'+
-        '<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind==='embed'?'video':p.kind)]], p.tOver?'on':'')+'</div>'+
-        (p.tOver?'<div class="at-f at-sub"><div class="at-2col">'+segH('atTSt',[['card','Card'],['banner','Banner'],['halo','Large']], p.tOver)+
-          '<select id="atTPos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="bl">Bottom left</option></select></div></div>':'')+
-        '<div class="at-f">Caption and text'+(spreadOn
+  const spreadOn=!!(book&&p.spread&&media0), boxOn=book&&(spreadOn ? (p.spreadText==='box') : (p.pageText==='box'));
+  const pvNote=(book?'Preview of the page'+(spreadOn?' (both pages)':''):'Preview of this section')+'. ';
+  let capCard, advCard='';
+  if(p.kind==='text') capCard=atCard('Text','<div id="atRich"></div>','at-card-wide');
+  else {
+    capCard=atCard('Caption and text',
+      '<div class="at-lt"><div class="at-ltc">'+
+        '<label class="at-f"><span class="at-fl">Caption <span class="kv">optional</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>'+
+        (['map','layout','image'].includes(p.kind)?'<label class="at-f"><span class="at-fl">Source or credit <span class="kv">shown under the caption</span></span><input type="text" id="atSrcTx" maxlength="300" value="'+esc(p.source||'')+'" placeholder="e.g. data provider, year"></label>':'')+
+        '<div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div><div id="atRich"></div>'+
+      '</div><div class="at-ltp"><div class="at-lpwrap'+(spreadOn?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(boxOn?'Drag the text box to move it; drag its corner to resize. ':'')+pvNote+'Maps show as pictures here; readers get the live maps.</p></div></div>','at-card-wide');
+    const titleCtl='<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind==='embed'?'video':p.kind)]], p.tOver?'on':'')+'</div>'+
+      (p.tOver?'<div class="at-f at-sub"><div class="at-2col">'+segH('atTSt',[['card','Card'],['banner','Banner'],['halo','Large']], p.tOver)+
+        '<select id="atTPos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="bl">Bottom left</option></select></div></div>':'');
+    const bookCtl= book ? '<div class="at-swrow"><label class="at-chk at-sw"><input type="checkbox" id="atFill"'+(p.fill?' checked':'')+'><i></i> <b>Fill to margins</b></label>'+
+        (media0?'<label class="at-chk at-sw"><input type="checkbox" id="atSpread"'+(p.spread?' checked':'')+'><i></i> <b>Full spread</b></label>':'')+'</div>' : '';
+    const placeCtl= book ? '<div class="at-f">Caption and text'+(spreadOn
           ? segH('atSpText',[['column','Column','A column on the right-hand page'],['box','Text box','A box you place over the map'],['split','Two columns','One column on each page, below']], p.spreadText||'column')
           : segH('atPgText',[['below','Below'],['box','Text box','A box you place over the '+(p.kind==='map'?'map':p.kind)]], p.pageText==='box'?'box':'below'))+'</div>'+
-        (boxOn?'<div class="at-f at-sub">Box style'+segH('atBoxSt',[['design','Page'],['glass','Frosted'],['dark','Dark']], p.boxStyle||'design')+'</div>':'')+
-        '<label class="at-f"><span class="at-fl">Caption <span class="kv">optional</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>'+
-      '</div>'+
-      '<div class="at-ltp"><div class="at-lpwrap'+(spreadOn?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(boxOn?'Drag the text box to move it; drag its corner to resize. ':'')+'Preview of the page as printed'+(spreadOn?' (both pages)':'')+'.</p></div>'+
-    '</div>'+
-    '<div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div><div id="atRich"></div>', 'at-card-wide');
+        (boxOn?'<div class="at-f at-sub">Box style'+segH('atBoxSt',[['design','Page'],['glass','Frosted'],['dark','Dark']], p.boxStyle||'design')+'</div>':'') : '';
+    advCard='<details class="at-adv" id="atAdv"'+(atAdvOpen?' open':'')+'><summary>Layout options</summary><div class="at-advin">'+bookCtl+titleCtl+placeCtl+'</div></details>';
+  }
+  const readCard=atReaderCard(p);
   body.innerHTML='<div class="at-ed">'+
     '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+' title" aria-label="Page title">'+
       '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light at-delbtn" id="atDel" title="Delete this page">🗑 Delete</button></div></div>'+
     media+
-    ((srcCard||atReaderCard(p))?'<div class="at-cards">'+srcCard+atReaderCard(p)+'</div>':'')+
-    layCard+
+    (srcCard?'<div class="at-cards">'+srcCard+'</div>':'')+
+    capCard+advCard+readCard+
     '</div>';
   const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
   if(p.kind==='map' && p.snap) loadMap();
@@ -14107,6 +14233,7 @@ function renderAtBody(){
   let pt=null; const prevSoon=()=>{ clearTimeout(pt); pt=setTimeout(prev, 250); };
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); prevSoon(); };
   const cap=document.getElementById('atCap'); if(cap) cap.oninput=e=>{ p.caption=e.target.value; atDirty(); prevSoon(); };
+  const adv=document.getElementById('atAdv'); if(adv) adv.addEventListener('toggle',()=>{ atAdvOpen=adv.open; });
   [['atAlt','alt'],['atSrcTx','source'],['atPlaces','places']].forEach(([id,k])=>{ const el=document.getElementById(id); if(el) el.oninput=e=>{ p[k]=e.target.value; atDirty(); prevSoon(); }; });
   const hid=document.getElementById('atHid'); if(hid) hid.onchange=()=>{ p.hidden=hid.checked; atDirty(); renderAtlas(); if(p.hidden) toast('This map is unlisted: it is not a page of its own. Use it in a multi-map page or a story.', 4500); };
   const spc=document.getElementById('atSpread'); if(spc) spc.onchange=()=>{ p.spread=spc.checked; atDirty(); renderAtList(); renderAtBody(); };
@@ -14124,7 +14251,7 @@ function renderAtBody(){
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   const del=document.getElementById('atDel');
   del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; del.classList.add('armed'); setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.classList.remove('armed'); del.textContent='🗑 Delete'; } },3500); return; }
-    atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
+    atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); if(atUseCountOf(p)) toast('That map was used in other pages; those panels are now empty.', 6000); };
   const rc=document.getElementById('atRecap'); if(rc) rc.onclick=()=>{ if(p.kind==='map') atCaptureMap(p); else atCaptureLayout(p); };
   const vu=document.getElementById('atVurl');
   if(vu) vu.onchange=()=>{ const v=atUrlClean(vu.value); if(vu.value.trim() && !v){ toast('Paste the full address, starting with https://'); return; }
@@ -14135,11 +14262,11 @@ function renderAtBody(){
 /* ---- v87: editors for the new page types ---- */
 function atReaderCard(p){
   if(!['map','layout','image'].includes(p.kind)) return '';
-  return atCard('For readers',
+  const used=!!(p.alt||p.places||p.hidden);
+  return '<details class="at-adv" id="atRd"'+(used?' open':'')+'><summary>For readers <span class="kv">alt text, places, unlisted</span></summary><div class="at-advin">'+
     '<label class="at-f"><span class="at-fl">Alt text <span class="kv">describes it for screen readers</span></span><input type="text" id="atAlt" maxlength="300" value="'+esc(p.alt||'')+'"></label>'+
-    '<label class="at-f"><span class="at-fl">Source or credit <span class="kv">shown under the caption</span></span><input type="text" id="atSrcTx" maxlength="300" value="'+esc(p.source||'')+'" placeholder="e.g. data provider, year"></label>'+
     '<label class="at-f"><span class="at-fl">Places <span class="kv">for the index; separate with commas</span></span><input type="text" id="atPlaces" maxlength="200" value="'+esc(p.places||'')+'"></label>'+
-    (p.kind==='map'?'<label class="at-chk"><input type="checkbox" id="atHid"'+(p.hidden?' checked':'')+'> Use only inside other pages <span class="kv">not a page of its own</span></label>':''));
+    (p.kind==='map'?'<label class="at-chk"><input type="checkbox" id="atHid"'+(p.hidden?' checked':'')+'> Use only inside other pages <span class="kv">not a page of its own</span></label>':'')+'</div></details>';
 }
 function atHeadHtml(p,i,ph){
   return '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(ph||(AT_KINDS[p.kind].label+' title'))+'" aria-label="Page title">'+
@@ -14151,9 +14278,9 @@ function atBindHead(p,i,onTitle){
   document.getElementById('atDown').onclick=()=>{ atlas.pages.splice(i+1,0,atlas.pages.splice(i,1)[0]); atDirty(); renderAtlas(); };
   const del=document.getElementById('atDel');
   del.onclick=()=>{ if(!del._armed){ del._armed=true; del.textContent='Click again to delete'; del.classList.add('armed'); setTimeout(()=>{ if(del.isConnected){ del._armed=false; del.classList.remove('armed'); del.textContent='🗑 Delete'; } },3500); return; }
-    atlas.pages.splice(i,1); atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); };
+    const gone=atlas.pages.splice(i,1)[0]; atSel=atlas.pages[i]?atlas.pages[i].id:(atlas.pages[i-1]?atlas.pages[i-1].id:'cover'); atDirty(); renderAtlas(); if(atUseCountOf(gone)) toast('That map was used in other pages; those panels are now empty.', 6000); };
 }
-const atPrevBox=(spread,note)=>'<div class="at-ltp"><div class="at-lpwrap'+(spread?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(note||'Preview of the page as printed')+(spread?' (both pages)':'')+'. Maps show as pictures here; readers get the live maps.</p></div>';
+const atPrevBox=(spread,note)=>'<div class="at-ltp"><div class="at-lpwrap'+(spread&&atlas.mode!=='scroll'?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(note||(atlas.mode==='scroll'?'Preview of this section':'Preview of the page'))+(spread&&atlas.mode!=='scroll'?' (both pages)':'')+'. Maps show as pictures here; readers get the live maps.</p></div>';
 function atPrevSoon(p){ clearTimeout(atPrevSoon.t); atPrevSoon.t=setTimeout(()=>atPagePreview(p), 250); }
 const atSwitch=(id,label,sub,on)=>'<label class="at-chk at-sw"><input type="checkbox" id="'+id+'"'+(on?' checked':'')+'><i></i> <b>'+label+'</b>'+(sub?' <span class="kv">'+sub+'</span>':'')+'</label>';
 function atTplSvg(k){
@@ -14205,38 +14332,40 @@ function renderAtLocator(body,p,i){
     atCard('Locator map & index','<div class="at-lt"><div class="at-ltc"><p class="kv at-meta2">A key map with a numbered box for every map page, panel and story step. Readers click a box to go to that page, and an index lists them.</p>'+
       '<label class="at-f">Map underneath<select id="atLocBm">'+AT_LOC_BMS.map(b=>'<option value="'+b[0]+'"'+(p.locBm===b[0]?' selected':'')+'>'+b[1]+'</option>').join('')+'</select></label>'+
       atSwitch('atLocIdx','Show the index','place names from each page’s “Places” field, or else map titles',p.idx!==false)+
-      atSwitch('atSpread','Full spread','across both pages in the book',!!p.spread)+
+      (atlas.mode==='scroll'?'':atSwitch('atSpread','Full spread','across both pages in the book',!!p.spread))+
       '<p class="kv at-meta2">'+nOk+' of '+maps.length+' map page'+(maps.length===1?'':'s')+' can be located'+(nOk<maps.length?' (projected views have no map extent)':'')+'.</p></div>'+atPrevBox(!!p.spread)+'</div>','at-card-wide')+
     atCard('Introduction','<div id="atRich"></div>','at-card-wide')+'</div>';
   atBindHead(p,i,()=>atPrevSoon(p));
   document.getElementById('atLocBm').onchange=e=>{ p.locBm=e.target.value; atDirty(); };
   document.getElementById('atLocIdx').onchange=e=>{ p.idx=e.target.checked; atDirty(); atPrevSoon(p); };
-  document.getElementById('atSpread').onchange=e=>{ p.spread=e.target.checked; atDirty(); renderAtlas(); };
+  { const sp=document.getElementById('atSpread'); if(sp) sp.onchange=e=>{ p.spread=e.target.checked; atDirty(); renderAtlas(); }; }
   atRichEditor(document.getElementById('atRich'), p.text, v=>{ p.text=v; atDirty(); atPrevSoon(p); });
   atPagePreview(p);
 }
 function renderAtPanels(body,p,i){
   atEnsureCss(); const tpl=atSlotsFit(p), n=tpl.def.length, cmp=tpl.k==='compare';
   const slotBox=k=>{ const s=p.slots[k]; let inner='';
-    if(s.t==='map') inner='<label class="at-f">Map<select class="atSlRef" data-k="'+k+'">'+atRefOptions('map',s.ref)+'</select></label><div class="at-btnrow"><button type="button" class="btn small light atSlCap" data-k="'+k+'" title="Use the layers and view in Map Maker now, as a new unlisted map">🧭 Use the Map Maker view now</button></div>';
+    if(s.t==='map') inner='<label class="at-f">Map<select class="atSlRef" data-k="'+k+'">'+atRefOptions('map',s.ref)+'</select></label><div class="at-btnrow"><button type="button" class="btn small light atSlPos" data-k="'+k+'" title="Keep this map’s data and take only Map Maker’s present position (light on memory)"'+(s.ref?'':' disabled')+'>⌖ Map Maker’s position</button><button type="button" class="btn small light atSlCap" data-k="'+k+'" title="Capture the layers and view in Map Maker now as a new unlisted map">🧭 New map from Map Maker</button></div>'+(s.view?'<p class="kv at-meta2">Position set. <a href="#" class="atSlClr" data-k="'+k+'">Clear</a></p>':'');
     else if(s.t==='image') inner='<label class="at-f">Image page<select class="atSlRef" data-k="'+k+'">'+atRefOptions('image',s.ref)+'</select></label><div class="at-btnrow"><button type="button" class="btn small light atSlUp" data-k="'+k+'">⬆ Upload an image</button><input type="file" accept="image/*" hidden class="atSlFile" data-k="'+k+'"></div>'+(s.src?'<p class="kv at-meta2">An uploaded image is in use.</p>':'');
     else inner='<div class="atSlRich" data-k="'+k+'"></div>';
     return '<div class="at-slotbox"><div class="at-slot-h"><b>Panel '+(k+1)+'</b>'+(cmp?'<span class="kv">'+(k?'right of the divider':'left of the divider')+'</span>':'<div class="at-seg at-segs atSlT" data-k="'+k+'">'+[['map','Map'],['image','Image'],['text','Text']].map(o=>'<button type="button" data-v="'+o[0]+'"'+(s.t===o[0]?' class="on"':'')+'>'+o[1]+'</button>').join('')+'</div>')+'</div>'+inner+
       (s.t!=='text'?'<label class="at-f">Caption <input type="text" class="atSlCapIn" data-k="'+k+'" maxlength="300" value="'+esc(s.cap||'')+'"></label>'+(s.t==='image'?'<label class="at-f">Alt text <input type="text" class="atSlAlt" data-k="'+k+'" maxlength="300" value="'+esc(s.alt||'')+'"></label>':''):'')+'</div>'; };
   body.innerHTML='<div class="at-ed">'+atHeadHtml(p,i,'Page title (optional)')+
     atCard('Layout','<div class="at-lt"><div class="at-ltc"><div class="at-f">Arrangement<div class="at-tpls">'+AT_TPLS.map(t=>'<button type="button" class="at-tpl'+(t.k===tpl.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.d)+'">'+atTplSvg(t.k)+'<span>'+esc(t.n)+'</span></button>').join('')+'</div></div>'+
-      atSwitch('atSpread','Full spread','across both pages in the book',!!p.spread)+
+      (atlas.mode==='scroll'?'':atSwitch('atSpread','Full spread','across both pages in the book',!!p.spread))+
       (cmp?'<p class="kv at-meta2">Readers drag the divider to compare; the two maps pan and zoom together.</p>':atSwitch('atSync','Link the maps','pan and zoom together',!!p.sync))+
       '</div>'+atPrevBox(!!p.spread)+'</div>','at-card-wide')+
     atCard('Panels','<div class="at-slots">'+p.slots.slice(0,n).map((_,k)=>slotBox(k)).join('')+'</div>','at-card-wide')+'</div>';
   atBindHead(p,i,()=>atPrevSoon(p));
   body.querySelectorAll('.at-tpl').forEach(b=>b.onclick=()=>{ p.tpl=b.dataset.t; atSlotsFit(p); atDirty(); renderAtBody(); });
-  document.getElementById('atSpread').onchange=e=>{ p.spread=e.target.checked; atDirty(); renderAtlas(); };
+  { const sp=document.getElementById('atSpread'); if(sp) sp.onchange=e=>{ p.spread=e.target.checked; atDirty(); renderAtlas(); }; }
   const sy=document.getElementById('atSync'); if(sy) sy.onchange=e=>{ p.sync=e.target.checked; atDirty(); };
   body.querySelectorAll('.atSlT').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{ p.slots[+g.dataset.k].t=b.dataset.v; atDirty(); renderAtBody(); }));
-  body.querySelectorAll('.atSlRef').forEach(sel=>sel.onchange=()=>{ const s=p.slots[+sel.dataset.k]; s.ref=sel.value; if(s.t==='image') s.src=''; atDirty(); atPrevSoon(p); });
-  body.querySelectorAll('.atSlCap').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k, np=await atCaptureHidden(); if(!np) return; p.slots[k].ref=np.id; atDirty(); renderAtlas();
+  body.querySelectorAll('.atSlRef').forEach(sel=>sel.onchange=()=>{ const s=p.slots[+sel.dataset.k]; s.ref=sel.value; s.view=null; s.thumb=''; s.still=''; if(s.t==='image') s.src=''; atDirty(); renderAtBody(); });
+  body.querySelectorAll('.atSlCap').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k, np=await atCaptureHidden(); if(!np) return; p.slots[k].ref=np.id; p.slots[k].view=null; p.slots[k].thumb=''; p.slots[k].still=''; atDirty(); renderAtlas();
     toast('Map Maker’s view is now panel '+(k+1)+'. It is kept as an unlisted map in the page list.', 4500); });
+  body.querySelectorAll('.atSlPos').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k; if(await atCaptureView(p.slots[k])){ renderAtBody(); toast('Panel '+(k+1)+' now shows Map Maker’s position.', 3000); } });
+  body.querySelectorAll('.atSlClr').forEach(a=>a.onclick=e=>{ e.preventDefault(); const t=p.slots[+a.dataset.k]; t.view=null; t.thumb=''; t.still=''; atDirty(); renderAtBody(); });
   body.querySelectorAll('.atSlUp').forEach(b=>b.onclick=()=>b.parentNode.querySelector('.atSlFile').click());
   body.querySelectorAll('.atSlFile').forEach(fi=>fi.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ const s=p.slots[+fi.dataset.k]; s.src=await atReadImage(f,2200); s.ref=''; atDirty(); renderAtBody(); }catch(err){ toast(err.message); } });
   body.querySelectorAll('.atSlCapIn').forEach(inp=>inp.oninput=()=>{ p.slots[+inp.dataset.k].cap=inp.value; atDirty(); atPrevSoon(p); });
@@ -14247,10 +14376,10 @@ function renderAtPanels(body,p,i){
 function renderAtStory(body,p,i){
   atEnsureCss(); if(!Array.isArray(p.steps)||!p.steps.length) p.steps=[{ref:'',text:''}];
   const stepBox=(s,k)=>'<div class="at-slotbox"><div class="at-slot-h"><b>Step '+(k+1)+'</b><div class="at-pbtns"><button type="button" class="btn small light atStUp" data-k="'+k+'" title="Earlier"'+(k===0?' disabled':'')+'>↑</button><button type="button" class="btn small light atStDn" data-k="'+k+'" title="Later"'+(k===p.steps.length-1?' disabled':'')+'>↓</button><button type="button" class="btn small light atStDel" data-k="'+k+'" title="Remove this step"'+(p.steps.length===1?' disabled':'')+'>✕</button></div></div>'+
-    '<label class="at-f">Map<select class="atStRef" data-k="'+k+'">'+atRefOptions('map',s.ref)+'</select></label><div class="at-btnrow"><button type="button" class="btn small light atStCap" data-k="'+k+'" title="Use the layers and view in Map Maker now, as a new unlisted map">🧭 Use the Map Maker view now</button></div><div class="atStRich" data-k="'+k+'"></div></div>';
+    '<label class="at-f">Map<select class="atStRef" data-k="'+k+'">'+atRefOptions('map',s.ref)+'</select></label><div class="at-btnrow"><button type="button" class="btn small light atStPos" data-k="'+k+'" title="Keep this map’s data and take only Map Maker’s present position (light on memory)"'+(s.ref?'':' disabled')+'>⌖ Map Maker’s position</button><button type="button" class="btn small light atStCap" data-k="'+k+'" title="Capture the layers and view in Map Maker now as a new unlisted map">🧭 New map from Map Maker</button></div>'+(s.view?'<p class="kv at-meta2">Position set. <a href="#" class="atStClr" data-k="'+k+'">Clear</a></p>':'')+'<div class="atStRich" data-k="'+k+'"></div></div>';
   body.innerHTML='<div class="at-ed">'+atHeadHtml(p,i,'Story title (optional)')+
-    atCard('How a story works','<p class="kv at-meta2">Readers scroll through the steps while the map stays pinned and changes to each step’s map. For each step, set the layers or view in Map Maker, then press “Use the Map Maker view now”. In the book view and in a PDF, each step becomes its own page.</p>'+
-      (atlas.mode==='book'?'<p class="kv at-meta2"><b>Reading is set to Book.</b> Choose Scrolling in the settings on the right to see the pinned map.</p>':'')+'<div class="at-btnrow"><button type="button" class="btn small" id="atStPrev">👁 Preview atlas</button></div>','at-card-wide')+
+    atCard('How a story works','<p class="kv at-meta2">Readers scroll through the steps while the map stays pinned and changes to each step. For each step, choose a map. To move the same map somewhere else, pan and zoom in Map Maker (with the same layers on) and press <b>Map Maker’s position</b>: the data is kept once, so this is light on memory. To use different layers, press <b>New map from Map Maker</b>.</p>'+
+      (atlas.mode==='scroll'?'':'<p class="kv at-meta2"><b>Stories are shown in Scrolling style only.</b> This one is skipped in the Book.</p>')+'<div class="at-btnrow"><button type="button" class="btn small" id="atStPrev">👁 Preview atlas</button></div>','at-card-wide')+
     atCard('Steps','<div class="at-slots">'+p.steps.map(stepBox).join('')+'</div><div class="at-btnrow"><button type="button" class="btn small" id="atStAdd"'+(p.steps.length>=12?' disabled':'')+'>＋ Add a step</button></div>','at-card-wide')+'</div>';
   atBindHead(p,i);
   document.getElementById('atStPrev').onclick=atPreview;
@@ -14259,8 +14388,10 @@ function renderAtStory(body,p,i){
   body.querySelectorAll('.atStUp').forEach(b=>b.onclick=()=>mv(+b.dataset.k,-1));
   body.querySelectorAll('.atStDn').forEach(b=>b.onclick=()=>mv(+b.dataset.k,1));
   body.querySelectorAll('.atStDel').forEach(b=>b.onclick=()=>{ p.steps.splice(+b.dataset.k,1); atDirty(); renderAtBody(); });
-  body.querySelectorAll('.atStRef').forEach(sel=>sel.onchange=()=>{ p.steps[+sel.dataset.k].ref=sel.value; atDirty(); });
-  body.querySelectorAll('.atStCap').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k, np=await atCaptureHidden(); if(!np) return; p.steps[k].ref=np.id; atDirty(); renderAtlas();
+  body.querySelectorAll('.atStRef').forEach(sel=>sel.onchange=()=>{ const t=p.steps[+sel.dataset.k]; t.ref=sel.value; t.view=null; t.thumb=''; t.still=''; atDirty(); renderAtBody(); });
+  body.querySelectorAll('.atStPos').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k; if(await atCaptureView(p.steps[k])){ renderAtBody(); toast('Step '+(k+1)+' now shows Map Maker’s position.', 3000); } });
+  body.querySelectorAll('.atStClr').forEach(a=>a.onclick=e=>{ e.preventDefault(); const t=p.steps[+a.dataset.k]; t.view=null; t.thumb=''; t.still=''; atDirty(); renderAtBody(); });
+  body.querySelectorAll('.atStCap').forEach(b=>b.onclick=async()=>{ const k=+b.dataset.k, np=await atCaptureHidden(); if(!np) return; p.steps[k].ref=np.id; p.steps[k].view=null; p.steps[k].thumb=''; p.steps[k].still=''; atDirty(); renderAtlas();
     toast('Map Maker’s view is now step '+(k+1)+'. It is kept as an unlisted map in the page list.', 4500); });
   body.querySelectorAll('.atStRich').forEach(h=>{ const s=p.steps[+h.dataset.k]; atRichEditor(h, s.text, v=>{ s.text=v; atDirty(); }); });
 }
@@ -14334,13 +14465,8 @@ function renderAtSettings(){
   const cu=atlas.custom=atCustomClean(atlas.custom);
   const sel=(id,opts,v)=>'<select id="'+id+'">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
   const grp=(k,t,inner)=>'<details class="at-cgrp" data-k="'+k+'"'+(atCuOpen===k?' open':'')+'><summary>'+t+'</summary><div class="at-cgin">'+inner+'</div></details>';
-  box.innerHTML='<h3 class="fc-h" style="margin-top:0;">Reading</h3>'+
-    '<div class="at-seg" role="radiogroup"><button type="button" data-m="book"'+(atlas.mode==='book'?' class="on"':'')+' title="Turn pages in two-page spreads">📖 Book</button><button type="button" data-m="scroll"'+(atlas.mode==='scroll'?' class="on"':'')+' title="One long page, section after section">↕ Scrolling</button></div>'+
-    '<div class="at-go"><button class="btn" id="atPrev">👁 Preview atlas</button></div>'+
-    '<h3 class="fc-h">Maps &amp; captions</h3>'+
-    '<label class="at-chk"><input type="checkbox" id="atFigN"'+(atlas.figNums?' checked':'')+'> Number the maps and figures <span class="kv">Map 1, Map 2…</span></label>'+
-    '<label class="at-f" style="margin-top:6px">Details under each map'+sel('atApx',[['none','Caption only'],['compact','Add basemap, projection and date'],['full','Also list the layers']],atlas.apparatus||'none')+'</label>'+
-    '<label class="at-chk" style="margin-top:6px"><input type="checkbox" id="atSnap"'+(atlas.scrollSnap?' checked':'')+'> Snap to sections when scrolling</label>'+
+  const scroll=atlas.mode==='scroll';
+  box.innerHTML='<div class="at-go" style="margin-top:0"><button class="btn" id="atPrev">👁 Preview atlas</button></div>'+
     '<h3 class="fc-h">Design</h3><div class="at-themes">'+AT_THEMES.map(t=>'<button type="button" class="at-theme'+(atlas.theme===t.k?' on':'')+'" data-t="'+t.k+'" title="'+esc(t.n+': '+t.d)+'"><span class="at-tsw" style="background:'+t.bg+'"><i style="background:'+t.paper+';border-color:'+t.acc+'"><b style="background:'+t.ink+'"></b><u style="background:'+t.acc+'"></u></i></span><span class="at-tn">'+esc(t.n)+'</span></button>').join('')+'</div>'+
     (atlas.theme==='custom'?'<div class="at-custom">'+
       grp('pg','Page &amp; headings',
@@ -14355,8 +14481,11 @@ function renderAtSettings(){
         '<label>Captions'+sel('cuC',[['italic','Italic'],['plain','Plain'],['centred','Centred']],cu.capstyle)+'</label></div>'+
         '<div class="at-cg"><label>Page numbers'+sel('cuP',[['plain','3'],['dashes','— 3 —'],['circle','● 3'],['p','p. 3']],cu.pnum)+'</label></div>')+
       '</div>':'')+
+    '<h3 class="fc-h">Maps &amp; captions</h3>'+
+    '<label class="at-chk"><input type="checkbox" id="atFigN"'+(atlas.figNums?' checked':'')+'> Number the maps and figures <span class="kv">Map 1, Map 2…</span></label>'+
+    '<label class="at-f" style="margin-top:6px">Details under each map'+sel('atApx',[['none','Caption only'],['compact','Add basemap, projection and date'],['full','Also list the layers']],atlas.apparatus||'none')+'</label>'+
+    (scroll?'<h3 class="fc-h">Scrolling</h3><label class="at-chk"><input type="checkbox" id="atSnap"'+(atlas.scrollSnap?' checked':'')+'> Snap to sections when scrolling</label>':'')+
     '<p class="kv" style="margin-top:10px">Title, subtitle and author: click <b>Cover</b> in the page list. Share, export or PDF: <b>Send / Export ▾</b> at the top.</p>';
-  box.querySelectorAll('.at-seg button').forEach(b=>b.onclick=()=>{ atlas.mode=b.dataset.m; atDirty(); box.querySelectorAll('.at-seg button').forEach(x=>x.classList.toggle('on', x===b)); renderAtList(); });
   box.querySelectorAll('.at-theme').forEach(b=>b.onclick=()=>{ const was=atlas.theme; atlas.theme=b.dataset.t; atDirty();
     if((was==='custom')!==(atlas.theme==='custom')) renderAtSettings(); else box.querySelectorAll('.at-theme').forEach(x=>x.classList.toggle('on', x===b));
     if(atSel!=='cover'&&atSel!=='back'){ atSel='cover'; renderAtList(); } renderAtBody(); if(atFontUrl(atlas)) setTimeout(()=>{ if(atSel==='cover'||atSel==='back') renderAtBody(); }, 700);
@@ -14372,7 +14501,7 @@ function renderAtSettings(){
   const again=()=>{ if(atSel!=='cover'&&atSel!=='back'&&atSel!=='contents') renderAtBody(); renderAtList(); };
   document.getElementById('atFigN').onchange=e=>{ atlas.figNums=e.target.checked; atDirty(); again(); };
   document.getElementById('atApx').onchange=e=>{ atlas.apparatus=e.target.value; atDirty(); again(); };
-  document.getElementById('atSnap').onchange=e=>{ atlas.scrollSnap=e.target.checked; atDirty(); };
+  { const sn=document.getElementById('atSnap'); if(sn) sn.onchange=e=>{ atlas.scrollSnap=e.target.checked; atDirty(); }; }
   document.getElementById('atPrev').onclick=atPreview;
 }
 function atReadImage(file, max){
@@ -14387,6 +14516,28 @@ function atReadImage(file, max){
 }
 function atToJpeg(dataURL, max, q){
   return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const s=Math.min(1,max/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL('image/jpeg',q||0.85)); }; im.onerror=()=>res(''); im.src=dataURL; });
+}
+/* a picture of what Map Maker shows now: a small one for the screen, a sharper one for the PDF */
+async function atMakerStills(){
+  const wasHidden=document.getElementById('module-maker').classList.contains('hidden');
+  try{
+    if(wasHidden){ document.getElementById('module-maker').classList.remove('hidden'); mkMap.invalidateSize(); await new Promise(r=>setTimeout(r,250)); }
+    const url= await withHiRes(capWant(2), async ()=> projActive ? document.getElementById('projCanvas').toDataURL('image/png') : await captureMapElement((typeof mkGlobe!=='undefined' && mkGlobe) ? document.getElementById('mk-globe') : document.getElementById('mk-map'), 3, n=>n.id==='swipePanel'||n.classList&&(n.classList.contains('leaflet-control-container')||n.classList.contains('leaflet-control')||n.classList.contains('maplibregl-control-container')||n.classList.contains('mk-globe-hint'))));
+    return {thumb:await atToJpeg(url, 900, 0.8), still:await atToJpeg(url, 2800, 0.9)};
+  }catch(_){ return {thumb:'', still:''}; }
+  finally{ capProgress(1); if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
+}
+/* the same map as an existing page, at Map Maker's present position: one copy of the data, a new picture */
+async function atCaptureView(t){
+  const base=atlas.pages.find(q=>q.id===t.ref);
+  if(!base || base.kind!=='map' || !base.snap){ toast('Choose a live map first.', 3500); return false; }
+  if(base.snap.globe || base.snap.proj){ toast('Positions can be set for flat live maps only. Capture a globe or projected view as its own map.', 5000); return false; }
+  if(!mkMap){ toast('Open Map Maker first.', 3000); return false; }
+  const ids=(base.snap.layerIds||[]).slice().sort().join(), now=mkLayers.filter(l=>l.visible).map(l=>l.id).sort().join();
+  if(ids!==now){ toast('Map Maker is showing different layers from this map. Switch those layers on, or capture this view as a new map instead.', 7000); return false; }
+  toast('Capturing the position…');
+  const c=mkMap.getCenter(); t.view={c:[c.lat,c.lng], z:mkMap.getZoom()};
+  const st=await atMakerStills(); t.thumb=st.thumb; t.still=st.still; atDirty(); return true;
 }
 async function atCaptureMap(p, basemap, quiet){
   if(!mkLayers.some(l=>l.visible) && mkBasemapKey==='none'){ toast('Turn on a basemap or at least one layer in Map Maker first.', 3500); return false; }
@@ -14406,6 +14557,7 @@ async function atCaptureMap(p, basemap, quiet){
   }catch(_){ p.thumb=''; }
   finally{ capProgress(1); if(wasHidden) document.getElementById('module-maker').classList.add('hidden'); }
   atDirty(); if(!document.getElementById('module-atlas').classList.contains('hidden')) renderAtlas();
+  { const mb=atTotalMB(); if(mb>40 && !atCaptureMap.warned) { atCaptureMap.warned=true; toast('This atlas now holds about '+Math.round(mb)+' MB of map data, because every live map page keeps its own copy of its layers. To stay fast on laptops, reuse a map in several panels or story steps (use “Map Maker’s position”) instead of capturing the same layers again.', 14000); } }
   mlog('compose','Captured a live map for the atlas page "'+(p.title||'Map')+'" ('+mkLayers.filter(l=>l.visible).map(l=>l.name).join(', ')+').');
   return true;
 }
@@ -14470,6 +14622,7 @@ async function atCaptureLayout(p){
 }
 async function atAddPage(kind){
   if(!atlas){ atlas=atDefault(); }
+  if(kind==='story' && atlas.mode!=='scroll'){ toast('Scrolling stories are available in Scrolling style. Change the style above the page list.', 4500); return; }
   const p={id:uid(), kind, title:'', caption:'', text:'', src:'', thumb:'', mapHtml:'', snap:null, legend:false, basemap:'', captured:null};
   if(kind==='map'){ const l0=mkLayers.find(l=>l.visible); p.title=l0? (l0.style.legendTitle||prettyName(l0.name)) : 'Map'; if(!(await atCaptureMap(p))) return; }
   if(kind==='layout'){ const t=canvas.getObjects().find(o=>o.data&&o.data.type==='title'); p.title=t&&t.text?t.text:'Map'; if(!(await atCaptureLayout(p))) return; }
@@ -14594,16 +14747,28 @@ function atExport(){
   mlog('export','Exported the atlas "'+atlas.title+'" ('+atlas.pages.length+' pages, '+(atlas.mode==='book'?'book':'scrolling')+' style) as a web page.');
   toast('Atlas saved as '+name+'_atlas.html ('+Math.round(html.length/1024)+' KB).', 4000);
 }
+function atBuildAddMenu(){
+  const menu=document.getElementById('atAddMenu'); const scroll=atlas && atlas.mode==='scroll';
+  const it=(k,t,d)=>'<button data-k="'+k+'">'+t+'<small>'+d+'</small></button>';
+  const grp=t=>'<div class="at-addgrp">'+t+'</div>';
+  menu.innerHTML=
+    grp('Maps')+it('map','🧭 Live map','the layers on in Map Maker, interactive')+it('layout','▣ Map layout','the finished Map Composer page')+
+      it('panels','▦ Multi-map page','several maps, images and text together, or a swipe comparison')+
+      (scroll?it('story','⇅ Scrolling story','a pinned map that changes as the reader scrolls'):'')+
+    grp('Content')+it('text','¶ Text','an introduction, essay or notes')+it('image','🖼 Image','a photo, scan or figure')+it('embed','▶ Video or link','a YouTube or Vimeo video, or a web page')+
+    grp('Structure')+it('section','§ Section','a chapter opener that groups the pages after it')+it('locator','⌖ Locator map &amp; index','a clickable key map of where every map lies')+it('sources','✎ Sources &amp; notes','layers, basemaps and sources, listed automatically')+
+      (atlas && atlas.contents ? '' : it('contents','☰ Contents page','a list of the pages, made automatically'))+
+    grp('From elsewhere')+it('merge','⇲ From another project','pages from a group member’s project file');
+}
 (function(){
   const m=document.getElementById('module-atlas'); if(!m) return;
   const menu=document.getElementById('atAddMenu');
-  document.getElementById('atAddBtn').onclick=e=>{ e.stopPropagation(); menu.classList.toggle('hidden'); };
+  document.getElementById('atAddBtn').onclick=e=>{ e.stopPropagation(); if(!atlas){ toast('Start an atlas first: choose how it will read, then click Start.', 3500); return; } atBuildAddMenu(); menu.classList.toggle('hidden'); };
   document.addEventListener('click', ()=>menu.classList.add('hidden'));
-  menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{ menu.classList.add('hidden');
+  menu.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; menu.classList.add('hidden');
     if(b.dataset.k==='contents'){ atlas.contents=true; atSel='contents'; atDirty(); renderAtlas(); return; }
     if(b.dataset.k==='merge'){ openMergeDialog('atlas'); return; }
     atAddPage(b.dataset.k); });
-  document.getElementById('atAddBtn').addEventListener('click', ()=>{ const t=document.getElementById('atAddToc'); if(t) t.hidden=!!(atlas&&atlas.contents); }, true);
 })();
 window.__atlas=()=>atlas;
 
@@ -17016,7 +17181,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v87 · Oct 2026';
+const MOM_VERSION='v88 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -22194,7 +22359,7 @@ h.addEventListener('pointerup',function(){h.onpointermove=null;map.dragging.enab
 h.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'||e.key==='ArrowRight'){SW.x=Math.max(0.02,Math.min(0.98,SW.x+(e.key==='ArrowLeft'?-0.02:0.02)));clip();e.preventDefault();}});
 clip();})();}
 ${opts.sync ? `(function(){var busy=0,user=0,t=null,c=map.getContainer();['pointerdown','wheel','keydown','touchstart'].forEach(function(n){c.addEventListener(n,function(){user=1;},{passive:true,capture:true});});
-window.addEventListener('message',function(e){var d=e.data;if(!d||!d.momView||e.source!==parent)return;busy=1;try{map.setView(d.momView.c,d.momView.z,{animate:false});}catch(x){}setTimeout(function(){busy=0;},80);});
+window.addEventListener('message',function(e){var d=e.data;if(!d||!d.momView||e.source!==parent)return;busy=1;try{if(d.momView.a){map.flyTo(d.momView.c,d.momView.z,{duration:.9});}else{map.setView(d.momView.c,d.momView.z,{animate:false});}}catch(x){}setTimeout(function(){busy=0;},d.momView.a?1300:80);});
 map.on('moveend',function(){if(busy||!user)return;clearTimeout(t);t=setTimeout(function(){var q=map.getCenter();try{parent.postMessage({momMove:{c:[q.lat,q.lng],z:map.getZoom()}},'*');}catch(x){}},40);});})();` : ''}
 ${(opts.keepView && view.b) ? '' : `try{var b=group.getBounds();if(b.isValid())map.fitBounds(b,{padding:[24,24]});}catch(e){}`}
 ${legendHtml ? (lgToggle

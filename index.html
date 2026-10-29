@@ -549,6 +549,10 @@
   .at-mrow{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);} .at-mrow:last-of-type{border-bottom:0;}
   .at-mth{flex:0 0 92px;height:68px;border-radius:6px;overflow:hidden;background:#eef1f4;display:flex;align-items:center;justify-content:center;} .at-mth img{width:100%;height:100%;object-fit:cover;}
   .at-mbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;} .at-mtop{display:flex;align-items:center;gap:8px;} .at-mtop b{flex:none;font-size:13px;} .at-mtop input{flex:1;min-width:0;}
+  .at-pvtop{margin:0 0 4px;} .at-pvtop .at-lpwrap{width:min(100%,460px);} .at-pvtop .at-lpwrap.sp{width:100%;max-width:900px;}
+  .at-pvscroll{position:relative;height:clamp(360px,68vh,760px);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+  .at-pvscroll .at-pvbox{position:absolute;inset:0;}
+  .at-mrow-t .at-mbody{gap:6px;} .at-mrow-t .at-rt{min-height:90px;}
   .at-madd{margin-top:8px;} .at-mbm{flex:0 1 190px;min-width:0;} .at-minfo{align-self:center;font-size:11.5px;} .at-mrow .at-mbody{gap:5px;} .at-mth{flex-basis:80px;height:58px;}
   .at-item.at-secrow{border-left:4px solid var(--teal);} .at-item.at-secrow .at-meta b{text-transform:uppercase;letter-spacing:.04em;font-size:12px;}
   .at-ctrow.sec{font-weight:700;margin-top:4px;}
@@ -630,7 +634,8 @@
   .msp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;} .msp-h b{font-size:12.5px;} .msp-h button{border:none;background:none;font-size:17px;color:#6b7386;cursor:pointer;}
   .msp-r{padding:6px 0;border-top:1px solid #eef1f5;} .msp-t{font-weight:700;} .msp-t span{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#6b7386;margin-right:3px;}
   .msp-c{color:#3a4252;margin-top:2px;} .msp-l{color:#6b7386;margin-top:2px;} .msp-f{border-top:1px solid #eef1f5;padding-top:6px;margin-top:2px;color:#6b7386;font-size:11.5px;}
-  #mk-map .leaflet-control-attribution{max-width:calc(100% - 140px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #mk-map .leaflet-control-attribution{display:none !important;}
+  #mk-map .leaflet-control-attribution.x{max-width:calc(100% - 140px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   html[data-theme=dark] .mk-src-panel{background:var(--panel);color:var(--text);border-color:var(--line);} html[data-theme=dark] .msp-c{color:var(--text);} html[data-theme=dark] .msp-r,html[data-theme=dark] .msp-f{border-color:var(--line);}
   .grid-seg{display:flex;margin-top:6px;border:1px solid var(--line);border-radius:6px;overflow:hidden;} .grid-seg button{flex:1;border:none;background:none;padding:4px 2px;font-size:11.5px;color:var(--text);cursor:pointer;} .grid-seg button+button{border-left:1px solid var(--line);} .grid-seg button.on{background:var(--teal);color:#fff;}
   #mkBaseOpts .cs-sw{width:26px !important;min-width:26px;height:20px !important;flex:0 0 26px;padding:0;}
@@ -12437,7 +12442,9 @@ function atlasViewer(root, D){
   var deep=!!D.deepLink;
   var mark=function(j){ if(!deep || j==null) return; try{ win.history.replaceState(null,'','#p'+j); }catch(e){} };
   /* v89: a map page holds one to four maps (p.maps); every map has its own id */
-  var mapsOf=function(p){ return (p && p.kind==='map' && p.maps && p.maps.length) ? p.maps : []; };
+  var panelsOf=function(p){ return (p && p.kind==='map' && p.maps && p.maps.length) ? p.maps : []; };
+  var isMapP=function(m){ return m.t!=='image' && m.t!=='text'; };
+  var mapsOf=function(p){ return panelsOf(p).filter(isMapP); };
   var byMap={}; pages.forEach(function(p){ mapsOf(p).forEach(function(m){ byMap[m.id]=m; }); });
   if(D.sources && pages.some(function(p){ return mapsOf(p).length || p.kind==='layout' || p.kind==='image'; })) pages.push({kind:'sources', id:'__sources', title:'Sources and notes'});
   var hasSec=pages.some(function(p){ return p.kind==='section'; });
@@ -12488,7 +12495,7 @@ function atlasViewer(root, D){
     pages.forEach(function(q){
       if(q.kind==='section'){ secNo[q.id]=++sn; return; }
       if(!D.figNums) return;
-      if(q.kind==='map') mapsOf(q).forEach(function(mm){ FIG[mm.id]='Map '+(++m); });
+      if(q.kind==='map') panelsOf(q).forEach(function(mm){ if(mm.t==='text') return; FIG[mm.id]= mm.t==='image' ? 'Figure '+(++f) : 'Map '+(++m); });
       else if(q.kind==='layout') FIG[q.id]='Map '+(++m);
       else if(q.kind==='image') FIG[q.id]='Figure '+(++f);
     }); })();
@@ -12510,7 +12517,7 @@ function atlasViewer(root, D){
     return bits.length ? '<div class="av-apx">'+bits.join(' · ')+'</div>' : '';
   }
   function capHtml(q){
-    var ms=mapsOf(q), fig=ms.length===1 ? FIG[ms[0].id] : (q.kind==='map' ? '' : FIG[q.id]), c=q.caption||'';
+    var ms=mapsOf(q), fig=(panelsOf(q).length===1 && ms.length===1) ? FIG[ms[0].id] : (q.kind==='map' ? '' : FIG[q.id]), c=q.caption||'';
     return ((fig||c) ? '<div class="av-cap">'+(fig?'<b class="av-fig">'+E(fig)+(c?'.':'')+'</b> ':'')+E(c)+'</div>' : '')+apxHtml(ms, q.source);
   }
   var labOf=function(m){ var f=FIG[m.id]||'', c=m.cap||''; return {t:f+(f&&c?'. ':'')+c, h:(f?'<b class="av-fig">'+E(f)+'</b>'+(c?'. ':''):'')+E(c)}; };
@@ -12539,7 +12546,7 @@ function atlasViewer(root, D){
   /* two to four maps on one page: side by side, a swipe comparison, one large and two small, three across, or a grid */
   function multiMaps(p, ms, live){
     var n=ms.length, arr=p.arr, alt=p.alt||p.title||'Map';
-    if(n===2 && arr==='compare' && !pdfMode){
+    if(n===2 && arr==='compare' && !pdfMode && isMapP(ms[0]) && isMapP(ms[1])){
       var tg=function(k){ var l=labOf(ms[k]); return l.t ? '<span class="av-cmp-tag '+(k?'r':'l')+'">'+l.h+'</span>' : ''; };
       return '<div class="av-media av-mm av-cmp" data-sync="1">'+
         '<div class="av-cmp-a">'+oneMap(ms[0], live, alt+' (left)')+'</div><div class="av-cmp-b">'+oneMap(ms[1], live, alt+' (right)')+'</div>'+
@@ -12547,12 +12554,14 @@ function atlasViewer(root, D){
     }
     var cls= n===2 ? 'two' : n===3 ? (arr==='row'?'row3':'big3') : 'grid';
     return '<div class="av-media av-mm av-mm-'+cls+'"'+(p.sync&&!pdfMode?' data-sync="1"':'')+'>'+ms.map(function(m,k){ var l=labOf(m);
-      return '<figure class="av-mmf">'+oneMap(m, live, l.t||(alt+' '+(k+1)))+(l.t?'<figcaption class="av-mml">'+l.h+'</figcaption>':'')+'</figure>'; }).join('')+'</div>';
+      if(m.t==='text') return '<figure class="av-mmf av-mmf-t"><div class="av-ptext"><div class="av-text av-nodc">'+(m.text||'')+'</div></div></figure>';
+      var inner= m.t==='image' ? (!IMG.test(m.src||'') ? '<div class="av-media av-pimg"></div>' : pdfMode ? '<div class="av-media av-pdfm">'+pdfPic(m.src,'contain')+'</div>' : '<div class="av-media av-pimg"><img src="'+m.src+'" alt="'+E(m.alt||m.cap||'')+'"'+(live?' data-zoom="1"':'')+'></div>') : oneMap(m, live, l.t||(alt+' '+(k+1)));
+      return '<figure class="av-mmf">'+inner+(l.t?'<figcaption class="av-mml">'+l.h+'</figcaption>':'')+'</figure>'; }).join('')+'</div>';
   }
   function mediaHtml(p, live){
     if(p.kind==='embed') return embedMedia(p, live);
     if(p.kind==='map'){
-      var ms=mapsOf(p); if(!ms.length) return '';
+      var ms=panelsOf(p); if(!ms.length) return '';
       var h= ms.length===1 ? oneMap(ms[0], live, p.alt||p.title) : multiMaps(p, ms, live);
       return h+((pdfMode && D.url)?'<div class="av-pdfurl"><a href="'+E(D.url)+'">View the interactive map'+(ms.length>1?'s':'')+' ›</a></div>':'');
     }
@@ -12826,6 +12835,19 @@ function atlasViewer(root, D){
     }).then(function(r){ return r; }, function(err){ busyEl.innerHTML='<div><b>The PDF could not be made.</b><span>'+E(err&&err.message||err)+'</span></div>'; setTimeout(function(){ busyEl.remove(); }, 5000); throw err; })
       .then(function(r){ seq=saved; pdfMode=false; if(host) host.remove(); busyEl.remove(); return r; }, function(e){ seq=saved; pdfMode=false; if(host) host.remove(); throw e; });
   }
+  /* one page as a scrolling section, and a pinned story (also used alone by the editor's preview) */
+  function pageSection(q,j){
+    var text=q.text?'<div class="av-text">'+q.text+'</div>':'';
+    return '<section class="av-s av-k-'+q.kind+((isSpread(q)||panelsOf(q).length>1)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(function(){ var ov=overlayBits(q), m=mediaHtml(q,true); return ((q.title&&!ov.tov)?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+(m?stage(m, ov.tov, ''):''); })()+capHtml(q)+text+'</section>';
+  }
+  function storyHtmlF(grp){
+    var stage='', steps='', w=-1, wi=0;
+    grp.forEach(function(j){ var q=seq[j], m=(q.kind==='map'||q.kind==='layout'||q.kind==='image'||q.kind==='embed')?mediaHtml(q,true):'';
+      if(m){ w=wi++; stage+='<div class="av-stwrap" data-w="'+w+'">'+m+'</div>'; }
+      steps+='<div class="av-st-step" id="av-s'+j+'" data-w="'+w+'"><div class="av-st-card">'+(q.title?'<h3 class="av-st-h">'+E(q.title)+'</h3>':'')+capHtml(q)+(q.text?'<div class="av-text av-nodc">'+q.text+'</div>':'')+'</div></div>'; });
+    return '<div class="av-s av-story-s"><div class="av-story"><div class="av-st-stage"><div class="av-st-maps">'+stage+'</div></div><div class="av-st-steps">'+steps+'</div></div></div>';
+  }
+  var pinnedAt=function(j){ for(var k=j-1;k>0;k--){ if(seq[k].kind==='section') return !!seq[k].pin; } return false; };
   if(D.__pdfOnly) return {pdf:makePdf};
   if(D.__cover){ root.className=(root.className||'').replace(/\b(av-root|av-mode-\w+|av-th-\w+|av-c[a-z]+-\w+|av-cdc|av-cvhost)\b/g,'').trim()+' av-root av-mode-book'+themeCls+' av-cvhost'; dressRoot(root);
     if(D.__cover==='back'){ root.innerHTML=pageHtml(seq.length,false); return {}; }
@@ -12834,7 +12856,8 @@ function atlasViewer(root, D){
     root.innerHTML=pageHtml(0,false); return {}; }
   var go=function(){};
   /* a live map says when its basemap has drawn; only then does it replace the still */
-  win.addEventListener('message', function(e){ var d=e.data; if(!d) return;
+  if(root._momL) win.removeEventListener('message', root._momL);
+  win.addEventListener('message', root._momL=function(e){ var d=e.data; if(!d) return;
     frames=frames.filter(function(f){ return f.isConnected; });
     if(d.momMapReady){ frames.forEach(function(f){ if(f.contentWindow===e.source) f._show(); }); return; }
     if(d.momMove){ var src=null; frames.forEach(function(f){ if(f.contentWindow===e.source) src=f; });
@@ -12859,9 +12882,10 @@ function atlasViewer(root, D){
       'var b=L.latLngBounds([[s,w],[n,e]]);var go=function(){try{parent.postMessage({momGoJ:it.j},"*");}catch(x){}};'+
       'L.rectangle(b,{color:"#c98a1a",weight:2,fillColor:"#f2b84b",fillOpacity:.15}).addTo(all).bindTooltip(it.t,{sticky:true}).on("click",go);'+
       'L.marker(b.getCenter(),{icon:L.divIcon({className:"locn",html:"<b>"+it.n+"</b>",iconSize:[28,24]}),keyboard:true,title:it.t}).addTo(all).on("click",go);});'+
-      'if(IT.length){map.fitBounds(all.getBounds().pad(.3));}';
+      'if(IT.length){map.fitBounds(all.getBounds().pad(.3));}'+
+      'var ac=L.control({position:"bottomright"});ac.onAdd=function(){var b=L.DomUtil.create("button","mom-ai");b.type="button";b.title="Map credits";b.setAttribute("aria-label","Map credits");b.textContent="i";L.DomEvent.disableClickPropagation(b);b.onclick=function(){map.getContainer().classList.toggle("mom-attr-open");};return b;};ac.addTo(map);';
     return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+D.leafHead+
-      '<style>html,body,#map{margin:0;height:100%;}.locn{background:none;border:0;}.locn b{display:flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 4px;box-sizing:border-box;border-radius:12px;background:#fff;color:#1d2330;border:2px solid #c98a1a;font:700 12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;}.leaflet-interactive{cursor:pointer;}</style></head><body><div id="map"></div><scr'+'ipt>'+js+'</scr'+'ipt></body></html>';
+      '<style>html,body,#map{margin:0;height:100%;}.locn{background:none;border:0;}.locn b{display:flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 4px;box-sizing:border-box;border-radius:12px;background:#fff;color:#1d2330;border:2px solid #c98a1a;font:700 12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;}.leaflet-interactive{cursor:pointer;}#map .leaflet-control-attribution{display:none;font-size:11px;max-width:360px;white-space:normal;}#map.mom-attr-open .leaflet-control-attribution{display:block;}.mom-ai{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);color:#1f2a3c;font:italic 700 13px Georgia,serif;cursor:pointer;padding:0;}</style></head><body><div id="map"></div><scr'+'ipt>'+js+'</scr'+'ipt></body></html>';
   }
   function closeOverview(){ var o=root.querySelector('.av-ovw'); if(o){ if(ovFrame){ try{ ovFrame.srcdoc=''; }catch(e){} } o.remove(); } ovFrame=null; }
   function openOverview(){
@@ -12884,7 +12908,7 @@ function atlasViewer(root, D){
       if(j===0 || q.kind==='back' || q.kind==='blank' || q.kind==='spreadR') return;
       var t=q.kind==='contents'?(D.contentsTitle||'Contents'):titleOf(q), ms=mapsOf(q);
       var th=ms.length?(IMG.test(ms[0].thumb||'')?ms[0].thumb:''):(IMG.test(q.src||'')?q.src:'');
-      var txt=[t, q.caption, q.alt, q.source, plain(q.text)]; ms.forEach(function(m){ txt.push(m.cap); (m.meta&&m.meta.layers||[]).forEach(function(x){ txt.push(x); }); });
+      var txt=[t, q.caption, q.alt, q.source, plain(q.text)]; panelsOf(q).forEach(function(m){ txt.push(m.cap, plain(m.text)); (m.meta&&m.meta.layers||[]).forEach(function(x){ txt.push(x); }); });
       out.push({j:j, t:t, th:th, pg:(mode==='book'?pnum(j):''), kind:q.kind, txt:txt.join(' ').toLowerCase()});
     });
     return out;
@@ -12908,12 +12932,30 @@ function atlasViewer(root, D){
     pan.addEventListener('click', function(e){ if(e.target===pan){ close(); return; } var b=e.target.closest('.av-pan-i'); if(b){ var j=+b.getAttribute('data-j'); close(); go(j); } });
     q.focus();
   }
-  doc.addEventListener('keydown', function(e){
+  if(!D.__single) doc.addEventListener('keydown', function(e){
     if(e.key==='Escape'){ var op=root.querySelector('.av-pan'); if(op){ op.remove(); e.preventDefault(); } if(root.querySelector('.av-ovw')){ closeOverview(); e.preventDefault(); } return; }
     if(e.key==='/' && !(e.target.closest && e.target.closest('input,textarea,select,[contenteditable]'))){ e.preventDefault(); openPanel(); }
   });
   var navExtra=function(){ return '<button class="av-pan-b" title="Pages and search (/)" aria-label="Pages and search">⌕</button>'+(hasOv()?'<button class="av-ovb" title="Map of all the maps" aria-label="Map of all the maps">🗺</button>':''); };
   var wireNav=function(){ var a=root.querySelector('.av-pan-b'); if(a) a.onclick=openPanel; var b=root.querySelector('.av-ovb'); if(b) b.onclick=openOverview; };
+  if(D.__single){
+    var sj=-1, sq=null;
+    if(mode==='book') seq=bookSeq(baseSeq);
+    seq.forEach(function(q,j){ if(sj<0 && q.id===D.__single && q.kind!=='spreadR'){ sj=j; sq=q; } });
+    if(!sq){ root.innerHTML=''; return {}; }
+    if(mode==='book'){
+      root.className=(root.className||'').replace(/\bav-\S+/g,'').trim()+' av-root av-mode-book'+themeCls+' av-cvhost av-one'; dressRoot(root);
+      root.innerHTML=pageHtml(sj, !D.__still, isSpread(sq));
+    } else {
+      root.className=(root.className||'').replace(/\bav-\S+/g,'').trim()+' av-root av-mode-scroll'+themeCls+' av-one'; dressRoot(root);
+      root.innerHTML = sq.kind==='section' ? '<section class="av-s av-k-section">'+winBar(sq,sj)+sectionBody(sq)+'</section>'
+        : sq.kind==='sources' ? '<section class="av-s av-k-sources">'+winBar(sq,sj)+'<h2 class="av-h">'+E(sq.title)+'</h2>'+sourcesBody()+'</section>'
+        : pinnedAt(sj) ? storyHtmlF([sj]) : pageSection(sq, sj);
+      root.querySelectorAll('.av-stwrap').forEach(function(w){ w.classList.add('on'); }); root.querySelectorAll('.av-st-step').forEach(function(x){ x.classList.add('on'); });
+    }
+    if(!D.__still){ wireBits(root); root.querySelectorAll('.av-map[data-map]').forEach(mountOne); }
+    return {};
+  }
   root.innerHTML='';
   root.className='av-root av-mode-'+mode+themeCls; dressRoot(root);
 
@@ -12924,14 +12966,7 @@ function atlasViewer(root, D){
     seq.forEach(function(q,j){ if(j===0) return; secs.push(j);
       if(!hasSec || q.kind==='section' || q.kind==='contents' || q.kind==='sources'){ tabJs.push(j); html+='<button class="av-tab" data-j="'+j+'" role="tab">'+E(titleOf(q.kind==='contents'?{kind:'contents',title:D.contentsTitle}:q))+'</button>'; } });
     html+='</div>'+navExtra()+'<button class="av-spdf" title="Download this atlas as a PDF">⬇ PDF</button><div class="av-sprog"><i></i></div></nav><div class="av-sr" aria-live="polite"></div>';
-    /* a section with a pinned map: its pages scroll past while the map (or picture) beside them changes */
-    var storyHtml=function(grp){
-      var stage='', steps='', w=-1, wi=0;
-      grp.forEach(function(j){ var q=seq[j], m=(q.kind==='map'||q.kind==='layout'||q.kind==='image'||q.kind==='embed')?mediaHtml(q,true):'';
-        if(m){ w=wi++; stage+='<div class="av-stwrap" data-w="'+w+'">'+m+'</div>'; }
-        steps+='<div class="av-st-step" id="av-s'+j+'" data-w="'+w+'"><div class="av-st-card">'+(q.title?'<h3 class="av-st-h">'+E(q.title)+'</h3>':'')+capHtml(q)+(q.text?'<div class="av-text av-nodc">'+q.text+'</div>':'')+'</div></div>'; });
-      return '<div class="av-s av-story-s"><div class="av-story"><div class="av-st-stage"><div class="av-st-maps">'+stage+'</div></div><div class="av-st-steps">'+steps+'</div></div></div>';
-    };
+    var storyHtml=storyHtmlF;
     for(var j=0;j<seq.length;j++){ var q=seq[j];
       if(q.kind==='cover'){ html+='<section class="av-s av-scover" id="av-s0">'+pageHtml(0,true)+'<button class="av-down" data-go="1" aria-label="Start reading">↓</button></section>'; continue; }
       if(q.kind==='contents'){ html+='<section class="av-s av-k-contents" id="av-s'+j+'">'+winBar(q,j)+'<h2 class="av-h">'+E(D.contentsTitle||'Contents')+'</h2>'+contentsIntro()+'<div class="av-toc">'+contentsRows()+'</div></section>'; continue; }
@@ -12941,8 +12976,7 @@ function atlasViewer(root, D){
           if(grp.length){ html+=storyHtml(grp); j=k-1; } }
         continue; }
       if(q.kind==='sources'){ html+='<section class="av-s av-k-sources" id="av-s'+j+'">'+winBar(q,j)+'<h2 class="av-h">'+E(q.title)+'</h2>'+sourcesBody()+'</section>'; continue; }
-      var text=q.text?'<div class="av-text">'+q.text+'</div>':'';
-      html+='<section class="av-s av-k-'+q.kind+((isSpread(q)||mapsOf(q).length>1)?' av-sfull':'')+'" id="av-s'+j+'">'+winBar(q,j)+(function(){ var ov=overlayBits(q), m=mediaHtml(q,true); return ((q.title&&!ov.tov)?'<h2 class="av-h">'+E(q.title)+'</h2>':'')+(m?stage(m, ov.tov, ''):''); })()+capHtml(q)+text+'</section>';
+      html+=pageSection(q,j);
     }
     html+='<section class="av-s av-sback" style="background:'+coverCol+'"><div class="av-sbk">'+backInner()+'<div class="av-bk-foot">'+(D.backCredit?'<div class="av-bk-cr">'+E(D.backCredit)+'</div>':'')+'<a class="av-brand" href="https://www.jonathancinnamon.com/map-o-matic/" target="_blank" rel="noopener">'+logo(18)+'<span>Made with Map-O-Matic</span></a></div></div></section>';
     html+='<div class="av-sarrows"><button class="av-sup" aria-label="Previous section" title="Previous section">↑</button><button class="av-sdn" aria-label="Next section" title="Next section">↓</button></div>';
@@ -13082,7 +13116,7 @@ function atlasViewer(root, D){
     /* the page on the leaf's back lands on the far side; build it early, hidden under the leaf until it lands */
     var land= dir>0 ? L : R, li= dir>0 ? to[0] : to[1];
     var pre=null;
-    if(li!=null && seq[li] && seq[li].kind==='map' && mapsOf(seq[li]).length===1 && !spreadish(li)){ pre=doc.createElement('div'); pre.className='av-pre'; pre.innerHTML=pageHtml(li,true); land.appendChild(pre); mountMaps(pre); }
+    if(li!=null && seq[li] && seq[li].kind==='map' && panelsOf(seq[li]).length===1 && !spreadish(li)){ pre=doc.createElement('div'); pre.className='av-pre'; pre.innerHTML=pageHtml(li,true); land.appendChild(pre); mountMaps(pre); }
     win.requestAnimationFrame(function(){ win.requestAnimationFrame(function(){ leaf.classList.add('av-turn'); }); });
     setTimeout(function(){
       if(pre){ /* keep the already-loaded map: moving an iframe reloads it, so the hidden holder itself becomes the page */
@@ -13624,6 +13658,17 @@ const ATLAS_CSS=`
 .av-pan-b{font-size:16px !important;}
 @media (prefers-reduced-motion:reduce){ .av-leaf,.av-r.av-out-l,.av-r.av-out-r{transition-duration:.01s !important;} .av-root.av-mode-scroll{scroll-behavior:auto;} .av-stwrap,.av-st-card{transition:none;} }
 @media print{ .av-pan,.av-ovw,.av-pan-b,.av-ovb{display:none !important;} }
+.av-ptext{flex:1 1 auto;min-height:0;overflow:auto;padding:.2em .2em .2em 0;} .av-ptext .av-text{margin:0;font-size:1.15em;}
+.av-pimg{background:none;} .av-pimg img{max-width:100%;max-height:100%;object-fit:contain;}
+.av-s .av-mm .av-ptext{max-height:100%;} .av-s .av-mm .av-pimg img{max-height:100%;}
+.av-one.av-mode-scroll{overflow:auto;}
+.av-one .av-s{min-height:0;padding:22px 22px 30px;max-width:none;}
+.av-one .av-s .av-map{height:clamp(260px,50vh,560px);}
+.av-one .av-s .av-mm{height:clamp(320px,56vh,620px);} .av-one .av-s .av-mm .av-map{height:auto;}
+.av-one .av-s .av-cmp{height:clamp(320px,56vh,620px);}
+.av-one .av-s.av-story-s{padding:16px;} .av-one .av-st-steps{padding:0;} .av-one .av-st-step{min-height:0;padding:12px 0;}
+.av-one .av-st-stage{position:relative;top:0;height:clamp(300px,58vh,600px);}
+.av-one .av-s.av-k-section{min-height:clamp(300px,50vh,520px);}
 
 `;
 
@@ -13726,7 +13771,11 @@ function atSanitize(a){
       alt:s(p.alt,300), source:s(p.source,300), mcap:s(p.mcap,120), pin:p.kind==='section'&&p.pin===true,
       arr:['side','compare','big','row','grid'].includes(p.arr)?p.arr:'', sync:p.sync===true,
       layerNames:atNames(p.layerNames),
-      more:p.kind==='map'?(Array.isArray(p.more)?p.more:[]).slice(0,3).map(m=>{ if(!m||typeof m!=='object') return null; const sn=atSnapFrom(m, geoIn, out.geo); if(!sn) return null;
+      more:p.kind==='map'?(Array.isArray(p.more)?p.more:[]).slice(0,3).map(m=>{ if(!m||typeof m!=='object') return null;
+        const mid=s(m.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid();
+        if(m.t==='image') return AT_IMG.test(m.src||'') ? {id:mid, t:'image', src:m.src, cap:s(m.cap,120), alt:s(m.alt,300)} : null;
+        if(m.t==='text') return {id:mid, t:'text', text:sanitizeRich(m.text), cap:''};
+        const sn=atSnapFrom(m, geoIn, out.geo); if(!sn) return null;
         return {id:s(m.id,40).replace(/[^A-Za-z0-9_-]/g,'')||uid(), snap:sn, thumb:AT_IMG.test(m.thumb||'')?m.thumb:'', still:AT_IMG.test(m.still||'')?m.still:'', basemap:atBmKey(s(m.basemap,40)),
           captured:+m.captured||null, cap:s(m.cap,120), layerNames:atNames(m.layerNames)}; }).filter(Boolean):[]};
   }).filter(Boolean);
@@ -13807,7 +13856,8 @@ function atUnpackLayer(L, geo){
   delete out.gk; delete out.st; delete out.si; return out;
 }
 /* all the maps on a map page, the first one being the page's own fields */
-function atMapsOf(p){ return p && p.kind==='map' ? (p.snap||!(p.more||[]).length ? [p] : []).concat(p.more||[]) : []; }
+function atMapsOf(p){ return p && p.kind==='map' ? [p].concat((p.more||[]).filter(m=>m.t!=='image'&&m.t!=='text')) : []; }
+function atPanelsOf(p){ return p && p.kind==='map' ? [p].concat(p.more||[]) : []; }
 function atMapId(p,m){ return m===p ? p.id : m.id; }
 /* forget layer data no page uses any more */
 function atPruneGeo(a){
@@ -13865,8 +13915,10 @@ function atViewData(a0, opts){
   const geoOut={};
   const pages=a0.pages.map(p=>{
     const q=Object.assign({}, p); delete q.snap; delete q.more; q.mapHtml=''; if(p.kind==='map'){ delete q.thumb; delete q.still; }
-    if(p.kind==='map') q.maps=atMapsOf(p).map(m=>{
-      const t=opts.live ? atMapHtmlTok(p, m, a0.geo||{}, geoOut) : {html:'', lay:[]};
+    if(p.kind==='map') q.maps=atPanelsOf(p).map(m=>{
+      if(m.t==='image') return {id:m.id, t:'image', src:m.src, cap:m.cap||'', alt:m.alt||''};
+      if(m.t==='text') return {id:m.id, t:'text', text:m.text||''};
+      const t=(opts.live && (!opts.only || opts.only===p.id)) ? atMapHtmlTok(p, m, a0.geo||{}, geoOut) : {html:'', lay:[]};
       return {id:atMapId(p,m), html:t.html, lay:t.lay, thumb:m.thumb||'', still:m.still||'', cap:m===p?(p.mcap||''):(m.cap||''), meta:atMetaFor(m), fp:atFootprint(m)};
     });
     return q;
@@ -13914,7 +13966,8 @@ function renderAtlas(){
 /* in Scrolling, the pages after a section with a pinned map */
 function atPinnedAt(i){ for(let k=i-1;k>=0;k--){ const q=atlas.pages[k]; if(q.kind==='section') return q.pin; } return false; }
 function atListSub(p,nums,i){
-  const n=atMapsOf(p).length, k=AT_KINDS[p.kind].label+(n>1?' · '+n+' maps':'');
+  const ps=atPanelsOf(p), n=ps.length, cnt=t=>ps.filter(m=>(m.t||'map')===t).length, parts=[[cnt('map'),'map'],[cnt('image'),'image'],[cnt('text'),'text']].filter(x=>x[0]).map(x=>x[0]+' '+x[1]+(x[0]>1?'s':''));
+  const k=AT_KINDS[p.kind].label+(n>1?' · '+parts.join(', '):'');
   if(atlas.mode==='scroll') return k+((p.kind!=='section' && atPinnedAt(i))?' · pinned map':(p.kind==='section'&&p.pin?' · pins its map':''));
   const nn=nums[p.id]; return nn ? (nn.length>1?'pages '+nn.join('–')+' · spread':'page '+nn[0])+' · '+k : k;
 }
@@ -14026,30 +14079,31 @@ function renderAtBody(){
   const p=atCur(); if(!p){ atSel='cover'; renderAtBody(); return; }
   const i=atlas.pages.indexOf(p);
   if(p.kind==='section'){ renderAtSection(body,p,i); return; }
-  const ms=atMapsOf(p), nM=ms.length, book=atlas.mode!=='scroll';
+  const ms=atPanelsOf(p), nM=ms.length, book=atlas.mode!=='scroll';
   if(p.kind==='map') atArrFix(p);
   const segH=(id,opts,v,dis)=>'<div class="at-seg at-segs" id="'+id+'">'+opts.map(o=>'<button type="button" data-v="'+o[0]+'"'+(v===o[0]?' class="on"':'')+(dis?' disabled':'')+(o[2]?' title="'+o[2]+'"':'')+'>'+o[1]+'</button>').join('')+'</div>';
   let media='';
-  if(p.kind==='map') media= nM===1 ? (p.snap?'<div class="at-media at-mapbox"><iframe sandbox="allow-scripts allow-popups" title="Map preview"></iframe></div>':'<div class="at-media at-missing">No map captured yet.</div>') : '';
-  else if(p.kind==='layout'||p.kind==='image') media=p.src?'<div class="at-media"><img src="'+p.src+'" alt=""></div>':'<div class="at-media at-missing">No image yet.</div>';
-  else if(p.kind==='embed'){ const vk=atVidKind(p.vurl), yt=/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/.exec(p.vurl||'');
-    media=vk ? '<div class="at-media at-vidprev">'+(yt&&vk==='YouTube video'?'<img src="https://i.ytimg.com/vi/'+yt[1]+'/hqdefault.jpg" alt="" referrerpolicy="no-referrer">':'')+'<span class="at-vidtag">▶ '+esc(vk)+'</span></div>' : '<div class="at-media at-missing">Paste a YouTube or Vimeo address, or any web page, below.</div>'; }
   const when=p.captured?'Captured '+new Date(p.captured).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}):'';
   let srcCard='';
   if(p.kind==='map'){
     const bmOpts=AT_BMS.map(b=>'<option value="'+b[0]+'">'+b[1]+'</option>').join('');
     const mInfo=m=>{ const sn=m.snap; if(!sn) return 'No map captured yet.'; const nL=sn.globe?sn.gLayers.length:sn.proj?sn.pLayers.length:sn.layers.length;
       return (m.captured?'Captured '+new Date(m.captured).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})+' · ':'')+(sn.globe?'globe view · ':sn.proj?(sn.proj.label||'projected')+' projection · ':'')+(sn.swipe?'swipe comparison · ':'')+nL+' layer'+(nL===1?'':'s'); };
-    srcCard=atCard(nM>1?'Maps on this page':'Map',
-      ms.map((m,k)=>'<div class="at-mrow">'+(nM>1?'<div class="at-mth">'+(AT_IMG.test(m.thumb||'')?'<img src="'+m.thumb+'" alt="">':'<span>🧭</span>')+'</div>':'')+'<div class="at-mbody">'+
+    const nMaps=ms.filter(m=>(m.t||'map')==='map').length;
+    const pRow=(m,k)=>m.t==='image' ? '<div class="at-mrow"><div class="at-mth"><img src="'+m.src+'" alt=""></div><div class="at-mbody"><div class="at-mtop"><b>Image</b><input type="text" class="atMCap" data-k="'+k+'" maxlength="120" placeholder="Label (optional)" value="'+esc(m.cap||'')+'"></div>'+
+        '<div class="at-btnrow"><button class="btn small light atPImg" data-k="'+k+'">⬆ Replace image</button><button class="btn small light at-delbtn atMDel" data-k="'+k+'">✕ Remove</button></div></div></div>'
+      : m.t==='text' ? '<div class="at-mrow at-mrow-t"><div class="at-mbody"><div class="at-mtop"><b>Text</b><span class="kv">a block of writing beside the maps</span><button class="btn small light at-delbtn atMDel" data-k="'+k+'" style="margin-left:auto">✕ Remove</button></div><div class="atPRich" data-k="'+k+'"></div></div></div>'
+      : null;
+    srcCard=atCard(nM>1?'On this page':'Map',
+      ms.map((m,k)=>pRow(m,k)||'<div class="at-mrow">'+(nM>1?'<div class="at-mth">'+(AT_IMG.test(m.thumb||'')?'<img src="'+m.thumb+'" alt="">':'<span>🧭</span>')+'</div>':'')+'<div class="at-mbody">'+
         (nM>1?'<div class="at-mtop"><b>Map '+(k+1)+'</b><input type="text" class="atMCap" data-k="'+k+'" maxlength="120" placeholder="Label, e.g. 2016" aria-label="Label for map '+(k+1)+'" value="'+esc(k?m.cap:p.mcap)+'">'+(m.snap&&m.snap.proj?'':'<select class="atMBm at-mbm" data-k="'+k+'" title="Basemap" aria-label="Basemap for map '+(k+1)+'">'+bmOpts+'</select>')+'</div>'
           :(m.snap&&m.snap.proj?'':'<label class="at-f">Basemap<select class="atMBm" data-k="'+k+'">'+bmOpts+'</select></label>'))+
         '<div class="at-btnrow"><button class="btn small atMUp" data-k="'+k+'" title="Replace this map with the layers and view in Map Maker now">↻ Update from Map Maker</button><button class="btn small light atMShow" data-k="'+k+'" title="Open Map Maker at this map’s view with its layers switched on">🧭 Show in Map Maker</button>'+
-          (nM>1?'<button class="btn small light at-delbtn atMDel" data-k="'+k+'" title="Remove this map from the page">✕ Remove</button>':'')+(nM>1?'<span class="kv at-minfo">'+mInfo(m)+'</span>':'')+'</div>'+
+          ((nM>1 && (k>0 || nMaps>1))?'<button class="btn small light at-delbtn atMDel" data-k="'+k+'" title="Remove this map from the page">✕ Remove</button>':'')+(nM>1?'<span class="kv at-minfo">'+mInfo(m)+'</span>':'')+'</div>'+
         (nM>1?'':'<p class="kv at-meta2">'+mInfo(m)+'</p>')+'</div></div>').join('')+
-      (nM<4?'<div class="at-btnrow at-madd"><button class="btn small" id="atMAdd" title="Capture the layers and view in Map Maker now as another map on this page">＋ Add the Map Maker view as map '+(nM+1)+'</button></div><p class="kv at-meta2">'+(nM===1?'A page can hold up to four maps, side by side or as a swipe comparison: set up the next map in Map Maker, then add it here.':'Up to four maps on a page.')+'</p>':'')+
-      (nM>1?(nM<4?'<div class="at-f">Arrangement'+segH('atArr', AT_ARR[nM], p.arr)+'</div>':'<p class="kv at-meta2">Arranged in a 2 × 2 grid.</p>')+
-        (p.arr==='compare'?'<p class="kv at-meta2">Readers drag a divider across the two maps; the maps pan and zoom together.</p>':'<label class="at-chk"><input type="checkbox" id="atSync"'+(p.sync?' checked':'')+'> Link the maps <span class="kv">pan and zoom together</span></label>'):'')+
+      (nM<4?'<div class="at-btnrow at-madd"><button class="btn small" id="atMAdd" title="Capture the layers and view in Map Maker now as another map on this page">＋ Map Maker view</button><button class="btn small light" id="atPAddImg">＋ Image</button><button class="btn small light" id="atPAddTxt">＋ Text</button><input type="file" id="atPImgIn" accept="image/*" hidden></div><p class="kv at-meta2">'+(nM===1?'Up to four panels on a page: more maps (set up the next map in Map Maker, then add it), images or text.':'Up to four panels on a page.')+'</p>':'')+
+      (nM>1?(atArrOpts(p).length>1?'<div class="at-f">Arrangement'+segH('atArr', atArrOpts(p), p.arr)+'</div>':'<p class="kv at-meta2">Arranged as '+esc(atArrOpts(p)[0][1].toLowerCase())+'.</p>')+
+        (p.arr==='compare'?'<p class="kv at-meta2">Readers drag a divider across the two maps; the maps pan and zoom together.</p>':(nMaps>1?'<label class="at-chk"><input type="checkbox" id="atSync"'+(p.sync?' checked':'')+'> Link the maps <span class="kv">pan and zoom together</span></label>':'')):'')+
       '<label class="at-chk"><input type="checkbox" id="atLg"'+(p.legend?' checked':'')+'> Legend button <span class="kv">readers open and close it</span></label>', nM>1?'at-card-wide':'');
   }
   else if(p.kind==='layout') srcCard=atCard('Layout',
@@ -14063,13 +14117,13 @@ function renderAtBody(){
   const spreadOn=!!(book&&p.spread&&media0), boxOn=book&&(spreadOn ? (p.spreadText==='box') : (p.pageText==='box'));
   const hasSrc=['map','layout','image'].includes(p.kind);
   let capCard, advCard='', rdCard='';
-  if(p.kind==='text') capCard=atCard('Text','<div class="at-lt"><div class="at-ltc"><div id="atRich"></div></div>'+atPrevBox(false)+'</div>','at-card-wide');
+  if(p.kind==='text') capCard=atCard('Text','<div id="atRich"></div>','at-card-wide');
   else {
     capCard=atCard('Caption and text','<div class="at-lt"><div class="at-ltc">'+
         '<label class="at-f"><span class="at-fl">Caption <span class="kv">optional</span></span><input type="text" id="atCap" maxlength="400" value="'+esc(p.caption)+'"></label>'+
         (hasSrc?'<label class="at-f"><span class="at-fl">Source or credit <span class="kv">optional, shown under the caption</span></span><input type="text" id="atSrcTx" maxlength="300" value="'+esc(p.source||'')+'" placeholder="e.g. data provider, year"></label>':'')+
         '<div class="at-f"><span class="at-fl">Text <span class="kv">optional</span></span></div><div id="atRich"></div>'+
-      '</div>'+atPrevBox(spreadOn, boxOn?'Drag the text box to move it; drag its corner to resize. Preview of the page':'')+'</div>','at-card-wide');
+      '</div></div>','at-card-wide');
     const titleCtl='<div class="at-f">Title'+segH('atTOn',[['','Above'],['on','On the '+(p.kind==='map'?'map':p.kind==='embed'?'video':p.kind)]], p.tOver?'on':'')+'</div>'+
       (p.tOver?'<div class="at-f at-sub"><div class="at-2col">'+segH('atTSt',[['card','Card'],['banner','Banner'],['halo','Large']], p.tOver)+
         '<select id="atTPos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="bl">Bottom left</option></select></div></div>':'');
@@ -14086,7 +14140,7 @@ function renderAtBody(){
   body.innerHTML='<div class="at-ed">'+
     '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="'+esc(AT_KINDS[p.kind].label)+' title" aria-label="Page title">'+
       '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light at-delbtn" id="atDel" title="Delete this page">🗑 Delete</button></div></div>'+
-    media+
+    atPvHtml(spreadOn, boxOn)+
     (srcCard?'<div class="at-cards">'+srcCard+'</div>':'')+
     capCard+advCard+rdCard+
     '</div>';
@@ -14122,44 +14176,65 @@ function renderAtBody(){
 }
 let atAdvOpen=false;
 const AT_ARR={2:[['side','Side by side'],['compare','Swipe compare']], 3:[['big','One large, two small'],['row','Three across']], 4:[['grid','2 × 2 grid']]};
-function atArrFix(p){ const n=atMapsOf(p).length; if(n<2) return; const ok=AT_ARR[n].map(o=>o[0]); if(!ok.includes(p.arr)) p.arr=ok[0]; }
-const atPrevBox=(spread,note)=>'<div class="at-ltp"><div class="at-lpwrap'+(spread?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(note||'Preview of the page')+(spread?' (both pages)':'')+'. Maps show as pictures here; readers get the live maps.</p></div>';
+function atArrOpts(p){ const ps=atPanelsOf(p), n=ps.length; if(n<2) return []; return AT_ARR[n].filter(o=>o[0]!=='compare' || ps.every(m=>m.t!=='image'&&m.t!=='text')); }
+function atArrFix(p){ const ok=atArrOpts(p).map(o=>o[0]); if(ok.length && !ok.includes(p.arr)) p.arr=ok[0]; }
+const atPrevBoxUnused=(spread,note)=>'<div class="at-ltp"><div class="at-lpwrap'+(spread?' sp':'')+'"><div class="at-lpbox"></div></div><p class="kv at-meta2">'+(note||'Preview of the page')+(spread?' (both pages)':'')+'. Maps show as pictures here; readers get the live maps.</p></div>';
 function atPrevSoon(p){ clearTimeout(atPrevSoon.t); atPrevSoon.t=setTimeout(()=>{ if(atCur()===p) atPagePreview(p); }, 250); }
 function atBindMaps(body, p){
-  const ms=atMapsOf(p);
-  const loadMap=()=>{ const f=body.querySelector('.at-mapbox iframe'); if(f) f.srcdoc=atMapHtml(p); };
-  if(ms.length===1 && p.snap) loadMap();
-  body.querySelectorAll('.atMBm').forEach(sel=>{ const m=ms[+sel.dataset.k]; sel.value=atBmKey(m.basemap); sel.onchange=()=>{ m.basemap=sel.value; atDirty(); if(ms.length===1) loadMap(); }; });
+  const ms=atPanelsOf(p);
+  const re=()=>{ atArrFix(p); atDirty(); renderAtlas(); };
+  body.querySelectorAll('.atMBm').forEach(sel=>{ const m=ms[+sel.dataset.k]; sel.value=atBmKey(m.basemap); sel.onchange=()=>{ m.basemap=sel.value; atDirty(); atPagePreview(p); }; });
   body.querySelectorAll('.atMCap').forEach(inp=>inp.oninput=()=>{ const k=+inp.dataset.k; if(k) ms[k].cap=inp.value; else p.mcap=inp.value; atDirty(); atPrevSoon(p); });
   body.querySelectorAll('.atMUp').forEach(b=>b.onclick=async()=>{ const m=ms[+b.dataset.k]; if(await atCaptureMap(m) && ms.length>1 && m.still){ m.still=await atToJpeg(m.still, 1600, 0.86); atDirty(); } });
   body.querySelectorAll('.atMShow').forEach(b=>b.onclick=()=>atShowInMaker(ms[+b.dataset.k]));
+  body.querySelectorAll('.atPRich').forEach(h=>{ const m=ms[+h.dataset.k]; atRichEditor(h, m.text, v=>{ m.text=v; atDirty(); atPrevSoon(p); }); });
+  const pickImg=()=>new Promise(res=>{ const fi=document.getElementById('atPImgIn'); fi.value=''; fi.onchange=()=>res(fi.files&&fi.files[0]); fi.click(); });
+  body.querySelectorAll('.atPImg').forEach(b=>b.onclick=async()=>{ const f=await pickImg(); if(!f) return; try{ ms[+b.dataset.k].src=await atReadImage(f, 1800); atDirty(); renderAtlas(); }catch(err){ toast(err.message); } });
   body.querySelectorAll('.atMDel').forEach(b=>b.onclick=()=>{
     if(!b._armed){ b._armed=true; b.textContent='Click again to remove'; b.classList.add('armed'); setTimeout(()=>{ if(b.isConnected){ b._armed=false; b.classList.remove('armed'); b.textContent='✕ Remove'; } },3500); return; }
     const k=+b.dataset.k;
-    if(k===0){ const m=p.more.shift(); ['snap','thumb','still','basemap','captured','layerNames'].forEach(f=>{ p[f]=m[f]; }); p.mcap=m.cap||''; }
+    if(k===0){ /* the page's own map goes: the next map takes its place */
+      const j=p.more.findIndex(m=>m.t!=='image'&&m.t!=='text'); if(j<0) return; const m=p.more.splice(j,1)[0];
+      ['snap','thumb','still','basemap','captured','layerNames'].forEach(f=>{ p[f]=m[f]; }); p.mcap=m.cap||''; }
     else p.more.splice(k-1,1);
-    atArrFix(p); atDirty(); renderAtlas(); mlog('compose','Removed map '+(k+1)+' from the atlas page "'+(p.title||'Map')+'".'); });
+    re(); mlog('compose','Removed a panel from the atlas page "'+(p.title||'Map')+'".'); });
   const add=document.getElementById('atMAdd');
   if(add) add.onclick=async()=>{ if(!Array.isArray(p.more)) p.more=[]; if(p.more.length>=3) return;
-    const m={id:uid(), snap:null, thumb:'', still:'', basemap:'', captured:null, cap:'', layerNames:[]};
+    const m={id:uid(), t:'map', snap:null, thumb:'', still:'', basemap:'', captured:null, cap:'', layerNames:[]};
     if(!(await atCaptureMap(m, null, true))) return;
     m.still=await atToJpeg(m.still, 1600, 0.86); if(p.more.length===0 && p.still) p.still=await atToJpeg(p.still, 1600, 0.86);
-    p.more.push(m); atArrFix(p); atDirty(); renderAtlas();
-    toast('Added as map '+(p.more.length+1)+' on “'+(p.title||'this page')+'”. Give each map a short label.', 4500);
-    mlog('compose','Added a map to the atlas page "'+(p.title||'Map')+'" ('+(p.more.length+1)+' maps).'); };
+    p.more.push(m); re();
+    toast('Added the Map Maker view to “'+(p.title||'this page')+'”. Give each map a short label.', 4500);
+    mlog('compose','Added a map to the atlas page "'+(p.title||'Map')+'".'); };
+  const ai=document.getElementById('atPAddImg');
+  if(ai) ai.onclick=async()=>{ if(p.more.length>=3) return; const f=await pickImg(); if(!f) return;
+    try{ p.more.push({id:uid(), t:'image', src:await atReadImage(f, 1800), cap:'', alt:''}); re(); }catch(err){ toast(err.message); } };
+  const at=document.getElementById('atPAddTxt');
+  if(at) at.onclick=()=>{ if(p.more.length>=3) return; p.more.push({id:uid(), t:'text', text:'', cap:''}); re(); };
   body.querySelectorAll('#atArr button').forEach(b=>b.onclick=()=>{ p.arr=b.dataset.v; atDirty(); renderAtBody(); });
   const sy=document.getElementById('atSync'); if(sy) sy.onchange=()=>{ p.sync=sy.checked; atDirty(); };
-  const lgc=document.getElementById('atLg'); if(lgc) lgc.onchange=()=>{ p.legend=lgc.checked; atDirty(); loadMap(); };
+  const lgc=document.getElementById('atLg'); if(lgc) lgc.onchange=()=>{ p.legend=lgc.checked; atDirty(); atPagePreview(p); };
 }
+/* the live preview at the top of every page editor */
+function atPvHtml(spread, box){
+  const book=atlas.mode!=='scroll';
+  return '<div class="at-pvtop">'+(book ? '<div class="at-lpwrap'+(spread?' sp':'')+'"><div class="at-lpbox at-pvbox"></div></div>' : '<div class="at-pvscroll"><div class="at-pvbox"></div></div>')+
+    '<p class="kv at-meta2">'+(box?'Drag the text box to move it, and its corner to resize. ':'')+(book?'How this page'+(spread?' spread':'')+' looks in the book':'How this part of the scrolling page looks')+'. The maps are live: pan and zoom to explore (the view readers start with comes from Map Maker).</p></div>';
+}
+let atPv={el:null, id:'', mk:'', sig:''};
+const AT_PV_TXT='.av-h,.av-cap,.av-apx,.av-text,.av-tov,.av-mml,.av-cmp-tag,.av-st-h,.av-foot,.av-sec-k,.av-ptext';
+function atPvMapKey(p){ return JSON.stringify([atlas.mode, atlas.theme, atlas.custom, p.legend, (p.tOver&&p.title)?p.tPos:'', p.arr, p.sync, atPanelsOf(p).map(m=>[m.id||p.id, m.t||'map', m.captured, m.basemap, (m.src||'').length])]); }
+function atPvSig(el){ const c=el.cloneNode(true); c.querySelectorAll(AT_PV_TXT).forEach(e=>{ e.innerHTML=''; }); return c.innerHTML.replace(/>[^<]+</g,'><'); }
 function renderAtSection(body, p, i){
   atEnsureCss();
   const scroll=atlas.mode==='scroll';
   body.innerHTML='<div class="at-ed">'+
     '<div class="at-edhead"><input type="text" id="atPTitle" class="at-ptitle" maxlength="160" value="'+esc(p.title)+'" placeholder="Section title" aria-label="Section title">'+
       '<div class="at-pbtns"><button class="btn small light" id="atUp" title="Move earlier"'+(i===0?' disabled':'')+'>↑</button><button class="btn small light" id="atDown" title="Move later"'+(i===atlas.pages.length-1?' disabled':'')+'>↓</button><button class="btn small light at-delbtn" id="atDel" title="Delete this section opener (its pages stay)">🗑 Delete</button></div></div>'+
+    atPvHtml(false,false)+
     atCard('Section','<div class="at-lt"><div class="at-ltc"><p class="kv at-meta2">A chapter opener. The pages after it, up to the next section, belong to it: they are indented in the contents'+(scroll?', and the section becomes a tab':'')+'.</p>'+
       (scroll?'<label class="at-chk at-sw"><input type="checkbox" id="atPin"'+(p.pin?' checked':'')+'><i></i> <b>Pin the map</b> <span class="kv">this section’s pages scroll past a map that stays in place and changes with each page</span></label>':'')+
-      '<div class="at-f">Image'+atImgCtl('atSecImg', p.src, 'Optional, shown under the title.')+'</div></div>'+atPrevBox(false)+'</div>','at-card-wide')+
+      '<div class="at-f">Image'+atImgCtl('atSecImg', p.src, 'Optional, shown under the title.')+'</div></div></div>','at-card-wide')+
     atCard('Introduction','<div id="atRich"></div>','at-card-wide')+'</div>';
   document.getElementById('atPTitle').oninput=e=>{ p.title=e.target.value; atDirty(); renderAtList(); atPrevSoon(p); };
   const pin=document.getElementById('atPin'); if(pin) pin.onchange=()=>{ p.pin=pin.checked; atDirty(); renderAtList(); };
@@ -14173,10 +14248,21 @@ function renderAtSection(body, p, i){
   atPagePreview(p);
 }
 /* v61: the page (or spread) drawn in the chosen design, with a text box the author can drag and resize */
-function atPagePreview(p){
-  const bx=document.querySelector('#atBody .at-lpbox'); if(!bx) return;
+function atPagePreview(p, force){
+  const bx=document.querySelector('#atBody .at-pvbox'); if(!bx) return;
   atEnsureCss();
-  atlasViewer(bx, Object.assign(atViewData(atlas), {__cover:'page', __pageId:p.id}));
+  const book=atlas.mode!=='scroll';
+  /* a picture-only copy first: if only words changed, swap the words and keep the live maps as they are */
+  const tmp=document.createElement('div'); tmp.className='at-pvbox';
+  atlasViewer(tmp, Object.assign(atViewData(atlas), {__single:p.id, __still:true}));
+  const sig=atPvSig(tmp), mk=atPvMapKey(p);
+  if(!force && atPv.el===bx && bx.isConnected && atPv.id===p.id && atPv.mk===mk && atPv.sig===sig){
+    const a=[...bx.querySelectorAll(AT_PV_TXT)], b=[...tmp.querySelectorAll(AT_PV_TXT)];
+    if(a.length===b.length){ a.forEach((x,k)=>{ if(x.innerHTML!==b[k].innerHTML) x.innerHTML=b[k].innerHTML; }); return; }
+  }
+  atlasViewer(bx, Object.assign(atViewData(atlas, {live:true, only:p.id}), {__single:p.id}));
+  atPv={el:bx, id:p.id, mk, sig};
+  if(!book) return;
   bx.style.fontSize=(bx.clientHeight/60)+'px';
   bx.querySelectorAll('a').forEach(a=>a.addEventListener('click', e=>e.preventDefault()));
   const tb=bx.querySelector('.av-tbox'); if(!tb) return;
@@ -14266,7 +14352,7 @@ function renderAtSettings(){
         '<div class="at-cg"><label>Page numbers'+sel('cuP',[['plain','3'],['dashes','— 3 —'],['circle','● 3'],['p','p. 3']],cu.pnum)+'</label></div>')+
       '</div>':'')+
     '<p class="kv" style="margin-top:10px">Title, subtitle and author: click <b>Cover</b> in the page list. Share, export or PDF: <b>Send / Export ▾</b> at the top.</p>';
-  box.querySelectorAll('.at-modeseg button').forEach(b=>b.onclick=()=>{ if(atlas.mode===b.dataset.m) return; atlas.mode=b.dataset.m; atDirty(); renderAtlas(); mlog('compose','Set the atlas to read as '+(atlas.mode==='scroll'?'a scrolling page':'a book')+'.'); });
+  box.querySelectorAll('.at-modeseg button').forEach(b=>b.onclick=()=>{ if(atlas.mode===b.dataset.m) return; atlas.mode=b.dataset.m; atPv.el=null; atDirty(); renderAtlas(); mlog('compose','Set the atlas to read as '+(atlas.mode==='scroll'?'a scrolling page':'a book')+'.'); });
   const again=()=>{ if(atSel!=='cover'&&atSel!=='back'&&atSel!=='contents') atPrevSoon(atCur()); };
   document.getElementById('atFigN').onchange=e=>{ atlas.figNums=e.target.checked; atDirty(); again(); };
   document.getElementById('atApx').onchange=e=>{ atlas.apparatus=e.target.value; atDirty(); again(); };
@@ -16923,7 +17009,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v89 · Oct 2026';
+const MOM_VERSION='v90 · Oct 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -19368,6 +19454,14 @@ function loadProjectData(data){
 }
 
 /* ---------- module switching ---------- */
+/* Leaflet only draws tiles for the size it last measured; if the map's box is still settling when Map Maker opens
+   (fonts, side panels, a narrow window), parts of the basemap stay blank until the window is resized. Re-measure whenever the box changes. */
+function mkWatchSize(){
+  if(mkWatchSize.on || !('ResizeObserver' in window) || !mkMap) return; mkWatchSize.on=true;
+  let t=null, w=0, h=0; const el=mkMap.getContainer();
+  new ResizeObserver(()=>{ const r=el.getBoundingClientRect(); if(!r.width||!r.height||(r.width===w&&r.height===h)) return; w=r.width; h=r.height;
+    clearTimeout(t); t=setTimeout(()=>{ try{ mkMap.invalidateSize({pan:false}); }catch(_){} }, 80); }).observe(el);
+}
 function switchModule(which){
   window.curModule=which;
   ['home','maker','layout','collect','atlas'].forEach(m=>{
@@ -19383,7 +19477,7 @@ function switchModule(which){
   document.body.classList.toggle('on-home', which==='home');
   document.body.classList.toggle('mod-layout', which==='layout');
   document.body.classList.toggle('mod-home', which==='home');
-  if(which==='maker' && mkMap) setTimeout(()=>mkMap.invalidateSize(), 60);
+  if(which==='maker' && mkMap){ [60, 400, 1200].forEach(t=>setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} }, t)); mkWatchSize(); }
   if(which==='layout'){ canvas.calcOffset(); canvas.renderAll(); }
   positionEmbedFrames();
   if(which==='home') renderHome();
@@ -22042,6 +22136,10 @@ function buildEmbedHtml(opts){
   const lgToggle = opts.legend==='toggle';
   const css=`html,body{margin:0;height:100%;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;}
 #map{position:absolute;inset:0;}
+#map .leaflet-control-attribution{display:none;max-width:min(420px,calc(100vw - 60px));white-space:normal;font-size:11px;line-height:1.35;padding:4px 7px;border-radius:5px 0 0 0;}
+#map.mom-attr-open .leaflet-control-attribution{display:block;}
+.mom-ai{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.92);color:#1f2a3c;font:italic 700 13px Georgia,serif;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);padding:0;line-height:22px;}
+#map.mom-attr-open .mom-ai{background:#1f2a3c;color:#fff;}
 .leaflet-popup-content{font-size:12px;max-height:220px;overflow:auto;}
 .cs-embed-popup table{border-collapse:collapse;}
 .cs-embed-popup td{padding:2px 6px;border-bottom:1px solid #eee;vertical-align:top;}
@@ -22100,6 +22198,7 @@ h.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagatio
 h.addEventListener('pointerup',function(){h.onpointermove=null;map.dragging.enable();});
 h.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'||e.key==='ArrowRight'){SW.x=Math.max(0.02,Math.min(0.98,SW.x+(e.key==='ArrowLeft'?-0.02:0.02)));clip();e.preventDefault();}});
 clip();})();}
+(function(){var c=L.control({position:'bottomright'});c.onAdd=function(){var b=L.DomUtil.create('button','mom-ai');b.type='button';b.title='Map credits';b.setAttribute('aria-label','Map credits');b.setAttribute('aria-expanded','false');b.textContent='i';L.DomEvent.disableClickPropagation(b);b.onclick=function(){var o=map.getContainer().classList.toggle('mom-attr-open');b.setAttribute('aria-expanded',o?'true':'false');};return b;};c.addTo(map);})();
 ${opts.sync ? `(function(){var busy=0,user=0,t=null,c=map.getContainer();['pointerdown','wheel','keydown','touchstart'].forEach(function(n){c.addEventListener(n,function(){user=1;},{passive:true,capture:true});});
 window.addEventListener('message',function(e){var d=e.data;if(!d||!d.momView||e.source!==parent)return;busy=1;try{map.setView(d.momView.c,d.momView.z,{animate:false});}catch(x){}setTimeout(function(){busy=0;},80);});
 map.on('moveend',function(){if(busy||!user)return;clearTimeout(t);t=setTimeout(function(){var q=map.getCenter();try{parent.postMessage({momMove:{c:[q.lat,q.lng],z:map.getZoom()}},'*');}catch(x){}},40);});})();` : ''}

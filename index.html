@@ -73,6 +73,8 @@
   .modal .btn.ghost{color:var(--text);border-color:#9aa6bd;background:#fff;}
   #mk-map.carto-morphing .cs-maplabel{display:none;}
   .histo svg{display:block;background:#fbfcfe;border:1px solid var(--line);border-radius:4px;}
+  .mom-narrow{position:fixed;left:8px;right:8px;bottom:8px;z-index:9000;display:flex;gap:10px;align-items:center;background:#fffaeb;border:1px solid #f1d58e;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.4;color:#4a3b10;box-shadow:0 4px 16px rgba(0,0,0,.18);}
+  .mom-narrow span{flex:1;}
   .home-backup{background:#fffaeb;border:1px solid #f1d58e;border-left:4px solid #e0a82e;border-radius:10px;padding:14px 16px;margin:0 0 16px;font-size:13px;color:#4a3b10;}
   .home-backup .hb-head{display:flex;gap:10px;align-items:flex-start;}
   .home-backup .hb-ic{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:#fbe7b5;color:#9a6a06;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
@@ -1055,6 +1057,7 @@
 html[data-theme=dark] .modal .btn.ghost{background-color:var(--panel);}
 html[data-theme=dark] .histo svg{background-color:var(--panel);}
 html[data-theme=dark] .home-backup{background-color:#302a1a;border:1px solid #655a3f;color:#dfd8c4;}
+html[data-theme=dark] .mom-narrow{background-color:#302a1a;border-color:#655a3f;color:#dfd8c4;}
 html[data-theme=dark] .home-backup .hb-ic{background-color:#4a412b;color:#dbcaa8;}
 html[data-theme=dark] .home-backup .hb-head b{color:#e2dcc8;}
 html[data-theme=dark] .home-backup .hb-head span{color:#d0cab8;}
@@ -1890,7 +1893,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <p>Send the current map to Map Composer or the Atlas, share a live link, or export files: layout PDF/PNG/SVG, an interactive web map, data layers, or a whole project archive.</p>
     </div>
     <div class="help-step"><b>Keeping your work.</b>
-      <p>Projects live only in this browser. <b>⚙ → Sync to cloud</b> makes <b>Save</b> also write them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>⚙ → Log</b> lists every step you took, ready for a report. If a capture fails, it says so and your atlas or layout stays as it was.</p>
+      <p>Projects live only in this browser. <b>⚙ → Sync to cloud</b> makes <b>Save</b> also write them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>⚙ → Log</b> lists every step you took, ready for a report. If a capture fails, it says so and your atlas or layout stays as it was. Data files over 50 MB ask before loading.</p>
     </div>
     <div class="help-step"><b>About.</b>
       <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs in your browser; your data stay on your computer.</p>
@@ -2500,6 +2503,32 @@ const AUTOSAVE_KEY = "cartoStudio_autosave_v2";
 const UNIT_M = {m:1, km:1000, mi:1609.34, ft:0.3048};
 
 function uid(){ return 'o'+Math.random().toString(36).slice(2,10); }
+/* v93: fetch with a time limit, so a stalled service gives a message instead of hanging */
+function fetchT(url, opts, ms){
+  ms=ms||30000;
+  if(typeof AbortController!=='function') return fetch(url, opts);
+  const ac=new AbortController(), o=Object.assign({}, opts||{}), up=o.signal; let late=false;
+  if(up){ if(up.aborted) ac.abort(); else up.addEventListener('abort', ()=>ac.abort(), {once:true}); }
+  o.signal=ac.signal;
+  const t=setTimeout(()=>{ late=true; ac.abort(); }, ms);
+  return fetch(url, o).then(r=>{ clearTimeout(t); return r; }, e=>{ clearTimeout(t);
+    if(late){ const er=new Error('the service didn’t answer within '+Math.round(ms/1000)+' seconds. Check your connection and try again'); er.name='TimeoutError'; throw er; }
+    throw e; });
+}
+/* v93: an error nobody caught gets a short message instead of nothing happening (at most one every 8 s; harmless noise ignored) */
+(function(){
+  let last=0;
+  const skip=/ResizeObserver loop|^Script error\.?$|AbortError|aborted|The user aborted|cancell?ed|NotAllowedError|chrome-extension:|moz-extension:|safari-extension:/i;
+  const say=(msg, src)=>{
+    msg=String(msg||'').replace(/^(Uncaught )?(\w*Error: )?/,'').replace(/[.\s]+$/,'').trim();
+    if(!msg || skip.test(msg) || (src && skip.test(src))) return;
+    const now=Date.now(); if(now-last<8000) return; last=now;
+    try{ toast('Something went wrong: '+msg.slice(0,160)+'. Your saved work is safe. If it keeps happening, refresh the page.', 7000); }catch(_){}
+  };
+  window.addEventListener('error', e=>{ if(e && e.target && e.target!==window) return; /* failed images or scripts */
+    say(e&&(e.error&&e.error.message||e.message), e&&e.filename); });
+  window.addEventListener('unhandledrejection', e=>{ const r=e&&e.reason; if(r && (r.name==='AbortError')) return; say(r&&(r.message||r)); });
+})();
 function toast(msg, ms){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
@@ -5794,6 +5823,8 @@ function parseSpreadsheet(file){
 }
 
 function handleMakerFile(file){
+  /* v93: a very large file is read and parsed on the page itself, which can freeze the tab for a while */
+  if(file && file.size>50e6 && !confirm('“'+file.name+'” is '+Math.round(file.size/1e6)+' MB. Large files can make the page freeze for a while, or fail on computers with less memory.\n\nLoad it anyway?')) return;
   const name=file.name.replace(/\.[^.]+$/,'');
   const lower=file.name.toLowerCase();
   if(lower.endsWith('.zip')){
@@ -14102,7 +14133,7 @@ function renderAtlas(){
     document.getElementById('atBody').innerHTML='<div class="at-start"><h3>Make an atlas</h3><p class="kv">Live maps from Map Maker, layouts from Map Composer, images and text, with a cover and contents. How should it read?</p>'+
       '<div class="at-sgroup" role="radiogroup" aria-label="How the atlas reads">'+
         '<button type="button" class="at-scard on" data-m="book" role="radio" aria-checked="true"><span class="at-sic">📖</span><b>Book</b><span>Pages turn in two-page spreads, with page numbers and maps that can fill both pages.</span></button>'+
-        '<button type="button" class="at-scard" data-m="scroll" role="radio" aria-checked="false"><span class="at-sic">⇅</span><b>Scrolling</b><span>One long page with section tabs. A section can pin its map while the pages scroll past. Good on phones.</span></button></div>'+
+        '<button type="button" class="at-scard" data-m="scroll" role="radio" aria-checked="false"><span class="at-sic">⇅</span><b>Scrolling</b><span>One long page with section tabs. A section can hold its map on screen as a guided tour. Good on phones.</span></button></div>'+
       '<p class="kv" style="margin-top:10px">Both have the same pages and both make a PDF. You can change this later in the settings.</p>'+
       '<div class="at-go"><button class="btn" id="atStart">Start the atlas</button></div></div>';
     document.getElementById('atSettings').innerHTML='<div class="kv" style="padding:12px 4px;line-height:1.5"><b>Atlas settings</b> appear here once the atlas is started: how it reads, its design, captions and a preview.</div>';
@@ -14391,6 +14422,11 @@ function atBindMaps(body, p){
 }
 /* a new picture of a map at its (changed) view: Map Maker is set to that map's layers and view for a moment */
 async function atRetakeStill(m, small){
+  if(!atCapGuard()) return false;
+  atCapBusy=true;
+  try{ return await atRetakeStillRun(m, small); } finally{ atCapBusy=false; }
+}
+async function atRetakeStillRun(m, small){
   const sn=m.snap; if(!sn || sn.proj || sn.globe || !mkMap){ toast('This map’s picture can only be retaken with Update from Map Maker.', 4500); return false; }
   const ids=sn.layerIds||[];
   if(!ids.every(id=>mkLayers.some(l=>l.id===id))){ toast('Map Maker no longer has all of this map’s layers. Use Update from Map Maker to replace the map instead.', 6000); return false; }
@@ -14615,7 +14651,15 @@ async function atGrabStill(el, max, q, ignore){
     return out;
   });
 }
+/* v93: one capture at a time, so a second click while capturing can't add a second page */
+let atCapBusy=false;
+function atCapGuard(){ if(atCapBusy){ toast('Still capturing the last map…', 2500); return false; } return true; }
 async function atCaptureMap(p, basemap, quiet){
+  if(!atCapGuard()) return false;
+  atCapBusy=true;
+  try{ return await atCaptureMapRun(p, basemap, quiet); } finally{ atCapBusy=false; }
+}
+async function atCaptureMapRun(p, basemap, quiet){
   if(!mkLayers.some(l=>l.visible) && mkBasemapKey==='none'){ toast('Turn on a basemap or at least one layer in Map Maker first.', 3500); return false; }
 
   if(!quiet) toast('Capturing the map from Map Maker…');
@@ -15105,7 +15149,7 @@ const geocodeCache=new Map();
 function geocodeOne(q){
   const key=q.toLowerCase();
   if(geocodeCache.has(key)) return Promise.resolve(geocodeCache.get(key));
-  return fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q))
+  return fetchT('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q), null, 20000)
     .then(r=>{
       if(r.status===429||r.status===403) return {busy:true};
       return r.ok? r.json() : {error:true};
@@ -15681,7 +15725,7 @@ function runGeoSearch(q, fallback){
   let url;
   if(fallback) url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q='+encodeURIComponent(q);
   else { const c=geoCentre(); url='https://photon.komoot.io/api/?limit=8&lang=en&q='+encodeURIComponent(q)+(c?'&lat='+c[0].toFixed(3)+'&lon='+c[1].toFixed(3)+'&zoom='+Math.max(3,Math.min(14,Math.round(c[2]||3)))+'&location_bias_scale=0.3':''); }
-  fetch(url, geoAbort?{signal:geoAbort.signal}:{})
+  fetchT(url, geoAbort?{signal:geoAbort.signal}:{}, 20000)
     .then(r=>{ if(r.status===429) throw new Error('the place-search service is busy; wait a minute and try again'); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ const list=fallback ? (j||[]).map(r=>({lat:r.lat, lon:r.lon, display_name:r.display_name, kind:(r.type||'').replace(/_/g,' '), boundingbox:r.boundingbox})) : ((j&&j.features)||[]).map(photonToPlace);
       geoCache.set(key, list); if(id===geoReq) geoShow(list); })
@@ -16136,7 +16180,7 @@ function projDataCentroid(){
 function ensureWorldLand(){
   if(worldLand||worldLandLoading) return;
   worldLandLoading=true;
-  fetch('https://cdn.jsdelivr.net/gh/martynafford/natural-earth-geojson@master/110m/physical/ne_110m_land.json')
+  fetchT('https://cdn.jsdelivr.net/gh/martynafford/natural-earth-geojson@master/110m/physical/ne_110m_land.json', null, 30000)
     .then(r=>r.json()).then(gj=>{ worldLand=gj; worldLandLoading=false; if(projActive) renderProjection(); })
     .catch(()=>{ worldLandLoading=false; });
 }
@@ -17267,7 +17311,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v92 · Nov 2026';
+const MOM_VERSION='v93 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -19698,8 +19742,10 @@ function loadProjectData(data){
     if(typeof closeCompare==='function') closeCompare();
     mkOverlays.forEach(o=>{ if(o.leaflet) try{ mkMap.removeLayer(o.leaflet); }catch(_){} });
     mkOverlays=(data.maker.overlays||[]).filter(o=>o&&typeof o.src==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(o.src)&&Array.isArray(o.bounds)).map(o=>Object.assign({}, o, {leaflet:null}));
+    /* v93: layers keep their saved id, so Atlas pages can still find them (Retake, Show in Map Maker) */
     (data.maker.layers||[]).forEach(sl=>{
-      mkLayers.push(Object.assign({id:uid(), leaflet:null}, sl));
+      const id=(typeof sl.id==='string' && /^[\w-]{1,40}$/.test(sl.id) && !mkLayers.some(l=>l.id===sl.id)) ? sl.id : uid();
+      mkLayers.push(Object.assign({}, sl, {id, leaflet:null}));
     });
     mkSelectedId=mkLayers.length?mkLayers[0].id:null;
     mkGroups=(data.maker.groups&&typeof data.maker.groups==='object')?data.maker.groups:{};
@@ -19742,7 +19788,10 @@ function switchModule(which){
   document.body.classList.toggle('mod-layout', which==='layout');
   document.body.classList.toggle('mod-home', which==='home');
   if(which==='maker' && mkMap){ [60, 400, 1200].forEach(t=>setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} }, t)); mkWatchSize(); }
-  if(which==='layout'){ canvas.calcOffset(); canvas.renderAll(); }
+  if(which==='layout'){ canvas.calcOffset(); canvas.renderAll();
+    /* v93: the first time Composer opens, zoom out if the page would run off the screen (never zoom in past 100%) */
+    if(!switchModule.fitted){ switchModule.fitted=true; requestAnimationFrame(()=>{ try{ const w=document.getElementById('stage-wrap'), d=pagePx();
+      if(w && w.clientWidth && (d.w*layoutZoom>w.clientWidth-72 || d.h*layoutZoom>w.clientHeight-72)) applyLayoutZoom(Math.min(layoutZoom, (w.clientWidth-72)/d.w, (w.clientHeight-72)/d.h)); }catch(_){} }); } }
   positionEmbedFrames();
   if(which==='home') renderHome();
 }
@@ -20477,7 +20526,7 @@ async function esriLayersOf(url){
   const base=url.replace(/\?.*$/,'').replace(/\/$/,'');
   if(/\/(FeatureServer|MapServer)\/\d+$/.test(base)) return [{url:base, name:null}];
   if(!/\/(FeatureServer|MapServer)$/.test(base)) throw new Error('not a feature-service layer address');
-  const r=await fetch(base+'?f=json'); if(!r.ok) throw new Error('HTTP '+r.status);
+  const r=await fetchT(base+'?f=json', null, 30000); if(!r.ok) throw new Error('HTTP '+r.status);
   const j=await r.json(); if(j.error) throw new Error(j.error.message||'service error');
   return (j.layers||[]).filter(l=>!l.subLayerIds || !l.subLayerIds.length).map(l=>({url:base+'/'+l.id, name:l.name, geom:l.geometryType}));
 }
@@ -20590,7 +20639,7 @@ document.getElementById('onlineLoadSome').onclick=()=>{ if(onlinePending) online
 document.getElementById('onlineCancel').onclick=()=>{ hidePending(); onlineStatus('Cancelled.'); };
 
 function fetchJson(url){
-  return fetch(url).then(r=>{
+  return fetchT(url, null, 90000).then(r=>{
     if(!r.ok) throw new Error('HTTP '+r.status);
     return r.text();
   }).then(t=>{
@@ -20709,7 +20758,7 @@ document.getElementById('osmAddBtn').onclick=()=>{
       if(i>=EP.length) return Promise.reject(new Error('every OpenStreetMap server was busy ('+last+'). Wait a minute and try again, or zoom in to a smaller area.'));
       const url=EP[i++];
       if(i>1 && note) note('The main OpenStreetMap server is busy; trying another server ('+i+' of '+EP.length+')…');
-      return fetch(url, {method:'POST', body:'data='+encodeURIComponent(q)})
+      return fetchT(url, {method:'POST', body:'data='+encodeURIComponent(q)}, 90000)
         .then(r=>{ if(r.status===429||r.status===504||r.status===503||r.status===502){ last='HTTP '+r.status; return next(); }
           if(!r.ok) throw new Error('Overpass HTTP '+r.status); return r.json(); },
           e=>{ last=e.message||'network error'; return next(); });
@@ -20789,7 +20838,7 @@ async function fetchEsriAll(base, token){
   const CAP=50000;
   for(let page=0; page<60; page++){
     const u=base+'/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultOffset='+offset+'&resultRecordCount=2000'+(token?'&token='+token:'');
-    const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status);
+    const r=await fetchT(u, null, 90000); if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     if(data.error) throw new Error(data.error.message||'service returned an error');
     const got=(data.features||[]);
@@ -20825,7 +20874,7 @@ document.getElementById('urlAddBtn').onclick=()=>{
     return;
   }
   onlineStatus('Fetching…');
-  fetch(url).then(r=>{
+  fetchT(url, null, 90000).then(r=>{
     if(!r.ok) throw new Error('HTTP '+r.status);
     return r.text();
   }).then(text=>{
@@ -21483,7 +21532,7 @@ function serializeCurrentProject(noThumb){
     maker:{
       basemap:document.getElementById('mkBasemap').value,
       view: mkMap? {center:[mkMap.getCenter().lat, mkMap.getCenter().lng], zoom:mkMap.getZoom()} : null,
-      layers: mkLayers.map(l=>({name:l.name, geom:l.geom, visible:l.visible, opacity:l.opacity,
+      layers: mkLayers.map(l=>({id:l.id, name:l.name, geom:l.geom, visible:l.visible, opacity:l.opacity,
         style:l.style, labels:l.labels, filter:l.filter, datasetId:l.datasetId, group:l.group||null})),
       groups: clone(mkGroups), grid: clone(mkGrid),
       overlays: mkOverlays.map(o=>({id:o.id, name:o.name, src:o.src, bounds:o.bounds, opacity:o.opacity, visible:o.visible, fit:o.fit})),
@@ -22958,7 +23007,7 @@ function galStore(){ try{ return JSON.parse(localStorage.getItem('mom-gallery')|
 function galSave(o){ try{ localStorage.setItem('mom-gallery', JSON.stringify(o)); }catch(_){} }
 function galSlot(kind){ return (currentProjectId||'none')+':'+kind; }
 async function galFetch(path, body){
-  const r=await fetch(cfgGallery().relay.replace(/\/$/,'')+path, body?{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}:{});
+  const r=await fetchT(cfgGallery().relay.replace(/\/$/,'')+path, body?{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}:{}, 60000);
   let j={}; try{ j=await r.json(); }catch(_){}
   if(!r.ok) throw new Error(j.error||('The gallery answered '+r.status+'.'));
   return j;
@@ -23167,7 +23216,7 @@ async function onAuthMessage(e){
   if(e.data.state!==sessionStorage.getItem('cs_oauth_state')) return;
   const c=cfgPublish();
   try{
-    const r=await fetch(c.gatekeeper, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code:e.data.code})});
+    const r=await fetchT(c.gatekeeper, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code:e.data.code})}, 30000);
     const j=await r.json();
     if(!j.access_token) throw new Error(j.error_description||j.error||'no token returned');
     sessionStorage.setItem('cs_gh_token', j.access_token);
@@ -23179,12 +23228,12 @@ async function ghPublish(token, html, fileName, repo, onStep){
   const H={'Authorization':'token '+token, 'Accept':'application/vnd.github+json'};
   const step=m=>{ if(onStep) onStep(m); };
   step('Checking your account…');
-  const me=await (await fetch('https://api.github.com/user',{headers:H})).json();
+  const me=await (await fetchT('https://api.github.com/user',{headers:H})).json();
   const login=me && me.login; if(!login) throw new Error('could not read your GitHub account');
   step('Preparing the repository…');
-  const repoRes=await fetch('https://api.github.com/repos/'+login+'/'+repo,{headers:H});
+  const repoRes=await fetchT('https://api.github.com/repos/'+login+'/'+repo,{headers:H});
   if(repoRes.status===404){
-    const mk=await fetch('https://api.github.com/user/repos',{method:'POST',headers:H,
+    const mk=await fetchT('https://api.github.com/user/repos',{method:'POST',headers:H,
       body:JSON.stringify({name:repo, auto_init:true, description:'Interactive maps published from Map-O-Matic'})});
     if(!mk.ok){ const j=await mk.json().catch(()=>({})); throw new Error(j.message||'could not create the repository'); }
     await new Promise(r=>setTimeout(r,1600));
@@ -23192,15 +23241,15 @@ async function ghPublish(token, html, fileName, repo, onStep){
   step('Uploading your map…');
   const path=fileName.replace(/[^A-Za-z0-9._-]+/g,'-');
   let sha=null;
-  const ex=await fetch('https://api.github.com/repos/'+login+'/'+repo+'/contents/'+encodeURIComponent(path),{headers:H});
+  const ex=await fetchT('https://api.github.com/repos/'+login+'/'+repo+'/contents/'+encodeURIComponent(path),{headers:H});
   if(ex.status===200){ const j=await ex.json(); sha=j.sha; }
   const body={message:'Publish '+path+' from Map-O-Matic', content:b64EncodeUtf8(html)};
   if(sha) body.sha=sha;
-  const put=await fetch('https://api.github.com/repos/'+login+'/'+repo+'/contents/'+encodeURIComponent(path),
-    {method:'PUT',headers:H,body:JSON.stringify(body)});
+  const put=await fetchT('https://api.github.com/repos/'+login+'/'+repo+'/contents/'+encodeURIComponent(path),
+    {method:'PUT',headers:H,body:JSON.stringify(body)}, 180000);
   if(!put.ok){ const j=await put.json().catch(()=>({})); throw new Error(j.message||'upload failed'); }
   step('Turning on GitHub Pages…');
-  await fetch('https://api.github.com/repos/'+login+'/'+repo+'/pages',{method:'POST',headers:H,
+  await fetchT('https://api.github.com/repos/'+login+'/'+repo+'/pages',{method:'POST',headers:H,
     body:JSON.stringify({source:{branch:'main', path:'/'}})}).catch(()=>{});
   return 'https://'+login+'.github.io/'+repo+'/'+path;
 }
@@ -23253,6 +23302,15 @@ else if(isAtlasShareMode()){ enterAtlasShare(); }
 else {
 initCanvas();
 initMakerMap();
+/* v93: a small, dismissable notice on narrow screens (the studio needs a laptop-sized window) */
+(function(){
+  let seen=false; try{ seen=localStorage.getItem('mom-narrow-ok')==='1'; }catch(_){}
+  if(seen || window.innerWidth>=700) return;
+  const b=document.createElement('div'); b.className='mom-narrow'; b.setAttribute('role','status');
+  b.innerHTML='<span>Map-O-Matic works best on a laptop or desktop. On a phone, some panels cover the map.</span><button class="btn small" type="button">OK</button>';
+  b.querySelector('button').onclick=()=>{ b.remove(); try{ localStorage.setItem('mom-narrow-ok','1'); }catch(_){} };
+  document.body.appendChild(b);
+})();
 
 idbOpen().then(async ()=>{
   projectsCache=await idbAll('projects');

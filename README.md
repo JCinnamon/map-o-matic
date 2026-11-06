@@ -41,6 +41,10 @@ Because storage lives in the browser, it's tied to that browser on that computer
 
 **One tab at a time.** Two open copies of Map-O-Matic in the same browser would overwrite each other's work, since whichever saves last wins. A second tab therefore shows a notice instead of the app; **Use this tab instead** makes the first tab save and pause, and the second takes over. Share links, shared atlases and phone forms are read-only and open in any number of tabs.
 
+**Laptop or desktop.** The studio needs a laptop-sized window. On a narrow screen a small notice says so (phone forms, share links and shared atlases are made for phones and don't show it). Data files over 50 MB ask before loading, because a very large file can freeze the page for a while. Online sources and place searches that don't answer in time give a message instead of hanging, and if something goes wrong unexpectedly, a short message says so.
+
+**Atlas pages after reopening.** Map layers keep their identity when a project is saved and reopened, so an atlas page's **↻ Retake** and **Show in Map Maker** still find the page's layers. In projects last saved before v93, use **Update from Map Maker** once on each page instead.
+
 **Group projects: bringing in another project's work.** **+ Add data ▾ → From another project…** (or **+ Add page ▾ → From another project** in the Atlas) reads a group member's project file, or another project in this browser, and lists its map layers and atlas pages to tick. Layers arrive with their styling, labels and filters, above this project's layers; atlas pages are added at the end of the atlas; the other project's Log steps can be added to this one's, marked with its name. Nothing in the current project is replaced. A group can each build maps in their own browser, send project files to one member, and assemble a single atlas there.
 
 **Version.** The version number is shown at the foot of the ⚙ menu and in Help.

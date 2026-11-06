@@ -120,6 +120,6 @@ There is no test suite. Before reporting done:
    - a share-link round trip (`encodeShare` → `decodeShare` → `atSanitize`)
    - an atlas saved by an older version
    - zero page errors in the console
-4. **Memory check** for data-heavy changes: add an ~8,000-polygon layer, build ~10 map pages, then compare JSON size and heap (CDP `Runtime.getHeapUsage` after GC) with the previous release.
+4. **Memory check** for data-heavy changes: add an ~8,000-polygon layer, build ~10 map pages, then compare JSON size and heap (CDP `Runtime.getHeapUsage` after GC) with the previous release. Also compare whole-browser memory (renderer and GPU process sizes, e.g. from `ps` or Chrome's task manager) during captures and Composer sends: the JS heap misses image and graphics memory, which is most of the cost there.
 
 When editing, prefer small, anchored find-and-replace edits on unique strings over rewriting large blocks. Re-run the syntax check after every batch of edits.

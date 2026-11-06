@@ -2522,6 +2522,7 @@ function fetchT(url, opts, ms){
   const say=(msg, src)=>{
     msg=String(msg||'').replace(/^(Uncaught )?(\w*Error: )?/,'').replace(/[.\s]+$/,'').trim();
     if(!msg || skip.test(msg) || (src && skip.test(src))) return;
+    try{ if(!glSupported() && /_actualCanvas|jumpTo|getCanvas|maplibre|webgl/i.test(msg+' '+(src||''))) return; }catch(_){}   /* explained once at start instead */
     const now=Date.now(); if(now-last<8000) return; last=now;
     try{ toast('Something went wrong: '+msg.slice(0,160)+'. Your saved work is safe. If it keeps happening, refresh the page.', 7000); }catch(_){}
   };
@@ -4715,7 +4716,16 @@ function glRecoverSoon(ms){
   }, ms);
 }
 /* every capture calls this first, so a picture is never taken from a dead map */
+/* v94: is WebGL available at all? (off when hardware acceleration is turned off or blocked) */
+let glOk=null;
+function glSupported(){
+  if(glOk===null){ try{ const c=document.createElement('canvas'), g=c.getContext('webgl2')||c.getContext('webgl'); glOk=!!g;
+    const x=g&&g.getExtension('WEBGL_lose_context'); if(x) x.loseContext(); }catch(_){ glOk=false; } }
+  return glOk;
+}
 async function glEnsureReady(){
+  if(!glSupported() && (((BASEMAPS[mkBasemapKey]||{}).kind==='vector') || (typeof mkGlobe!=='undefined' && mkGlobe))){
+    const e=new Error('This browser’s graphics (WebGL) are switched off or not available, so this basemap can’t be drawn or captured. Choose another basemap, or turn on hardware acceleration in the browser’s settings and restart it.'); e.gl=true; throw e; }
   if(await glRecover()) return;
   const e=new Error('The basemap could not be redrawn. Refresh the page, then try again.'); e.gl=true; throw e;
 }
@@ -16041,6 +16051,7 @@ document.getElementById('sendGoBtn').onclick=async ()=>{
     if(goBtn) goBtn.disabled=false; capProgress(1);
   };
   (async ()=>{
+    await glEnsureReady();      /* v94: before the map is refitted, so a missing WebGL basemap gives a clear message */
     if(s0<0.98){
       capProgress(0.03, 'Fitting the map to the page frame…');
       mkMap.options.zoomSnap=0;
@@ -16830,8 +16841,9 @@ function mergeReadFile(file){
     return {kind:'file', name:file.name.replace(/\.mapomatic-project\.json$|\.json$/i,''), rec:d.project, datasets:ds};
   });
 }
-function mergeFromBrowser(id){
-  const rec=projectsCache.find(p=>p.id===id); if(!rec) return null;
+async function mergeFromBrowser(id){
+  const rec=await projectFull(id); if(!rec) return null;
+  await datasetsLoad(projDsIds(rec));
   return {kind:'local', name:rec.name, rec, datasets:null};
 }
 function mergeLayersOf(src){
@@ -16870,7 +16882,10 @@ function openMergeDialog(focus){
   sel.onchange=()=>{
     mergeSrc=null; document.getElementById('mgStatus').textContent='';
     if(sel.value==='__file'){ file.value=''; file.click(); renderMergeBody(focus); return; }
-    if(sel.value) mergeSrc=mergeFromBrowser(sel.value);
+    if(sel.value){ const v=sel.value; document.getElementById('mgStatus').textContent='Reading…';
+      mergeFromBrowser(v).then(src=>{ if(sel.value!==v) return; mergeSrc=src; document.getElementById('mgStatus').textContent=src?'':'That project could not be read.'; renderMergeBody(focus); })
+        .catch(()=>{ if(sel.value===v) document.getElementById('mgStatus').textContent='That project could not be read.'; });
+    }
     renderMergeBody(focus);
   };
   file.onchange=()=>{ const f=file.files&&file.files[0]; if(!f) return;
@@ -16918,6 +16933,7 @@ function runMerge(focus){
   markProjectDirty();
   closeModal('modal-merge');
   toast('Brought in '+nL+' layer'+(nL===1?'':'s')+(nP?', '+nP+' atlas page'+(nP===1?'':'s'):'')+(nY?', '+nY+' map layout'+(nY===1?'':'s')+' (tabs above the Composer page)':'')+' from “'+src.name+'”.', 5000);
+  datasetsTrim();
   if(nL && mkMap){ try{ let b=null; add.forEach(l=>{ const bb=gjBounds(l.geojson); b=b?b.extend(bb):L.latLngBounds(bb); }); if(b&&b.isValid()) mkMap.fitBounds(b,{padding:[20,20],maxZoom:14}); }catch(_){} }
 }
 
@@ -17311,7 +17327,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v93 · Nov 2026';
+const MOM_VERSION='v94 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -20992,13 +21008,11 @@ function syncFileName(rec){
   const base=(rec.name||'project').replace(/[^a-z0-9\-_ ]+/gi,'_').trim().replace(/\s+/g,'-');
   return base+'--'+rec.id+SYNC_EXT;
 }
-function syncPayload(rec){
+async function syncPayload(rec){
   const usedIds=Array.from(new Set(((rec.maker||{}).layers||[]).map(l=>l.datasetId).filter(Boolean)));
-  return {version:4, app:'map-o-matic', savedAt:Date.now(), project:rec,
-    datasets: usedIds.map(did=>{
-      const d=datasetById(did);
-      return d? {id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived} : null;
-    }).filter(Boolean)};
+  const ds=await Promise.all(usedIds.map(did=>datasetFull(did).catch(()=>null)));
+  return {version:4, app:'map-o-matic', savedAt:Date.now(), project:projFileRec(rec),
+    datasets: ds.filter(Boolean).map(d=>({id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}))};
 }
 
 /* Writes are debounced — a project with a few basemap layers can be tens of
@@ -21065,7 +21079,8 @@ async function syncWriteFile(rec){
   }
   const fh=await syncDir.getFileHandle(name,{create:true});
   const w=await fh.createWritable();
-  await w.write(new Blob([JSON.stringify(syncPayload(rec))],{type:'application/json'}));
+  const payload=JSON.stringify(await syncPayload(rec));
+  await w.write(new Blob([payload],{type:'application/json'}));
   await w.close();
   const f=await fh.getFile();
   syncSeen[rec.id]=f.lastModified;
@@ -21111,7 +21126,7 @@ async function syncCheckConflict(rec){
         name:uniqueProjectName(original.name+' (this computer)'),
         created:Date.now(), modified:Date.now()
       });
-      projectsCache.push(copy);
+      projCachePut(copy);
       currentProjectId=copy.id;
       await idbPut('projects', copy).catch(e=>storageErrorToast(e,'The copy could not be stored'));
       syncSeen[copy.id]=0;
@@ -21179,12 +21194,11 @@ async function syncOpenFile(file, replaceCurrent, confirmed){
     idMap[d.id]=ds.id;
   });
   ((rec.maker||{}).layers||[]).forEach(l=>{ l.datasetId=idMap[l.datasetId]||l.datasetId; });
-  const i=projectsCache.findIndex(p=>p.id===rec.id);
-  if(i>=0) projectsCache[i]=rec; else projectsCache.push(rec);
+  projCachePut(rec);
   try{ await idbPut('projects', rec); }catch(e){ storageErrorToast(e,'The project could not be stored in this browser'); }
   syncSeen[rec.id]=file.lastModified;
   renderProjectSwitcher();
-  if(replaceCurrent!==false) openProject(rec.id);
+  if(replaceCurrent!==false) await openProject(rec.id); else datasetsTrim();
   return rec;
 }
 async function syncOpenFolderProject(fileName){
@@ -21472,6 +21486,85 @@ function idbAll(store){
     req.onerror=()=>rej(req.error);
   });
 }
+/* v94: one record */
+function idbGet(store,key){
+  return new Promise((res,rej)=>{
+    const req=db.transaction(store,'readonly').objectStore(store).get(key);
+    req.onsuccess=()=>res(req.result||null);
+    req.onerror=()=>rej(req.error);
+  });
+}
+/* v94: change one stored record in a single transaction, so no other save can slip in between the read and the write */
+function idbUpdate(store,key,fn){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite'), os=tx.objectStore(store); let out=null;
+    const req=os.get(key);
+    req.onsuccess=()=>{ const v=req.result; if(!v) return; fn(v); out=v; try{ os.put(v); }catch(e){ rej(e); } };
+    tx.oncomplete=()=>res(out); tx.onerror=()=>rej(tx.error);
+    tx.onabort=()=>rej(tx.error||new Error('Browser storage refused the change.'));
+  });
+}
+/* v94: read a store one record at a time, keeping only what keep() returns, so the whole store is never in memory at once */
+function idbEach(store, keep){
+  return new Promise((res,rej)=>{
+    const out=[], req=db.transaction(store,'readonly').objectStore(store).openCursor();
+    req.onsuccess=()=>{ const c=req.result; if(!c){ res(out); return; } let v=c.value; try{ v=keep(v); }catch(_){} out.push(v); c.continue(); };
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+/* ---------- v94: projects and datasets are kept in memory only while needed ----------
+   The project list holds a short summary of each project; the whole project is read
+   from browser storage when it is opened, copied, exported or merged. Datasets keep
+   their features in memory only while a layer of the open project uses them. */
+function projStub(r){
+  if(!r || !db) return r;
+  const ls=((r.maker||{}).layers||[]);
+  return {id:r.id, name:r.name, created:r.created, modified:r.modified, lastExported:r.lastExported||null, thumbnail:r.thumbnail||null,
+    methodsLog:Array.isArray(r.methodsLog)?r.methodsLog:[], nLayers:ls.length, dsIds:[...new Set(ls.map(l=>l&&l.datasetId).filter(Boolean))], __stub:true};
+}
+function projCachePut(rec){
+  const s=projStub(rec), i=projectsCache.findIndex(p=>p.id===rec.id);
+  if(i>=0) projectsCache[i]=s; else projectsCache.push(s);
+  return s;
+}
+function projDsIds(p){ return p.dsIds || [...new Set((((p.maker||{}).layers)||[]).map(l=>l&&l.datasetId).filter(Boolean))]; }
+function projLayerCount(p){ return p.nLayers!=null ? p.nLayers : (((p.maker||{}).layers)||[]).length; }
+async function projectFull(id){
+  const c=projectsCache.find(p=>p.id===id); if(!c) return null;
+  if(!c.__stub) return c;
+  const r=await idbGet('projects', id); if(!r) return null;
+  /* the summary holds the newest name, export time and log */
+  r.name=c.name; r.lastExported=c.lastExported; r.methodsLog=c.methodsLog;
+  return r;
+}
+/* the record written to project and sync files: the open layout is already in layouts, so it isn't repeated */
+function projFileRec(rec){
+  return (Array.isArray(rec.layouts) && rec.layouts.length) ? Object.assign({}, rec, {canvasJSON:{version:'5.3.0', objects:[]}}) : rec;
+}
+const dsUnsaved=new Set();     /* datasets whose latest write hasn't finished (their features stay in memory) */
+function dsMeta(d){ if(!d || !db) return d; const o=Object.assign({}, d); delete o.geojson; return o; }
+/* a dataset with its features, without keeping them in memory afterwards */
+async function datasetFull(id){
+  const d=datasetById(id); if(!d) return null;
+  if(d.geojson || !db) return d;
+  const r=await idbGet('datasets', id);
+  return r && r.geojson ? Object.assign({}, d, {geojson:r.geojson}) : null;
+}
+/* bring these datasets' features into memory (for the open project) */
+async function datasetsLoad(ids){
+  if(!db) return;
+  for(const id of new Set(ids||[])){
+    const d=datasetById(id); if(!d || d.geojson) continue;
+    try{ const r=await idbGet('datasets', id); if(r && r.geojson && !d.geojson) d.geojson=r.geojson; }catch(_){}
+  }
+}
+/* let go of features no layer of the open project uses (they stay in browser storage) */
+function datasetsTrim(){
+  if(!db) return;
+  const keep=new Set(mkLayers.map(l=>l.datasetId));
+  datasetsCache.forEach(d=>{ if(d.geojson && !keep.has(d.id) && !dsUnsaved.has(d.id)) delete d.geojson; });
+}
 
 function storageErrorToast(err, what){
   const full=err && (err.name==='QuotaExceededError' || /quota|full/i.test(err.message||''));
@@ -21494,18 +21587,26 @@ function registerDataset(gj, name, geom, opts){
     derived:!!(opts&&opts.derived), added:Date.now()};
   if(opts&&opts.source) ds.source=opts.source;
   datasetsCache.push(ds);
-  if(db) idbPut('datasets', ds).catch(e=>storageErrorToast(e,'Dataset “'+ds.name+'” could not be saved'));
+  if(db){ dsUnsaved.add(ds.id); idbPut('datasets', ds).then(()=>dsUnsaved.delete(ds.id)).catch(e=>storageErrorToast(e,'Dataset “'+ds.name+'” could not be saved')); }
   return ds;
 }
 function persistDataset(id){
   const ds=datasetById(id);
-  if(ds&&db) idbPut('datasets', ds).catch(e=>storageErrorToast(e,'Dataset changes could not be saved'));
+  if(!ds || !db) return;
+  if(!ds.geojson){
+    /* v94: features not in memory (only its details changed, e.g. a rename): update the stored copy and keep its features */
+    const meta=dsMeta(ds);
+    idbUpdate('datasets', id, r=>{ Object.keys(meta).forEach(k=>{ r[k]=meta[k]; }); }).catch(e=>storageErrorToast(e,'Dataset changes could not be saved'));
+    return;
+  }
+  dsUnsaved.add(id);
+  idbPut('datasets', ds).then(()=>dsUnsaved.delete(id)).catch(e=>storageErrorToast(e,'Dataset changes could not be saved'));
 }
 function datasetUsedBy(dsId){
   const names=[];
   projectsCache.forEach(p=>{
     if(p.id===currentProjectId) return;
-    if(((p.maker||{}).layers||[]).some(l=>l.datasetId===dsId)) names.push(p.name);
+    if(projDsIds(p).includes(dsId)) names.push(p.name);
   });
   if(currentProjectId && mkLayers.some(l=>l.datasetId===dsId)){
     const cur=projectsCache.find(p=>p.id===currentProjectId);
@@ -21526,8 +21627,8 @@ function serializeCurrentProject(noThumb){
     methodsLog:rec?(rec.methodsLog||[]):[],
     thumbnail: noThumb ? null : canvas.getObjects().length ? atFullSize(()=>canvas.toDataURL({format:'jpeg', quality:0.6, multiplier:0.12})) : (rec?rec.thumbnail:null),
     page:{size:pageState.size, orientation:pageState.orientation},
-    canvasJSON:layoutJSON(),
-    layouts:(()=>{ loSnapshot(); return loLayouts.map(L=>({id:L.id, name:L.name, page:L.page, canvasJSON:L.canvasJSON})); })(),
+    canvasJSON:(loSnapshot(), loCurrent().canvasJSON),   /* v94: the same object as the open layout in layouts, so storage keeps it once */
+    layouts:loLayouts.map(L=>({id:L.id, name:L.name, page:L.page, canvasJSON:L.canvasJSON})),
     curLayout:loCur,
     maker:{
       basemap:document.getElementById('mkBasemap').value,
@@ -21572,7 +21673,7 @@ function saveCurrentProject(showToast){
   const rec=serializeCurrentProject();
   const i=projectsCache.findIndex(p=>p.id===rec.id);
   if(keepDate && i>=0) rec.modified=projectsCache[i].modified;
-  if(i>=0) projectsCache[i]=rec; else projectsCache.push(rec);
+  projCachePut(rec);
   renderProjectSwitcher();
   projectDirty=false; lastProjectSave=Date.now();
   savedPrint=print; savedPrintId=rec.id;
@@ -21605,11 +21706,19 @@ function applyProjectRecord(rec){
   if(missing) toast(missing+' layer(s) skipped — their dataset is no longer in the library.', 4200);
   renderProjectSwitcher();
 }
-function openProject(id, module){
-  const rec=projectsCache.find(p=>p.id===id);
+let openSeq=0;
+async function openProject(id, module){
+  const seq=++openSeq;
+  let rec=null;
+  try{ rec=await projectFull(id); if(rec) await datasetsLoad(projDsIds(rec)); }catch(e){ rec=null; }
+  if(seq!==openSeq) return;                 /* another project was chosen meanwhile */
   if(!rec){ toast('Project not found.'); return; }
+  /* a layer whose features couldn't be read is not dropped: the project stays closed instead */
+  if(projDsIds(rec).some(did=>{ const d=datasetById(did); return d && !d.geojson; })){
+    toast('Part of this project could not be read from browser storage. Refresh the page and try again.', 6000); return; }
   syncOpenedAt[rec.id]=rec.modified||0;
   applyProjectRecord(rec);
+  datasetsTrim();
   switchModule(module||'maker');
 }
 function switchProject(id){
@@ -21626,7 +21735,7 @@ function createProject(name){
   const rec={id:uid(), name:name||'Untitled project', created:Date.now(), modified:Date.now(),
     thumbnail:null, page:{size:'letter', orientation:'portrait'},
     canvasJSON:{version:'5.3.0', objects:[]}, maker:{basemap:DEFAULT_BASEMAP, view:null, layers:[]}};
-  projectsCache.push(rec);
+  projCachePut(rec);
   return idbPut('projects', rec).then(()=>rec).catch(e=>{ storageErrorToast(e,'The new project could not be stored'); return rec; });
 }
 function deleteProject(id){
@@ -21645,16 +21754,19 @@ function renameProject(id){
   const n=window.prompt('Project name:', rec.name);
   if(!n) return;
   rec.name=n; rec.modified=Date.now();
-  idbPut('projects', rec).catch(e=>storageErrorToast(e,'The new name could not be saved'));
-  if(typeof syncActive==='function' && syncActive()){ if(id===currentProjectId) syncQueueWrite(); else syncWriteRecord(rec); }
+  /* v94: the list holds a summary, so the stored project is changed in place */
+  const write=rec.__stub ? idbUpdate('projects', id, r=>{ r.name=n; r.modified=rec.modified; }) : idbPut('projects', rec).then(()=>rec);
+  write.then(full=>{ if(full && id!==currentProjectId && typeof syncActive==='function' && syncActive()) syncWriteRecord(full); })
+    .catch(e=>storageErrorToast(e,'The new name could not be saved'));
+  if(id===currentProjectId && typeof syncActive==='function' && syncActive()) syncQueueWrite();
   renderHome(); renderProjectSwitcher();
 }
-function duplicateProject(id){
-  const rec=projectsCache.find(p=>p.id===id);
-  if(!rec) return;
-  const copy=JSON.parse(JSON.stringify(rec));
-  copy.id=uid(); copy.name=rec.name+' copy'; copy.created=Date.now(); copy.modified=Date.now();
-  projectsCache.push(copy);
+async function duplicateProject(id){
+  let full=null; try{ full=await projectFull(id); }catch(_){}
+  if(!full){ toast('The project could not be read from browser storage.'); return; }
+  const copy=JSON.parse(JSON.stringify(full));
+  copy.id=uid(); copy.name=full.name+' copy'; copy.created=Date.now(); copy.modified=Date.now();
+  projCachePut(copy);
   idbPut('projects', copy).catch(e=>storageErrorToast(e,'The copy could not be stored'));
   renderHome(); renderProjectSwitcher();
 }
@@ -21669,12 +21781,14 @@ function downloadBlob(filename, blob){
   a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 8000);
 }
-function exportProjectFile(id){
-  const rec=(id===currentProjectId)? serializeCurrentProject() : projectsCache.find(p=>p.id===id);
-  if(!rec) return;
+async function exportProjectFile(id){
+  let rec=null;
+  try{ rec=(id===currentProjectId)? serializeCurrentProject() : await projectFull(id); }catch(_){}
+  if(!rec){ toast('The project could not be read from browser storage.'); return; }
   const usedIds=Array.from(new Set(((rec.maker||{}).layers||[]).map(l=>l.datasetId).filter(Boolean)));
-  const payload={version:4, app:'map-o-matic', project:rec,
-    datasets: usedIds.map(did=>{ const d=datasetById(did); return d? {id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}:null; }).filter(Boolean)};
+  const ds=await Promise.all(usedIds.map(did=>datasetFull(did).catch(()=>null)));
+  const payload={version:4, app:'map-o-matic', project:projFileRec(rec),
+    datasets: ds.filter(Boolean).map(d=>({id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}))};
   downloadBlob(rec.name.replace(/[^a-z0-9\-_]+/gi,'_')+'.mapomatic-project.json',
     new Blob([JSON.stringify(payload)],{type:'application/json'}));
   noteProjectExported(rec.id);
@@ -21694,9 +21808,9 @@ function importProjectFile(file){
       rec.id=uid(); rec.name=uniqueProjectName(rec.name); rec.modified=Date.now();
       ((rec.maker||{}).layers||[]).forEach(l=>{ l.datasetId=idMap[l.datasetId]||l.datasetId; });
       rec.lastExported=Date.now();
-      projectsCache.push(rec);
-      idbPut('projects', rec).then(()=>toast('Project imported: '+rec.name))
-        .catch(e=>{ projectsCache=projectsCache.filter(p=>p!==rec); storageErrorToast(e,'The project could not be imported'); renderHome(); renderProjectSwitcher(); });
+      projCachePut(rec);
+      idbPut('projects', rec).then(()=>{ toast('Project imported: '+rec.name); datasetsTrim(); })
+        .catch(e=>{ projectsCache=projectsCache.filter(p=>p.id!==rec.id); storageErrorToast(e,'The project could not be imported'); renderHome(); renderProjectSwitcher(); });
       renderHome(); renderProjectSwitcher();
     } else if(data.canvasJSON || data.maker){
       /* legacy v1/v2 file with embedded geojson */
@@ -21710,9 +21824,9 @@ function importProjectFile(file){
         rec.maker.layers.push({name:sl.name, geom:sl.geom, visible:sl.visible, opacity:sl.opacity,
           style:sl.style, labels:sl.labels, filter:sl.filter, datasetId:ds.id});
       });
-      projectsCache.push(rec);
-      idbPut('projects', rec).then(()=>toast('Project imported (upgraded from older format): '+rec.name))
-        .catch(e=>{ projectsCache=projectsCache.filter(p=>p!==rec); storageErrorToast(e,'The project could not be imported'); renderHome(); renderProjectSwitcher(); });
+      projCachePut(rec);
+      idbPut('projects', rec).then(()=>{ toast('Project imported (upgraded from older format): '+rec.name); datasetsTrim(); })
+        .catch(e=>{ projectsCache=projectsCache.filter(p=>p.id!==rec.id); storageErrorToast(e,'The project could not be imported'); renderHome(); renderProjectSwitcher(); });
       renderHome(); renderProjectSwitcher();
     } else {
       toast('That file is not a Map-O-Matic project.');
@@ -21754,7 +21868,7 @@ function requestPersistentStorage(){
 function noteProjectExported(id){
   const rec=projectsCache.find(p=>p.id===id); if(!rec) return;
   rec.lastExported=Date.now();
-  if(db) idbPut('projects', rec).catch(()=>{});
+  if(db) (rec.__stub ? idbUpdate('projects', id, r=>{ r.lastExported=rec.lastExported; }) : idbPut('projects', rec)).catch(()=>{});
   renderBackupBanner();
 }
 function projectsNeedingBackup(){
@@ -21813,7 +21927,7 @@ function renderSyncSection(){
 function renderProjectsGrid(){
   const el=document.getElementById('home-projects');
   const cards=projectsCache.slice().sort((a,b)=>(b.modified||0)-(a.modified||0)).map(p=>{
-    const nLayers=((p.maker||{}).layers||[]).length;
+    const nLayers=projLayerCount(p);
     const okThumb=typeof p.thumbnail==='string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.thumbnail);
     const thumb=okThumb? 'style="background-image:url('+p.thumbnail+')"' : '';
     return `<div class="proj-card" data-id="${esc(p.id)}">
@@ -21906,8 +22020,8 @@ function renderLibrary(){
           if(n){ ds.name=n; persistDataset(id); renderLibrary(); }
         }
         if(act==='export'){
-          downloadBlob(ds.name.replace(/[^a-z0-9\-_]+/gi,'_')+'.geojson',
-            new Blob([JSON.stringify(ds.geojson)],{type:'application/geo+json'}));
+          datasetFull(id).then(d=>{ if(!d){ toast('That dataset could not be read from browser storage.'); return; }
+            downloadBlob(d.name.replace(/[^a-z0-9\-_]+/gi,'_')+'.geojson', new Blob([JSON.stringify(d.geojson)],{type:'application/geo+json'})); });
         }
         if(act==='del'){
           const used=datasetUsedBy(id);
@@ -21973,9 +22087,10 @@ function openLibPick(){
   cbs.forEach(cb=>cb.onchange=refresh);
   allCb.checked=false;
   allCb.onchange=()=>{ cbs.forEach(c=>c.checked=allCb.checked); refresh(); };
-  addBtn.onclick=()=>{
+  addBtn.onclick=async()=>{
     const ids=cbs.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
     if(!ids.length) return;
+    addBtn.disabled=true; await datasetsLoad(ids); addBtn.disabled=false;
     ids.forEach(id=>addLayerFromDataset(id, {quiet:true, keepView:true}));
     closeModal('modal-libpick');
     fitMakerToLayers();
@@ -21994,6 +22109,7 @@ function fitMakerToLayers(){
 function addLayerFromDataset(dsId, opts){
   opts=opts||{};
   const ds=datasetById(dsId); if(!ds) return;
+  if(!ds.geojson){ toast('“'+ds.name+'” could not be read from browser storage.', 4000); return; }
   const lyr={id:uid(), name:ds.name, datasetId:ds.id, geojson:ds.geojson, geom:ds.geom,
     visible:true, opacity:1, style:defaultStyle(ds.geom), labels:defaultLabels(),
     filter:{logic:'AND', conds:[]}, leaflet:null};
@@ -22626,7 +22742,7 @@ function runExport(fmt, name, dpi){
       zip.file(name+'.pgw', pgw);
       zip.file(name+'_projection.txt','Georeferencing: world file ('+name+'.pgw), coordinates in Web Mercator (EPSG:3857).\nIn your GIS software, assign EPSG:3857 to the image when adding it.');
       zip.generateAsync({type:'blob'}).then(blob=>{ downloadBlob(name+'_georef.zip', blob); toast('Georeferenced map exported.'); });
-    }).catch(err=>toast('Capture failed: '+err.message+'. Try a different basemap.', 4500));
+    }).catch(err=>toast(err&&err.gl ? err.message : 'Capture failed: '+err.message+'. Try a different basemap.', 6000));
   } else if(fmt==='embed'){
     if(!mkLayers.some(l=>l.visible) && document.getElementById('embedBasemap').value==='none'){ toast('Choose a basemap or turn on a layer to embed.'); return; }
     const basemap=document.getElementById('embedBasemap').value;
@@ -22657,7 +22773,7 @@ function runExport(fmt, name, dpi){
     if(mkLayers.length) layersToZip(zip, zip.folder('layers'));
     const rec=serializeCurrentProject();
     const usedIds=Array.from(new Set(mkLayers.map(l=>l.datasetId).filter(Boolean)));
-    zip.file(name+'.mapomatic-project.json', JSON.stringify({version:4, app:'map-o-matic', project:rec,
+    zip.file(name+'.mapomatic-project.json', JSON.stringify({version:4, app:'map-o-matic', project:projFileRec(rec),
       datasets: usedIds.map(did=>{ const d=datasetById(did); return d?{id:d.id, name:d.name, geom:d.geom, geojson:d.geojson, derived:d.derived}:null; }).filter(Boolean)}));
     zip.generateAsync({type:'blob'}).then(blob=>{ downloadBlob(name+'_archive.zip', blob); toast('Project archive exported.'); noteProjectExported(rec.id); })
       .catch(err=>toast('Archive failed: '+err.message, 6000));
@@ -23302,6 +23418,8 @@ else if(isAtlasShareMode()){ enterAtlasShare(); }
 else {
 initCanvas();
 initMakerMap();
+/* v94: without WebGL the vector basemaps and the globe can't be drawn: say so once */
+try{ if(!glSupported()) setTimeout(()=>toast('This browser’s graphics (WebGL) are switched off or not available, so some basemaps and the globe won’t show. Turn on hardware acceleration in the browser’s settings, or use another browser.', 9000), 1500); }catch(_){}
 /* v93: a small, dismissable notice on narrow screens (the studio needs a laptop-sized window) */
 (function(){
   let seen=false; try{ seen=localStorage.getItem('mom-narrow-ok')==='1'; }catch(_){}
@@ -23313,8 +23431,8 @@ initMakerMap();
 })();
 
 idbOpen().then(async ()=>{
-  projectsCache=await idbAll('projects');
-  datasetsCache=await idbAll('datasets');
+  projectsCache=await idbEach('projects', projStub);     /* v94: summaries only */
+  datasetsCache=await idbEach('datasets', dsMeta);
   /* migrate a legacy localStorage session, once */
   let legacy=null;
   try{ legacy=localStorage.getItem(AUTOSAVE_KEY); }catch(_){}
@@ -23333,7 +23451,7 @@ idbOpen().then(async ()=>{
           rec.maker.layers.push({name:sl.name, geom:sl.geom, visible:sl.visible, opacity:sl.opacity,
             style:sl.style, labels:sl.labels, filter:sl.filter, datasetId:ds.id});
         });
-        projectsCache.push(rec);
+        projCachePut(rec);
         idbPut('projects', rec);
       }
     }catch(_){}

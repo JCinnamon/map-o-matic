@@ -57,6 +57,7 @@ These functions **must stay self-contained**. They may not reference app globals
 - He tests on his own hardware and real class data. Say clearly which fixes were checked only in a headless browser or with synthetic data, and what he should check by hand.
 - Every release:
   - bump `MOM_VERSION`
+  - set `version.txt` to the same release name (e.g. `v95`) and upload it beside `index.html`; the Home screen reads it to tell an open tab that a newer version is online
   - update `README.md` (and the user guide, if asked)
   - update the Help text (`#modal-help`) when a module's behaviour changes.
 

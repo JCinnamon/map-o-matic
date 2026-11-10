@@ -963,6 +963,16 @@
   .modal-x:hover{background:var(--danger);border-color:var(--danger);color:#fff;}
   .modal-close-row{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
   .help-step{margin-bottom:13px;}
+  .help-tabs{display:flex;gap:6px;margin:-2px 0 12px;border-bottom:1px solid var(--line);}
+  .help-tabs button{border:0;background:none;padding:6px 10px;font:inherit;font-weight:700;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;}
+  .help-tabs button.on{color:var(--teal);border-bottom-color:var(--teal);}
+  .help-ol{margin:4px 0 0;padding-left:20px;font-size:13px;line-height:1.55;} .help-ol li{margin:2px 0;}
+  .help-note{color:var(--muted);}
+  .mk-start{padding:2px 2px 8px;} .mk-start .btn{display:block;width:100%;margin:5px 0;text-align:left;}
+  #mkFirstSteps{margin:10px 8px 4px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.5;}
+  #mkFirstSteps:empty{display:none;}
+  #mkFirstSteps b{display:block;margin-bottom:3px;} #mkFirstSteps .fs-i{display:flex;gap:6px;color:var(--text);} #mkFirstSteps .fs-i.done{color:var(--muted);text-decoration:line-through;}
+  #mkFirstSteps .fs-x{float:right;border:0;background:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0;text-decoration:underline;}
   .help-step b{color:var(--navy2);}
   .help-step p{margin:3px 0 0;font-size:13px;line-height:1.55;}
   .tmpl-cards{display:flex;gap:12px;flex-wrap:wrap;}
@@ -1330,7 +1340,11 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   .gear-menu .gm-sep{border-top:1px solid var(--line);margin:4px 0;}
   .gear-menu button.on::before{content:'✓ ';color:var(--teal);font-weight:800;}
   .gear-menu button[data-cvd]:not(.on){padding-left:24px;}
-  body:not(.mod-layout) .gear-menu .gm-cvd{display:none !important;}
+  body:not(.mod-layout):not(.mod-maker) .gear-menu .gm-cvd{display:none !important;}
+  body.mod-maker[data-cvd=deut] #mk-map, body.mod-maker[data-cvd=deut] #mk-proj, body.mod-maker[data-cvd=deut] #mk-globe-map{filter:url(#cvd-deut);}
+  body.mod-maker[data-cvd=prot] #mk-map, body.mod-maker[data-cvd=prot] #mk-proj, body.mod-maker[data-cvd=prot] #mk-globe-map{filter:url(#cvd-prot);}
+  body.mod-maker[data-cvd=trit] #mk-map, body.mod-maker[data-cvd=trit] #mk-proj, body.mod-maker[data-cvd=trit] #mk-globe-map{filter:url(#cvd-trit);}
+  body.mod-maker[data-cvd=grey] #mk-map, body.mod-maker[data-cvd=grey] #mk-proj, body.mod-maker[data-cvd=grey] #mk-globe-map{filter:url(#cvd-grey);}
 
   /* v75: projected-view button bars match the flat map; measuring overlay; full screen */
   #projZoomCtl{box-shadow:none !important;overflow:visible !important;background:transparent;gap:10px !important;}
@@ -1537,7 +1551,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <span class="zoom-menu"><button class="btn ghost small" id="btnGear" aria-haspopup="true" aria-expanded="false" title="Settings: sync, view as, log, dark interface, help" aria-label="Settings">⚙ ▾</button>
       <div id="gearMenu" class="tools-menu hidden gear-menu" role="menu">
         <button data-g="save" role="menuitem">💾 Save now <span class="gm-k">Ctrl+S</span></button>
-        <button data-g="sync" role="menuitem">☁ <span id="syncState">Sync to cloud</span>…</button>
+        <button data-g="sync" role="menuitem">☁ <span id="syncState">Save to a synced folder</span>…</button>
         <button data-g="backup" role="menuitem">⬇ Download project file (backup)</button>
         <div class="tg gm-cvd">View as (preview only)</div>
         <button data-cvd="" class="gm-cvd" role="menuitemradio">Normal colour vision</button>
@@ -1585,7 +1599,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div id="home-projects" class="home-grid"></div>
     <div id="home-sync"></div>
     <div id="home-library" class="hidden"></div>
-    <p class="kv home-note"><b>Where your work lives:</b> in this browser, on this computer. To work across computers, use <b>☁ Sync to cloud</b> with a folder you already sync (OneDrive, Google&nbsp;Drive, Dropbox; Chrome or Edge). On a shared computer, also export a backup.</p>
+    <p class="kv home-note"><b>Where your work lives:</b> in this browser, on this computer. To work across computers, use <b>⚙ → Save to a synced folder</b> with a folder you already sync (OneDrive, Google&nbsp;Drive, Dropbox; Chrome or Edge). On a shared computer, also export a backup.</p>
   </div>
   <!-- credits ribbon (Vis-O-Matic style footer) -->
   <footer class="home-foot">
@@ -1659,7 +1673,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="mkl-pane" data-lp="layers" role="tabpanel" aria-labelledby="mklTabLayers">
     <div class="sec">
       <div class="add-menu">
-        <button class="btn" id="mkAddMenuBtn" style="width:100%;justify-content:center;" title="Upload GeoJSON, CSV, or a zipped shapefile — or fetch from online sources. Drag &amp; drop onto the map also works.">+ Add data ▾</button>
+        <button class="btn" id="mkAddMenuBtn" style="width:100%;justify-content:center;" title="Upload GeoJSON, CSV, Excel, a zipped shapefile, KML/KMZ or GPX — or fetch from online sources. Drag &amp; drop onto the map also works.">+ Add data ▾</button>
         <div class="add-menu-list hidden" id="mkAddMenuList">
           <button id="mkAddUpload">⬆ Upload files…</button>
           <button id="mkAddLibrary">▤ From my library…</button>
@@ -1713,9 +1727,10 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       </div>
     </div>
     <div class="sec" style="border-bottom:none;padding-bottom:4px;"><h3>Layers</h3></div>
-    <div id="mk-layerlist"><div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div></div>
+    <div id="mk-layerlist"></div>
     <div id="mk-overlaylist"></div>
     <button type="button" class="mkl-baserow" id="mkBaseRow" title="Basemap, overlays and grid — open the Basemap tab"></button>
+    <div id="mkFirstSteps"></div>
     </div>
     <div class="mkl-pane hidden" data-lp="base" role="tabpanel" aria-labelledby="mklTabBase">
     <div class="sec">
@@ -1875,10 +1890,12 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 
 <div class="modal-overlay hidden" id="modal-help">
   <div class="modal">
-    <h2>Quick start <span class="mom-ver-tag"></span></h2>
+    <h2>Help <span class="mom-ver-tag"></span></h2>
+    <div class="help-tabs" role="tablist"><button type="button" class="on" data-ht="quick" role="tab" aria-selected="true">Quick start</button><button type="button" data-ht="how" role="tab" aria-selected="false">How do I…</button></div>
+    <div class="help-pane" data-hp="quick">
     <p class="kv" style="margin-top:-4px;">Four modules, in the buttons at the top. Work saves in this browser as you go.</p>
     <div class="help-step"><b>🧭 Map Maker: build the map.</b>
-      <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, online sources), then style, filter and label each layer. The Tools tab has the table, calculator and spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more. The left panel’s <b>Basemap</b> tab sets the basemap, its opacity and parts, stacks overlays (hillshade, contours, night lights, an old map) and adds a lat/long or UTM grid; ⓘ on the map lists their sources. ☾ in the top bar switches to the dark interface.</p>
+      <p><b>+ Add data</b> (GeoJSON, CSV/Excel, shapefiles, KML, GPX, online sources), then style, filter and label each layer. Each layer has a <b>Table</b> button (the field calculator is inside it); the <b>Tools</b> tab has the spatial tools. On-map buttons: globe, drag-select, measure and ⇆ swipe; the projection list has 13 more. The left panel’s <b>Basemap</b> tab sets the basemap, its opacity and parts, stacks overlays (hillshade, contours, night lights, an old map) and adds a lat/long or UTM grid; ⓘ on the map lists their sources. ☾ in the top bar switches to the dark interface.</p>
     </div>
     <div class="help-step"><b>▣ Map Composer: lay out the page.</b>
       <p>Arrange the map with a title, legend, north arrow, scale bar, text and images, or start from a template. Maps arrive from Map Maker ready to use; a map image from other software can be added with <b>Map Frame</b> and its scale calibrated. <b>View as</b> checks colours for colour blindness and greyscale print.</p>
@@ -1893,12 +1910,21 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <p>Send the current map to Map Composer or the Atlas, share a live link, or export files: layout PDF/PNG/SVG, an interactive web map, data layers, or a whole project archive.</p>
     </div>
     <div class="help-step"><b>Keeping your work.</b>
-      <p>Projects live only in this browser. <b>⚙ → Sync to cloud</b> makes <b>Save</b> also write them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>⚙ → Log</b> lists every step you took, ready for a report. If a capture fails, it says so and your atlas or layout stays as it was. Data files over 50 MB ask before loading.</p>
+      <p>Projects live only in this browser. <b>⚙ → Save to a synced folder</b> makes <b>Save</b> also write them to a folder you already sync (OneDrive, Google Drive, Dropbox); otherwise export a project file now and then, and always on a shared computer. <b>⚙ → Log</b> lists every step you took, ready for a report. If a capture fails, it says so and your atlas or layout stays as it was. Data files over 50 MB ask before loading.</p>
     </div>
     <div class="help-step"><b>About.</b>
-      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs in your browser; your data stay on your computer.</p>
+      <p>Map-O-Matic was created by <a href="https://www.jonathancinnamon.com" target="_blank" rel="noopener">Jonathan Cinnamon</a>. It is free and runs in your browser; your data stay on your computer. The page counts visits anonymously and sends nothing about you or your projects.</p>
       <p class="help-disc">Map-O-Matic is provided “as is”, without warranty of any kind. Check your results, respect data and basemap terms, and take responsibility for what you publish.</p>
     </div>
+    </div>
+    <div class="help-pane hidden" data-hp="how">
+      <div class="help-step"><b>Make a map of amounts (a choropleth)</b><ol class="help-ol"><li><b>+ Add data</b>: upload a file, or choose <b>Online sources</b>.</li><li>Click the layer, then in <b>Style</b> choose <b>Graduated colour</b> and a <b>Value field</b>.</li><li>If the field is a count (people, cases), set <b>Normalize by</b> to a total or to <b>Area (km²)</b>, so large areas don’t stand out just for being large.</li><li>Choose the <b>Method</b>, the number of <b>Classes</b> and a <b>Colour ramp</b>. The chart below the list shows where the breaks fall.</li><li>Rename the layer (<b>⋯ → Rename</b>) so the legend says what the colours mean.</li></ol><p class="help-note">Counts are often better as <b>Proportional symbols</b>, which is another Style type.</p></div>
+      <div class="help-step"><b>Lay out a page to hand in</b><ol class="help-ol"><li>In Map Maker, set the view you want, then <b>Send / Export ▾ → Map Composer</b>.</li><li>Type a map title and legend titles, add your name under <b>Map by</b>, and click <b>Capture &amp; send</b>.</li><li>In Map Composer, drag things into place. Add a <b>North Arrow</b>, <b>Text</b> or a <b>Neatline</b> from the left rail.</li><li><b>⚙ → View as</b> shows the page as a colour-blind reader or a greyscale printer would see it.</li><li><b>Send / Export ▾ → Export files…</b> saves a PDF or PNG.</li></ol></div>
+      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li></ol></div>
+      <div class="help-step"><b>Collect data in the field</b><ol class="help-ol"><li>In <b>Field Mapper</b>, click <b>+ New form</b> and add the questions.</li><li><b>Make link &amp; QR code</b>, then open the link on each phone.</li><li>Back at the laptop: <b>Collected data → Receive from phone</b>, and on the phone <b>Send to laptop</b>.</li><li><b>Send to Map Maker</b> turns the records into layers.</li></ol></div>
+      <div class="help-step"><b>Build an atlas</b><ol class="help-ol"><li>In <b>Atlas</b>, choose Book or Scrolling and click <b>Start the atlas</b>.</li><li>In Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds the current map as a page. Change the map and send again for the next page.</li><li>Add text, images and sections with <b>+ Add page</b>, and write a caption for each map.</li><li><b>Send / Export ▾</b> in the Atlas shares a link, exports a web page or downloads a PDF.</li></ol></div>
+      <div class="help-step"><b>Keep and hand in your work</b><ol class="help-ol"><li>Work saves in this browser as you go. <b>⚙ → Download project file</b> makes a backup you can open on another computer.</li><li><b>⚙ → Log</b> lists the steps you took. Copy it into the methods section of a report.</li><li>On a shared computer, always download the project file before you leave.</li></ol></div>
+      </div>
     <div class="modal-close-row"><button class="btn" onclick="closeModal('modal-help')">Got it</button></div>
   </div>
 </div>
@@ -2068,6 +2094,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
           <option value="unionop">Union — combined dissolved geometry</option>
         </optgroup>
         <optgroup label="Geometry">
+          <option value="geomfields">Add geometry fields (area, length, coordinates)</option>
           <option value="centroid">Centroids</option>
           <option value="hull">Convex hull</option>
           <option value="bbox">Bounding box</option>
@@ -2089,7 +2116,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 
 <div class="modal-overlay hidden" id="modal-send">
   <div class="modal">
-    <h2>Send map to Layout</h2>
+    <h2>Send map to Map Composer</h2>
     <p class="kv">Captures the current map view at high resolution, with a calibrated scale.</p>
     <div class="send-target">
       <div class="st-row"><label for="sendTarget" style="font-weight:700;">Put it on</label><select id="sendTarget"></select></div>
@@ -2433,7 +2460,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
 </div>
 <div id="toast"></div>
 
-<input type="file" id="fileMakerData" accept=".geojson,.json,.csv,.txt,.zip,.xlsx,.xls" multiple hidden>
+<input type="file" id="fileMakerData" accept=".geojson,.json,.csv,.txt,.zip,.xlsx,.xls,.kml,.kmz,.gpx" multiple hidden>
 <input type="file" id="fileMapImage" accept="image/*" hidden>
 <input type="file" id="fileLayoutImage" accept="image/*" hidden>
 <input type="file" id="fileProject" accept=".json" hidden>
@@ -2713,6 +2740,7 @@ const RAMPS = {
   diverging: ['RdBu','RdYlBu','BrBG','PiYG','PuOr','Spectral'],
   qualitative: ['Set2','Set1','Dark2','Paired','Pastel1','Accent']
 };
+const RAMPS_CVD_OK=['Blues','Greens','Oranges','Purples','Reds','YlOrRd','YlGnBu','PuBuGn','BuPu','Viridis','RdBu','RdYlBu','BrBG','PiYG','PuOr'];
 
 /* ---------- colour controls that can be "none" ----------
    Cartographically you often want an unfilled symbol or an outline-free polygon,
@@ -3463,7 +3491,12 @@ function fieldTypeOf(lyr, k){
 
 let mkBasemapKey=DEFAULT_BASEMAP;
 function initMakerMap(){
-  mkMap = L.map('mk-map', {preferCanvas:true}).setView([49.888,-119.496], 11);
+  /* v95: a new project opens where a map was last used in this browser, or on the world */
+  let lv=null; try{ lv=JSON.parse(localStorage.getItem('mom-lastview')||'null'); }catch(_){}
+  if(!(lv && isFinite(lv.lat) && isFinite(lv.lng) && isFinite(lv.z) && Math.abs(lv.lat)<=85 && Math.abs(lv.lng)<=180)) lv={lat:20, lng:0, z:2};
+  mkMap = L.map('mk-map', {preferCanvas:true}).setView([lv.lat, lv.lng], Math.max(1, Math.min(18, lv.z)));
+  mkMap.on('moveend', ()=>{ try{ const sz=mkMap.getSize(); if(!sz.x||!sz.y) return; const c=mkMap.getCenter(); localStorage.setItem('mom-lastview', JSON.stringify({lat:+c.lat.toFixed(4), lng:+c.lng.toFixed(4), z:mkMap.getZoom()})); }catch(_){} });
+  mkMap.on('moveend zoomend resize', ()=>mkDeclutterSoon());
   window.__mkmap=mkMap;               /* debugging / automated-testing hook */
   L.control.scale({imperial:false}).addTo(mkMap);
   setBasemap(DEFAULT_BASEMAP);
@@ -4869,6 +4902,7 @@ async function captureMapElement(el, scale, ignore, asCanvas){
   });
   if(shots.length||comp) el.style.backgroundColor='transparent';
   capProgress(0.84, 'Drawing symbols and labels…');
+  try{ mkDeclutterLabels(); }catch(_){}   /* v95: the capture has its own size, so overlapping labels are worked out for it */
   let snap;
   try{
     snap=await html2canvas(el, Object.assign({useCORS:true, scale, logging:false}, ignore?{ignoreElements:ignore}:{},
@@ -5468,13 +5502,15 @@ const LAZY_LIBS={
   proj4:'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js',
   XLSX:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
   qrcode:'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js',
-  jsQR:'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'
+  jsQR:'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
+  toGeoJSON:'https://cdn.jsdelivr.net/npm/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js'   /* v95: KML and GPX */
 };
 const LAZY_SRI={
   proj4:'sha384-BIsA8GBrihzaRmijjpqTCihj8D5Vox3hyBFg9sJiTGAEOv6KusZ8QOCKbTFEAfhm',
   XLSX:'sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw',
   qrcode:'sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1',
-  jsQR:'sha384-hStSInNIZ8ljtOVrmrgf7zdHMapaLBWoSnPTtF0nzsybp4+LuhDz6sHuEVpWIX8o'
+  jsQR:'sha384-hStSInNIZ8ljtOVrmrgf7zdHMapaLBWoSnPTtF0nzsybp4+LuhDz6sHuEVpWIX8o',
+  toGeoJSON:'sha384-4a+9x4ql6wch9epMfqnC3bSjASMJDDqpSuVblbNd6thkfnwdBucHgePPyl0exaFY'
 };
 const _lazyLoading={};
 function loadLib(name){
@@ -5837,6 +5873,30 @@ function handleMakerFile(file){
   if(file && file.size>50e6 && !confirm('“'+file.name+'” is '+Math.round(file.size/1e6)+' MB. Large files can make the page freeze for a while, or fail on computers with less memory.\n\nLoad it anyway?')) return;
   const name=file.name.replace(/\.[^.]+$/,'');
   const lower=file.name.toLowerCase();
+  /* v95: KML and KMZ (Google Earth, My Maps) and GPX (phones, watches), read by a small converter loaded when first needed */
+  if(/\.(kml|kmz|gpx)$/.test(lower)){
+    const isGpx=lower.endsWith('.gpx');
+    const text=lower.endsWith('.kmz')
+      ? file.arrayBuffer().then(b=>JSZip.loadAsync(b)).then(z=>{ const k=Object.keys(z.files).filter(n=>/\.kml$/i.test(n)).sort((a,b)=>a.length-b.length)[0]; if(!k) throw new Error('no KML file inside'); return z.file(k).async('string'); })
+      : file.text();
+    Promise.all([loadLib('toGeoJSON'), text]).then(([T, xml])=>{
+      const doc=new DOMParser().parseFromString(xml, 'text/xml');
+      if(doc.getElementsByTagName('parsererror').length) throw new Error('the file is not well-formed');
+      let fc=isGpx ? T.gpx(doc) : T.kml(doc);
+      try{ fc=turf.flatten(fc); }catch(_){}
+      /* keep plain values only; one layer for each kind of shape */
+      const kinds={point:[], line:[], polygon:[]};
+      (fc.features||[]).forEach(f=>{ if(!f||!f.geometry) return;
+        const p={}; Object.keys(f.properties||{}).forEach(k=>{ const v=f.properties[k]; if(v==null||typeof v!=='object') p[k]=v; });
+        const t=f.geometry.type, kind=/Polygon/.test(t)?'polygon':/Line/.test(t)?'line':/Point/.test(t)?'point':null;
+        if(kind) kinds[kind].push({type:'Feature', properties:p, geometry:f.geometry}); });
+      const used=Object.keys(kinds).filter(k=>kinds[k].length);
+      if(!used.length){ toast('No points, lines or areas were found in '+file.name+'.', 4500); return; }
+      const NM={point:'points', line:'lines', polygon:'areas'};
+      used.forEach(k=>addGeoJSONChecked({type:'FeatureCollection', features:kinds[k]}, name+(used.length>1?' ('+NM[k]+')':'')));
+    }).catch(err=>toast('Could not read '+file.name+': '+((err&&err.message)||'unknown error')+'.', 6000));
+    return;
+  }
   if(lower.endsWith('.zip')){
     file.arrayBuffer().then(b=>shp(b)).then(gj=>{
       if(Array.isArray(gj)) gj.forEach((g,i)=>addGeoJSONChecked(g, name+(i?'_'+i:'')));
@@ -6260,11 +6320,27 @@ function labelDecimals(vals){
   const ref=Math.max(span, mag/10);
   return ref>=100?0 : ref>=10?1 : ref>=1?2 : ref>=0.1?3 : 4;
 }
+/* v95: "Area (km²)" in the Normalize lists makes a density without a field of areas.
+   The area is worked out once for each feature and kept while its shape is unchanged. */
+const NORM_AREA='__area';
+const _areaKm2=new WeakMap();
+function featAreaKm2(f){
+  const g=f&&f.geometry; if(!g) return NaN;
+  const c=_areaKm2.get(g); if(c && c.c===g.coordinates) return c.a;
+  let a=NaN; try{ a=turf.area(f)/1e6; }catch(_){}
+  _areaKm2.set(g, {c:g.coordinates, a}); return a;
+}
+function normDivisor(nf, f){ return nf===NORM_AREA ? featAreaKm2(f) : toNum((f.properties||{})[nf]); }
+function normName(nf){ return nf===NORM_AREA ? 'area (km²)' : nf; }
+function normOptions(lyr, numFields, cur){
+  return '<option value="">none</option>'+(lyr.geom==='polygon'?'<option value="'+NORM_AREA+'" '+(cur===NORM_AREA?'selected':'')+'>Area (km²) — makes a density</option>':'')+
+    numFields.map(f=>'<option value="'+esc(f)+'" '+(cur===f?'selected':'')+'>'+esc(f)+'</option>').join('');
+}
 function valueOf(lyr, f){
   const p=f.properties||{};
   let v=toNum(p[lyr.style.field]);
   if(lyr.style.normField){
-    const d=toNum(p[lyr.style.normField]);
+    const d=normDivisor(lyr.style.normField, f);
     v = (isFinite(d)&&d!==0) ? v/d : NaN;
   }
   return v;
@@ -6291,6 +6367,18 @@ function computeClassification(lyr){
       const clusters=ss.ckmeans(vals, n);
       breaks=[clusters[0][0], ...clusters.map(c=>c[c.length-1])];
     }catch(_){ method='quantile'; lyr._jenksFellBack=true; }
+  } else if(method==='stddev'){
+    /* v95: classes one standard deviation wide, counted out from the mean; "Classes" is the most it will make */
+    const mean=vals.reduce((a,b)=>a+b,0)/vals.length, sd=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)*(b-mean),0)/vals.length);
+    if(sd>0){
+      let inner=[]; for(let j=-12;j<=12;j++){ const b=mean+j*sd; if(b>min && b<max) inner.push({b, j:Math.abs(j)}); }
+      inner.sort((x,y)=>x.j-y.j||x.b-y.b); inner=inner.slice(0, Math.max(1, n-1)).map(x=>x.b).sort((a,b)=>a-b);
+      breaks=[min, ...inner, max];
+    } else method='quantile';
+  } else if(method==='pretty'){
+    /* v95: breaks at round numbers; the count of classes can come out one or two either side of the number asked for */
+    let inner=[]; try{ inner=d3.ticks(min, max, n).filter(v=>v>min && v<max); }catch(_){}
+    if(inner.length) breaks=[min, ...inner, max]; else method='quantile';
   }
   if(method==='quantile' || (method==='manual' && !breaks.length)){
     breaks=quantileBreaks(vals, n);
@@ -6413,7 +6501,7 @@ function colorValueOf(lyr, f){
   const p=f.properties||{};
   let v=toNum(p[st.colorField||st.field]);
   if(st.normField){
-    const d=toNum(p[st.normField]);
+    const d=normDivisor(st.normField, f);
     v=(isFinite(d)&&d!==0)? v/d : NaN;
   }
   return v;
@@ -6867,7 +6955,7 @@ function copyLayerStyle(lyr){
 function pasteLayerStyle(lyr){
   if(!styleClip){ toast('Copy a style from a layer first (… → Copy style).'); return; }
   const c=styleClip, have=new Set(fieldsOf(lyr));
-  const usesFields=[c.style.field, c.style.normField, c.style.colorField].concat(c.style.chartFields||[]).filter(Boolean);
+  const usesFields=[c.style.field, c.style.normField===NORM_AREA?null:c.style.normField, c.style.colorField].concat(c.style.chartFields||[]).filter(Boolean);
   const fieldsOk=usesFields.every(f=>have.has(f));
   if(c.geom===lyr.geom && fieldsOk){
     lyr.style=clone(c.style); lyr.opacity=c.opacity;
@@ -7840,6 +7928,7 @@ function renderLayer(lyr){
         const p=f.properties||{};
         m.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
         m.on('click', ev=>{ const oe=ev.originalEvent||{}; const i=fidOf(lyr,f); if(i==null) return; mkSelectedId=lyr.id; setSelection(lyr,[i],(oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i); });
+        if(st.chartOne) try{ m.setZIndexOffset(-Math.round(m.options.icon.options.iconSize[0])*10000); }catch(_){}
         ms.push(m); });
       lyr.dotLayer=L.layerGroup(ms).addTo(mkMap);
     }
@@ -7925,7 +8014,40 @@ function autoActivateLayer(){
   if(mkLayers.length===1 && mkLayers[0].visible){ mkSelectedId=mkLayers[0].id; return; }
   if(mkSelectedId && !mkLayers.some(l=>l.id===mkSelectedId && l.visible)) mkSelectedId=vis.length? vis[0].id : null;
 }
+/* ---------- v95: hide labels that overlap (a per-layer choice in the Labels tab) ----------
+   Labels are checked in layer order, top layer first, and a label that would run into
+   one already placed is hidden. It is worked out again whenever the map moves or redraws,
+   so zooming in brings hidden labels back. mkLabelHidden lets the Composer's editable
+   labels leave out the same ones. */
+const mkLabelHidden=new WeakSet();
+let mkDeclRaf=0, mkDeclT=0;
+function mkDeclutterLabels(){
+  if(!mkMap) return;
+  const lyrs=mkLayers.filter(l=>l.visible && l.leaflet && l.labels && l.labels.enabled && l.labels.field && l.labels.noOverlap);
+  if(!lyrs.length) return;
+  const mr=mkMap.getContainer().getBoundingClientRect(), items=[];
+  lyrs.forEach(l=>{ try{ l.leaflet.eachLayer(x=>{ const t=x.getTooltip&&x.getTooltip(), el=t&&t.getElement&&t.getElement(); if(!el) return; el.style.visibility=''; items.push({el, f:x.feature}); }); }catch(_){} });
+  items.forEach(it=>{ it.r=it.el.getBoundingClientRect(); });
+  const C=96, grid=new Map();
+  items.forEach(it=>{
+    const r=it.r; if(it.f) mkLabelHidden.delete(it.f);
+    if(!r.width || r.right<mr.left || r.left>mr.right || r.bottom<mr.top || r.top>mr.bottom) return;
+    const x0=Math.floor(r.left/C), x1=Math.floor(r.right/C), y0=Math.floor(r.top/C), y1=Math.floor(r.bottom/C);
+    let hit=false;
+    for(let x=x0;x<=x1&&!hit;x++) for(let y=y0;y<=y1&&!hit;y++){ const a=grid.get(x+':'+y); if(!a) continue;
+      for(let i=0;i<a.length;i++){ const o=a[i]; if(r.left<o.right+2 && r.right+2>o.left && r.top<o.bottom+1 && r.bottom+1>o.top){ hit=true; break; } } }
+    if(hit){ it.el.style.visibility='hidden'; if(it.f) mkLabelHidden.add(it.f); return; }
+    for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++){ const k=x+':'+y; let a=grid.get(k); if(!a){ a=[]; grid.set(k,a); } a.push(r); }
+  });
+}
+/* once on the next frame, and once more when a redraw has settled (labels are put in place a moment after their layer) */
+function mkDeclutterSoon(){
+  const run=()=>{ try{ mkDeclutterLabels(); }catch(_){} };
+  cancelAnimationFrame(mkDeclRaf); mkDeclRaf=requestAnimationFrame(run);
+  clearTimeout(mkDeclT); mkDeclT=setTimeout(run, 280);
+}
 function updateLabelCss(lyr){
+  mkDeclutterSoon();
   const id='labelcss-'+lyr.id;
   let el=document.getElementById(id);
   if(!el){ el=document.createElement('style'); el.id=id; document.head.appendChild(el); }
@@ -7987,12 +8109,51 @@ function updateMkStatus(){
   el.innerHTML='<b>Current layer:</b> '+esc(lyr.name)+' — '+vis+' of '+total+' features shown';
 }
 
+/* ---------- v95: a first map ----------
+   An empty project offers three ways to begin, and a short list of first steps
+   ticks itself off from what the project already holds. It can be hidden for good. */
+const MK_EMPTY_HTML='<div class="mk-start"><div class="empty-hint">No layers yet. Start with one of these:</div>'+
+  '<button type="button" class="btn small" data-start="upload">⬆ Upload a file</button>'+
+  '<button type="button" class="btn small secondary" data-start="online">🌐 Get data online</button>'+
+  '<button type="button" class="btn small light" data-start="sample">Try sample data</button>'+
+  '<div class="kv" id="mkStartMsg">Sample data is a world map of countries (Natural Earth), with population and economy fields to try the styles on.</div></div>';
+document.getElementById('mk-layerlist').addEventListener('click', e=>{
+  const b=e.target.closest('[data-start]'); if(!b) return;
+  if(b.dataset.start==='upload') document.getElementById('fileMakerData').click();
+  else if(b.dataset.start==='online') document.getElementById('mkAddOnline').click();
+  else if(b.dataset.start==='sample'){
+    const msg=document.getElementById('mkStartMsg'), url='https://cdn.jsdelivr.net/gh/martynafford/natural-earth-geojson@master/110m/cultural/ne_110m_admin_0_countries.json';
+    b.disabled=true; if(msg) msg.textContent='Fetching the sample data…';
+    fetchJson(url).then(data=>{ const gj=normalizeGeoJSON(data); if(!gj) throw new Error('unexpected format'); onlineFinish(gj, 'Countries (sample)', {type:'natural-earth', url}); })
+      .catch(err=>{ b.disabled=false; if(msg) msg.textContent='The sample data could not be fetched ('+((err&&err.message)||'no connection')+'). Check the internet connection and try again.'; });
+  }
+});
+function firstStepsOff(){ try{ return localStorage.getItem('mom-steps-off')==='1'; }catch(_){ return false; } }
+function renderFirstSteps(){
+  const el=document.getElementById('mkFirstSteps'); if(!el) return;
+  if(firstStepsOff()){ el.innerHTML=''; return; }
+  let sent=false, exported=false;
+  try{ sent=canvas.getObjects().some(o=>o.data&&o.data.type==='mapFrame'); }catch(_){}
+  try{ const rec=mlogRec(); exported=!!(rec && (rec.methodsLog||[]).some(m=>m.cat==='export')); }catch(_){}
+  const steps=[
+    ['Add data', mkLayers.length>0],
+    ['Style a layer by one of its fields', mkLayers.some(l=>l.style && l.style.mode!=='single')],
+    ['Label a layer (Data tab)', mkLayers.some(l=>l.labels && l.labels.enabled && l.labels.field)],
+    ['Send the map to Map Composer', sent],
+    ['Export a PDF, image or web map', exported]];
+  if(steps.every(s=>s[1])){ try{ localStorage.setItem('mom-steps-off','1'); }catch(_){} el.innerHTML=''; return; }
+  el.innerHTML='<button type="button" class="fs-x" id="mkFirstStepsOff" title="Hide this list for good">Hide</button><b>First steps</b>'+
+    steps.map(s=>'<div class="fs-i'+(s[1]?' done':'')+'"><span aria-hidden="true">'+(s[1]?'☑':'☐')+'</span><span>'+s[0]+(s[1]?' (done)':'')+'</span></div>').join('');
+  document.getElementById('mkFirstStepsOff').onclick=()=>{ try{ localStorage.setItem('mom-steps-off','1'); }catch(_){} el.innerHTML=''; };
+}
+
 /* ---------- layer list UI ---------- */
 function renderMakerLayerList(){
   const el=document.getElementById('mk-layerlist');
   if(typeof cartoUpdateProjectionLock==='function') try{ cartoUpdateProjectionLock(); }catch(_){}
   if(typeof autoActivateLayer==='function') autoActivateLayer();
-  if(!mkLayers.length){ el.innerHTML='<div class="empty-hint">No layers yet. Click “+ Add data” to upload a dataset.</div>'; { const br=document.getElementById('mkBaseRow'); if(br) br.style.display=''; } return; }
+  renderFirstSteps();
+  if(!mkLayers.length){ el.innerHTML=MK_EMPTY_HTML; { const br=document.getElementById('mkBaseRow'); if(br) br.style.display=''; } return; }
   let prevG=null;
   const SP=stackPositions(), nL=mkLayers.length;
   const rowsAt=pos=>(bmHasLabelsRow()&&SP.lp===pos?stackRowHtml('labels'):'')+(SP.bp===pos?stackRowHtml('base'):'');
@@ -8420,8 +8581,10 @@ function rampOptions(sel, geom, mode, st){
   const edited = st && (mode==='cat' ? !!st.catEdited : !!(st.classColors && st.classColors.some(c=>c)));
   if(st && st.customRamp && mode!=='cat'){ html+='<option value="__custom" selected>Imported ramp'+(edited?' (edited)':'')+'</option>'; sel=null; }
   else if(edited){ html+='<option value="__edited" selected>'+esc(sel)+' (edited)</option>'; sel=null; }
+  /* v95: say what each group is for, and tick the ramps that stay readable with colour-vision deficiency (ColorBrewer's own flags) */
+  const GL={sequential:'Sequential: low to high', diverging:'Diverging: either side of a middle value', qualitative:'Qualitative: categories'};
   Object.keys(groups).forEach(g=>{
-    html+='<optgroup label="'+g+'">'+groups[g].map(r=>'<option value="'+r+'" '+(sel===r?'selected':'')+'>'+r+'</option>').join('')+'</optgroup>';
+    html+='<optgroup label="'+GL[g]+'">'+groups[g].map(r=>'<option value="'+r+'" '+(sel===r?'selected':'')+'>'+r+(RAMPS_CVD_OK.includes(r)?' ✓':'')+'</option>').join('')+'</optgroup>';
   });
   if(st && mode==='grad') html+='<option value="__import">Import…</option>';
   return html;
@@ -8436,7 +8599,7 @@ function rampPreviewHtml(ramp, n, reverse, st){
   if(reverse) colors=colors.slice().reverse();
   if(st && st.classColors) colors=colors.map((c,i)=>st.classColors[i]||c);
   return '<div class="ramp-preview">'+colors.map(c=>'<div style="background:'+c+'"></div>').join('')+'</div>'+
-    (st && st.customRamp? '<div class="kv">Using an imported ramp.</div>':'');
+    (st && st.customRamp? '<div class="kv">Using an imported ramp.</div>':'<div class="kv">✓ in the list: still readable with colour-blindness.</div>');
 }
 function symbolLabel(name){
   if(name && name.indexOf('custom:')===0){
@@ -8517,6 +8680,7 @@ function symbolPreviewHtml(sel){
 }
 
 function renderStyleTab(){
+  renderFirstSteps();
   const el=document.getElementById('mk-tab-style');
   const lyr=selectedLayer();
   if(!lyr){ el.innerHTML='<div class="empty-hint">Select a layer to style it.</div>'; return; }
@@ -8528,17 +8692,28 @@ function renderStyleTab(){
        ['heat','Heatmap (density surface)'],['hex','Hexbin (aggregated counts)']]
     : lyr.geom==='polygon'
       ? [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour'],
+         ['chartOne','Proportional symbols (sized by a value)'],
          ['bichoro','Bivariate colour (two variables)'],['dot','Dot density'],['chart','Chart symbols (pie, donut, bar)'],['carto','Cartogram (area by value)']]
       : [['single','Single symbol'],['cat','Categories (unique values)'],['grad','Graduated colour']];
   let html=`<h3>${esc(lyr.name)} — symbology</h3>
     <div class="field"><label>Style type</label>
-      <select id="stMode">${modes.map(m=>'<option value="'+m[0]+'" '+(st.mode===m[0]?'selected':'')+'>'+m[1]+'</option>').join('')}</select>
+      <select id="stMode">${modes.map(m=>'<option value="'+m[0]+'" '+(((st.mode==='chart'&&st.chartOne)?'chartOne':st.mode)===m[0]?'selected':'')+'>'+m[1]+'</option>').join('')}</select>
     </div>`;
   /* v74: no legend-title box here; the legend title is the layer's name (⋯ → Rename) */
   if(st.mode==='single'){
     html+=colourFieldHtml('stColor', lyr.geom==='line'?'Line colour':lyr.geom==='point'?'Symbol colour':'Fill colour', st.color);
   }
-  if(st.mode==='chart'){
+  if(st.mode==='chart' && st.chartOne){
+    chartDefaults(st);
+    html+=`<div class="field"><label>Value field (numeric — a count or total)</label>
+      <select id="stChOneField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.chartFields[0]===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+      <div class="row2">
+        <div class="field"><label>Largest symbol (radius px)</label><input type="number" id="stChOneR" min="6" max="80" value="${st.chartR}"></div>
+        <div class="field"><label>Symbol colour</label><input type="color" id="stChOneCol" value="${toHex(st.chartOneColor||'#b3452f')}"></div>
+      </div>`+colourFieldHtml('stColor','Area fill colour', st.color)+
+      `<div class="kv">Symbol <b>area</b> is proportional to the value. This suits counts and totals, which a colour fill would tie to the size of each area.</div>`;
+  }
+  if(st.mode==='chart' && !st.chartOne){
     chartDefaults(st);
     if(lyr.geom==='polygon') html+=colourFieldHtml('stColor','Area fill colour', st.color);
     html+=`<div class="field"><label>Chart</label><select id="stChType">${[['pie','Pie'],['donut','Donut'],['bar','Bars']].map(o=>'<option value="'+o[0]+'"'+(st.chartType===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')}</select></div>
@@ -8683,7 +8858,7 @@ function renderStyleTab(){
       html+=`<div class="field"><label>Colour field (numeric)</label>
         <select id="stField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
         <div class="field"><label>Normalize the colour field by (optional)</label>
-        <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+        <select id="stNorm">${normOptions({geom:'-'}, numFields, st.normField)}</select></div>
         <div class="row2 st-mc">
           <div class="field"><label>Method</label>
             <select id="stMethod">
@@ -8735,7 +8910,7 @@ function renderStyleTab(){
     html+=`<div class="field"><label>Value field (numeric)</label>
       <select id="stField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
       <div class="field"><label>Normalize by (optional — makes a rate)</label>
-      <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
+      <select id="stNorm">${normOptions(lyr, numFields, st.normField)}</select></div>
       <div class="row2">
         <div class="field"><label>Largest symbol (radius px)</label><input type="number" id="stMaxR" value="${st.maxR}" min="4"></div>
         <div class="field"><label>Symbol colour</label><input type="color" id="stColor" value="${st.color}"></div>
@@ -8746,7 +8921,7 @@ function renderStyleTab(){
     html+=`<div class="field"><label>Value field (numeric)</label>
       <select id="stField"><option value="">— choose —</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.field===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>
       <div class="field"><label>Normalize by (optional — makes a rate)</label>
-      <select id="stNorm"><option value="">none</option>${numFields.map(f=>'<option value="'+esc(f)+'" '+(st.normField===f?'selected':'')+'>'+esc(f)+'</option>').join('')}</select></div>`;
+      <select id="stNorm">${normOptions(lyr, numFields, st.normField)}</select></div>`;
   }
   if(st.mode==='grad'){
     html+=`<div class="row2 st-mc">
@@ -8755,6 +8930,8 @@ function renderStyleTab(){
           <option value="quantile" ${st.method==='quantile'?'selected':''}>Quantile</option>
           <option value="equal" ${st.method==='equal'?'selected':''}>Equal interval</option>
           <option value="jenks" ${st.method==='jenks'?'selected':''}>Natural breaks (Jenks)</option>
+          <option value="stddev" ${st.method==='stddev'?'selected':''}>Standard deviation</option>
+          <option value="pretty" ${st.method==='pretty'?'selected':''}>Rounded breaks</option>
           <option value="manual" ${st.method==='manual'?'selected':''}>Manual breaks</option>
         </select></div>
       <div class="field"><label>Classes</label><input type="number" id="stClasses" min="2" max="12" value="${st.method==='manual'&&String(st.manualBreaks||'').trim()? (String(st.manualBreaks).split(',').filter(v=>isFinite(parseFloat(v))).length+1) : st.classes}"></div>
@@ -8846,6 +9023,15 @@ function renderStyleTab(){
   g('stMode').onchange=()=>{
     const was=st.mode;
     st.mode=g('stMode').value;
+    /* v95: proportional symbols on areas are a one-field chart symbol (a circle sized by its value),
+       so every view and export that draws charts draws them too */
+    if(st.mode==='chartOne'){
+      st.mode='chart'; st.chartOne=true; chartDefaults(st); st.chartType='pie'; st.chartSize='prop';
+      const nf=numericFieldsOf(lyr), keep=(st.field&&nf.includes(st.field))?st.field:(st.chartFields.find(f=>nf.includes(f))||null);
+      st.chartFields=keep?[keep]:[]; if(!st.chartOneColor) st.chartOneColor='#b3452f';
+      if(keep) st.chartColors[keep]=st.chartOneColor;
+      if(!(st.chartR>=20)) st.chartR=24;
+    } else st.chartOne=false;
     if(st.mode==='hex') hexStyleDefaults(st);
     /* a cartogram's units aren't where the basemap says they are, so take it away */
     if(st.mode==='carto' && was!=='carto') cartoEnterBasemap();
@@ -8930,6 +9116,11 @@ function renderStyleTab(){
   bindColourField('stPatColor', ()=>st.patColor, v=>{ st.patColor=v; }, ()=>{ if(!fastRestyle(lyr)) throttledRender(lyr); });
   if(g('stPatGap')) g('stPatGap').oninput=()=>{ st.patGap=+g('stPatGap').value; g('stPatGapV').textContent=st.patGap; if(!fastRestyle(lyr)) throttledRender(lyr); };
   /* ---- chart symbols ---- */
+  if(g('stChOneField')){
+    g('stChOneField').onchange=()=>{ const v=g('stChOneField').value; st.chartFields=v?[v]:[]; if(v) st.chartColors[v]=st.chartOneColor||'#b3452f'; lyr._chartSig=null; renderStyleTab(); rerender(); };
+    g('stChOneR').onchange=()=>{ st.chartR=Math.max(6,Math.min(80,+g('stChOneR').value||24)); rerender(); };
+    g('stChOneCol').oninput=()=>{ st.chartOneColor=g('stChOneCol').value; if(st.chartFields[0]) st.chartColors[st.chartFields[0]]=st.chartOneColor; rerender(); };
+  }
   if(g('stChType')){
     g('stChType').onchange=()=>{ st.chartType=g('stChType').value; renderStyleTab(); rerender(); };
     g('stChSize').onchange=()=>{ st.chartSize=g('stChSize').value; renderStyleTab(); rerender(); };
@@ -9692,9 +9883,10 @@ function renderLabelsTab(){
         <select id="lbPos">${LABEL_POSITIONS.map(p=>'<option value="'+p[0]+'" '+((lb.position||'ne')===p[0]?'selected':'')+'>'+p[1]+'</option>').join('')}</select></div>
       <div class="field" style="max-width:110px;"><label>Offset (px)</label><input type="number" id="lbOffset" value="${lb.offset==null?8:lb.offset}" min="0" max="60"></div>
     </div>
-    <div class="kv">Tip: labels work best on a small number of features — filter first if the map gets crowded.</div>`;
+    <div class="checkline"><input type="checkbox" id="lbNoOverlap" ${lb.noOverlap?'checked':''}><label for="lbNoOverlap" style="margin:0;color:var(--text);">Hide labels that overlap</label></div>
+    <div class="kv">Hidden labels come back as you zoom in. Web maps, share links and atlas pages still show every label.</div>`;
   const g=id=>document.getElementById(id);
-  const rl=()=>renderLayer(lyr);
+  const rl=()=>{ renderLayer(lyr); renderFirstSteps(); };
   g('lbOn').onchange=()=>{ lb.enabled=g('lbOn').checked; rl(); };
   g('lbField').onchange=()=>{ lb.field=g('lbField').value||null; rl(); };
   g('lbFont').onchange=()=>{ lb.font=g('lbFont').value; if(isGoogleFont(lb.font)) ensureGoogleFonts(); rl(); };
@@ -9704,6 +9896,7 @@ function renderLabelsTab(){
   g('lbBold').onchange=()=>{ lb.bold=g('lbBold').checked; rl(); };
   g('lbItalic').onchange=()=>{ lb.italic=g('lbItalic').checked; rl(); };
   g('lbHalo').onchange=()=>{ lb.halo=g('lbHalo').checked; rl(); };
+  g('lbNoOverlap').onchange=()=>{ lb.noOverlap=g('lbNoOverlap').checked; rl(); mkTouch(); markProjectDirty(); };
   g('lbPos').onchange=()=>{ lb.position=g('lbPos').value; rl(); };
   g('lbOffset').onchange=()=>{ lb.offset=Math.max(0,+g('lbOffset').value||0); rl(); };
 }
@@ -10788,6 +10981,8 @@ function renderSpatialForm(){
   } else if(op==='mergelyr'){
     el.innerHTML=`<div class="field"><label>Layer A</label><select id="spA">${layerOptions(null,null)}</select></div>
       <div class="field"><label>Layer B (same geometry type)</label><select id="spB">${layerOptions(null,null)}</select></div>`;
+  } else if(op==='geomfields'){
+    el.innerHTML=selA+`<div class="kv">Adds measurements to the layer's attribute table, ready for the field calculator, Normalize and labels. Areas get <b>area_km2</b>, <b>perim_km</b> and the centre's <b>lon</b> and <b>lat</b>; lines get <b>length_km</b>; points get <b>lon</b> and <b>lat</b>. Measured on the globe, so the projection on screen makes no difference.</div>`;
   } else if(op==='centroid'){
     el.innerHTML=selA+`<div class="kv">Creates a point layer at each feature's centroid, keeping all attributes — useful for placing labels or proportional symbols on polygons.</div>`;
   } else if(op==='hull'){
@@ -15273,6 +15468,15 @@ document.getElementById('spOp').addEventListener('change', renderSpatialForm);
 document.getElementById('spRunBtn').onclick=()=>{
   const op=document.getElementById('spOp').value;
   const status=document.getElementById('spStatus');
+  /* v95: these tools hold the page until they finish, so a large job asks first */
+  if(['buffer','clip','erase','intersect','unionop','dissolve'].includes(op)){
+    const nv=id=>{ const e=document.getElementById(id), l=e&&mkLayers.find(x=>x.id===e.value); let n=0;
+      const walk=c=>{ if(typeof c[0]==='number') n++; else for(let i=0;i<c.length;i++) walk(c[i]); };
+      if(l) l.geojson.features.forEach(f=>{ if(f.geometry&&f.geometry.coordinates&&featurePasses(l,f)) try{ walk(f.geometry.coordinates); }catch(_){} });
+      return n; };
+    const pts=nv('spA')+nv('spB');
+    if(pts>150000 && !window.confirm('This is a large job (about '+(Math.round(pts/1000)*1000).toLocaleString()+' points in the outlines). The page will not respond until it finishes, which can take a minute or more.\n\nTo make it quicker, cancel and first filter the layer or run Simplify.\n\nRun it now?')){ status.textContent=''; return; }
+  }
   status.textContent='Working…';
   setTimeout(()=>{
     mlogSuppress=true; mlogPending=[];
@@ -15410,6 +15614,27 @@ document.getElementById('spRunBtn').onclick=()=>{
         if(A.geom!==B.geom){ status.textContent='Layers must have the same geometry type.'; return; }
         const feats=[...clone(visibleFeatures(A)), ...clone(visibleFeatures(B))];
         addMakerLayer({type:'FeatureCollection',features:feats}, A.name+'_merged');
+      }
+      else if(op==='geomfields'){
+        /* v95: measurements as ordinary fields (same route as the field calculator: in place, undoable, logged) */
+        const names=A.geom==='polygon'?['area_km2','perim_km','lon','lat']:A.geom==='line'?['length_km']:['lon','lat'];
+        const clash=names.filter(n=>fieldsOf(A).includes(n));
+        if(clash.length && !window.confirm('This layer already has '+clash.join(', ')+'. Replace '+(clash.length===1?'its':'their')+' values?')){ status.textContent=''; return; }
+        const r=(v,d)=>isFinite(v)? +v.toFixed(d) : null;
+        A.geojson.features.forEach(f=>{
+          f.properties=f.properties||{};
+          if(!f.geometry){ names.forEach(n=>f.properties[n]=null); return; }
+          try{
+            if(A.geom==='polygon'){ f.properties.area_km2=r(turf.area(f)/1e6, 4); f.properties.perim_km=r(turf.length(f,{units:'kilometers'}), 3); }
+            if(A.geom==='line') f.properties.length_km=r(turf.length(f,{units:'kilometers'}), 3);
+            if(A.geom!=='line'){ const c=centroidOf(f), xy=c&&c.geometry&&c.geometry.coordinates; f.properties.lon=xy?r(xy[0],6):null; f.properties.lat=xy?r(xy[1],6):null; }
+          }catch(_){ names.forEach(n=>{ if(f.properties[n]===undefined) f.properties[n]=null; }); }
+        });
+        A._calcTypes=null; invalidateFieldCache(A);
+        markProjectDirty(); mkPushHistory();
+        renderLayer(A); renderMakerPanels(); if(tableWinOpen()) renderAttrTable();
+        persistDataset(A.datasetId);
+        toast('Added '+names.join(', ')+' to “'+A.name+'”.', 3600);
       }
       else if(op==='centroid'){
         const out=visibleFeatures(A).map(f=>{
@@ -15592,6 +15817,8 @@ function legendSpecForLayer(lyr){
       for(let i=lyr._breaks.length-2;i>=0;i--){
         items.push({color:lyr._colors[i], label:classRangeLabel(lyr,i), shape:shp_});
       }
+      /* v95: features with no value are drawn grey, so the legend says what the grey means */
+      if(visibleFeatures(lyr).some(f=>!isFinite(valueOf(lyr,f)))) items.push({color:'#bbbbbb', label:'No data', shape:shp_});
     }
   } else if(st.mode==='prop'){
     sizeRange(lyr);
@@ -15645,11 +15872,16 @@ function legendSpecForLayer(lyr){
     }
   } else if(st.mode==='chart'){
     chartDefaults(st);
+    if(st.chartOne && st.chartFields.length){
+      lyr._chartSig=null; const mx=chartScale(lyr), col=chartColorOf(st, st.chartFields[0], 0);
+      [mx.tot, mx.tot/4, mx.tot/16].forEach(v=>{ const r=st.chartR*Math.sqrt(v/mx.tot); if(r>=st.chartMinR) items.push({color:col, label:fmtNum(v), shape:'circle', size:Math.round(2*r)}); });
+    } else {
     st.chartFields.forEach((k,i)=>items.push({color:chartColorOf(st,k,i), label:k, shape:'rect'}));
     if(st.chartSize==='prop' && st.chartType!=='bar' && st.chartFields.length){
       lyr._chartSig=null; const mx=chartScale(lyr);
       items.push({header:true, label:'Total'});
       [mx.tot, mx.tot/4].forEach(v=>items.push({color:'#d8dce3', label:fmtNum(v), shape:'circle', size:Math.round(2*Math.max(st.chartMinR, st.chartR*Math.sqrt(v/mx.tot)))}));
+    }
     }
   } else if(st.mode==='hex'){
     if(!lyr._hexBreaks && lyr.visible) renderLayer(lyr);
@@ -15814,7 +16046,7 @@ function goToPlace(r){
 /* ---------- send to layout ---------- */
 /* U4: names readers will see, asked for before anything lands on the page */
 function prettyName(s){
-  let t=String(s||'').replace(/\.(geojson|json|csv|zip|shp|xlsx?)$/i,'').replace(/[_]+/g,' ').replace(/(\w)-(\w)/g,'$1 $2').replace(/\s+/g,' ').trim();
+  let t=String(s||'').replace(/\.(geojson|json|csv|zip|shp|xlsx?|kml|kmz|gpx)$/i,'').replace(/[_]+/g,' ').replace(/(\w)-(\w)/g,'$1 $2').replace(/\s+/g,' ').trim();
   t=t.replace(/\b(stats|joined|clip|dissolved|buffer|centroids)\b/gi, m=>m.toLowerCase());
   return t ? t.charAt(0).toUpperCase()+t.slice(1) : '';
 }
@@ -15823,10 +16055,17 @@ function renderSendNames(){
   const lyrs=mkLayers.filter(l=>l.visible).map(l=>({l, spec:legendSpecForLayer(l)})).filter(x=>x.spec.items.length);
   const rec=projectsCache.find(p=>p.id===currentProjectId);
   const existing=canvas.getObjects().find(o=>o.data&&o.data.type==='title'&&o.text&&o.text!=='Map Title');
-  const guess= existing ? existing.text : (lyrs.length===1 ? prettyName(lyrs[0].spec.title) : prettyName(rec&&rec.name&&!/^my first project$|^untitled/i.test(rec.name)?rec.name:''));
+  /* v95: no file name as a ready-made map title; a legend for a mapped field starts with that field's name */
+  const guess= existing ? existing.text : prettyName(rec&&rec.name&&!/^my first project$|^untitled/i.test(rec.name)?rec.name:'');
+  const lgDefault=x=>{ const st=x.l.style||{};
+    if(st.mode==='chart' && st.chartOne && (st.chartFields||[])[0]) return prettyName(st.chartFields[0]);
+    if(['grad','gradSize','prop','dot'].includes(st.mode) && st.field) return prettyName(st.field)+(st.normField ? (st.normField===NORM_AREA?' per km²':' per '+prettyName(st.normField).toLowerCase()) : '');
+    return prettyName(x.spec.title); };
+  let by=''; try{ by=localStorage.getItem('mom-author')||''; }catch(_){}
   box.innerHTML='<div class="send-names"><div class="sn-h">Names on the page</div>'+
-    '<label class="sn-row"><span>Map title</span><input type="text" id="sendTitle" maxlength="140" value="'+esc(guess)+'" placeholder="Leave blank for no title"></label>'+
-    (lyrs.length?'<div class="sn-sub">Legend titles (the names readers see instead of file and field names)</div>'+lyrs.map((x,i)=>'<label class="sn-row"><span title="'+esc(x.l.name)+'">'+esc(x.l.name)+'</span><input type="text" class="sendLg" data-id="'+x.l.id+'" maxlength="140" value="'+esc(x.l.style.legendTitle||prettyName(x.spec.title))+'"></label>').join(''):'')+
+    '<label class="sn-row"><span>Map title</span><input type="text" id="sendTitle" maxlength="140" value="'+esc(guess)+'" placeholder="What, where and when (or leave blank)"></label>'+
+    '<label class="sn-row"><span>Map by</span><input type="text" id="sendBy" maxlength="80" value="'+esc(by)+'" placeholder="Your name (optional): adds a credit line with the date and projection"></label>'+
+    (lyrs.length?'<div class="sn-sub">Legend titles (the names readers see instead of file and field names)</div>'+lyrs.map((x,i)=>'<label class="sn-row"><span title="'+esc(x.l.name)+'">'+esc(x.l.name)+'</span><input type="text" class="sendLg" data-id="'+x.l.id+'" maxlength="140" value="'+esc(x.l.style.legendTitle||lgDefault(x))+'"></label>').join(''):'')+
     '</div>';
 }
 document.getElementById('mkSendBtn').onclick=()=>{
@@ -15926,8 +16165,20 @@ function applySendNames(){
     const l=mkLayers.find(x=>x.id===inp.dataset.id); if(!l) return;
     const v=inp.value.trim(); if(v!==(l.style.legendTitle||'')){ l.style.legendTitle=v; }
   });
+  const by=document.getElementById('sendBy');
+  sendByName=by ? by.value.trim() : '';
+  try{ if(by) localStorage.setItem('mom-author', sendByName); }catch(_){}
   const t=document.getElementById('sendTitle');
   return t ? t.value.trim() : '';
+}
+/* v95: an optional credit line (name, date, projection) at the end of the Sources box */
+let sendByName='';
+function sendCreditsLine(){
+  if(!sendByName) return '';
+  let proj='Web Mercator';
+  try{ if(projActive && PROJ_DEFS[projKey]) proj=PROJ_DEFS[projKey].label; else if(typeof mkGlobe!=='undefined' && mkGlobe && document.getElementById('mk-globe-map')) proj='globe view'; }catch(_){}
+  let when=''; try{ when=new Date().toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'}); }catch(_){ when=new Date().toDateString(); }
+  return 'Map by '+sendByName+', '+when+'. Projection: '+proj+'.';
 }
 function placeSendTitle(text){
   if(!text) return;
@@ -15951,11 +16202,12 @@ function makerSourcesText(){
     let where='';
     if(src&&src.url){ try{ where=new URL(src.url).host.replace(/^www\./,''); }catch(_){ where=String(src.url).slice(0,60); } }
     else if(src&&(src.name||src.title)) where=String(src.name||src.title).slice(0,80);
-    const nm=(l.style&&l.style.legendTitle)||prettyName(l.name);
+    const nm=prettyName(l.name);   /* v95: the dataset's own name; the legend title now names the mapped field */
     return where ? nm+' ('+where+')' : nm;
   });
   if(data.length) parts.push('Data: '+data.join('; '));
-  return parts.join('. ')+(parts.length?'.':'');
+  const cr=sendCreditsLine();
+  return parts.join('. ')+(parts.length?'.':'')+(cr?(parts.length?' ':'')+cr:'');
 }
 function collectLabelPlacements(){
   const out=[];
@@ -15965,6 +16217,7 @@ function collectLabelPlacements(){
     visibleFeatures(l).forEach(f=>{
       const v=(f.properties||{})[l.labels.field];
       if(v==null||v==='') return;
+      if(l.labels.noOverlap && mkLabelHidden.has(f)) return;
       let c;
       try{ c=turf.center(f).geometry.coordinates; }catch(_){ return; }
       const pt=mkMap.latLngToContainerPoint([c[1],c[0]]);
@@ -16335,6 +16588,7 @@ function renderProjection(){
   const dpr=window.__momPR || Math.min(window.devicePixelRatio||1, 2);
   cnv.width=Math.round(w*dpr); cnv.height=Math.round(h*dpr);
   const ctx=cnv.getContext('2d');
+  ctx._momPlaced=null;   /* v95: label boxes placed so far in this drawing */
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,w,h);
   ctx.fillStyle='#ffffff';
@@ -16478,6 +16732,7 @@ function renderProjection(){
       if(isGoogleFont(lb.font)) ensureGoogleFonts();
       ctx.font=(lb.italic?'italic ':'')+(lb.bold?'700 ':'400 ')+lb.size+'px '+(lb.font||'Arial');
       ctx.textAlign='center';
+      const placed=lb.noOverlap ? (ctx._momPlaced||(ctx._momPlaced=[])) : null;
       visibleFeatures(lyr).forEach(f=>{
         const v=(f.properties||{})[lb.field];
         if(v==null) return;
@@ -16486,6 +16741,11 @@ function renderProjection(){
           const pt=proj(c);
           if(!pt||!isFinite(pt[0])||!isFinite(pt[1])) return;
           if(pt[0]<-50||pt[1]<-50||pt[0]>w+50||pt[1]>h+50) return;
+          if(placed){ /* v95: skip a label that would run into one already drawn */
+            const tw=ctx.measureText(String(v)).width/2+2, th=lb.size, b=[pt[0]-tw, pt[1]-th, pt[0]+tw, pt[1]+th*0.35];
+            if(placed.some(o=>b[0]<o[2] && b[2]>o[0] && b[1]<o[3] && b[3]>o[1])) return;
+            placed.push(b);
+          }
           if(lb.halo){
             ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3;
             ctx.strokeText(String(v), pt[0], pt[1]);
@@ -17327,7 +17587,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='v94 · Nov 2026';
+const MOM_VERSION='v95 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -19802,7 +20062,9 @@ function switchModule(which){
   document.getElementById('grp-page').style.display=which==='layout'?'flex':'none';
   document.body.classList.toggle('on-home', which==='home');
   document.body.classList.toggle('mod-layout', which==='layout');
+  document.body.classList.toggle('mod-maker', which==='maker');
   document.body.classList.toggle('mod-home', which==='home');
+  if(which==='maker') renderFirstSteps();
   if(which==='maker' && mkMap){ [60, 400, 1200].forEach(t=>setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} }, t)); mkWatchSize(); }
   if(which==='layout'){ canvas.calcOffset(); canvas.renderAll();
     /* v93: the first time Composer opens, zoom out if the page would run off the screen (never zoom in past 100%) */
@@ -19816,6 +20078,11 @@ document.getElementById('modLayoutBtn').onclick=()=>{ requireProject(()=>switchM
 document.getElementById('modCollectBtn').onclick=()=>{ requireProject(()=>switchModule('collect')); };
 document.getElementById('modAtlasBtn').onclick=()=>{ requireProject(()=>switchModule('atlas')); };
 document.getElementById('btnHelp').onclick=()=>openModal('modal-help');
+/* v95: Help has two tabs, the quick start and short how-to cards */
+document.querySelectorAll('#modal-help .help-tabs button').forEach(b=>{ b.onclick=()=>{
+  document.querySelectorAll('#modal-help .help-tabs button').forEach(x=>{ const on=x===b; x.classList.toggle('on',on); x.setAttribute('aria-selected',String(on)); });
+  document.querySelectorAll('#modal-help .help-pane').forEach(p=>p.classList.toggle('hidden', p.dataset.hp!==b.dataset.ht));
+}; });
 /* ---------- side panels: drag the divider to resize, click its tab to hide ----------
    One splitter serves every side panel (Map Maker, Map Composer, Field Mapper).
    Dragging a panel narrower than its minimum hides it; the tab stays at the edge
@@ -19918,10 +20185,14 @@ window.__splitters={
   sel.onchange=()=>{
     const v=sel.value, stage=document.getElementById('stage'), wrap=document.getElementById('stage-wrap');
     stage.style.filter=v?'url(#cvd-'+v+')':'';
+    /* v95: the same preview on the Map Maker map (flat, projected and globe), by a rule on <body> */
+    if(v) document.body.setAttribute('data-cvd', v); else document.body.removeAttribute('data-cvd');
+    const inMaker=document.body.classList.contains('mod-maker');
+    if(v && inMaker) toast('Viewing the map as someone with '+names[v]+' would see it. Preview only. ⚙ → Normal colour vision switches back.', 5200);
     let b=document.getElementById('cvdBanner');
     if(v){ if(!b){ b=document.createElement('div'); b.id='cvdBanner'; b.className='cvd-banner'; wrap.insertBefore(b, stage); } b.innerHTML='Viewing the page as someone with '+names[v]+' would see it. Preview only; exports are unchanged. <a href="#" id="cvdOff">Back to normal</a>'; document.getElementById('cvdOff').onclick=e=>{ e.preventDefault(); sel.value=''; sel.onchange(); }; }
     else if(b) b.remove();
-    if(v) mlog('compose','Checked the layout as '+names[v]+'.');
+    if(v) mlog('compose','Checked the '+(inMaker?'map':'layout')+' as '+names[v]+'.');
     if(window.__gearSync) __gearSync();
   };
 })();
@@ -21223,7 +21494,7 @@ function updateSyncUI(state){
   }
   btn.classList.toggle('on', syncActive());
   if(!lbl) return;
-  if(!syncActive()){ lbl.textContent='Sync to cloud'; btn.title='Save projects to a folder you sync (OneDrive, Google Drive, Dropbox) as well as this browser'; return; }
+  if(!syncActive()){ lbl.textContent='Save to a synced folder'; btn.title='Save projects to a folder you sync (OneDrive, Google Drive, Dropbox) as well as this browser'; return; }
   if(syncDir.__needsPermission){ lbl.textContent='Sync — allow'; btn.title='Click to re-allow access to “'+syncDir.name+'”'; return; }
   btn.title='Syncing to “'+syncDir.name+'”';
   lbl.textContent = state==='saving' ? 'Saving…'
@@ -21305,7 +21576,7 @@ document.getElementById('btnSync').onclick=openSyncDialog;
   const sync=()=>{
     const v=cvd?cvd.value:'';
     menu.querySelectorAll('[data-cvd]').forEach(b=>{ const on=b.dataset.cvd===v; b.classList.toggle('on',on); b.setAttribute('aria-checked',String(on)); });
-    btn.classList.toggle('cvd-on', !!v && document.body.classList.contains('mod-layout'));
+    btn.classList.toggle('cvd-on', !!v && (document.body.classList.contains('mod-layout')||document.body.classList.contains('mod-maker')));
     const d=document.documentElement.getAttribute('data-theme')==='dark';
     const t=document.getElementById('gmTheme'); if(t) t.textContent=d?'☀ Light interface':'☾ Dark interface';
     const pu=document.getElementById('gmPopups'); if(pu) pu.classList.toggle('on', mkPopupsOn());
@@ -21327,6 +21598,8 @@ document.getElementById('btnSync').onclick=openSyncDialog;
     else if(g==='popups') mkPopupsSet(!mkPopupsOn());
   });
   if(cvd) cvd.addEventListener('change', sync);
+  /* v95: show the Mac shortcut on Macs */
+  try{ const k=menu.querySelector('.gm-k'); if(k && /Mac|iPhone|iPad/.test(navigator.platform||'')) k.textContent='⌘S'; }catch(_){}
   window.__gearSync=sync;
 })();
 document.getElementById('btnMethods').onclick=()=>requireProject(openMethodsLog);
@@ -21370,18 +21643,18 @@ function mlog(cat, text){
 }
 const MODE_NAMES={single:'single symbol', cat:'categories (unique values)', grad:'graduated colour (choropleth)', gradSize:'graduated symbol size',
   prop:'proportional symbols', bivariate:'size and colour (bivariate)', heat:'heatmap', hex:'hexbin', dot:'dot density', carto:'cartogram'};
-const METHOD_NAMES={quantile:'quantile', equal:'equal interval', jenks:'natural breaks (Jenks)', manual:'manual breaks'};
+const METHOD_NAMES={quantile:'quantile', equal:'equal interval', jenks:'natural breaks (Jenks)', manual:'manual breaks', stddev:'standard deviation', pretty:'rounded breaks'};
 function describeLayerDesign(l){
   const st=l.style, parts=[];
   let s='**'+l.name+'** ('+l.geom+', '+l.geojson.features.length.toLocaleString()+' features';
   const vis=visibleFeatures(l).length; if(vis!==l.geojson.features.length) s+=', '+vis.toLocaleString()+' shown after filtering';
-  s+='): '+(MODE_NAMES[st.mode]||st.mode);
+  s+='): '+((st.mode==='chart'&&st.chartOne)?'proportional symbols of '+((st.chartFields||[])[0]||'?'):(MODE_NAMES[st.mode]||st.mode));
   if(st.mode==='grad'){
-    s+=' of '+(st.field||'?')+(st.normField?' / '+st.normField+' (rate)':'')+', '+(METHOD_NAMES[st.method]||st.method)+', '+(l._breaks?(l._breaks.length-1):st.classes)+' classes';
+    s+=' of '+(st.field||'?')+(st.normField?' / '+normName(st.normField)+(st.normField===NORM_AREA?' (density)':' (rate)'):'')+', '+(METHOD_NAMES[st.method]||st.method)+', '+(l._breaks?(l._breaks.length-1):st.classes)+' classes';
     if(l._breaks) s+=' (breaks '+l._breaks.map(fmtNum).join(', ')+')';
     s+=', '+(st.customRamp?'imported':st.ramp)+' colour ramp'+(st.reverse?' (reversed)':'');
   } else if(st.mode==='cat'){ s+=' of '+(st.field||'?')+', '+(st.ramp||'Set2')+' palette'; }
-  else if(st.mode==='gradSize'||st.mode==='prop'){ s+=' of '+(st.field||'?')+(st.normField?' / '+st.normField:'')+', radius '+st.minR+'–'+st.maxR+' px'+(st.mode==='gradSize'?(st.sizeScale==='sqrt'?' (area-proportional)':' (linear)'):''); }
+  else if(st.mode==='gradSize'||st.mode==='prop'){ s+=' of '+(st.field||'?')+(st.normField?' / '+normName(st.normField):'')+', radius '+st.minR+'–'+st.maxR+' px'+(st.mode==='gradSize'?(st.sizeScale==='sqrt'?' (area-proportional)':' (linear)'):''); }
   else if(st.mode==='bivariate'){ s+=': size from '+(st.field||'?')+', colour from '+(st.colorField||st.field||'?'); }
   else if(st.mode==='heat'){ s+=', radius '+(st.heatRadius||25)+' px, blur '+(st.heatBlur==null?15:st.heatBlur)+' px'+(st.heatField?', weighted by '+st.heatField:''); }
   else if(st.mode==='hex'){ s+=', '+hexSizeLabel(st.hexSize||5)+' cells, '+(st.hexStat==='count'||!st.hexField?'point count':st.hexStat+' of '+st.hexField)+(st.hexShow==='circles'?', proportional circles':', '+(METHOD_NAMES[st.method]||st.method)+' classes'); }
@@ -21845,7 +22118,26 @@ function fmtDate(ts){
   const d=new Date(ts);
   return d.toLocaleDateString(undefined,{month:'short', day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit', minute:'2-digit'});
 }
+/* ---------- v95: a newer version is online ----------
+   version.txt sits beside index.html and holds the release name (v95). A tab left
+   open for days, or a cached page, learns from it that a reload is due. */
+let verChecked=0;
+function checkNewVersion(){
+  if(!/^https?:$/.test(location.protocol) || Date.now()-verChecked<30*60*1000 || document.getElementById('momNewVer')) return;
+  verChecked=Date.now();
+  const num=v=>{ const m=/^v(\d+)/.exec(String(v||'').trim()); return m? +m[1] : 0; };
+  fetch('version.txt?t='+Date.now(), {cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{
+    const latest=num(t), mine=num(MOM_VERSION);
+    if(!latest || !mine || latest<=mine || t.length>40) return;
+    const b=document.createElement('div'); b.id='momNewVer'; b.className='mom-narrow'; b.setAttribute('role','status');
+    b.innerHTML='<span>A newer version of Map-O-Matic is available (v'+latest+'). Your projects are kept.</span><button class="btn small" type="button" data-a="go">Reload</button><button class="btn small light" type="button" data-a="no">Later</button>';
+    b.onclick=e=>{ const a=e.target.dataset&&e.target.dataset.a; if(a==='no') b.remove();
+      if(a==='go'){ const go=()=>location.reload(); try{ (currentProjectId?saveCurrentProject(false):Promise.resolve()).then(go, go); }catch(_){ go(); } } };
+    document.body.appendChild(b);
+  }).catch(()=>{});
+}
 function renderHome(){
+  checkNewVersion();
   renderBackupBanner();
   renderProjectsGrid();
   renderLibrary();
@@ -22350,7 +22642,7 @@ function embedLayerData(lyr, compact){
     const rc=c=>compact?[Math.round(c[0]*1e5)/1e5,Math.round(c[1]*1e5)/1e5]:c;
     const charts=visibleFeatures(lyr).map(f=>{ const c=chartAnchor(f), cs=c&&chartSvg(lyr,f); if(!cs) return null;
       const op=st.fillOpacity*lyr.opacity, svg=op<1?cs.svg.replace('<svg ','<svg opacity="'+op.toFixed(2)+'" '):cs.svg;
-      return {type:'Feature', properties:Object.assign({}, f.properties, {_cs:{t:'i', svg, size:cs.size}}), geometry:{type:'Point', coordinates:rc(c)}}; }).filter(Boolean);
+      return {type:'Feature', properties:Object.assign({}, f.properties, {_cs:(lyr.geom==='polygon' ? {t:'i', svg, size:cs.size, nl:1} : {t:'i', svg, size:cs.size})}), geometry:{type:'Point', coordinates:rc(c)}}; }).filter(Boolean);   /* v95: nl = no label here; on an area layer the area itself carries the label */
     const base=lyr.geom==='polygon' ? visibleFeatures(lyr).map(f=>({type:'Feature', properties:Object.assign({}, f.properties, {_cs:bakeFeatureStyle(lyr,f,compact)}), geometry:compact?roundGeom(f.geometry,5):f.geometry})) : [];
     return {name:lyr.name, geom:lyr.geom, fc:{type:'FeatureCollection', features:base.concat(charts)}};
   }
@@ -22641,7 +22933,7 @@ function po(L2){return (SW&&L2.id===SW.left)?PO.swL:(SW&&L2.id===SW.right)?PO.sw
 function E(v){return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k in p){if(k.charAt(0)==='_')continue;var v=p[k];r+='<tr><td class=\"k\">'+E(k)+'</td><td>'+((typeof v==='string'&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<img src=\"'+v+'\" alt=\"\" style=\"max-width:220px;max-height:200px;display:block\">':(typeof v==='string'&&/^data:audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a|wav)(;[a-z0-9=.+-]+)*;base64,[A-Za-z0-9+\\/=]+$/.test(v))?'<audio controls preload=\"none\" src=\"'+v+'\" style=\"width:220px;height:34px;display:block\"></audio>':E(v))+'</td></tr>';}if(r)layer.bindPopup('<div class=\"cs-embed-popup\"><table>'+r+'</table></div>');` : ''}}
 function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,0],n:['top',0,-d],s:['bottom',0,d],e:['right',d,0],w:['left',-d,0],ne:['right',d,-d],se:['right',d,d],nw:['left',-d,-d],sw:['left',-d,d]};var p=P[lb.p]||P.ne;return{direction:p[0],offset:[p[1],p[2]]};}
-function label(f,layer,lb,li){if(!lb||!lb.f)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
+function label(f,layer,lb,li){if(!lb||!lb.f)return;if(((f.properties||{})._cs||{}).nl)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
 LAYERS.forEach(function(L2,li){var o=po(L2);var gj=L.geoJSON(L2.fc,Object.assign({style:styleFn,pointToLayer:function(f,ll){return ptLayer(f,ll,o);},onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}},o));gj.addTo(group);});
 if(SW){(function(){var mc=map.getContainer(),bar=document.createElement('div');bar.className='cs-swbar';bar.innerHTML='<div class="cs-swh" role="slider" tabindex="0" aria-label="Compare divider">⇆</div>';mc.appendChild(bar);
@@ -22966,6 +23258,7 @@ function svInjectLabelCss(li, lbl){
 }
 function svBindLabel(f, layer, lbl, li){
   if(!lbl || !lbl.f) return;
+  if(((f.properties||{})._cs||{}).nl) return;   /* v95: a chart or proportional symbol on an area; the area has the label */
   const v=(f.properties||{})[lbl.f];
   if(v==null || v==='') return;
   const a=labelAnchor({position:lbl.p, offset:lbl.o});
@@ -23494,6 +23787,9 @@ setInterval(()=>{
   }
 }, 20000);
 window.addEventListener('beforeunload', ()=>{ if(currentProjectId) saveCurrentProject(false); });
+/* v95: also when the tab is hidden or the page is put away; a closed laptop lid rarely fires beforeunload */
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && currentProjectId && projectDirty) saveCurrentProject(false); });
+window.addEventListener('pagehide', ()=>{ if(currentProjectId && projectDirty) saveCurrentProject(false); });
 
 /* mark edits dirty for quicker autosave */
 canvas.on('object:modified', markProjectDirty);

@@ -871,6 +871,9 @@
     padding:4px 9px;border:1px solid var(--line);border-radius:5px;background:#eef1f6;color:var(--navy);white-space:nowrap;}
   .tbtn:hover{background:#e2e7ef;}
   .tbtn.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .tbl-seg{display:inline-flex;}
+  .tbl-seg .tbtn:first-child{border-top-right-radius:0;border-bottom-right-radius:0;}
+  .tbl-seg .tbtn:last-child{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-1px;}
   .tbtn.on:hover{background:#243660;}
   /* a big caret, the same weight as the + on Add field, so it's obvious these
      buttons expand a panel below the toolbar */
@@ -1371,6 +1374,22 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
   #mk-center:fullscreen #mk-toolbar{display:none !important;}
   #mk-center:fullscreen > #mk-map, #mk-center:fullscreen > #mk-proj{flex:1 1 auto;height:auto !important;min-height:0;}
   #mk-center:-webkit-full-screen #mk-toolbar{display:none !important;}
+  /* 2.1: a small floating bar of key tools, shown only in full screen */
+  #mkFsBar,#mkFsLayers{display:none;}
+  #mk-center:fullscreen #mkFsBar,#mk-center:-webkit-full-screen #mkFsBar{display:flex;}
+  #mkFsBar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1000;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;
+    max-width:calc(100% - 120px);background:var(--panel);color:var(--text);padding:5px 7px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:12px;}
+  #mkFsSel{display:inline-flex;gap:6px;align-items:center;}
+  #mkFsSel.hidden{display:none;}
+  #mk-center:fullscreen #mkFsLayers:not(.hidden),#mk-center:-webkit-full-screen #mkFsLayers:not(.hidden){display:block;}
+  #mkFsLayers{position:absolute;top:56px;right:12px;z-index:1000;width:min(280px,calc(100% - 24px));max-height:calc(100% - 80px);overflow:auto;
+    background:var(--panel);color:var(--text);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:8px 10px;font-size:12px;}
+  @media (max-width:700px){
+    #mkFsBar{left:52px;right:8px;transform:none;max-width:none;justify-content:flex-start;}
+    #mkFsLayers{top:auto;bottom:12px;max-height:45%;}
+  }
+  #mkFsLayers label{display:flex;gap:6px;align-items:center;margin:0 0 4px;font-size:12.5px;color:var(--text);cursor:pointer;}
+  #mkFsLayers .sv-legend{box-shadow:none;padding:6px 0 0;background:none;max-height:none;border-top:1px solid var(--line);margin-top:6px;}
   .mkl-tabs button.lt-off{opacity:.4;cursor:not-allowed;}
   #mkBaseRow.lt-off{opacity:.5;pointer-events:none;}
 
@@ -1796,6 +1815,12 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       </span>
       <button id="mkSendBtn" hidden></button>
     </div>
+    <div id="mkFsBar" role="toolbar" aria-label="Map tools">
+      <span id="mkFsSel" class="hidden"><b id="mkFsSelCount"></b><button type="button" class="btn light small" id="mkFsZoom">Zoom to selection</button><button type="button" class="btn light small" id="mkFsClear" title="Clear selection">✕ Clear</button></span>
+      <button type="button" class="btn light small" id="mkFsTable" title="Open the attribute table">▦ Table</button>
+      <button type="button" class="btn light small" id="mkFsLayersBtn" aria-expanded="false">☰ Layers &amp; legend</button>
+    </div>
+    <div id="mkFsLayers" class="hidden" role="dialog" aria-label="Layers and legend"></div>
     <div id="mk-map"></div>
     <div id="mk-proj" class="hidden">
       <canvas id="projCanvas"></canvas>
@@ -1927,7 +1952,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="help-pane hidden" data-hp="how">
       <div class="help-step"><b>Make a map of amounts (a choropleth)</b><ol class="help-ol"><li><b>+ Add data</b>: upload a file, or choose <b>Online sources</b>.</li><li>Click the layer, then in <b>Style</b> choose <b>Graduated colour</b> and a <b>Value field</b>.</li><li>If the field is a count (people, cases), set <b>Normalize by</b> to a total or to <b>Area (km²)</b>, so large areas don’t stand out just for being large.</li><li>Choose the <b>Method</b>, the number of <b>Classes</b> and a <b>Colour ramp</b>. The chart below the list shows where the breaks fall.</li><li>Rename the layer (<b>⋯ → Rename</b>) so the legend says what the colours mean.</li></ol><p class="help-note">Counts are often better as <b>Proportional symbols</b>, which is another Style type.</p></div>
       <div class="help-step"><b>Lay out a page to hand in</b><ol class="help-ol"><li>In Map Maker, set the view you want, then <b>Send / Export ▾ → Map Composer</b>.</li><li>Type a map title and legend titles, add your name under <b>Map by</b>, and click <b>Capture &amp; send</b>.</li><li>In Map Composer, drag things into place. Add a <b>North Arrow</b>, <b>Text</b> or a <b>Neatline</b> from the left rail.</li><li><b>⚙ → View as</b> shows the page as a colour-blind reader or a greyscale printer would see it.</li><li><b>Send / Export ▾ → Export files…</b> saves a PDF or PNG.</li></ol></div>
-      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li></ol></div>
+      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li></ol></div>
       <div class="help-step"><b>Collect data in the field</b><ol class="help-ol"><li>In <b>Field Mapper</b>, click <b>+ New form</b> and add the questions.</li><li><b>Make link &amp; QR code</b>, then open the link on each phone.</li><li>Back at the laptop: <b>Collected data → Receive from phone</b>, and on the phone <b>Send to laptop</b>.</li><li><b>Send to Map Maker</b> turns the records into layers.</li></ol></div>
       <div class="help-step"><b>Build an atlas</b><ol class="help-ol"><li>In <b>Atlas</b>, choose Book or Scrolling and click <b>Start the atlas</b>.</li><li>In Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds the current map as a page. Change the map and send again for the next page.</li><li>Add text, images and sections with <b>+ Add page</b>, and write a caption for each map.</li><li><b>Send / Export ▾</b> in the Atlas shares a link, exports a web page or downloads a PDF.</li></ol></div>
       <div class="help-step"><b>Keep and hand in your work</b><ol class="help-ol"><li>Work saves in this browser as you go. <b>⚙ → Download project file</b> makes a backup you can open on another computer.</li><li><b>⚙ → Log</b> lists the steps you took. Copy it into the methods section of a report.</li><li>On a shared computer, always download the project file before you leave.</li></ol></div>
@@ -1994,6 +2019,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
       <button class="tbtn" id="tblAttrBtn" title="Edit attribute values"><span class="car">▸</span> ✎ Edit attributes</button>
       <button class="tbtn" id="tblFilterBtn" title="Build a filter for this layer"><span class="car">▸</span> Filter</button>
       <button class="tbtn" id="tblStatsBtn" title="Show summary statistics for the numeric fields"><span class="car">▸</span> Σ Statistics</button>
+      <span class="tbl-seg" role="group" aria-label="Rows to show"><button class="tbtn on" id="tblShowAll" aria-pressed="true" title="Show every feature">All</button><button class="tbtn" id="tblShowSel" aria-pressed="false" title="Show only the selected features">Selected</button></span>
       <span class="kv" id="attrCount"></span>
       <input type="checkbox" id="attrRespectFilter" checked hidden>
       <input type="checkbox" id="attrEdit" hidden>
@@ -4543,6 +4569,53 @@ function toggleBasemapPanel(){
     this._ctx.translate(-b.min.x, -b.min.y);
     this.fire('update');
   };
+  /* 2.1: (1) a run of paths sharing options.momG is drawn into one spare canvas and then
+     copied onto the layer canvas at options.momGA opacity, so a see-through layer fades as
+     a whole (no doubled edges). Drawing order is unchanged and one spare canvas per renderer
+     is made only when such a layer exists. (2) A polygon smaller than a pixel would vanish
+     (Leaflet simplifies it to a point), so it is drawn as a 2 px dot. */
+  const C=L.Canvas.prototype, oPoly=C._updatePoly;
+  C._updatePoly=function(layer, closed){
+    const b=layer._rawPxBounds, o=layer.options;
+    if(closed && this._drawing && b && b.max.x-b.min.x<1.5 && b.max.y-b.min.y<1.5 && (o.fill||o.stroke)){
+      const ctx=this._ctx, useFill=o.fill && o.fillOpacity>0 && typeof o.fillColor==='string';
+      ctx.save(); ctx.globalAlpha=useFill? o.fillOpacity : (o.opacity==null?1:o.opacity);
+      ctx.fillStyle=useFill? (o.fillColor||o.color) : o.color;
+      ctx.beginPath(); ctx.arc((b.min.x+b.max.x)/2, (b.min.y+b.max.y)/2, 1, 0, Math.PI*2); ctx.fill(); ctx.restore();
+      return;
+    }
+    return oPoly.call(this, layer, closed);
+  };
+  C._draw=function(){
+    const bounds=this._redrawBounds, main=this._ctx;
+    main.save();
+    if(bounds){ const sz=bounds.getSize(); main.beginPath(); main.rect(bounds.min.x, bounds.min.y, sz.x, sz.y); main.clip(); }
+    this._drawing=true;
+    let grp=null, ga=1;
+    const flush=()=>{ if(grp==null) return;
+      main.save(); main.setTransform(1,0,0,1,0,0); main.globalAlpha=ga; main.drawImage(this._momOff, 0, 0); main.restore();
+      this._ctx=main; grp=null; };
+    for(let order=this._drawFirst; order; order=order.next){
+      const layer=order.layer;
+      if(bounds && !(layer._pxBounds && layer._pxBounds.intersects(bounds))) continue;
+      const g=(layer.options.momGA!=null && this._container.width>0 && this._container.height>0) ? layer.options.momG : null;   /* a hidden map has a 0-size canvas */
+      if(g!==grp){
+        flush();
+        if(g!=null){
+          const cv=this._container;
+          if(!this._momOff) this._momOff=document.createElement('canvas');
+          const off=this._momOff; if(off.width!==cv.width || off.height!==cv.height){ off.width=cv.width; off.height=cv.height; }
+          const oc=off.getContext('2d'); oc.setTransform(1,0,0,1,0,0); oc.clearRect(0,0,off.width,off.height);
+          oc.setTransform(main.getTransform());
+          this._ctx=oc; grp=g; ga=layer.options.momGA;
+        }
+      }
+      layer._updatePath();
+    }
+    flush();
+    this._drawing=false;
+    main.restore();
+  };
 })();
 const nextFrames=(n)=>new Promise(r=>{ const go=k=>{ if(k<=0) r(); else requestAnimationFrame(()=>go(k-1)); }; go(n||2); });
 function glIdle(m, ms){ return new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; try{ m.once('idle', f); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, ms||4000); }); }
@@ -6825,7 +6898,7 @@ function featureStyle(lyr, f){
     opacity: seam ? seamOp : (strokeOff? 0 : lyr.opacity),
     fillColor: paintValue(color),
     fillOpacity: fillOff? 0 : st.fillOpacity*lyr.opacity,
-    dashArray: st.dash||null};
+    dashArray: st.dash||null, _seam:seam};
 }
 /* ---------- fill patterns (v67) ----------
    Hatching, cross-hatching, grids and dots for polygons: the classic way to show a
@@ -6863,6 +6936,11 @@ function patSpec(lyr, f){
 function featureStyleL(lyr, f){
   const s=featureStyle(lyr,f), p=patSpec(lyr,f);
   if(p){ s.fillColor=momPattern(p.k, p.bg, p.c, p.g); s.fillOpacity=lyr.style.fillOpacity*lyr.opacity; s._pat=p; }
+  /* 2.1: a see-through fill with no outline is drawn at full strength into a layer of
+     its own and faded as a whole (see momGroup below), so the seam outline can close
+     the gaps between neighbours fully without drawing darker lines where they overlap */
+  if(s._seam && !p && s.fillOpacity<0.95){ s.momGA=s.fillOpacity; s.momG=lyr.id; s.fillOpacity=1; s.opacity=1; }
+  else { s.momGA=null; s.momG=null; }
   return s;
 }
 /* a CSS look-alike for HTML legends */
@@ -8436,13 +8514,15 @@ function renderSelection(){
     if(selHighlight.bringToFront) selHighlight.bringToFront();
   }
   updateSelBar();
-  markSelectedRows();
+  if(!attrFollowSelection()) markSelectedRows();
   if(projActive) scheduleProjRender();
   if(typeof mkGlobe!=='undefined' && mkGlobe) globeSyncSelection();
 }
 function updateSelBar(){
   const bar=document.getElementById('mkSelBar');
   const n=selection.set.size;
+  const fsb=document.getElementById('mkFsSel');
+  if(fsb){ fsb.classList.toggle('hidden', !n); document.getElementById('mkFsSelCount').textContent=n.toLocaleString()+' selected'; }
   if(!n){ bar.classList.add('hidden'); return; }
   bar.classList.remove('hidden');
   const lyr=selectionLayer();
@@ -8464,8 +8544,12 @@ function zoomToFeatureSelection(){
   const feats=selectedFeatureList();
   if(!feats.length){ toast('Nothing selected.'); return; }
   try{
-    if(projActive){ projFitToData(); return; }
-    mkMap.fitBounds(gjBounds({type:'FeatureCollection', features:feats}), {padding:[30,30], maxZoom:16});
+    const bb=gjBounds({type:'FeatureCollection', features:feats});
+    /* 2.1: the globe and projected views zoom to the selection too, not the flat map behind them */
+    if(projActive){ const w=bb.getWest(), e=bb.getEast(), so=bb.getSouth(), n=bb.getNorth(), pw=Math.max(0.05,(e-w)*0.08), ph=Math.max(0.05,(n-so)*0.08);
+      projFitToBounds([w-pw, so-ph, e+pw, n+ph]); return; }
+    if(mkGlobe){ mkGlobe.fitBounds([[bb.getWest(),bb.getSouth()],[bb.getEast(),bb.getNorth()]], {padding:50, maxZoom:14, duration:800}); return; }
+    mkMap.fitBounds(bb, {padding:[30,30], maxZoom:16});
   }catch(_){ toast('Could not zoom to the selection.'); }
 }
 function selectionToFC(){
@@ -9954,16 +10038,20 @@ function saveTableWin(){
 function tableWinOpen(){ return !document.getElementById('tableWin').classList.contains('hidden'); }
 function placeTableWin(){
   const win=document.getElementById('tableWin');
-  const mode=tableWinState.mode;
+  /* 2.1: in full screen only the map area is shown, so the table floats inside it */
+  const fs=mkFsOn();
+  const mode=(fs && tableWinState.mode==='right')? 'float' : tableWinState.mode;
   win.classList.remove('float','dock-bottom','dock-right');
   win.classList.add(mode==='bottom'?'dock-bottom':mode==='right'?'dock-right':'float');
   win.style.left=win.style.top=win.style.width=win.style.height='';
   if(mode==='float'){
-    document.body.appendChild(win);
+    (fs? document.getElementById('mk-center') : document.body).appendChild(win);
     win.style.left=tableWinState.left+'px';
     win.style.top=tableWinState.top+'px';
     win.style.width=tableWinState.w+'px';
     win.style.height=tableWinState.h+'px';
+    /* full screen on a narrow screen: keep the whole window in view (not saved) */
+    if(fs && window.innerWidth<700){ win.style.left='8px'; win.style.width=(window.innerWidth-16)+'px'; win.style.top=Math.round(window.innerHeight*0.45)+'px'; win.style.height=Math.round(window.innerHeight*0.5)+'px'; }
   } else if(mode==='bottom'){
     document.getElementById('mk-center').appendChild(win);
     win.style.height=tableWinState.dockH+'px';
@@ -10065,7 +10153,7 @@ function fieldPicker(box, lyr, onChange, opts){
     '<button type="button" class="btn small light" data-a="none">None</button>'+
     '<input type="search" placeholder="Find a field" aria-label="Find a field"></div>'+
     '<div class="fpick-list">'+fields.map((f,k)=>{ const t=opts.types? fieldTypeOf(lyr,f) : null;
-      return '<label data-n="'+esc(f.toLowerCase())+'"><input type="checkbox" data-k="'+k+'" checked> <b>'+esc(f)+'</b>'+
+      return '<label data-n="'+esc(f.toLowerCase())+'"><input type="checkbox" data-k="'+k+'"'+(opts.none?'':' checked')+'> <b>'+esc(f)+'</b>'+
         (used.has(f)?' <span class="kv">(in use)</span>':'')+
         (t?'<span class="ftype">'+t.type+' · '+t.filledPct+'%</span>':'')+'</label>'; }).join('')+'</div>';
   const boxes=[...box.querySelectorAll('.fpick-list input')];
@@ -10435,11 +10523,43 @@ function renderFieldsPanel(wrap, lyr){
   wrap.querySelector('#calcApplyBtn').onclick=calcApply;
 }
 let attrPageStart=0, attrPageLayer=null, attrAllRows=[];
+/* 2.1: the table shows All rows or only the Selected ones. Any selection made outside
+   the table (map click, box, lasso, expression) switches it to Selected; clearing the
+   selection goes back to All. Clicking a row in the table doesn't switch. */
+var attrShowSel=false, attrSelFromTable=false;   /* var: renderSelection can run before this line */
+function attrSyncShowBtns(on){
+  [['tblShowAll',!on],['tblShowSel',on]].forEach(([id,v])=>{ const b=document.getElementById(id); if(b){ b.classList.toggle('on',v); b.setAttribute('aria-pressed',v?'true':'false'); } });
+}
+function attrSetShowSel(on){
+  if(on && !(selection.set.size && selection.layerId===mkSelectedId)){ toast('Nothing is selected in this layer.'); on=false; }
+  if(attrShowSel!==on) attrPageStart=0;
+  attrShowSel=on; if(!tableWinOpen()){ attrSyncShowBtns(on); return; }
+  renderAttrTable();
+  /* back to All: stay with the selection, on its page */
+  if(!on && selection.set.size && selection.layerId===mkSelectedId) scrollTableToFeature(selection.set.values().next().value);
+}
+document.getElementById('tblShowAll').onclick=()=>attrSetShowSel(false);
+document.getElementById('tblShowSel').onclick=()=>attrSetShowSel(true);
+/* called after every selection change */
+function attrFollowSelection(){
+  const fromTable=attrSelFromTable; attrSelFromTable=false;
+  const want=selection.set.size>0;
+  if(fromTable && want) return false;          /* keep the current view; rows are just marked */
+  if(attrShowSel===want && !want) return false;
+  attrShowSel=want; attrPageStart=0;
+  if(!tableWinOpen()) return false;
+  renderAttrTable(); return true;
+}
 function renderAttrTable(){
   const lyr=selectedLayer(); if(!lyr) return;
   document.getElementById('attrTableTitle').textContent='Attribute table — '+lyr.name;
   const respect=document.getElementById('attrRespectFilter').checked;
   let feats=respect? visibleFeatures(lyr) : lyr.geojson.features;
+  /* 2.1: All / Selected */
+  const selOnly=attrShowSel && selection.layerId===lyr.id && selection.set.size>0;
+  if(selOnly) feats=feats.filter(f=>selection.set.has(fidOf(lyr,f)));
+  attrSyncShowBtns(selOnly);
+  const unit=selOnly?' selected':' features';
   const cols=fieldsOf(lyr);
   if(attrSort.col){
     const c=attrSort.col, dir=attrSort.asc?1:-1;
@@ -10459,12 +10579,12 @@ function renderAttrTable(){
   const countEl=document.getElementById('attrCount');
   if(feats.length>MAXROWS){
     const a=attrPageStart+1, b=Math.min(feats.length, attrPageStart+MAXROWS);
-    countEl.innerHTML=feats.length.toLocaleString()+' features · rows '+a.toLocaleString()+'–'+b.toLocaleString()+
+    countEl.innerHTML=feats.length.toLocaleString()+unit+' · rows '+a.toLocaleString()+'–'+b.toLocaleString()+
       ' <button class="btn small light" id="attrPrev" '+(attrPageStart===0?'disabled':'')+'>◀ Previous</button>'+
       ' <button class="btn small light" id="attrNext" '+(b>=feats.length?'disabled':'')+'>Next ▶</button>';
     countEl.querySelector('#attrPrev').onclick=()=>{ attrPageStart=Math.max(0,attrPageStart-MAXROWS); renderAttrTable(); };
     countEl.querySelector('#attrNext').onclick=()=>{ attrPageStart+=MAXROWS; renderAttrTable(); };
-  } else countEl.textContent=feats.length.toLocaleString()+' features';
+  } else countEl.textContent=feats.length.toLocaleString()+unit;
   const tbl=document.getElementById('attr-table');
   const shown=feats.slice(attrPageStart, attrPageStart+MAXROWS);
   attrShownRows=shown.map(f=>fidOf(lyr,f));      /* row order, for pasted columns */
@@ -10521,10 +10641,12 @@ function renderAttrTable(){
         const a=order.indexOf(selLastRow), b=order.indexOf(i);
         if(a>=0 && b>=0){
           const [lo,hi]=a<b?[a,b]:[b,a];
+          attrSelFromTable=true;
           setSelection(lyr, order.slice(lo,hi+1), 'add');
           return;
         }
       }
+      attrSelFromTable=true;
       if(ev.ctrlKey||ev.metaKey) setSelection(lyr, [i], 'toggle');
       else setSelection(lyr, [i], 'set');
       selLastRow=i;
@@ -10990,6 +11112,7 @@ function spatialToolSummary(op){
   if(op==='join'){ const cols=[...document.querySelectorAll('.jnCol:checked')].map(c=>c.value); if(cols.length) bits.push('columns: '+cols.join(', ')); const pv=document.getElementById('jnPreview'); if(pv) bits.push(pv.innerText.split('\n')[0]); }
   return t+(bits.length?' ('+bits.join('; ')+')':'');
 }
+let spBufPicked=null;
 function renderSpatialForm(){
   const op=document.getElementById('spOp').value;
   const el=document.getElementById('spForm');
@@ -11002,7 +11125,15 @@ function renderSpatialForm(){
         <div class="field"><label>Distance</label><input type="number" id="spDist" value="1" min="0.001" step="0.1"></div>
         <div class="field"><label>Unit</label><select id="spUnit"><option value="kilometers">km</option><option value="meters">m</option><option value="miles">mi</option></select></div>
       </div>
-      <div class="checkline"><input type="checkbox" id="spDissolve"><label for="spDissolve" style="margin:0;color:var(--text);">Dissolve overlapping buffers into one shape</label></div>`;
+      <div class="checkline"><input type="checkbox" id="spDissolve"><label for="spDissolve" style="margin:0;color:var(--text);">Dissolve overlapping buffers into one shape</label></div>
+      <div class="field" id="spBufFieldsWrap"><label>Fields to keep (area_km2 and buffer_km are always added)</label><div id="spBufFields"></div></div>`;
+    /* 2.1: source fields such as population or area no longer describe the buffer,
+       so none are kept unless ticked; dissolved buffers can't carry them at all */
+    const pick=()=>{ const l=mkLayers.find(x=>x.id===document.getElementById('spA').value);
+      spBufPicked=l? fieldPicker(document.getElementById('spBufFields'), l, null, {none:true}) : null; };
+    const dz=document.getElementById('spDissolve'), fw=document.getElementById('spBufFieldsWrap');
+    dz.onchange=()=>fw.classList.toggle('hidden', dz.checked);
+    document.getElementById('spA').addEventListener('change', pick); pick();
   } else if(op==='selloc'){
     el.innerHTML=`<div class="field"><label>Select features from</label><select id="spA">${layerOptions(mkSelectedId,null)}</select></div>
       <div class="field"><label>Relationship</label>
@@ -15575,11 +15706,27 @@ document.getElementById('spRunBtn').onclick=()=>{
       else if(op==='buffer'){
         const bd=+gv('spDist');
         if(!(bd>0)){ status.textContent='Enter a buffer distance greater than zero.'; return; }
-        const out=turf.buffer(fcOf(A), bd, {units:gv('spUnit')});
+        const dissolve=document.getElementById('spDissolve').checked;
+        const keep=(!dissolve && spBufPicked)? spBufPicked() : [];
+        const src=visibleFeatures(A).filter(f=>f.geometry).map(f=>{ const p=f.properties||{}, q={}; keep.forEach(k=>{ if(k in p) q[k]=p[k]; });
+          return {type:'Feature', properties:q, geometry:clone(f.geometry)}; });
+        const out=turf.buffer({type:'FeatureCollection', features:src}, bd, {units:gv('spUnit')});
         if(!out||!out.features||!out.features.length){ status.textContent='The buffer came out empty.'; return; }
-        if(document.getElementById('spDissolve').checked){
+        const bkm=+turf.convertLength(bd, gv('spUnit'), 'kilometers').toFixed(6);
+        const km2=f=>{ try{ return +(turf.area(f)/1e6).toFixed(4); }catch(_){ return null; } };
+        out.features=out.features.filter(f=>f&&f.geometry);
+        out.features.forEach(f=>{ f.properties=Object.assign(f.properties||{}, {buffer_km:bkm, area_km2:km2(f)}); });
+        if(dissolve){
           const u=unionAll(out.features);
-          if(u){ u.properties={source:A.name+' buffer'}; addMakerLayer({type:'FeatureCollection',features:[u]}, A.name+'_buffer');
+          /* 2.1: the union is one multi-part shape; each separate part becomes its own
+             feature, so only buffers that actually overlap end up merged */
+          const parts=u? partsOf(u).filter(p=>p.geometry) : [];
+          if(parts.length){
+            const marks=out.features.map(f=>{ try{ return turf.pointOnFeature(f).geometry.coordinates; }catch(_){ return null; } }).filter(Boolean);
+            const feats=parts.map(p=>{ const bb=turf.bbox(p); let n=0;
+              marks.forEach(c=>{ if(c[0]>=bb[0]&&c[0]<=bb[2]&&c[1]>=bb[1]&&c[1]<=bb[3]){ try{ if(turf.booleanPointInPolygon(c,p)) n++; }catch(_){} } });
+              return {type:'Feature', geometry:p.geometry, properties:{buffer_km:bkm, area_km2:km2(p), n_merged:n}}; });
+            addMakerLayer({type:'FeatureCollection',features:feats}, A.name+'_buffer');
             if(unionAll.failed) loadReport(unionAll.failed+' buffer piece'+(unionAll.failed===1?'':'s')+' could not be merged and '+(unionAll.failed===1?'is':'are')+' missing from the dissolved result. Try without Dissolve, or simplify the input first.'); }
           else { status.textContent='Dissolve failed — layer created undissolved.'; addMakerLayer(out, A.name+'_buffer'); }
         } else addMakerLayer(out, A.name+'_buffer');
@@ -17167,8 +17314,26 @@ function mkFsToggle(){
   if(!req){ toast('This browser cannot show the map full screen.'); return; }
   try{ const pr=req.call(el); if(pr && pr.catch) pr.catch(()=>toast('Full screen was blocked by the browser.')); }catch(_){ toast('Full screen was blocked by the browser.'); }
 }
+function mkFsLayersRender(){
+  const el=document.getElementById('mkFsLayers'); if(!el || el.classList.contains('hidden')) return;
+  el.innerHTML='<b style="display:block;margin-bottom:5px">Layers</b>'+(mkLayers.length? mkLayers.map(l=>'<label><input type="checkbox" data-id="'+esc(l.id)+'"'+(l.visible?' checked':'')+'> '+esc(l.name)+'</label>').join('') : '<span class="kv">No layers yet.</span>')+
+    '<div class="sv-legend">'+(embedLegendHtml()||'<span class="kv">Nothing to show in the legend.</span>')+'</div>';
+  el.querySelectorAll('input[data-id]').forEach(cb=>cb.onchange=()=>{
+    /* the layer list's own switch, so everything that goes with it still happens */
+    const real=document.querySelector('#mk-layerlist .mk-layer[data-id="'+CSS.escape(cb.dataset.id)+'"] [data-act=vis]');
+    if(real){ real.checked=cb.checked; real.dispatchEvent(new Event('change', {bubbles:true})); }
+    setTimeout(mkFsLayersRender, 50);
+  });
+}
+document.getElementById('mkFsZoom').onclick=()=>zoomToFeatureSelection();
+document.getElementById('mkFsClear').onclick=()=>clearSelection();
+document.getElementById('mkFsTable').onclick=()=>{ if(tableWinOpen()) closeAttrTable(); else openAttrTable(); };
+document.getElementById('mkFsLayersBtn').onclick=e=>{ const el=document.getElementById('mkFsLayers'); const open=el.classList.toggle('hidden')===false;
+  e.currentTarget.setAttribute('aria-expanded', open?'true':'false'); mkFsLayersRender(); };
 ['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev, ()=>{
   mkFsSync();
+  if(tableWinOpen()) placeTableWin();
+  if(!mkFsOn()){ const el=document.getElementById('mkFsLayers'); if(el) el.classList.add('hidden'); const b=document.getElementById('mkFsLayersBtn'); if(b) b.setAttribute('aria-expanded','false'); }
   setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} try{ if(typeof mkGlobe!=='undefined' && mkGlobe) mkGlobe.resize(); }catch(_){} if(projActive) renderProjection(); if(typeof swipe!=='undefined' && swipe) try{ swipeClip(); }catch(_){} }, 120);
 }));
 document.addEventListener('click', e=>{ const b=e.target.closest && e.target.closest('.mk-fs-btn'); if(!b) return; e.preventDefault(); e.stopPropagation(); mkFsToggle(); }, true);
@@ -17674,7 +17839,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.0 · Nov 2026';
+const MOM_VERSION='2.1 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last

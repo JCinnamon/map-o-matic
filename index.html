@@ -1952,7 +1952,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="help-pane hidden" data-hp="how">
       <div class="help-step"><b>Make a map of amounts (a choropleth)</b><ol class="help-ol"><li><b>+ Add data</b>: upload a file, or choose <b>Online sources</b>.</li><li>Click the layer, then in <b>Style</b> choose <b>Graduated colour</b> and a <b>Value field</b>.</li><li>If the field is a count (people, cases), set <b>Normalize by</b> to a total or to <b>Area (km²)</b>, so large areas don’t stand out just for being large.</li><li>Choose the <b>Method</b>, the number of <b>Classes</b> and a <b>Colour ramp</b>. The chart below the list shows where the breaks fall.</li><li>Rename the layer (<b>⋯ → Rename</b>) so the legend says what the colours mean.</li></ol><p class="help-note">Counts are often better as <b>Proportional symbols</b>, which is another Style type.</p></div>
       <div class="help-step"><b>Lay out a page to hand in</b><ol class="help-ol"><li>In Map Maker, set the view you want, then <b>Send / Export ▾ → Map Composer</b>.</li><li>Type a map title and legend titles, add your name under <b>Map by</b>, and click <b>Capture &amp; send</b>.</li><li>In Map Composer, drag things into place. Add a <b>North Arrow</b>, <b>Text</b> or a <b>Neatline</b> from the left rail.</li><li><b>⚙ → View as</b> shows the page as a colour-blind reader or a greyscale printer would see it.</li><li><b>Send / Export ▾ → Export files…</b> saves a PDF or PNG.</li></ol></div>
-      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li></ol></div>
+      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li><li>A layer that is switched off still uses memory. Remove layers you no longer need.</li></ol></div>
       <div class="help-step"><b>Collect data in the field</b><ol class="help-ol"><li>In <b>Field Mapper</b>, click <b>+ New form</b> and add the questions.</li><li><b>Make link &amp; QR code</b>, then open the link on each phone.</li><li>Back at the laptop: <b>Collected data → Receive from phone</b>, and on the phone <b>Send to laptop</b>.</li><li><b>Send to Map Maker</b> turns the records into layers.</li></ol></div>
       <div class="help-step"><b>Build an atlas</b><ol class="help-ol"><li>In <b>Atlas</b>, choose Book or Scrolling and click <b>Start the atlas</b>.</li><li>In Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds the current map as a page. Change the map and send again for the next page.</li><li>Add text, images and sections with <b>+ Add page</b>, and write a caption for each map.</li><li><b>Send / Export ▾</b> in the Atlas shares a link, exports a web page or downloads a PDF.</li></ol></div>
       <div class="help-step"><b>Keep and hand in your work</b><ol class="help-ol"><li>Work saves in this browser as you go. <b>⚙ → Download project file</b> makes a backup you can open on another computer.</li><li><b>⚙ → Log</b> lists the steps you took. Copy it into the methods section of a report.</li><li>On a shared computer, always download the project file before you leave.</li></ol></div>
@@ -4591,6 +4591,11 @@ function toggleBasemapPanel(){
     this._ctx.translate(-b.min.x, -b.min.y);
     this.fire('update');
   };
+  momCanvasFix(L);
+})();
+/* 2.1.2: self-contained (it is copied into exported web maps and atlas maps too) */
+function momCanvasFix(L){
+  if(!L || !L.Canvas || L.Canvas.prototype.__momFix) return;
   /* 2.1: (1) a run of paths sharing options.momG is drawn into one spare canvas and then
      copied onto the layer canvas at options.momGA opacity, so a see-through layer fades as
      a whole (no doubled edges). Drawing order is unchanged and one spare canvas per renderer
@@ -4640,7 +4645,8 @@ function toggleBasemapPanel(){
     this._drawing=false;
     main.restore();
   };
-})();
+  C.__momFix=true;
+}
 const nextFrames=(n)=>new Promise(r=>{ const go=k=>{ if(k<=0) r(); else requestAnimationFrame(()=>go(k-1)); }; go(n||2); });
 function glIdle(m, ms){ return new Promise(res=>{ let d=false; const f=()=>{ if(!d){ d=true; res(); } }; try{ m.once('idle', f); m.triggerRepaint(); }catch(_){ f(); } setTimeout(f, ms||4000); }); }
 /* Run fn with every map in Map Maker redrawn at k× pixel density: basemap, canvas
@@ -6094,8 +6100,26 @@ function mkDataPrint(gj){
     h=mkValHash(h, f.properties); const g=f.geometry; h=mkValHash(h, g?g.type:null); h=mkValHash(h, g?g.coordinates:null); h2=(h2+h)|0; }
   return fs.length+':'+(h>>>0).toString(36)+':'+(h2>>>0).toString(36);
 }
+/* 2.1.2: the undo fingerprint. Hashing every coordinate of every layer (hidden ones too)
+   took ~0.1 s per change with a few big polygon layers. Edits always give a feature new
+   coordinate arrays (they are never changed in place), so each array's hash is remembered
+   and only new arrays are read again. Attributes are still read every time. mkDataPrint
+   itself is unchanged because atlas data keys are made from it. */
+const mkCoordMemo=new WeakMap();
+function mkUndoPrint(gj){
+  const fs=(gj&&gj.features)||[]; let h=2166136261|0, h2=fs.length|0;
+  for(let i=0;i<fs.length;i++){ const f=fs[i]; if(!f){ h=Math.imul(h^1,16777619); continue; }
+    h=mkValHash(h, f.properties); const g=f.geometry; h=mkValHash(h, g?g.type:null);
+    const c=g&&g.type!=='GeometryCollection'?g.coordinates:null;
+    if(c && typeof c==='object'){ let m=mkCoordMemo.get(c);
+      if(!m || m.n!==c.length){ m={v:mkValHash(2166136261|0, c), n:c.length}; mkCoordMemo.set(c, m); }
+      h=Math.imul(h^m.v, 16777619); }
+    else h=mkValHash(h, g?(g.type==='GeometryCollection'?g.geometries:g.coordinates):null);
+    h2=(h2+h)|0; }
+  return fs.length+':'+(h>>>0).toString(36)+':'+(h2>>>0).toString(36);
+}
 function mkSnapGeo(gj, pr){
-  pr=pr||mkDataPrint(gj);
+  pr=pr||mkUndoPrint(gj);
   for(let k=mkHistory.stack.length-1;k>=0;k--){ const sn=mkHistory.stack[k];
     for(const sl of sn.layers){ if(sl.gprint===pr && sl.geojson) return {geojson:sl.geojson, gprint:pr}; } }
   return {geojson:clone(gj), gprint:pr};
@@ -6108,7 +6132,7 @@ function mkSnapshot(){
     groups:clone(mkGroups),
     layers:mkLayers.map(l=>({id:l.id, datasetId:l.datasetId, name:l.name, geom:l.geom, group:l.group||null,
       visible:l.visible, opacity:l.opacity, style:clone(l.style), labels:clone(l.labels), filter:clone(l.filter),
-      ...(withData ? (()=>{ const pr0=mkDataPrint(l.geojson); if(seen[pr0]) return seen[pr0]; const r=mkSnapGeo(l.geojson, pr0); seen[r.gprint]=r; return r; })() : {geojson:null})}))};
+      ...(withData ? (()=>{ const pr0=mkUndoPrint(l.geojson); if(seen[pr0]) return seen[pr0]; const r=mkSnapGeo(l.geojson, pr0); seen[r.gprint]=r; return r; })() : {geojson:null})}))};
 }
 function updateMkUndoButtons(){
   const u=document.getElementById('mkUndo'), r=document.getElementById('mkRedo');
@@ -6171,7 +6195,7 @@ function restoreMkSnapshot(s){
     const ds=(typeof datasetById==='function')?datasetById(sl.datasetId):null;
     /* when the layer's data is unchanged since that step, keep it as it is (no copy, no re-save) */
     const live=liveById[sl.id];
-    if(sl.geojson && live && live.geojson && sl.gprint && mkDataPrint(live.geojson)===sl.gprint){
+    if(sl.geojson && live && live.geojson && sl.gprint && mkUndoPrint(live.geojson)===sl.gprint){
       if(ds && ds.geojson!==live.geojson){ ds.geojson=live.geojson; ds.featureCount=live.geojson.features.length; }
       return {id:sl.id, name:sl.name, datasetId:sl.datasetId, geojson:live.geojson, geom:sl.geom, group:sl.group||null,
         visible:sl.visible, opacity:sl.opacity, style:clone(sl.style), labels:clone(sl.labels), filter:clone(sl.filter),
@@ -17867,7 +17891,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.1.1 · Nov 2026';
+const MOM_VERSION='2.1.2 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -23207,8 +23231,10 @@ ${snap.tiers ? momTierVis.toString()+'\n'+momTiers.toString()+'\nvar TIERS='+JSO
 ${(bmo.bop<1||basemap==='none'||(bmHasParts(basemap)&&(snap.partsOff||[]).includes('background'))) ? "map.getPane('tilePane').style.opacity='"+bmo.bop+"';map.getContainer().style.background='"+bmo.paper+"';" : ''}
 ${opts.zoomPos==='bottomleft' ? "try{map.zoomControl.setPosition('bottomleft');}catch(e){}" : ''}
 ${layers.some(L2=>L2.fc.features.some(f=>f.properties&&f.properties._cs&&f.properties._cs.pat)) ? momPatTile.toString()+'\n'+momPattern.toString() : 'function momPattern(){return null;}'}
+${momCanvasFix.toString()}
+momCanvasFix(L);
 (function(){var cz=L.GridLayer.prototype._clampZoom;L.GridLayer.prototype._clampZoom=function(z){var m=this._map;if(m&&this instanceof L.TileLayer&&!m._animatingZoom){var f=m.getZoom();if(isFinite(f)&&f-Math.floor(f)>0.02)z=Math.ceil(f);}return cz.call(this,z);};})();
-function styleFn(f){var s=f.properties._cs||{};var o={color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};if(s.pat){var pp=momPattern(s.pat.k,(s.fill&&s.fill!=='rgba(0,0,0,0)')?s.fill:'',s.pat.c,s.pat.g);if(pp)o.fillColor=pp;}return o;}
+function styleFn(f,li){var s=f.properties._cs||{};var o={color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.6:s.fo,dashArray:s.dash||null};if(f.geometry&&/Polygon/.test(f.geometry.type))o.smoothFactor=0.5;if(s.pat){var pp=momPattern(s.pat.k,(s.fill&&s.fill!=='rgba(0,0,0,0)')?s.fill:'',s.pat.c,s.pat.g);if(pp)o.fillColor=pp;}else if(s.w===0.75&&s.stroke&&s.stroke===s.fill&&o.fillOpacity<0.95){o.momGA=o.fillOpacity;o.momG='g'+li;o.fillOpacity=1;o.opacity=1;}return o;}
 function ptLayer(f,ll,o){o=o||{};var s=f.properties._cs||{};if(s.t==='i'){return L.marker(ll,{icon:L.divIcon({className:'cs-mk',html:s.svg,iconSize:[s.size,s.size],iconAnchor:[s.size/2,s.size/2]}),pane:o.pane||'markerPane'});}return L.circleMarker(ll,Object.assign({radius:s.r||5,color:s.stroke||'#333',weight:s.w==null?1:s.w,opacity:s.so==null?1:s.so,fillColor:s.fill||'#3388ff',fillOpacity:s.fo==null?0.8:s.fo},o));}
 var SW=${JSON.stringify(SW)},PO={};
 if(SW){['swL','swR'].forEach(function(n){var p=map.createPane(n),id=n==='swL'?SW.left:SW.right,z=410;if(TIERS&&TIERS.split){LAYERS.forEach(function(x){if(x.id===id&&x.sg!=null)z=TIERS.zs[x.sg]+5;});}p.style.zIndex=z;PO[n]={pane:n,renderer:L.canvas({pane:n,padding:0.5})};});}
@@ -23218,7 +23244,7 @@ function popup(f,layer){${opts.popups ? `var p=f.properties||{},r='';for(var k i
 function lblAnchor(lb){var d=Math.max(0,lb.o==null?8:lb.o);var P={c:['center',0,0],n:['top',0,-d],s:['bottom',0,d],e:['right',d,0],w:['left',-d,0],ne:['right',d,-d],se:['right',d,d],nw:['left',-d,-d],sw:['left',-d,d]};var p=P[lb.p]||P.ne;return{direction:p[0],offset:[p[1],p[2]]};}
 function label(f,layer,lb,li){if(!lb||!lb.f)return;if(((f.properties||{})._cs||{}).nl)return;var v=(f.properties||{})[lb.f];if(v==null||v==='')return;var a=lblAnchor(lb);layer.bindTooltip(E(v),{permanent:true,direction:a.direction,offset:a.offset,className:'cs-maplabel cs-lbl-'+li,opacity:1});}
 var group=L.featureGroup().addTo(map);
-LAYERS.forEach(function(L2,li){var o=po(L2);var gj=L.geoJSON(L2.fc,Object.assign({style:styleFn,pointToLayer:function(f,ll){return ptLayer(f,ll,o);},onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}},o));gj.addTo(group);});
+LAYERS.forEach(function(L2,li){var o=po(L2);var gj=L.geoJSON(L2.fc,Object.assign({style:function(f){return styleFn(f,li);},pointToLayer:function(f,ll){return ptLayer(f,ll,o);},onEachFeature:function(f,layer){popup(f,layer);label(f,layer,L2.lbl,li);}},o));gj.addTo(group);});
 if(SW){(function(){var mc=map.getContainer(),bar=document.createElement('div');bar.className='cs-swbar';bar.innerHTML='<div class="cs-swh" role="slider" tabindex="0" aria-label="Compare divider">⇆</div>';mc.appendChild(bar);
 [['l',SW.ln],['r',SW.rn]].forEach(function(t){if(!t[1])return;var d=document.createElement('div');d.className='cs-swtag '+t[0];d.textContent=t[0]==='l'?'◀ '+t[1]:t[1]+' ▶';mc.appendChild(d);});
 function clip(){var s=map.getSize(),x=Math.round(s.x*SW.x),nw=map.containerPointToLayerPoint([0,0]),se=map.containerPointToLayerPoint(s),cx=map.containerPointToLayerPoint([x,0]).x;map.getPane('swL').style.clip='rect('+nw.y+'px,'+cx+'px,'+se.y+'px,'+nw.x+'px)';map.getPane('swR').style.clip='rect('+nw.y+'px,'+se.x+'px,'+se.y+'px,'+cx+'px)';bar.style.left=x+'px';}
@@ -23511,9 +23537,13 @@ function sanitizeLegendHtml(html){
   });
   return out;
 }
-function svStyleFn(f){ const s=f.properties._cs||{}; const o={color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40),
+function svStyleFn(f, li){ const s=f.properties._cs||{}; const o={color:safeColor(s.stroke,'#333'), weight:svNum(s.w,1,0,40),
   opacity:svNum(s.so,1,0,1), fillColor:safeColor(s.fill,'#3388ff'), fillOpacity:svNum(s.fo,0.6,0,1), dashArray:/^[\d\s,.]*$/.test(s.dash||'')?(s.dash||null):null};
   if(s.pat && typeof s.pat==='object' && PAT_KEYS.includes(s.pat.k)){ const bg0=isNoColour(s.fill)?'':safeColor(s.fill,''), bg=bg0==='rgba(0,0,0,0)'?'':bg0; o._pat={k:s.pat.k, bg, c:safeColor(s.pat.c,'#333333'), g:svNum(s.pat.g,8,4,40)}; o.fillColor=momPattern(o._pat.k, bg, o._pat.c, o._pat.g); }
+  /* 2.1.2: polygons with no outline are drawn without slivers, as in Map Maker (the seam outline
+     is a 0.75 px line in the fill's own colour; see featureStyle and momCanvasFix) */
+  else if(s.w===0.75 && s.stroke && s.stroke===s.fill && o.fillOpacity<0.95){ o.momGA=o.fillOpacity; o.momG='sv'+li; o.fillOpacity=1; o.opacity=1; }
+  if(f.geometry && /Polygon/.test(f.geometry.type)) o.smoothFactor=0.5;
   return o; }
 function svPtLayer(f,ll,o){ const s=f.properties._cs||{};
   if(s.t==='i'){
@@ -23652,7 +23682,7 @@ async function enterShareViewer(){
   (payload.layers||[]).forEach((L2,li)=>{
     if(L2.lbl) svInjectLabelCss(li, L2.lbl);
     const o=svTO([0,1,2].includes(L2.sg)?L2.sg:null);
-    const g=L.geoJSON(L2.fc,Object.assign({style:svStyleFn, pointToLayer:(f,ll)=>svPtLayer(f,ll,o),
+    const g=L.geoJSON(L2.fc,Object.assign({style:f=>svStyleFn(f,li), pointToLayer:(f,ll)=>svPtLayer(f,ll,o),
       onEachFeature:(f,layer)=>{ svPopup(f,layer); svBindLabel(f,layer,L2.lbl,li); }}, o)).addTo(group);
     svGroups.push({g, lbl:L2.lbl});
   });

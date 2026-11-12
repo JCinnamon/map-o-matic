@@ -6788,14 +6788,17 @@ function bivBreaks(vals, n, method){
 function bivClassOf(b, v){ if(!b||!isFinite(v)) return -1; for(let i=0;i<b.length-1;i++) if(v<=b[i+1]) return i; return b.length-2; }
 function bivCompute(lyr){
   const st=lyr.style; bivDefaults(st);
+  /* 2.1.3: this runs once per feature, so the cache is checked before filtering the layer
+     (filtering first made every redraw of a big layer take features × features steps) */
+  const all=lyr.geojson.features;
+  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,st.biCX,st.biCY,st.biLo,st.biHH,st.biRX,st.biRY,all.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
+  if(lyr._biv && lyr._biv.sig===sig && lyr._biv.arr===all) return lyr._biv;
   const feats=visibleFeatures(lyr);
-  const sig=[st.biX,st.biY,st.biN,st.biMX,st.biMY,st.biPal,st.biCX,st.biCY,st.biLo,st.biHH,st.biRX,st.biRY,feats.length,lyr._fidN,JSON.stringify(lyr.filter||null)].join('|');
-  if(lyr._biv && lyr._biv.sig===sig) return lyr._biv;
   const X=f=>toNum((f.properties||{})[st.biX]), Y=f=>toNum((f.properties||{})[st.biY]);
   const bx=st.biX? bivBreaks(feats.map(X), st.biN, st.biMX) : null;
   const by=st.biY? bivBreaks(feats.map(Y), st.biN, st.biMY) : null;
   const n=st.biN;
-  lyr._biv={sig, bx, by, grid:bivGrid(st.biPal, n, st), n, X, Y};
+  lyr._biv={sig, arr:all, bx, by, grid:bivGrid(st.biPal, n, st), n, X, Y};
   return lyr._biv;
 }
 function bivColor(lyr, f){
@@ -17891,7 +17894,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.1.2 · Nov 2026';
+const MOM_VERSION='2.1.3 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last

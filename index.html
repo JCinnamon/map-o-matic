@@ -3841,6 +3841,20 @@ function glbCollect(groups, meta){
       if(circle) P._r=num(o.radius,10);
       if(o.dashArray && !meta.dash) meta.dash=String(o.dashArray);
       if(o.interactive===false) P._ni=1;
+      /* 2.1.1: the flat map draws a see-through layer at full strength and fades it as a
+         whole (momGA); the globe needs the real opacity, and no seam outline (MapLibre's
+         fills meet without gaps) */
+      if(o.momGA!=null){ P._fo=num(o.momGA,0.75); P._sw=0; P._so=0; }
+      /* 2.1.1: a dot for each polygon, shown only while the polygon is under 2 px on screen
+         (_zc: the zoom below which that is so), so small areas don't vanish when zoomed out */
+      if(poly && (P._fo>0 || P._so>0)){
+        let x0=Infinity, y0=Infinity, x1=-Infinity, y1=-Infinity;
+        const bw=c=>{ if(typeof c[0]==='number'){ if(c[0]<x0)x0=c[0]; if(c[0]>x1)x1=c[0]; if(c[1]<y0)y0=c[1]; if(c[1]>y1)y1=c[1]; } else for(let i=0;i<c.length;i++) bw(c[i]); };
+        try{ bw(g.coordinates); }catch(_){}
+        const size=Math.max((x1-x0)*Math.cos((y0+y1)/360*Math.PI), y1-y0);
+        if(isFinite(size) && size<1.4) feats.push({type:'Feature', geometry:{type:'Point', coordinates:[(x0+x1)/2,(y0+y1)/2]},
+          properties:{_li:P._li, _k:'d', _ni:1, _fill:P._fo>0?P._fill:P._stroke, _fo:P._fo>0?P._fo:P._so, _zc:Math.log2(720/(512*Math.max(size,1e-9)))}});
+      }
     }
     feats.push({type:'Feature', geometry:g, properties:P});
   };
@@ -3865,7 +3879,9 @@ function glbAddLayer(map, id, col, lbl){
   const K=k=>['==',['get','_k'],k];
   let dash=null; if(col.dash){ const d=col.dash.split(/[\s,]+/).map(Number).filter(x=>isFinite(x)&&x>=0); if(d.length>=2) dash=d; }
   const flat=['!',['has','_h']];
-  map.addLayer({id:src+'_f', type:'fill', source:src, filter:['all',K('p'),['!',['has','_pat']],flat], paint:{'fill-color':['get','_fill'], 'fill-opacity':['get','_fo']}});
+  /* 2.1.1: with no outlines, edge smoothing leaves faint lines where see-through neighbours meet; without it they tile exactly */
+  const noLine=!col.fc.features.some(f=>f.properties._k==='p' && +f.properties._sw>0 && +f.properties._so>0);
+  map.addLayer({id:src+'_f', type:'fill', source:src, filter:['all',K('p'),['!',['has','_pat']],flat], paint:{'fill-color':['get','_fill'], 'fill-opacity':['get','_fo'], 'fill-antialias':!noLine}});
   map.addLayer({id:src+'_fp', type:'fill', source:src, filter:['all',K('p'),['has','_pat'],flat], paint:{'fill-pattern':['get','_pat'], 'fill-opacity':['get','_fo']}});
   /* 3-D: polygons raised by a field's value */
   if(col.fc.features.some(f=>f.properties._h!=null)){
@@ -3873,6 +3889,10 @@ function glbAddLayer(map, id, col, lbl){
     map.addLayer({id:src+'_x', type:'fill-extrusion', source:src, filter:['all',K('p'),['has','_h']], paint:{'fill-extrusion-color':['get','_fill'], 'fill-extrusion-height':['get','_h'], 'fill-extrusion-base':0,
       'fill-extrusion-opacity':Math.max(0.35, Math.min(1, fo.length? fo.reduce((a,b)=>a+b,0)/fo.length+0.15 : 0.9)), 'fill-extrusion-vertical-gradient':true}});
     ids.push(src+'_x');
+  }
+  if(col.fc.features.some(f=>f.properties._k==='d')){
+    const op=['interpolate',['linear'],['zoom']]; for(let z=0;z<=22;z+=2) op.push(z, ['case',['<',z,['get','_zc']],['get','_fo'],0]);
+    map.addLayer({id:src+'_d', type:'circle', source:src, filter:K('d'), paint:{'circle-radius':1, 'circle-color':['get','_fill'], 'circle-opacity':op}});
   }
   map.addLayer({id:src+'_l', type:'line', source:src, filter:['any',K('p'),K('l')], layout:{'line-join':'round','line-cap':'round'},
     paint:Object.assign({'line-color':['get','_stroke'], 'line-width':['get','_sw'], 'line-opacity':['get','_so']}, dash?{'line-dasharray':dash.map(x=>x/2)}:{})});
@@ -4183,6 +4203,8 @@ function globeSyncSelection(){
       map.addLayer({id:'u_sel_l', type:'line', source:'u_sel', filter:['!',['in',['geometry-type'],['literal',['Point','MultiPoint']]]], paint:{'line-color':'#ffb000','line-width':4}});
       map.addLayer({id:'u_sel_c', type:'circle', source:'u_sel', filter:['in',['geometry-type'],['literal',['Point','MultiPoint']]], paint:{'circle-radius':r,'circle-color':'#ffd24d','circle-opacity':.55,'circle-stroke-color':'#ffb000','circle-stroke-width':3,'circle-pitch-alignment':'map'}});
     }
+    /* 2.1.1: keep the highlight above the data layers, which are re-added when they change */
+    ['u_sel_f','u_sel_l','u_sel_c'].forEach(id=>{ if(map.getLayer(id)) map.moveLayer(id); });
   }catch(_){}
 }
 function globeApplyParts(map){
@@ -4577,7 +4599,7 @@ function toggleBasemapPanel(){
   const C=L.Canvas.prototype, oPoly=C._updatePoly;
   C._updatePoly=function(layer, closed){
     const b=layer._rawPxBounds, o=layer.options;
-    if(closed && this._drawing && b && b.max.x-b.min.x<1.5 && b.max.y-b.min.y<1.5 && (o.fill||o.stroke)){
+    if(closed && this._drawing && b && b.max.x-b.min.x<2 && b.max.y-b.min.y<2 && (o.fill||o.stroke)){
       const ctx=this._ctx, useFill=o.fill && o.fillOpacity>0 && typeof o.fillColor==='string';
       ctx.save(); ctx.globalAlpha=useFill? o.fillOpacity : (o.opacity==null?1:o.opacity);
       ctx.fillStyle=useFill? (o.fillColor||o.color) : o.color;
@@ -4591,7 +4613,7 @@ function toggleBasemapPanel(){
     main.save();
     if(bounds){ const sz=bounds.getSize(); main.beginPath(); main.rect(bounds.min.x, bounds.min.y, sz.x, sz.y); main.clip(); }
     this._drawing=true;
-    let grp=null, ga=1;
+    let grp=null, ga=1, usedGrp=false;
     const flush=()=>{ if(grp==null) return;
       main.save(); main.setTransform(1,0,0,1,0,0); main.globalAlpha=ga; main.drawImage(this._momOff, 0, 0); main.restore();
       this._ctx=main; grp=null; };
@@ -4607,12 +4629,14 @@ function toggleBasemapPanel(){
           const off=this._momOff; if(off.width!==cv.width || off.height!==cv.height){ off.width=cv.width; off.height=cv.height; }
           const oc=off.getContext('2d'); oc.setTransform(1,0,0,1,0,0); oc.clearRect(0,0,off.width,off.height);
           oc.setTransform(main.getTransform());
-          this._ctx=oc; grp=g; ga=layer.options.momGA;
+          this._ctx=oc; grp=g; ga=layer.options.momGA; usedGrp=true;
         }
       }
       layer._updatePath();
     }
     flush();
+    /* no faded layer in this canvas any more: give the spare canvas's memory back */
+    if(this._momOff && !usedGrp && !bounds){ this._momOff.width=this._momOff.height=0; this._momOff=null; }
     this._drawing=false;
     main.restore();
   };
@@ -8059,6 +8083,9 @@ function renderLayer(lyr){
       drawFC={type:'FeatureCollection', features:lyr.geojson.features.slice().sort((a,b)=>r.get(b)-r.get(a))}; }catch(_){}
   }
   const opts=Object.assign(swipePaneOpts(lyr), {
+    /* 2.1.1: Leaflet simplifies each polygon on its own (by up to 1 px), so neighbours'
+       shared edges drift apart and slivers open up when zoomed out; half that keeps them together */
+    smoothFactor: lyr.geom==='polygon' ? 0.5 : 1,
     filter: f=>(st.mode==='carto') ? true : featurePasses(lyr,f),
     style: f=>{
       if(st.mode==='dot'){
@@ -17617,6 +17644,7 @@ function mkPopupsSet(on){
   const wait=()=>{ if(typeof mkMap==='undefined' || !mkMap){ setTimeout(wait, 300); return; }
     mkMap.on('click', e=>{
       if(Date.now()-mkFeatClickAt<60) return;                  /* that click was on a feature */
+      if(typeof mkGlobe!=='undefined' && mkGlobe) return;     /* 2.1.1: a click on the globe reaches the flat map below too; the globe handles its own */
       mkInfoChipClear();
       const oe=e.originalEvent||{};
       if(oe.shiftKey||oe.ctrlKey||oe.metaKey) return;
@@ -17839,7 +17867,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.1 · Nov 2026';
+const MOM_VERSION='2.1.1 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last

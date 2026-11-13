@@ -601,7 +601,7 @@
   #mk-center.globe-open .leaflet-control-container,
   #mk-center.globe-open .mk-mapctl{display:none !important;}
   #mk-globe-map{position:absolute;inset:0;}
-  #mk-globe-map{transition:opacity .35s;} #mk-globe.loading #mk-globe-map{opacity:0;}
+  #mk-globe-map{transition:opacity .35s;} #mk-globe-map canvas.maplibregl-canvas{width:100% !important;height:100% !important;} #mk-globe.loading #mk-globe-map{opacity:0;}
   #mk-globe.loading::after{content:"Loading globe…";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#9fb3d6;font-size:13px;}
   .mk-globe-hint{position:absolute;left:12px;bottom:12px;z-index:5;background:rgba(15,25,50,.82);color:#eef2fb;
     font-size:12px;padding:7px 11px;border-radius:7px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.35);}
@@ -1952,7 +1952,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="help-pane hidden" data-hp="how">
       <div class="help-step"><b>Make a map of amounts (a choropleth)</b><ol class="help-ol"><li><b>+ Add data</b>: upload a file, or choose <b>Online sources</b>.</li><li>Click the layer, then in <b>Style</b> choose <b>Graduated colour</b> and a <b>Value field</b>.</li><li>If the field is a count (people, cases), set <b>Normalize by</b> to a total or to <b>Area (km²)</b>, so large areas don’t stand out just for being large.</li><li>Choose the <b>Method</b>, the number of <b>Classes</b> and a <b>Colour ramp</b>. The chart below the list shows where the breaks fall.</li><li>Rename the layer (<b>⋯ → Rename</b>) so the legend says what the colours mean.</li></ol><p class="help-note">Counts are often better as <b>Proportional symbols</b>, which is another Style type.</p></div>
       <div class="help-step"><b>Lay out a page to hand in</b><ol class="help-ol"><li>In Map Maker, set the view you want, then <b>Send / Export ▾ → Map Composer</b>.</li><li>Type a map title and legend titles, add your name under <b>Map by</b>, and click <b>Capture &amp; send</b>.</li><li>In Map Composer, drag things into place. Add a <b>North Arrow</b>, <b>Text</b> or a <b>Neatline</b> from the left rail.</li><li><b>⚙ → View as</b> shows the page as a colour-blind reader or a greyscale printer would see it.</li><li><b>Send / Export ▾ → Export files…</b> saves a PDF or PNG.</li></ol></div>
-      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li><li>A layer that is switched off still uses memory. Remove layers you no longer need.</li></ol></div>
+      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li><li>A layer that is switched off still uses memory. Remove layers you no longer need.</li><li>On a slower laptop, big layers are lighter on the flat map than as raised areas on the globe.</li></ol></div>
       <div class="help-step"><b>Collect data in the field</b><ol class="help-ol"><li>In <b>Field Mapper</b>, click <b>+ New form</b> and add the questions.</li><li><b>Make link &amp; QR code</b>, then open the link on each phone.</li><li>Back at the laptop: <b>Collected data → Receive from phone</b>, and on the phone <b>Send to laptop</b>.</li><li><b>Send to Map Maker</b> turns the records into layers.</li></ol></div>
       <div class="help-step"><b>Build an atlas</b><ol class="help-ol"><li>In <b>Atlas</b>, choose Book or Scrolling and click <b>Start the atlas</b>.</li><li>In Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds the current map as a page. Change the map and send again for the next page.</li><li>Add text, images and sections with <b>+ Add page</b>, and write a caption for each map.</li><li><b>Send / Export ▾</b> in the Atlas shares a link, exports a web page or downloads a PDF.</li></ol></div>
       <div class="help-step"><b>Keep and hand in your work</b><ol class="help-ol"><li>Work saves in this browser as you go. <b>⚙ → Download project file</b> makes a backup you can open on another computer.</li><li><b>⚙ → Log</b> lists the steps you took. Copy it into the methods section of a report.</li><li>On a shared computer, always download the project file before you leave.</li></ol></div>
@@ -3530,7 +3530,7 @@ function initMakerMap(){
   /* v95: a new project opens where a map was last used in this browser, or on the world */
   let lv=null; try{ lv=JSON.parse(localStorage.getItem('mom-lastview')||'null'); }catch(_){}
   if(!(lv && isFinite(lv.lat) && isFinite(lv.lng) && isFinite(lv.z) && Math.abs(lv.lat)<=85 && Math.abs(lv.lng)<=180)) lv={lat:20, lng:0, z:2};
-  mkMap = L.map('mk-map', {preferCanvas:true}).setView([lv.lat, lv.lng], Math.max(1, Math.min(18, lv.z)));
+  mkMap = L.map('mk-map', {preferCanvas:true, trackResize:false}).setView([lv.lat, lv.lng], Math.max(1, Math.min(18, lv.z)));
   mkMap.on('moveend', ()=>{ try{ const sz=mkMap.getSize(); if(!sz.x||!sz.y) return; const c=mkMap.getCenter(); localStorage.setItem('mom-lastview', JSON.stringify({lat:+c.lat.toFixed(4), lng:+c.lng.toFixed(4), z:mkMap.getZoom()})); }catch(_){} });
   mkMap.on('moveend zoomend resize', ()=>mkDeclutterSoon());
   window.__mkmap=mkMap;               /* debugging / automated-testing hook */
@@ -3819,8 +3819,12 @@ function glbCollect(groups, meta){
     if(l._latlngs && l.options && l.options.gradient && !(l instanceof L.Path)){ heats.push(l); return; }   /* Leaflet.heat */
     if(l instanceof L.LayerGroup){ l.eachLayer(walk); return; }
     if(!(l instanceof L.Path) && !(l instanceof L.Marker)) return;
-    let gj; try{ gj=l.toGeoJSON(7); }catch(_){ return; }
-    const g=gj&&gj.geometry; if(!g) return;
+    /* 2.2: on the open globe the rounded geometry of a line or area is kept with its shape,
+       so a restyle doesn't convert every coordinate again */
+    let g=null; const ck=meta.cache && l._latlngs;
+    if(ck && l._momGeo && l._momGeo.ll===l._latlngs) g=l._momGeo.g;
+    else { let gj; try{ gj=l.toGeoJSON(7); }catch(_){ return; } g=gj&&gj.geometry; if(ck && g) l._momGeo={ll:l._latlngs, g}; }
+    if(!g) return;
     const o=l.options||{}, f=l.feature;
     const P=Object.assign({}, meta.props?meta.props(f):{}, {_li:meta.id||''});
     if(meta.fid && f){ const i=meta.fid(f); if(i!=null) P._fi=i; }
@@ -4174,14 +4178,27 @@ function globeClearUserLayers(map){
 }
 function globeAddUserLayers(map){
   if(!map || !glbStyleReady(map)) return;
+  const T=(typeof stackTierSpec==='function')?stackTierSpec():null;
+  const items=mkLayers.slice().reverse().filter(l=>l.visible).map(lyr=>({lyr, lbl:labelSpecFor(lyr),
+    col:glbCollect([lyr.densityLayer, lyr.leaflet, lyr.dotLayer], {id:lyr.id, cache:true, fid:f=>fidOf(lyr,f), lbl:(lyr.labels&&lyr.labels.enabled)?lyr.labels.field:null, h:extrudeFn(lyr)})}));
+  /* 2.2: which MapLibre layers glbAddLayer makes for this data. When that is unchanged (a
+     recolour, new classes, new heights), only the data is swapped in; removing and re-adding
+     every layer rebuilt all the graphics buffers on each change. */
+  const shape=JSON.stringify([T, items.map(({lyr,lbl,col})=>{ const F=col.fc.features, ex=F.filter(f=>f.properties._h!=null).map(f=>+f.properties._fo).filter(isFinite);
+    return [lyr.id, col.heats.length, col.dash, F.length>0, F.some(f=>f.properties._k==='p' && +f.properties._sw>0 && +f.properties._so>0),
+      ex.length? Math.round(ex.reduce((a,b)=>a+b,0)/ex.length*100) : (F.some(f=>f.properties._h!=null)?-1:null), F.some(f=>f.properties._k==='d'), lbl, tierOfLayer(lyr,T)]; })]);
+  if(map.__momShape===shape && items.every(({lyr,col})=>!col.heats.length && (!col.fc.features.length || map.getSource('u_'+lyr.id)))){
+    let ok=true;
+    try{ glbAttachImages(map); items.forEach(({lyr,col})=>{ if(col.fc.features.length) map.getSource('u_'+lyr.id).setData(col.fc); }); }catch(_){ ok=false; }
+    if(ok){ globeSyncSelection(); return; }
+  }
   globeClearUserLayers(map);
   glbAttachImages(map);
+  map.__momShape=shape;
   /* draw bottom layer first so the list's top layer stays on top, matching Leaflet */
-  const ids=[], T=(typeof stackTierSpec==='function')?stackTierSpec():null, groups=[];
-  mkLayers.slice().reverse().forEach(lyr=>{
-    if(!lyr.visible) return;
-    const col=glbCollect([lyr.densityLayer, lyr.leaflet, lyr.dotLayer], {id:lyr.id, fid:f=>fidOf(lyr,f), lbl:(lyr.labels&&lyr.labels.enabled)?lyr.labels.field:null, h:extrudeFn(lyr)});
-    try{ const got=glbAddLayer(map, lyr.id, col, labelSpecFor(lyr)); ids.push(...got); groups.push({sg:tierOfLayer(lyr,T), ids:got}); }catch(_){}
+  const ids=[], groups=[];
+  items.forEach(({lyr,lbl,col})=>{
+    try{ const got=glbAddLayer(map, lyr.id, col, lbl); ids.push(...got); groups.push({sg:tierOfLayer(lyr,T), ids:got}); }catch(_){}
   });
   if(T) momGlobeTiers(map, T, groups);
   map.__clickIds=ids;
@@ -4370,6 +4387,7 @@ function globeOpen(){
     mkGlobe=new maplibregl.Map({
       container:'mk-globe-map',
       style,
+      trackResize:false,          /* 2.2: resized once the size settles (mkSizeSettle) */
       projection:{type:'globe'},
       center:[c.lng, c.lat],
       zoom:1.5,                 /* provisional — settled to a whole-globe fit on load */
@@ -4401,7 +4419,10 @@ function globeOpen(){
   mkGlobe.on('click', e=>{ if(selTool || gMeas) return; if(hitAt(e.point)) return; mkInfoChipClear();
     const oe=e.originalEvent||{}; if(oe.shiftKey||oe.ctrlKey||oe.metaKey) return;
     if(selection.via==='click' && selection.set && selection.set.size) clearSelection(); });
-  mkGlobe.on('mousemove', e=>{ if(selTool || gMeas) return; mkGlobe.getCanvas().style.cursor=hitAt(e.point)?'pointer':''; });
+  /* 2.2: looked up once per frame, and not while the globe is being moved (it is costly on raised areas) */
+  let hovPt=null, hovRaf=0;
+  mkGlobe.on('mousemove', e=>{ if(selTool || gMeas) return; hovPt=e.point; if(hovRaf) return;
+    hovRaf=requestAnimationFrame(()=>{ hovRaf=0; const g=mkGlobe; if(!g || !hovPt) return; try{ if(g.isMoving()) return; g.getCanvas().style.cursor=hitAt(hovPt)?'pointer':''; }catch(_){} }); });
   if(typeof cartoUpdateProjectionLock==='function') cartoUpdateProjectionLock();
   /* apply the projection, parts and user layers once ready. 'style.load' alone is
      unreliable in v5, so also poll — that's what makes the data render on the
@@ -4411,7 +4432,7 @@ function globeOpen(){
   /* the panel is still being laid out when the map is constructed, so settle the
      fit-zoom once on load — otherwise the globe opens slightly too large/small */
   mkGlobe.once('load', ()=>{
-    try{ mkGlobe.resize(); mkGlobe.jumpTo({bearing:0, pitch:0}); globeFitZoom(); }catch(_){}
+    try{ mkGlobe.resize(); const el=mkGlobe.getContainer(); mkGlobe.__sz=el.clientWidth+'x'+el.clientHeight; mkGlobe.jumpTo({bearing:0, pitch:0}); globeFitZoom(); }catch(_){}
   });
   mkGlobe.on('error', ()=>{});
   /* hide the half-drawn globe (the bare navy background) until the first full draw */
@@ -4453,6 +4474,8 @@ function flatMapRefresh(gv){
   if(rebuild || !mkBasemapLayers.length || mkBasemapLayers.some(l=>!mkMap.hasLayer(l))) setBasemap(mkBasemapKey);
   mkLayers.forEach(l=>{ if(l.visible){ try{ renderLayer(l); }catch(_){} } });
   try{ restackMakerLayers(); renderSelection(); }catch(_){}
+  /* 2.2: the data canvas was left alone while the globe covered it */
+  try{ mkMap.eachLayer(r=>{ if(r instanceof L.Canvas){ r._update(); } }); }catch(_){}
 }
 function toggleGlobeView(){
   if(typeof swipe!=='undefined' && (swipe||document.getElementById('swipePanel'))) closeCompare();
@@ -4592,6 +4615,12 @@ function toggleBasemapPanel(){
     this.fire('update');
   };
   momCanvasFix(L);
+  /* 2.2: while the globe covers the flat map, its data canvas is not redrawn or resized
+     (thousands of shapes drawn where nobody can see them); flatMapRefresh redraws it */
+  const C0=L.Canvas.prototype, oRedraw=C0._redraw, oUpd=C0._update;
+  const covered=r=>{ try{ return !!(mkGlobe && mkMap && r._map===mkMap && !window.__momPR); }catch(_){ return false; } };
+  C0._redraw=function(){ if(covered(this)){ this._redrawRequest=null; this._redrawBounds=null; return; } return oRedraw.call(this); };
+  C0._update=function(){ if(covered(this)) return; return oUpd.call(this); };
 })();
 /* 2.1.2: self-contained (it is copied into exported web maps and atlas maps too) */
 function momCanvasFix(L){
@@ -6990,6 +7019,7 @@ function featureStyleL(lyr, f){
   /* 2.1: a see-through fill with no outline is drawn at full strength into a layer of
      its own and faded as a whole (see momGroup below), so the seam outline can close
      the gaps between neighbours fully without drawing darker lines where they overlap */
+  if(!p) s._pat=null;
   if(s._seam && !p && s.fillOpacity<0.95){ s.momGA=s.fillOpacity; s.momG=lyr.id; s.fillOpacity=1; s.opacity=1; }
   else { s.momGA=null; s.momG=null; }
   return s;
@@ -8035,7 +8065,32 @@ function renderHeatLayer(lyr){
   return L.heatLayer(pts, {radius:+st.heatRadius||25, blur:st.heatBlur==null?15:+st.heatBlur,
     max:1, minOpacity:0.25, gradient:grad});
 }
-function renderLayer(lyr){
+/* 2.2: what a layer's drawn shapes depend on apart from their styling. When a Style-panel
+   change leaves this the same, the shapes already on the map are recoloured instead of
+   all being made again (which took time and memory on layers with thousands of areas). */
+function mkRenderSig(lyr){
+  const st=lyr.style;
+  if(lyr.geom==='point' || ['heat','hex','carto','chart','dot'].includes(st.mode)) return null;
+  return [lyr.geojson.features.length, JSON.stringify(lyr.filter||null), JSON.stringify(lyr.labels||null), mkPopupsOn()?1:0, swipePaneOpts(lyr).pane||''].join('|');
+}
+function renderLayer(lyr, restyle){
+  if(restyle && lyr.visible && lyr.leaflet && lyr._rsig && lyr._rsFeat===lyr.geojson.features && !lyr.ghostLayer && !lyr.densityLayer && !lyr.dotLayer
+     && mkMap.hasLayer(lyr.leaflet) && lyr._rsig===mkRenderSig(lyr)){
+    let ok=false;
+    try{
+      if(lyr.style.mode==='grad') { computeClassification(lyr); sizeRange(lyr); }
+      if(lyr.style.mode==='cat') computeCategories(lyr);
+      lyr.leaflet.setStyle(f=>featureStyleL(lyr,f));
+      ok=true;
+    }catch(_){}
+    if(ok){
+      updateLabelCss(lyr); updateMkStatus();
+      if(projActive) scheduleProjRender();
+      scheduleGlobeSync(); cartoUpdateProjectionLock(); mkTouch();
+      return;
+    }
+  }
+  lyr._rsig=null;
   if(lyr.leaflet){ mkMap.removeLayer(lyr.leaflet); lyr.leaflet=null; }
   if(lyr.ghostLayer){ mkMap.removeLayer(lyr.ghostLayer); lyr.ghostLayer=null; }
   if(lyr._morphAnim){ cancelAnimationFrame(lyr._morphAnim); lyr._morphAnim=null; }
@@ -8149,6 +8204,7 @@ function renderLayer(lyr){
     }
   });
   lyr.leaflet=L.geoJSON(drawFC, opts).addTo(mkMap);
+  lyr._rsig=mkRenderSig(lyr); lyr._rsFeat=lyr.geojson.features;
   updateLabelCss(lyr);
   updateMkStatus();
   /* a layer that has just been redrawn lands on top of everything; put the
@@ -9179,7 +9235,7 @@ function renderStyleTab(){
   stFoldify(el); stHoverBind(el, lyr);
 
   const g=id=>document.getElementById(id);
-  const rerender=()=>{ renderLayer(lyr); };
+  const rerender=()=>{ renderLayer(lyr, true); };
   if(st.mode==='bichoro'){
     const bset=(k,v)=>{ st[k]=v; lyr._biv=null; renderStyleTab(); rerender(); mkTouch(); markProjectDirty(); mkPushHistory(); };
     if(g('biX')) g('biX').onchange=()=>bset('biX', g('biX').value||null);
@@ -9256,7 +9312,7 @@ function renderStyleTab(){
     if(!dv.length) return;
     const lo=Math.min(...dv), hi=Math.max(...dv), n=Math.max(2, lyr.style.classes||5), out=[];
     for(let i=1;i<n;i++) out.push(+(lo+(hi-lo)*i/n).toFixed(Math.min(6, lyr._labelDec!=null?lyr._labelDec:2)));
-    writeManualBreaks(lyr, out); st.classColors=null; renderLayer(lyr); renderStyleTab(); mkTouch(); markProjectDirty();
+    writeManualBreaks(lyr, out); st.classColors=null; renderLayer(lyr, true); renderStyleTab(); mkTouch(); markProjectDirty();
   };
   if(g('stRamp')) g('stRamp').onchange=()=>{ const v=g('stRamp').value;
     if(v==='__import'){ renderStyleTab(); openRampImport(lyr); return; }
@@ -17388,7 +17444,8 @@ document.getElementById('mkFsLayersBtn').onclick=e=>{ const el=document.getEleme
   mkFsSync();
   if(tableWinOpen()) placeTableWin();
   if(!mkFsOn()){ const el=document.getElementById('mkFsLayers'); if(el) el.classList.add('hidden'); const b=document.getElementById('mkFsLayersBtn'); if(b) b.setAttribute('aria-expanded','false'); }
-  setTimeout(()=>{ try{ mkMap.invalidateSize(); }catch(_){} try{ if(typeof mkGlobe!=='undefined' && mkGlobe) mkGlobe.resize(); }catch(_){} if(projActive) renderProjection(); if(typeof swipe!=='undefined' && swipe) try{ swipeClip(); }catch(_){} }, 120);
+  mkSizeSettle();
+  setTimeout(()=>{ if(projActive) renderProjection(); if(typeof swipe!=='undefined' && swipe) try{ swipeClip(); }catch(_){} }, 120);
 }));
 document.addEventListener('click', e=>{ const b=e.target.closest && e.target.closest('.mk-fs-btn'); if(!b) return; e.preventDefault(); e.stopPropagation(); mkFsToggle(); }, true);
 setTimeout(mkFsSync, 0);
@@ -17894,7 +17951,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.1.3 · Nov 2026';
+const MOM_VERSION='2.2 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
@@ -20349,11 +20406,28 @@ function loadProjectData(data){
 /* ---------- module switching ---------- */
 /* Leaflet only draws tiles for the size it last measured; if the map's box is still settling when Map Maker opens
    (fonts, side panels, a narrow window), parts of the basemap stay blank until the window is resized. Re-measure whenever the box changes. */
+/* 2.2: every drawing surface (data canvas, basemap, globe) is rebuilt at full size when the
+   map's box changes, and a full-screen animation or a sliding panel is dozens of steps, which
+   multiplied graphics memory several times over. So the maps are resized once, when the size
+   has settled. While the globe is open the flat map underneath is left alone (it is
+   re-measured and redrawn when the globe closes, in flatMapRefresh). */
+let mkSizeTimer=null;
+function mkSizeSettle(ms){
+  clearTimeout(mkSizeTimer);
+  mkSizeTimer=setTimeout(()=>{
+    if(typeof mkGlobe!=='undefined' && mkGlobe){
+      try{ const el=mkGlobe.getContainer(), k=el.clientWidth+'x'+el.clientHeight; if(mkGlobe.__sz!==k){ mkGlobe.__sz=k; mkGlobe.resize(); } }catch(_){}
+      return;
+    }
+    try{ if(mkMap) mkMap.invalidateSize({pan:false}); }catch(_){}
+  }, ms==null?150:ms);
+}
 function mkWatchSize(){
-  if(mkWatchSize.on || !('ResizeObserver' in window) || !mkMap) return; mkWatchSize.on=true;
-  let t=null, w=0, h=0; const el=mkMap.getContainer();
-  new ResizeObserver(()=>{ const r=el.getBoundingClientRect(); if(!r.width||!r.height||(r.width===w&&r.height===h)) return; w=r.width; h=r.height;
-    clearTimeout(t); t=setTimeout(()=>{ try{ mkMap.invalidateSize({pan:false}); }catch(_){} }, 80); }).observe(el);
+  if(mkWatchSize.on || !mkMap) return; mkWatchSize.on=true;
+  window.addEventListener('resize', ()=>mkSizeSettle());
+  if(!('ResizeObserver' in window)) return;
+  let w=0, h=0; const el=mkMap.getContainer();
+  new ResizeObserver(()=>{ const r=el.getBoundingClientRect(); if(!r.width||!r.height||(r.width===w&&r.height===h)) return; w=r.width; h=r.height; mkSizeSettle(); }).observe(el);
 }
 function switchModule(which){
   window.curModule=which;
@@ -20456,7 +20530,7 @@ function makeSplitter(panel, side, key, min, max, onChange){
   };
   return api;
 }
-const onMakerResize=()=>{ if(mkMap) mkMap.invalidateSize(); };
+const onMakerResize=()=>mkSizeSettle();
 const onLayoutResize=()=>{ canvas.calcOffset(); canvas.renderAll(); positionEmbedFrames(); };
 /* v72: adding something from the Composer rail opens its properties if that panel was folded */
 document.getElementById('toolrail').addEventListener('click', e=>{

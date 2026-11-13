@@ -1952,7 +1952,7 @@ html[data-theme=dark] .stats-table td{border-bottom:1px solid #373b41;}
     <div class="help-pane hidden" data-hp="how">
       <div class="help-step"><b>Make a map of amounts (a choropleth)</b><ol class="help-ol"><li><b>+ Add data</b>: upload a file, or choose <b>Online sources</b>.</li><li>Click the layer, then in <b>Style</b> choose <b>Graduated colour</b> and a <b>Value field</b>.</li><li>If the field is a count (people, cases), set <b>Normalize by</b> to a total or to <b>Area (km²)</b>, so large areas don’t stand out just for being large.</li><li>Choose the <b>Method</b>, the number of <b>Classes</b> and a <b>Colour ramp</b>. The chart below the list shows where the breaks fall.</li><li>Rename the layer (<b>⋯ → Rename</b>) so the legend says what the colours mean.</li></ol><p class="help-note">Counts are often better as <b>Proportional symbols</b>, which is another Style type.</p></div>
       <div class="help-step"><b>Lay out a page to hand in</b><ol class="help-ol"><li>In Map Maker, set the view you want, then <b>Send / Export ▾ → Map Composer</b>.</li><li>Type a map title and legend titles, add your name under <b>Map by</b>, and click <b>Capture &amp; send</b>.</li><li>In Map Composer, drag things into place. Add a <b>North Arrow</b>, <b>Text</b> or a <b>Neatline</b> from the left rail.</li><li><b>⚙ → View as</b> shows the page as a colour-blind reader or a greyscale printer would see it.</li><li><b>Send / Export ▾ → Export files…</b> saves a PDF or PNG.</li></ol></div>
-      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li><li>A layer that is switched off still uses memory. Remove layers you no longer need.</li><li>On a slower laptop, big layers are lighter on the flat map than as raised areas on the globe.</li></ol></div>
+      <div class="help-step"><b>Bring in your own data</b><ol class="help-ol"><li>Upload GeoJSON, a zipped shapefile, KML/KMZ, GPX, or a CSV/Excel table with coordinate columns. Dragging a file onto the map works too.</li><li>A table with no coordinates can be attached to a layer with <b>Tools → Join a table by a shared field</b>.</li><li>Addresses can be placed with <b>Tools → Geocode addresses</b>.</li><li><b>Tools → Add geometry fields</b> adds area, length and coordinates to the table.</li><li>In the table, <b>All / Selected</b> shows every row or just the selected features. In full screen, the bar at the top has the selection, the table and the layers.</li><li>A layer with lots of fields? Open its <b>Fields</b>, untick the ones you don’t need and click <b>Keep checked fields</b>. Big layers get faster.</li><li>A layer that is switched off still uses memory. Remove layers you no longer need.</li><li>On a slower laptop, big layers are lighter on the flat map than as raised areas on the globe.</li><li>Cartograms: non-contiguous, Dorling and Demers take up to 10,000 areas (a big layer takes a few seconds); contiguous takes up to 2,000.</li></ol></div>
       <div class="help-step"><b>Collect data in the field</b><ol class="help-ol"><li>In <b>Field Mapper</b>, click <b>+ New form</b> and add the questions.</li><li><b>Make link &amp; QR code</b>, then open the link on each phone.</li><li>Back at the laptop: <b>Collected data → Receive from phone</b>, and on the phone <b>Send to laptop</b>.</li><li><b>Send to Map Maker</b> turns the records into layers.</li></ol></div>
       <div class="help-step"><b>Build an atlas</b><ol class="help-ol"><li>In <b>Atlas</b>, choose Book or Scrolling and click <b>Start the atlas</b>.</li><li>In Map Maker, <b>Send / Export ▾ → Atlas: new page</b> adds the current map as a page. Change the map and send again for the next page.</li><li>Add text, images and sections with <b>+ Add page</b>, and write a caption for each map.</li><li><b>Send / Export ▾</b> in the Atlas shares a link, exports a web page or downloads a PDF.</li></ol></div>
       <div class="help-step"><b>Keep and hand in your work</b><ol class="help-ol"><li>Work saves in this browser as you go. <b>⚙ → Download project file</b> makes a backup you can open on another computer.</li><li><b>⚙ → Log</b> lists the steps you took. Copy it into the methods section of a report.</li><li>On a shared computer, always download the project file before you leave.</li></ol></div>
@@ -3830,7 +3830,15 @@ function glbCollect(groups, meta){
     if(meta.fid && f){ const i=meta.fid(f); if(i!=null) P._fi=i; }
     if(meta.lbl && f && f.properties && f.properties[meta.lbl]!=null && f.properties[meta.lbl]!=='') P._lbl=String(f.properties[meta.lbl]);
     if(meta.h && f && l instanceof L.Polygon){ const h=meta.h(f); if(isFinite(h) && h>0) P._h=Math.round(h); }
-    if(l instanceof L.Marker){
+    if(o.momChart){
+      /* 2.3: one value is a plain circle (data-driven, so thousands stay light); otherwise the chart as an icon */
+      const c=chartParts(o.momLyr, f); if(!c) return;
+      const cst=o.momLyr.style, op=Math.max(0, Math.min(1, cst.fillOpacity*o.momLyr.opacity));
+      if(c.type!=='bar' && c.v.filter(v=>v>0).length===1){
+        P._k='c'; P._fill=glbColor(c.cols[c.v.findIndex(v=>v>0)],'#b3452f'); P._fo=op; P._r=c.r;
+        P._stroke=isNoColour(cst.strokeColor)?'#ffffff':glbColor(cst.strokeColor,'#ffffff'); P._sw=Math.max(0.5, Math.min(2, cst.strokeWeight||0.8)); P._so=op;
+      } else { const cs=chartSvg(o.momLyr, f); if(!cs) return; P._k='s'; P._img=glbIconId(cs.svg, cs.size); P._io=op; P._r=cs.size/2; }
+    } else if(l instanceof L.Marker){
       const ic=o.icon&&o.icon.options; if(!ic||!ic.html||!/<svg/i.test(ic.html)) return;
       const sz=(ic.iconSize&&ic.iconSize[0])||14;
       const op=/opacity:\s*([\d.]+)/.exec(ic.html);
@@ -7097,11 +7105,17 @@ function chartAnchor(f){
   if(g.type==='Point') return g.coordinates;
   try{ return turf.pointOnFeature(f).geometry.coordinates; }catch(_){ return null; }
 }
+/* 2.3: a chart is drawn on the layer's canvas, like every other shape. Each one used to be
+   its own page element, and a few thousand of those made styling, zooming and dragging stall. */
 function chartMarker(lyr, f, latlng){
-  const cs=chartSvg(lyr,f); if(!cs) return null;
-  const po=swipePaneOpts(lyr);
-  const icon=L.divIcon({className:'mk-symbol mk-chart', html:'<div style="width:'+cs.size+'px;height:'+cs.size+'px;opacity:'+(lyr.style.fillOpacity*lyr.opacity)+'">'+cs.svg+'</div>', iconSize:[cs.size,cs.size], iconAnchor:[cs.size/2,cs.size/2]});
-  const m=L.marker(latlng, Object.assign({icon, keyboard:false}, po.pane?{pane:po.pane}:{}));
+  const c=chartParts(lyr,f); if(!c) return null;
+  if(!chartMarker.C) chartMarker.C=L.CircleMarker.extend({
+    _updatePath:function(){ const r=this._renderer; if(!r || !r._drawing || this._empty()) return;
+      const p=this._point; drawChartOnCanvas(r._ctx, this.options.momLyr, this.feature, p.x, p.y); },
+    /* styling comes from the layer, so the layer-wide style call must not change the size */
+    setStyle:function(){ return this; }
+  });
+  const m=new chartMarker.C(latlng, Object.assign({radius:c.r, weight:2, momChart:true, momLyr:lyr}, swipePaneOpts(lyr)));
   m.feature=f;
   return m;
 }
@@ -7116,6 +7130,10 @@ function drawChartOnCanvas(ctx, lyr, f, x, y){
     ctx.beginPath(); ctx.moveTo(x-c.r,base); ctx.lineTo(x+c.r,base); ctx.strokeStyle=isNoColour(st.strokeColor)?'#555':st.strokeColor; ctx.stroke();
   } else {
     let a=-Math.PI/2; const ri=c.type==='donut'?c.r*0.55:0;
+    /* one value only: a plain disc or ring, with no line from the centre */
+    const nz=c.v.filter(v=>v>0).length;
+    if(nz===1){ const i=c.v.findIndex(v=>v>0); ctx.beginPath(); ctx.arc(x,y,c.r,0,Math.PI*2); if(ri>0){ ctx.moveTo(x+ri,y); ctx.arc(x,y,ri,0,Math.PI*2,true); }
+      ctx.fillStyle=c.cols[i]; ctx.fill('evenodd'); ctx.beginPath(); ctx.arc(x,y,c.r,0,Math.PI*2); ctx.stroke(); ctx.restore(); return; }
     c.v.forEach((v,i)=>{ if(!(v>0)) return; const a1=a+v/c.tot*Math.PI*2; ctx.beginPath();
       if(ri>0){ ctx.arc(x,y,c.r,a,a1); ctx.arc(x,y,ri,a1,a,true); } else { ctx.moveTo(x,y); ctx.arc(x,y,c.r,a,a1); }
       ctx.closePath(); ctx.fillStyle=c.cols[i]; ctx.fill(); ctx.stroke(); a=a1; });
@@ -7388,6 +7406,8 @@ function hexCellsToLayer(lyr){
    is switched off and the projection dropdown locked while one is on show. */
 const CARTO_R=6378137;
 const CARTO_MAX_UNITS=2000;
+/* 2.3: how many polygons each kind can take (set from timings on an 8,000-area layer) */
+const CARTO_CAPS={noncontig:10000, dorling:10000, demers:10000, contig:2000};
 const CARTO_VERTEX_TARGET=24000;
 const CARTO_LABELS={noncontig:'non-contiguous', dorling:'Dorling', demers:'Demers', contig:'contiguous'};
 let cartoBasemapMemo=null;
@@ -7576,6 +7596,8 @@ function cartoResample(r, n){
   return out;
 }
 /* circle or square outline with n points, starting due north, anticlockwise */
+/* 2.3: points round each circle or square; fewer on big layers, where each one is small on screen */
+function cartoRingN(count){ return count>3000 ? 32 : count>1200 ? 48 : 96; }
 function cartoShapeRing(cx, cy, h, n, square){
   const out=[];
   for(let k=0;k<n;k++){
@@ -7700,8 +7722,9 @@ function cartoPacked(units, st, square, out){
   });
   /* units with no touching neighbour (islands, scattered points) link to their
      nearest unit so they don't drift off on their own */
+  const linked=new Set(); links.forEach(l=>{ linked.add(l.source); linked.add(l.target); });
   nodes.forEach(nd=>{
-    if(links.some(l=>l.source===nd||l.target===nd)) return;
+    if(linked.has(nd)) return;
     let best=null, bd=Infinity;
     nodes.forEach(o=>{ if(o===nd) return; const d=Math.hypot(o.u.cx-nd.u.cx, o.u.cy-nd.u.cy); if(d<bd){ bd=d; best=o; } });
     if(best) links.push({source:nd, target:best, d:nd.r+best.r+gap, weak:true});
@@ -7711,19 +7734,25 @@ function cartoPacked(units, st, square, out){
       .force('x', d3.forceX(d=>d.u.cx).strength(0.06))
       .force('y', d3.forceY(d=>d.u.cy).strength(0.06))
       .force('link', d3.forceLink(links).distance(l=>l.d).strength(l=>l.weak?0.1:0.35))
-      .force('collide', d3.forceCollide(d=>(square?d.r*1.12:d.r)+gap/2).strength(0.9).iterations(3))
+      .force('collide', d3.forceCollide(d=>(square?d.r*1.12:d.r)+gap/2).strength(0.9).iterations(n>4000?1:3))   /* 2.3: one pass each tick on very big layers; the exact pass below removes what is left */
       .alpha(1).alphaDecay(0.02).velocityDecay(0.35);
-    const ticks = n>1200 ? 160 : 300;
+    const ticks = n>4000 ? 100 : n>1200 ? 160 : 300;
     for(let t=0;t<ticks;t++) sim.tick();
   }
   /* guarantee: nothing overlaps (exact circles, or exact squares for Demers) */
+  /* 2.3: units are taken in order from left to right, so each is checked only against the
+     ones close enough to touch it; checking every pair took most of the time on big layers */
   const need=(a,b)=>a.r+b.r+gap;
-  for(let it=0; it<(n>800?40:120); it++){
+  let maxR=0; for(const nd of nodes) if(nd.r>maxR) maxR=nd.r;
+  const ord=nodes.slice();
+  for(let it=0; it<(n>4000?60:200); it++){
     let worst=0;
+    ord.sort((p,q)=>p.x-q.x);
     for(let i=0;i<n;i++){
-      const a=nodes[i];
+      const a=ord[i];
       for(let j=i+1;j<n;j++){
-        const b=nodes[j];
+        const b=ord[j];
+        if(b.x-a.x >= a.r+maxR+gap+worst) break;
         const dx=b.x-a.x, dy=b.y-a.y, reach=need(a,b);
         if(Math.abs(dx)>=reach || Math.abs(dy)>=reach) continue;
         if(square){
@@ -7745,7 +7774,7 @@ function cartoPacked(units, st, square, out){
   nodes.forEach(nd=>{ nd.u.px=nd.x; nd.u.py=nd.y; });
   for(const u of units){
     if(u.value<=0){ u.polys=[]; continue; }
-    u.polys=[[cartoShapeRing(u.px, u.py, u.h, 96, square)]];
+    u.polys=[[cartoShapeRing(u.px, u.py, u.h, cartoRingN(units.length), square)]];
   }
   return true;
 }
@@ -7858,7 +7887,11 @@ function cartogramFC0(lyr, planeKey){
   const st=lyr.style;
   const info=document.getElementById('stCartoInfo');
   const say=msg=>{ lyr._cartoNote=msg; if(info) info.innerHTML=msg; };
-  const fail=msg=>{ say(msg); lyr._cartoSig=null; lyr._cartoFC=null; lyr._cartoByIdx=null; return null; };
+  /* 2.3: the layer stays on the map in its real shape (renderLayer), and a reason the
+     user could miss in the panel is also shown once as a toast */
+  const fail=(msg, tell)=>{ say(msg); lyr._cartoSig=null; lyr._cartoFC=null; lyr._cartoByIdx=null;
+    if(tell && lyr._cartoTold!==msg){ lyr._cartoTold=msg; try{ toast(msg.replace(/<[^>]+>/g,''), 7000); }catch(_){} }
+    return null; };
   if(!st.cartoField) return fail('Choose the field whose values the areas should show.');
   const sig=[st.cartoKind, st.cartoField, st.cartoNormField, st.cartoSize, st.cartoIterations,
     st.cartoSpacing, st.cartoAuto, cartoValueSig(lyr), planeKey].join('|');
@@ -7870,9 +7903,11 @@ function cartogramFC0(lyr, planeKey){
   const t0=now();
   const units=cartoUnits(lyr);
   if(!units.length) return fail('This layer has no polygons to transform.');
-  if(units.length>CARTO_MAX_UNITS){
-    return fail('This layer has '+units.length.toLocaleString()+' polygons and cartograms are capped at '+
-      CARTO_MAX_UNITS.toLocaleString()+'. Filter it down, or dissolve it to larger units, and try again.');
+  const cap=CARTO_CAPS[st.cartoKind]||CARTO_MAX_UNITS;
+  if(units.length>cap){
+    const can=Object.keys(CARTO_CAPS).filter(k=>k!==st.cartoKind && units.length<=CARTO_CAPS[k]).map(k=>CARTO_LABELS[k]);
+    return fail('This layer has '+units.length.toLocaleString()+' polygons, and a '+(CARTO_LABELS[st.cartoKind]||'')+' cartogram can take up to '+
+      cap.toLocaleString()+'. '+(can.length ? 'Try another type ('+can.join(', ')+'), or filter the layer down.' : 'Filter it down, or dissolve it to larger units, and try again.'), true);
   }
   if(!units.some(u=>u.value>0)){
     return fail('No values above zero in ' + esc(st.cartoField) +
@@ -7893,7 +7928,7 @@ function cartogramFC0(lyr, planeKey){
   /* starting shapes, kept for the real-map-to-cartogram morph */
   const packed=(kind==='dorling'||kind==='demers');
   units.forEach(u=>{
-    if(packed){ const r=cartoLargestOuter(u.polys); u.origRing=r? cartoResample(r, 96) : null; }
+    if(packed){ const r=cartoLargestOuter(u.polys); u.origRing=r? cartoResample(r, cartoRingN(units.length)) : null; }
     else u.orig=cartoClonePolys(u.polys);
   });
   const out={};
@@ -8120,13 +8155,9 @@ function renderLayer(lyr, restyle){
   /* a cartogram is drawn from transformed geometry, so build that first */
   if(st.mode==='carto'){
     const cfc=cartogramFC(lyr);
-    if(!cfc){
-      updateMkStatus(); scheduleGlobeSync(); cartoUpdateProjectionLock(); mkTouch();
-      return;
-    }
     cartoPrepColors(lyr);
     /* the true boundaries, faint, underneath: what the cartogram is distorting */
-    if(st.cartoGhost!==false){
+    if(cfc && st.cartoGhost!==false){
       lyr.ghostLayer=L.geoJSON({type:'FeatureCollection', features:visibleFeatures(lyr).filter(f=>f.geometry&&/Polygon/.test(f.geometry.type))},{
         style:()=>({color:st.cartoGhostColor||'#8a96ad', weight:0.8, opacity:0.7*lyr.opacity, fill:true, fillColor:'#dfe4ec', fillOpacity:0.25*lyr.opacity, dashArray:null}),
         interactive:false
@@ -8145,9 +8176,10 @@ function renderLayer(lyr, restyle){
         const p=f.properties||{};
         m.bindPopup(()=>makerPopupHtml(p)||'(no attributes)', {maxWidth:340, minWidth:200});
         m.on('click', ev=>{ const oe=ev.originalEvent||{}; const i=fidOf(lyr,f); if(i==null) return; mkSelectedId=lyr.id; setSelection(lyr,[i],(oe.ctrlKey||oe.metaKey||oe.shiftKey)?'toggle':'set'); scrollTableToFeature(i); });
-        if(st.chartOne) try{ m.setZIndexOffset(-Math.round(m.options.icon.options.iconSize[0])*10000); }catch(_){}
         ms.push(m); });
-      lyr.dotLayer=L.layerGroup(ms).addTo(mkMap);
+      /* drawn in order, so the largest go down first and small ones stay visible on top */
+      ms.sort((a,b)=>b.options.radius-a.options.radius);
+      lyr.dotLayer=L.featureGroup(ms).addTo(mkMap);
     }
   }
   if(st.mode==='dot'){
@@ -8169,7 +8201,7 @@ function renderLayer(lyr, restyle){
     /* 2.1.1: Leaflet simplifies each polygon on its own (by up to 1 px), so neighbours'
        shared edges drift apart and slivers open up when zoomed out; half that keeps them together */
     smoothFactor: lyr.geom==='polygon' ? 0.5 : 1,
-    filter: f=>(st.mode==='carto') ? true : featurePasses(lyr,f),
+    filter: f=>(st.mode==='carto' && lyr._cartoFC) ? true : featurePasses(lyr,f),
     style: f=>{
       if(st.mode==='dot'){
         return {color:st.strokeColor, weight:st.strokeWeight, opacity:lyr.opacity,
@@ -8300,6 +8332,8 @@ function restackMakerLayers(){
     if(l.ghostLayer && l.ghostLayer.bringToFront) l.ghostLayer.bringToFront();
     if(l.dotLayer && l.dotLayer.bringToFront) l.dotLayer.bringToFront();
     if(l.leaflet && l.leaflet.bringToFront) l.leaflet.bringToFront();
+    /* 2.3: charts on areas are drawn on the same canvas, so they go above their own areas */
+    if(l.dotLayer && l.dotLayer.bringToFront && l.geom==='polygon' && l.style && l.style.mode==='chart') l.dotLayer.bringToFront();
     /* symbol markers live in their own pane: order them by the list too */
     if(l.leaflet && l.geom==='point' && l.style && l.style.symbol && l.style.symbol!=='circle' && l.leaflet.eachLayer) l.leaflet.eachLayer(m=>{ if(m.setZIndexOffset) m.setZIndexOffset(k*1000); });
   });
@@ -17952,7 +17986,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.2.1 · Nov 2026';
+const MOM_VERSION='2.3 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last

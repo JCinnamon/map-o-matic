@@ -4615,12 +4615,13 @@ function toggleBasemapPanel(){
     this.fire('update');
   };
   momCanvasFix(L);
-  /* 2.2: while the globe covers the flat map, its data canvas is not redrawn or resized
-     (thousands of shapes drawn where nobody can see them); flatMapRefresh redraws it */
-  const C0=L.Canvas.prototype, oRedraw=C0._redraw, oUpd=C0._update;
+  /* 2.2: while the globe covers the flat map, its data canvas is not redrawn (thousands of
+     shapes drawn where nobody can see them); flatMapRefresh redraws it. 2.2.1: only the
+     drawing is skipped. A canvas must still be measured (_update), or a new one made under
+     the globe (the legend-hover highlight) has no bounds and adding shapes to it fails. */
+  const C0=L.Canvas.prototype, oRedraw=C0._redraw;
   const covered=r=>{ try{ return !!(mkGlobe && mkMap && r._map===mkMap && !window.__momPR); }catch(_){ return false; } };
   C0._redraw=function(){ if(covered(this)){ this._redrawRequest=null; this._redrawBounds=null; return; } return oRedraw.call(this); };
-  C0._update=function(){ if(covered(this)) return; return oUpd.call(this); };
 })();
 /* 2.1.2: self-contained (it is copied into exported web maps and atlas maps too) */
 function momCanvasFix(L){
@@ -17951,7 +17952,7 @@ function tierClean(T){
     off:Array.isArray(T.off)?T.off.filter(x=>typeof x==='string'&&/^[a-z_]{1,40}$/.test(x)).slice(0,40):[], m0:+T.m0||0, m1:+T.m1||0};
 }
 /* ---------- v78: version label and one-tab guard ---------- */
-const MOM_VERSION='2.2 · Nov 2026';
+const MOM_VERSION='2.2.1 · Nov 2026';
 window.MOM_VERSION=MOM_VERSION;
 document.querySelectorAll('.mom-ver-tag').forEach(e=>e.textContent=MOM_VERSION);
 /* Two tabs of Map-O-Matic share one browser store, and the tab that saves last
